@@ -93,7 +93,7 @@ export default function Home() {
               width: '480px',
               textAlign: 'center',
               color: '#F2F0EF',
-              fontSize: '12px',
+              fontSize: '10px',
               padding: '10px',
               textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)',
               // backdropFilter: 'blur(10px)',
@@ -119,7 +119,7 @@ export default function Home() {
           <div id="w3m-layer" className='w3m-layer'>
 
             <w3m-button />
-              <h1 style={{ paddingTop: '20px', paddingLeft: '20px', fontSize: '15px', fontWeight: '700', fontFamily: 'Orbitron, sans-serif' }}>
+              <h1 style={{ paddingTop: '20px', paddingLeft: '15px', fontWeight: '700', fontFamily: 'Orbitron, sans-serif'}}>
               
                 {new Date().toLocaleString()}
                 </h1>
