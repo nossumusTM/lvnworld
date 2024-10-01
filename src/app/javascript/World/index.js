@@ -857,6 +857,7 @@ export default class
                         yesButton.style.backgroundColor = '#8CFF80';
                         yesButton.style.color = '#000';
                         yesButton.style.flex = '1';
+                        yesButton.style.fontFamily = 'Orbitron, sans-serif';
                         yesButton.onclick = () => respondToInvite('yes', inviterId, playerId);
                         buttonContainer.appendChild(yesButton);
                         feather.replace();
@@ -867,6 +868,7 @@ export default class
                         noButton.style.whiteSpace = 'pre';
                         noButton.style.backgroundColor = '#FF5733';
                         noButton.style.display = 'flex';
+                        noButton.style.fontFamily = 'Orbitron, sans-serif';
                         noButton.style.justifyContent = 'center';
                         noButton.style.flex = '1';
                         noButton.onclick = () => respondToInvite( 'DENY', inviterId, playerId);
