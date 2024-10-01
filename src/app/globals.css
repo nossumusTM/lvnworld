@@ -314,7 +314,8 @@ opacity: 0;
   color: #fff;
   font-size: 24px;
   font-family: 'Orbitron, sans-serif';
-  opacity: 0.2
+  opacity: 0.2;
+  overflow: hidden;
 }
 
 .w3m-layer {
@@ -331,6 +332,7 @@ opacity: 0;
   font-size: 24px;
   font-family: 'Orbitron, sans-serif';
   cursor: crosshair;
+  overflow: hidden;
 }
 
 #signOutButton {
@@ -422,7 +424,7 @@ opacity: 0;
   color: #fff;
   position: relative;
   border: 1px solid transparent;
-  border-radius: 10px;
+  border-radius: 20px;
   /* border: 2px solid rgba(0, 0, 0, 0.5); */
   /* text-shadow: 30px 30px 30px #0213f7; */
   text-decoration: none;

@@ -93,11 +93,13 @@ export default function Home() {
               width: '480px',
               textAlign: 'center',
               color: '#F2F0EF',
-              fontSize: '10px',
-              paddingLeft: '50px',
-              paddingRight: '50px'
+              fontSize: '12px',
+              padding: '10px',
+              textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)',
+              // backdropFilter: 'blur(10px)',
+              borderRadius: '10px'
             }}>
-              Powered by Nossumus Foundation. Krashbox is a real-time playground diary about tokenomics. ©2024
+              Powered by Nossumus Foundation. Krashbox is a real-time on-chain playground. ©2024
             </h2>
           </div>
         </div>
