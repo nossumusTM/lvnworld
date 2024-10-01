@@ -2022,8 +2022,14 @@ export default class
         this.startingScreen.area.on('interact', () => {
 
             const loadingLayer = document.getElementById('loading-layer');
+            const w3mLayer = document.getElementById('w3m-layer');
+
             if (loadingLayer) {
-                loadingLayer.style.display = 'none'; // No need for '!important' in JS
+                loadingLayer.style.display = 'none';
+            }
+
+            if (w3mLayer) {
+                w3mLayer.style.display = 'none';
             }
 
             this.startingScreen.area.deactivate()

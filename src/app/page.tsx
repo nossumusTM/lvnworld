@@ -105,15 +105,23 @@ export default function Home() {
       
       {/* Show the loading layer if the wallet is connected but the canvas isn't initialized */}
       {isConnected && !isCanvasInitialized && (
-        <div id="loading-layer" className="loading-layer" style={{cursor: 'crosshair'}}>
-          <h1 style={{ paddingTop: '20px', paddingLeft: '20px', fontSize: '20px', fontFamily: 'Orbitron, sans-serif' }}>
-          {new Date().toLocaleString()}
-          </h1>
-          {/* <h2 style={{paddingTop: '5px', paddingLeft: '15px', fontSize: '25px', fontFamily: 'Orbitron, sans-serif'}}>Sphere orbit</h2>
-          <h3 style={{paddingTop: '5px', paddingLeft: '15px', fontSize: '70px', fontFamily: 'Orbitron, sans-serif'}}>110–210 Earth radii</h3>
-          <h3 style={{paddingTop: '15px', paddingLeft: '15px', fontSize: '30px', fontFamily: 'Orbitron, sans-serif'}}>299.2 million km · 2 AU · ~6.54 AU</h3>
+        <div>
+          
+          <div id="loading-layer" className="loading-layer">
+            {/* <h2 style={{paddingTop: '5px', paddingLeft: '15px', fontSize: '25px', fontFamily: 'Orbitron, sans-serif'}}>Sphere orbit</h2>
+            <h3 style={{paddingTop: '5px', paddingLeft: '15px', fontSize: '70px', fontFamily: 'Orbitron, sans-serif'}}>110–210 Earth radii</h3>
+            <h3 style={{paddingTop: '15px', paddingLeft: '15px', fontSize: '30px', fontFamily: 'Orbitron, sans-serif'}}>299.2 million km · 2 AU · ~6.54 AU</h3>
+            <h3 style={{paddingLeft: '12px', fontSize: '50px', fontFamily: 'Orbitron, sans-serif'}}>6,363,000–12,663,000 km</h3> */}
+          </div>
 
-          <h3 style={{paddingLeft: '12px', fontSize: '50px', fontFamily: 'Orbitron, sans-serif'}}>6,363,000–12,663,000 km</h3> */}
+          <div id="w3m-layer" className='w3m-layer'>
+
+            <w3m-button />
+              <h1 style={{ paddingTop: '20px', paddingLeft: '20px', fontSize: '15px', fontWeight: '700', fontFamily: 'Orbitron, sans-serif' }}>
+              
+                {new Date().toLocaleString()}
+                </h1>
+            </div>
         </div>
       )}
 
