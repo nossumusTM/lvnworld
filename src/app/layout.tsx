@@ -1,8 +1,5 @@
 import type { Metadata } from "next";
-import { Orbitron } from 'next/font/google';
 import './globals.css'
-
-const orbitron = Orbitron({ subsets: ["latin"] });
 
 import { headers } from 'next/headers';
 import ContextProvider from "../../context";
@@ -28,7 +25,10 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body className={orbitron.className}>
+    <head>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
+    </head>
+      <body>
         {/* Wrap everything in the ContextProvider and pass cookies */}
         <ContextProvider cookies={cookies}>{children}</ContextProvider>
       </body>
