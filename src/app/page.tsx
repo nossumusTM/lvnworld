@@ -39,6 +39,19 @@ export default function Home() {
   // Handle disconnection and refresh the page
   useEffect(() => {
     if (!isConnected && hasAppInitialized) {
+
+      const userDisplay = document.getElementById('userDisplay');
+      const batteryStatus = document.getElementById('battery-status');
+      const scoreElement = document.getElementById('score-status');
+      const coinMarket = document.getElementById('coin-market');
+      const inviteButton = document.getElementById('invite-button');
+      const tradeButton = document.getElementById('trade-button');
+      const partyElement = document.getElementById('party-info');
+
+      if (userDisplay) {
+        userDisplay.style.display = 'none';
+      }
+
       console.log('Wallet disconnected, refreshing the page...');
       window.location.reload(); // Refresh the page when the user disconnects
     }
@@ -64,7 +77,7 @@ export default function Home() {
 
   return (
     //<main className="min-h-screen px-8 py-0 pb-12 flex-1 flex flex-col items-center" style={{ backgroundColor: '#fff', fontFamily: "'Orbitron', sans-serif" }}>
-    <main className="flex flex-col items-center" style={{ backgroundColor: '#0213f7', fontFamily: "'Orbitron', sans-serif" }}>
+    <main className="min-h-screen flex-1 flex flex-col items-center" style={{ backgroundColor: '#0213f7', fontFamily: "'Orbitron', sans-serif" }}>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 
       {/* Show the connectWalletDiv initially */}
@@ -121,7 +134,7 @@ export default function Home() {
           <div id="w3m-layer" className='w3m-layer'>
 
             <w3m-button />
-              <h1 style={{ paddingTop: '20px', paddingLeft: '15px', fontWeight: '700', fontFamily: 'Orbitron, sans-serif'}}>
+              <h1 style={{ paddingTop: '20px', paddingLeft: '15px', fontWeight: '700', fontFamily: 'Orbitron, sans-serif', opacity: '0.8', color: '#B4B4B8'}}>
               
                 {new Date().toLocaleString()}
                 </h1>
@@ -161,6 +174,9 @@ export default function Home() {
                 <div className="battery-bar"></div>
               </div>
 
+              {/* Party Status */}
+              {/* <div id="party-info" className="party-info">
+              </div> */}
               {/* Speedometer */}
               <div id="speedometer">
                 <div id="needle"></div>
@@ -189,6 +205,7 @@ export default function Home() {
       <div id="coin-market"></div>
       <div id="target-player-id"></div>
       <button id="invite-button" style={{ opacity: 0 }}></button>
+      <button id="trade-button" style={{ opacity: 0 }}></button>
       <div id="touch-radio" style={{ opacity: 0 }}></div>
       <div id="touch-mute" style={{ opacity: 0 }}></div>
       <input

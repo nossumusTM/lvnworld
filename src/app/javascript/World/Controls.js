@@ -271,19 +271,31 @@ export default class Controls extends EventEmitter
         this.touch.reset.$element.style.bottom = resetButtonElementBottom;
         this.touch.reset.$element.style.left = resetButtonElementLeft;
 
+        const partyInfo = document.getElementById('party-info')
+
+        if (partyInfo) {
+            partyInfo.style.right = this.isVerticalDisplay() ? 'calc(50% - 120px)!important;' : 'unset';
+            partyInfo.style.left = this.isVerticalDisplay() ? 'unset' : '345px';
+            partyInfo.style.width = this.isVerticalDisplay() ? '35%' : '15%';
+        }
+
         // Display none if horizontal
 
         const targetPlayerId = document.getElementById('target-player-id');
         const inviteButton = document.getElementById('invite-button');
+        const tradeButton = document.getElementById('trade-button');
         const touchRadio = document.getElementById('touch-radio');
         const touchMute = document.getElementById('touch-mute');
         const touchSlider = document.getElementById('touch-slider');
+        const switchContainer = document.getElementById('switch-container');
 
         targetPlayerId.style.display = this.isVerticalDisplay() ? 'block' : 'none';
         inviteButton.style.display = this.isVerticalDisplay() ? 'flex' : 'none';
+        tradeButton.style.display = this.isVerticalDisplay() ? 'none' : 'none';
         touchRadio.style.display = this.isVerticalDisplay() ? 'block' : 'none';
         touchMute.style.display = this.isVerticalDisplay() ? 'block' : 'none';
         touchSlider.style.display = this.isVerticalDisplay() ? 'block' : 'none';
+        switchContainer.style.display = this.isVerticalDisplay() ? 'block' : 'none';
         
     }
 
@@ -483,6 +495,7 @@ export default class Controls extends EventEmitter
         const touchRadio = document.getElementById('touch-radio');
         const touchMute = document.getElementById('touch-mute');
         const touchSlider = document.getElementById('touch-slider');
+        const partyInfo = document.getElementById('party-info');
 
 
         // Toggle function to move the square and toggle visibility of elements
@@ -500,6 +513,8 @@ export default class Controls extends EventEmitter
                 touchRadio.style.display = 'block';
                 touchMute.style.display = 'block';
                 touchSlider.style.display = 'block';
+                touchSlider.style.display = 'block';
+                partyInfo.style.display = 'unset';
 
             } else {
                 switchToggle.style.left = '5px';   // Move square back to the left
@@ -512,6 +527,7 @@ export default class Controls extends EventEmitter
                 touchRadio.style.display = 'none';
                 touchMute.style.display = 'none';
                 touchSlider.style.display = 'none';
+                partyInfo.style.display = 'none';
 
             }
         });
@@ -791,60 +807,60 @@ export default class Controls extends EventEmitter
         document.body.appendChild(this.touch.zoomSlider.$element);
 
         // Add custom styles for the slider
-    const sliderStyle = document.createElement('style');
-    sliderStyle.innerHTML = `
-        input[type="range"] {
-            -webkit-appearance: none;
-            width: 100%;
-            height: 2px;
-            background: transparent; /* Track color */
-            outline: none;
-            opacity: 0.7;
-            transition: opacity .2s;
-            opacity: 0.7
+        const sliderStyle = document.createElement('style');
+        sliderStyle.innerHTML = `
+            input[type="range"] {
+                -webkit-appearance: none;
+                width: 100%;
+                height: 2px;
+                background: transparent; /* Track color */
+                outline: none;
+                opacity: 0.7;
+                transition: opacity .2s;
+                opacity: 0.7
 
-        }
+            }
 
-        input[type="range"]:hover {
-            opacity: 1;
-        }
+            input[type="range"]:hover {
+                opacity: 1;
+            }
 
-        input[type="range"]::-webkit-slider-runnable-track {
-            width: 100%;
-            height: 2px;
-            cursor: pointer;
-            animate: 0.2s;
-            background: #fff; /* Track color */
-            border-radius: 5px;
-        }
+            input[type="range"]::-webkit-slider-runnable-track {
+                width: 100%;
+                height: 2px;
+                cursor: pointer;
+                animate: 0.2s;
+                background: #fff; /* Track color */
+                border-radius: 5px;
+            }
 
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            height: 10px;
-            width: 10px;
-            border-radius: unset;
-            background: #FF5733; /* Thumb color */
-            cursor: pointer;
-            margin-top: -5px; /* Align thumb with the track */
-        }
+            input[type="range"]::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                height: 10px;
+                width: 10px;
+                border-radius: unset;
+                background: #FF5733; /* Thumb color */
+                cursor: pointer;
+                margin-top: -5px; /* Align thumb with the track */
+            }
 
-        input[type="range"]::-moz-range-track {
-            width: 100%;
-            height: 2px;
-            cursor: pointer;
-            animate: 0.2s;
-            background: #007bff; /* Track color */
-            border-radius: 5px;
-        }
+            input[type="range"]::-moz-range-track {
+                width: 100%;
+                height: 2px;
+                cursor: pointer;
+                animate: 0.2s;
+                background: #007bff; /* Track color */
+                border-radius: 5px;
+            }
 
-        input[type="range"]::-moz-range-thumb {
-            height: 10px;
-            width: 10px;
-            border-radius: unset;
-            background: #8CFF80; /* Thumb color */
-            cursor: pointer;
-        }
-    `;
+            input[type="range"]::-moz-range-thumb {
+                height: 10px;
+                width: 10px;
+                border-radius: unset;
+                background: #8CFF80; /* Thumb color */
+                cursor: pointer;
+            }
+        `;
     document.head.appendChild(sliderStyle);
 
     // Event listener for slider change
@@ -887,7 +903,7 @@ export default class Controls extends EventEmitter
         this.touch.mute.$border.style.background = 'rgba(0, 0, 0, 0.5)'
         this.touch.mute.$border.style.borderRadius = '5px';
         this.touch.mute.$border.style.boxSizing = 'border-box';
-        this.touch.mute.$border.style.opacity = '0.25';
+        this.touch.mute.$border.style.opacity = '1';
         this.touch.mute.$border.style.willChange = 'opacity';
         this.touch.mute.$element.appendChild(this.touch.mute.$border);
 
@@ -931,7 +947,7 @@ export default class Controls extends EventEmitter
             const touch = touches.find((_touch) => _touch.identifier === this.touch.mute.touchIdentifier);
 
             if (touch) {
-                this.touch.mute.$border.style.opacity = '0.25';
+                this.touch.mute.$border.style.opacity = '1';
 
                 document.removeEventListener('touchend', this.touch.mute.events.touchend);
             }

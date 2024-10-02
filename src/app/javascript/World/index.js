@@ -805,7 +805,7 @@ export default class
                         inviteElement = document.createElement('div');
                         inviteElement.id = 'invite-prompt';
                         inviteElement.style.position = 'absolute';
-                        inviteElement.style.bottom = '40%';
+                        inviteElement.style.top = '50%';
                         inviteElement.style.left = '50%';
                         inviteElement.style.transform = 'translate(-50%, -50%)';
                         inviteElement.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
@@ -954,7 +954,7 @@ export default class
                         partyElement.style.padding = '10px';
                         partyElement.style.zIndex = '1000';
                         partyElement.style.backdropFilter = 'blur(10px)';
-                        partyElement.style.width = '20%';
+                        partyElement.style.width = '12.5%';
 
                         const leaveButton = document.createElement('button');
                         leaveButton.id = 'ordinaryButton'
@@ -1786,13 +1786,18 @@ export default class
             const scoreElement = document.getElementById('score-status');
             const coinMarket = document.getElementById('coin-market');
             const inviteButton = document.getElementById('invite-button');
+            const tradeButton = document.getElementById('trade-button');
+
             inviteButton.innerText = 'INVITE';
+            tradeButton.innerText = 'TRADE';
             
             if (userDisplay) {
                 userDisplay.innerHTML = formatPlayerId(playerId);
                 batteryStatus.style.opacity = 1;
                 scoreElement.style.opacity = 1;
                 coinMarket.style.opacity = 1;
+                inviteButton.style.opacity = 1;
+                tradeButton.style.opacity = 1;
             }
     
             // Request token from your server using `playerId`
