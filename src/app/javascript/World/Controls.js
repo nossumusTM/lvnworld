@@ -270,6 +270,20 @@ export default class Controls extends EventEmitter
 
         this.touch.reset.$element.style.bottom = resetButtonElementBottom;
         this.touch.reset.$element.style.left = resetButtonElementLeft;
+
+        // Display none if horizontal
+
+        const targetPlayerId = document.getElementById('target-player-id');
+        const inviteButton = document.getElementById('invite-button');
+        const touchRadio = document.getElementById('touch-radio');
+        const touchMute = document.getElementById('touch-mute');
+        const touchSlider = document.getElementById('touch-slider');
+
+        targetPlayerId.style.display = this.isVerticalDisplay() ? 'block' : 'none';
+        inviteButton.style.display = this.isVerticalDisplay() ? 'flex' : 'none';
+        touchRadio.style.display = this.isVerticalDisplay() ? 'block' : 'none';
+        touchMute.style.display = this.isVerticalDisplay() ? 'block' : 'none';
+        touchSlider.style.display = this.isVerticalDisplay() ? 'block' : 'none';
         
     }
 

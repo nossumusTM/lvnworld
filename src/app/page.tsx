@@ -63,7 +63,8 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen px-8 py-0 pb-12 flex-1 flex flex-col items-center overflow-hidden" style={{ backgroundColor: '#0213f7', fontFamily: "'Orbitron', sans-serif" }}>
+    //<main className="min-h-screen px-8 py-0 pb-12 flex-1 flex flex-col items-center" style={{ backgroundColor: '#fff', fontFamily: "'Orbitron', sans-serif" }}>
+    <main className="flex flex-col items-center" style={{ backgroundColor: '#0213f7', fontFamily: "'Orbitron', sans-serif" }}>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 
       {/* Show the connectWalletDiv initially */}
