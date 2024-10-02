@@ -271,13 +271,14 @@ export default class Controls extends EventEmitter
         this.touch.reset.$element.style.bottom = resetButtonElementBottom;
         this.touch.reset.$element.style.left = resetButtonElementLeft;
 
-        const partyInfo = document.getElementById('party-info')
+        // const partyInfo = document.getElementById('party-info')
 
-        if (partyInfo) {
-            partyInfo.style.right = this.isVerticalDisplay() ? 'calc(50% - 120px)!important;' : 'unset';
-            partyInfo.style.left = this.isVerticalDisplay() ? 'unset' : '345px';
-            partyInfo.style.width = this.isVerticalDisplay() ? '35%' : '15%';
-        }
+        // if (partyInfo) {
+        //     partyInfo.style.right = this.isVerticalDisplay() ? 'calc(50% - 120px)!important;' : 'unset';
+        //     partyInfo.style.left = this.isVerticalDisplay() ? 'unset' : '345px';
+        //     partyInfo.style.width = this.isVerticalDisplay() ? '35%' : '15%';
+        //     partyInfo.style.opacity = this.isVerticalDisplay() ? '1' : '1';
+        // }
 
         // Display none if horizontal
 

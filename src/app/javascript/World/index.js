@@ -948,13 +948,13 @@ export default class
                         partyElement.innerText = 'PARTY'
                         partyElement.style.position = 'absolute';
                         partyElement.style.top = '15px';
-                        partyElement.style.right = '20px';
+                        partyElement.style.left = '345px';
                         partyElement.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
                         partyElement.style.color = 'white';
                         partyElement.style.padding = '10px';
                         partyElement.style.zIndex = '1000';
                         partyElement.style.backdropFilter = 'blur(10px)';
-                        partyElement.style.width = '12.5%';
+                        partyElement.style.width = '15%';
 
                         const leaveButton = document.createElement('button');
                         leaveButton.id = 'ordinaryButton'
