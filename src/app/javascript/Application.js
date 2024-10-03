@@ -44,6 +44,10 @@ const Application = ({ playerId }) => {
           this.setPasses();
           this.setWorld();
           this.animate();
+
+          // Resize canvas when window size changes
+          this.sizes.on('resize', this.resizeCanvas.bind(this));
+          this.resizeCanvas(); // Set initial size
         }
 
     /**
@@ -101,7 +105,8 @@ const Application = ({ playerId }) => {
         // this.renderer.setClearColor(0x414141, 1)
         this.renderer.setClearColor(0x000000, 1)
         // this.renderer.setPixelRatio(Math.min(Math.max(window.devicePixelRatio, 1.5), 2))
-        this.renderer.setPixelRatio(2)
+        // this.renderer.setPixelRatio(2)
+        this.renderer.setPixelRatio(window.devicePixelRatio || 1);
         this.renderer.setSize(this.sizes.viewport.width, this.sizes.viewport.height)
         this.renderer.autoClear = false
 
@@ -114,6 +119,19 @@ const Application = ({ playerId }) => {
         {
             this.renderer.setSize(this.sizes.viewport.width, this.sizes.viewport.height)
         })
+    }
+
+    /**
+    * Resize canvas based on viewport
+    */
+    resizeCanvas() {
+        const { width, height } = this.sizes.viewport;
+        this.renderer.setSize(width, height);
+
+        if (this.camera && this.camera.instance) {
+            this.camera.instance.aspect = width / height;
+            this.camera.instance.updateProjectionMatrix();
+        }
     }
 
     animate() {
@@ -330,7 +348,7 @@ return () => {
 };
 }, [playerId]);
 
-return <canvas ref={canvasRef} className="canvas js-canvas" />;
+return <canvas ref={canvasRef} className="canvas js-canvas" style={{ width: '100vw', height: '100vh' }} />;
 };
 
 export default Application;

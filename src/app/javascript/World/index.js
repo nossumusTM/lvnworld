@@ -948,8 +948,8 @@ export default class
                     let partyElement = document.getElementById('party-info');
                     
                     if (!partyElement) {
-                        partyElement = document.getElementById('party-info');
-                        // partyElement.id = 'party-info';
+                        partyElement = document.createElement('div')
+                        partyElement.id = 'party-info';
                         // partyElement.innerText = 'PARTY'
                         partyElement.style.position = 'absolute';
                         partyElement.style.top = '15px';

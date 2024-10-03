@@ -181,8 +181,8 @@ export default function Home() {
               </div>
 
               {/* Party Status */}
-              <div id="party-info" className="party-info" style={{opacity: 0}}>
-              </div>
+              {/* <div id="party-info" className="party-info" style={{opacity: 0}}>
+              </div> */}
 
               {/* Speedometer */}
               <div id="speedometer">
