@@ -86,8 +86,8 @@ export default function Home() {
 
         <div className="connectWalletDiv flex flex-col justify-between items-center h-screen p-4">
           {/* Centered Connect Wallet Button */}
-          {/* <div className="flex-grow flex justify-center items-center"> */}
-          <div className="">
+          <div className="flex-grow flex justify-center items-center">
+          {/* <div className=""> */}
 
 
           {/* Logo */}
@@ -150,8 +150,8 @@ export default function Home() {
       </header> */}
 
       {/* Wallet connection button (Web3Modal) */}
-      {/* <div className="max-w-4xl"> */}
-      <div>
+      <div className="max-w-4xl">
+      {/* <div> */}
 
 
         <br />
