@@ -107,7 +107,6 @@ export default class Sounds
             capitolo3vol7,
             capitolo3vol3, 
             capitolo3vol9,
-            capitolo4vol11,
             capitolo4vol8
         ]
 
