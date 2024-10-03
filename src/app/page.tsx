@@ -84,7 +84,7 @@ export default function Home() {
       {!isConnected && (
                 // <div className="connectWalletDiv flex flex-col justify-between items-center h-screen p-4">
 
-        <div className="connectWalletDiv">
+        <div className="connectWalletDiv flex flex-col justify-between items-center h-screen p-4">
           {/* Centered Connect Wallet Button */}
           {/* <div className="flex-grow flex justify-center items-center"> */}
           <div className="">
