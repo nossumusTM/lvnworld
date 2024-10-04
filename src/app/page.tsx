@@ -53,7 +53,8 @@ export default function Home() {
       }
 
       console.log('Wallet disconnected, refreshing the page...');
-      window.location.reload(); // Refresh the page when the user disconnects
+      // window.location.reload(); // Refresh the page when the user disconnects
+      window.location.href = 'https://krashboxfoundation.netlify.app'
     }
   }, [isConnected, hasAppInitialized]);
 
