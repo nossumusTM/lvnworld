@@ -229,6 +229,9 @@ export default class Controls extends EventEmitter
         const cameraView = document.getElementById('camera-view');
         cameraView.style.display = this.isVerticalDisplay() ? 'unset' : 'none';
 
+        const partyInfo = document.getElementById('party-info');
+        userDisplay.style.display = this.isVerticalDisplay() ? 'unset' : 'none';
+
         const joystickBottom = this.isVerticalDisplay() ? '10px' : '20px';
         this.touch.joystick.$element.style.bottom = joystickBottom;
 
@@ -278,7 +281,7 @@ export default class Controls extends EventEmitter
         this.touch.camera.$element.style.left = cameraButtonElementLeft;
         
         const resetButtonElementBottom = this.isVerticalDisplay() ? '175px' : '35px';
-        const resetButtonElementLeft = this.isVerticalDisplay() ? '83px': '165px';
+        const resetButtonElementLeft = this.isVerticalDisplay() ? '83px': '190px';
 
         this.touch.reset.$element.style.bottom = resetButtonElementBottom;
         this.touch.reset.$element.style.left = resetButtonElementLeft;

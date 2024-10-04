@@ -668,7 +668,8 @@ export default class
                         
                         // Redirect to the home or wallet connection page
                         if (typeof window !== 'undefined') {
-                            window.location.href = 'https://krashboxfoundation.netlify.app';
+                            // window.location.href = 'https://krashboxfoundation.netlify.app';
+                            window.location.href = 'localhost:3000';
                         }
                 };
 
