@@ -132,7 +132,7 @@ body {
   margin-left: 5px;
 }
 
-#target-player-id {
+/* #target-player-id {
   position: absolute;
   width: 100px;
   text-align: center;
@@ -147,7 +147,7 @@ body {
   z-index: 10;
   opacity: 0;
   rotate: 90deg;
-}
+} */
 
 @media (orientation: landscape) {
   #target-player-id {
@@ -207,7 +207,7 @@ opacity: 0;
 @media (orientation: landscape) {
   #party-info {
     position: absolute;
-    width: 17%;
+    width: 27%;
     text-align: left;
     font-family: 'Orbitron', sans-serif;
     font-size: 13px;
@@ -225,15 +225,15 @@ opacity: 0;
 @media (max-width: 767px) {
   #party-info {
     position: absolute;
-    top: calc(50% - 120px)!important;
-    left: calc(50% + 40px)!important;
-    background-color: rgba(0, 0, 0, 0.2)!important;
+    top: calc(50% - 120px);
+    left: calc(50% + 40px);
+    background-color: rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(5px);
     color: white;
     padding: 10px;
     z-index: 1000;
     backdrop-filter: blur(10px);
-    width: 35%!important;
+    width: 35%;
     display: block;
     text-align: center;
     font-family: 'Orbitron', sans-serif;
