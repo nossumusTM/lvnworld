@@ -187,39 +187,20 @@ body {
   }
 }
 
-/* #party-info {
+#party-info {
 position: absolute;
-width: 12.5%;
-text-align: center;
+width: 17%;
+text-align: left;
 font-family: 'Orbitron', sans-serif;
 font-size: 13px;
 top: 15px;
-right: 20px;
-background: rgba(0, 0, 0, 0.2);
+left: calc(50% - 60px);
+background: rgba(0, 0, 0, 0.5);
 color: white;
 padding: 10px 10px;
 border-radius: 5px;
 z-index: 1000;
 opacity: 0;
-} */
-
-/* Styles for landscape orientation */
-@media (orientation: landscape) {
-  #party-info {
-    position: absolute;
-    width: 17%;
-    text-align: left;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 13px;
-    top: calc(50% - 183px);
-    left: calc(50% - 60px);
-    background: rgba(0, 0, 0, 0.2);
-    color: white;
-    padding: 10px 10px;
-    border-radius: 5px;
-    z-index: 1000;
-    opacity: 0;
-  }
 }
 
 @media (max-width: 767px) {

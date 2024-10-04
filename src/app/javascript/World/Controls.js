@@ -217,6 +217,18 @@ export default class Controls extends EventEmitter
 
     updateButtonPositions() {
 
+        const userDisplay = document.getElementById('userDisplay');
+        userDisplay.style.display = this.isVerticalDisplay() ? 'unset' : 'none';
+
+        const batteryContainer = document.getElementById('battery-status');
+        batteryContainer.style.top = this.isVerticalDisplay() ? '70px' : '60px';
+
+        const scoreContainer = document.getElementById('coin-market');
+        scoreContainer.style.top = this.isVerticalDisplay() ? '85px' : '15px';
+
+        const cameraView = document.getElementById('camera-view');
+        cameraView.style.display = this.isVerticalDisplay() ? 'unset' : 'none';
+
         const joystickBottom = this.isVerticalDisplay() ? '10px' : '20px';
         this.touch.joystick.$element.style.bottom = joystickBottom;
 
@@ -702,6 +714,7 @@ export default class Controls extends EventEmitter
         // Element
 
         this.touch.camera.$element = document.createElement('div')
+        this.touch.camera.$element.id = 'camera-view'
         this.touch.camera.$element.style.userSelect = 'none'
         this.touch.camera.$element.style.position = 'fixed'
         this.touch.camera.$element.style.bottom = '175px'
