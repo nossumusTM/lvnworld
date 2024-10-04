@@ -149,6 +149,25 @@ body {
   rotate: 90deg;
 }
 
+@media (orientation: landscape) {
+  #target-player-id {
+    position: absolute;
+    width: 100px;
+    text-align: center;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    top: 48px;
+    left: 269px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 10px 10px;
+    border-radius: 5px;
+    z-index: 10;
+    opacity: 0;
+    rotate: 90deg;
+  }
+}
+
 @media (max-width: 767px) {
   #target-player-id {
     position: absolute;
@@ -182,6 +201,25 @@ padding: 10px 10px;
 border-radius: 5px;
 z-index: 1000;
 opacity: 0;
+}
+
+/* Styles for landscape orientation */
+@media (orientation: landscape) {
+  #party-info {
+    position: absolute;
+    width: 17%;
+    text-align: left;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    top: 15px;
+    left: 345px;
+    background: rgba(0, 0, 0, 0.2);
+    color: white;
+    padding: 10px 10px;
+    border-radius: 5px;
+    z-index: 1000;
+    opacity: 0;
+  }
 }
 
 @media (max-width: 767px) {

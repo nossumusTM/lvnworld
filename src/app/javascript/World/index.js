@@ -979,29 +979,6 @@ export default class
                         partyElement.style.padding = '10px';
                         partyElement.style.zIndex = '1000';
                         partyElement.style.backdropFilter = 'blur(10px)';
-                        
-                        // Function to update styles based on orientation
-                        function updatePartyUIStyles() {
-                            const isHorizontal = window.innerWidth > window.innerHeight;
-                    
-                            if (isHorizontal) {
-                                // Horizontal (landscape) settings
-                                partyElement.style.top = '15px';
-                                partyElement.style.left = '346px'; // Adjust as needed
-                                partyElement.style.width = '18%'; // Adjust width for landscape
-                            } else {
-                                // Vertical (portrait) settings
-                                partyElement.style.top = '15px';
-                                partyElement.style.left = '345px'; // Adjust as needed
-                                partyElement.style.width = '15%'; // Adjust width for portrait
-                            }
-                        }
-                    
-                        // Initial call to set the style based on current orientation
-                        updatePartyUIStyles();
-                    
-                        // Event listener to update the layout on orientation change
-                        window.addEventListener('resize', updatePartyUIStyles);
                     
                         const leaveButton = document.createElement('button');
                         leaveButton.id = 'ordinaryButton';
