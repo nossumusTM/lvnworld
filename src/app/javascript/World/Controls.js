@@ -280,7 +280,7 @@ export default class Controls extends EventEmitter
         this.touch.camera.$element.style.bottom = cameraButtonElementBottom;
         this.touch.camera.$element.style.left = cameraButtonElementLeft;
         
-        const resetButtonElementBottom = this.isVerticalDisplay() ? '175px' : '35px';
+        const resetButtonElementBottom = this.isVerticalDisplay() ? '175px' : '20px';
         const resetButtonElementLeft = this.isVerticalDisplay() ? '83px': '188px';
 
         this.touch.reset.$element.style.bottom = resetButtonElementBottom;
