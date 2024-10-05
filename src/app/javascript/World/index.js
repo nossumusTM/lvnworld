@@ -971,15 +971,78 @@ export default class
                 function updatePartyUI(inviterId, members, physics) {
                     let partyElement = document.getElementById('party-info');
                     
+                    // if (!partyElement) {
+                    //     partyElement = document.createElement('div');
+                    //     partyElement.id = 'party-info';
+                    //     partyElement.style.position = 'absolute';
+                    //     partyElement.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                    //     partyElement.style.color = 'white';
+                    //     partyElement.style.padding = '10px';
+                    //     partyElement.style.zIndex = '1000';
+                    //     partyElement.style.backdropFilter = 'blur(10px)';
+                    
+                    //     const leaveButton = document.createElement('button');
+                    //     leaveButton.id = 'ordinaryButton';
+                    //     leaveButton.onclick = leaveParty;
+                    //     partyElement.appendChild(leaveButton);
+                    
+                    //     document.body.appendChild(partyElement);
+                    // }                    
+
                     if (!partyElement) {
                         partyElement = document.createElement('div');
                         partyElement.id = 'party-info';
-                        // partyElement.style.position = 'absolute';
-                        // partyElement.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-                        // partyElement.style.color = 'white';
-                        // partyElement.style.padding = '10px';
-                        // partyElement.style.zIndex = '1000';
-                        // partyElement.style.backdropFilter = 'blur(10px)';
+                        
+                        const updateStylesForOrientation = (orientation) => {
+                            if (orientation === 'portrait') {
+                                partyElement.style.top = '180px';
+                                partyElement.style.left = '205px';
+                                partyElement.style.width = '38%';
+                                partyElement.style.fontSize = '13px';
+                                partyElement.style.textAlign = 'left';
+                                partyElement.style.borderRadius = '5px';
+                                partyElement.style.fontFamily = 'Orbitron, sans-serif';
+                                partyElement.style.backgroundColor = 'rgba(0, 0, 0, 0.2)';
+                            } else if (orientation === 'landscape') {
+                                partyElement.style.top = '15px';
+                                partyElement.style.left = '346px';
+                                partyElement.style.width = '10%';
+                                partyElement.style.fontSize = '13px';
+                                partyElement.style.textAlign = 'left';
+                                partyElement.style.borderRadius = '5px';
+                                partyElement.style.fontFamily = 'Orbitron, sans-serif';
+                            }
+                        };
+                    
+                        // Check initial orientation
+                        let portrait = window.matchMedia("(orientation: portrait)");
+                        updateStylesForOrientation(portrait.matches ? 'portrait' : 'landscape');
+                    
+                        // Listen for orientation changes
+                        portrait.addEventListener("change", (e) => {
+                            if (e.matches) {
+                                updateStylesForOrientation('portrait');
+                            } else {
+                                updateStylesForOrientation('landscape');
+                            }
+                        });
+                    
+                        // Alternatively, using screen.orientation (if supported)
+                        if (screen.orientation) {
+                            screen.orientation.addEventListener("change", (e) => {
+                                updateStylesForOrientation(screen.orientation.type.includes('portrait') ? 'portrait' : 'landscape');
+                            });
+                        }
+                    
+                        // Set the common styles for the partyElement
+                        partyElement.style.position = 'absolute';
+                        partyElement.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                        partyElement.style.color = 'white';
+                        partyElement.style.padding = '10px';
+                        partyElement.style.zIndex = '1000';
+                        partyElement.style.backdropFilter = 'blur(10px)';
+                        partyElement.style.fontFamily = 'Orbitron, sans-serif';
+                        partyElement.style.borderRadius = '5px';
                     
                         const leaveButton = document.createElement('button');
                         leaveButton.id = 'ordinaryButton';
@@ -987,8 +1050,8 @@ export default class
                         partyElement.appendChild(leaveButton);
                     
                         document.body.appendChild(partyElement);
-                    }                    
-
+                    }
+                    
                     // Ensure the party UI is visible
                     partyElement.style.display = 'block';
 
