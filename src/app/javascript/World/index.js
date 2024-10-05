@@ -996,7 +996,7 @@ export default class
                         const updateStylesForOrientation = (orientation) => {
                             if (orientation === 'portrait') {
                                 partyElement.style.top = '180px';
-                                partyElement.style.left = '260px';
+                                partyElement.style.left = 'calc(50% + 52px)';
                                 partyElement.style.width = '33%';
                                 partyElement.style.fontSize = '13px';
                                 partyElement.style.textAlign = 'left';
@@ -1004,14 +1004,14 @@ export default class
                                 partyElement.style.fontFamily = 'Orbitron, sans-serif';
                                 partyElement.style.backgroundColor = 'rgba(0, 0, 0, 0.2)';
                             } else if (orientation === 'landscape') {
-                                partyElement.style.top = '15px';
-                                partyElement.style.left = '346px';
-                                partyElement.style.width = '15%';
-                                partyElement.style.fontSize = '13px';
-                                partyElement.style.textAlign = 'left';
-                                partyElement.style.borderRadius = '5px';
-                                partyElement.style.fontFamily = 'Orbitron, sans-serif';
-                                partyElement.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                                partyElement.style.display = 'none';
+                                // partyElement.style.left = '346px';
+                                // partyElement.style.width = '15%';
+                                // partyElement.style.fontSize = '13px';
+                                // partyElement.style.textAlign = 'left';
+                                // partyElement.style.borderRadius = '5px';
+                                // partyElement.style.fontFamily = 'Orbitron, sans-serif';
+                                // partyElement.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
                             }
                         };
                     
@@ -1041,9 +1041,16 @@ export default class
                         partyElement.style.color = 'white';
                         partyElement.style.padding = '10px';
                         partyElement.style.zIndex = '1000';
+                        partyElement.style.display = 'block';
                         partyElement.style.backdropFilter = 'blur(10px)';
                         partyElement.style.fontFamily = 'Orbitron, sans-serif';
                         partyElement.style.borderRadius = '5px';
+
+                        partyElement.style.left = '346px';
+                        partyElement.style.top = '15px';
+                        partyElement.style.width = '15%';
+                        partyElement.style.fontSize = '13px';
+                        partyElement.style.textAlign = 'left';
                     
                         const leaveButton = document.createElement('button');
                         leaveButton.id = 'ordinaryButton';
