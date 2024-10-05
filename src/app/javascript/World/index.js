@@ -996,8 +996,8 @@ export default class
                         const updateStylesForOrientation = (orientation) => {
                             if (orientation === 'portrait') {
                                 partyElement.style.top = '180px';
-                                partyElement.style.left = '205px';
-                                partyElement.style.width = '38%';
+                                partyElement.style.left = '260px';
+                                partyElement.style.width = '33%';
                                 partyElement.style.fontSize = '13px';
                                 partyElement.style.textAlign = 'left';
                                 partyElement.style.borderRadius = '5px';
@@ -1006,11 +1006,12 @@ export default class
                             } else if (orientation === 'landscape') {
                                 partyElement.style.top = '15px';
                                 partyElement.style.left = '346px';
-                                partyElement.style.width = '10%';
+                                partyElement.style.width = '15%';
                                 partyElement.style.fontSize = '13px';
                                 partyElement.style.textAlign = 'left';
                                 partyElement.style.borderRadius = '5px';
                                 partyElement.style.fontFamily = 'Orbitron, sans-serif';
+                                partyElement.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
                             }
                         };
                     
