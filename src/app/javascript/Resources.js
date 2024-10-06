@@ -2,7 +2,6 @@ import * as THREE from 'three'
 
 import Loader from './Utils/Loader.js'
 import EventEmitter from './Utils/EventEmitter.js'
-import { FontLoader } from './Utils/FontLoader.js';
 
 // Matcaps
 const matcapBeigeSource = '/models/matcaps/beige.png'
@@ -184,7 +183,8 @@ const tilesEBaseSource = '/models/tiles/e/base.glb'
 const tilesECollisionSource = '/models/tiles/e/collision.glb'
 
 // Font
-// const orbitronFont = '/fonts/Orbitron.json'
+const orbitronFont = '/fonts/Orbitron.json'
+// const orbitronFont = 'https://threejs.org/examples/fonts/helvetiker_bold.typeface.json';
 
 export default class Resources extends EventEmitter
 {
@@ -275,7 +275,7 @@ export default class Resources extends EventEmitter
             { name: 'introDevCollision', source: introDevCollisionSource },
 
             // Font
-            // { name: 'orbitronFont', source: orbitronFont },
+            { name: 'orbitronFont', source: orbitronFont, type: 'font' },
 
             // Intro
             { name: 'crossroadsStaticBase', source: crossroadsStaticBaseSource },
@@ -400,19 +400,7 @@ export default class Resources extends EventEmitter
                     videoTexture.needsUpdate = true
             
                     this.items[`${_resource.name}VideoTexture`] = videoTexture
-                }
-
-                // Font: Handle font loading using FontLoader
-                if (_resource.type === 'font')
-                    {
-                        const fontLoader = new FontLoader();
-                        fontLoader.load(_resource.source, (font) => {
-                            this.items[_resource.name] = font; // Store the loaded font in `items`
-                            console.log("Font loaded")
-                        }, undefined, (error) => {
-                            console.error('Error loading font:', error);
-                        });
-                    }
+                }               
             
                 // Trigger progress
                 this.trigger('progress', [this.loader.loaded / this.loader.toLoad])
@@ -422,6 +410,7 @@ export default class Resources extends EventEmitter
         {
             // Trigger ready
             this.trigger('ready')
+            console.log('All assets are loaded, triggering ready event');
         })
     }
 }

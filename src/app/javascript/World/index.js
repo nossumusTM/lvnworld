@@ -1590,24 +1590,24 @@ export default class
                     if (data.score !== undefined) car.score = data.score;
 
                     if (data.battery) {
-                        car.battery = data.battery
+                        car.battery = data.battery;
                         const batteryLevelWidth = data.battery / 100;
-
+                    
                         if (!car.chassis.object.children.includes(car.backLightsBattery.object)) {
-                                car.chassis.object.add(car.backLightsBattery.object)
-                                car.chassis.object.add(car.objects.getConvertedMesh(car.models.chassis.scene.children));
+                            car.chassis.object.add(car.backLightsBattery.object);
+                            car.chassis.object.add(car.objects.getConvertedMesh(car.models.chassis.scene.children));
                         }
-
+                    
                         if (car.backLightsBattery) {
-
-                            if(car.backLightsBattery.object.children.length === 0) {
+                            // Add the battery visual representation
+                            if (car.backLightsBattery.object.children.length === 0) {
                                 const defaultChild = new THREE.Mesh(new THREE.BoxGeometry(0.055, 2.32, 0.18), car.backLightsBattery.materialRed);
-
                                 car.backLightsBattery.object.add(defaultChild);
                                 car.backLightsBattery.object.position.set(-0.22, 0, 1.1);
                                 car.backLightsBattery.object.rotation.set(0, 1, 0);
                             }
-
+                    
+                            // Update the battery color and scale based on battery level
                             car.backLightsBattery.object.children.forEach(child => {
                                 const greenColor = data.battery / 100;
                                 const redValue = 1 - greenColor;
@@ -1615,31 +1615,47 @@ export default class
                                 child.scale.set(batteryLevelWidth, 4, 3);
                                 child.material.opacity = 1;
                             });
-
-                            // Create or update playerId text above the battery
-                            // let playerIdText = car.playerId;
-                            // const font = this.resources.items.orbitron; // Access the Orbitron font
-                            // if (!playerIdText) {
-                            //     const playerIdMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
-                            //     const playerIdGeometry = new THREE.TextGeometry(data.playerId, {
-                            //         font: font, // Assuming you've loaded a font via your resources manager
-                            //         size: 0.2, // Adjust the size as needed
-                            //         height: 0.02, // Depth of the text
-                            //         curveSegments: 12,
-                            //         bevelEnabled: false
-                            //     });
-
-                            //     playerIdText = new THREE.Mesh(playerIdGeometry, playerIdMaterial);
-                            //     playerIdText.position.set(-0.22, 0, 1.6); // Adjust position above the battery
-                            //     playerIdText.rotation.set(0, 1, 0);
-                            //     car.backLightsBattery.object.add(playerIdText);
-                            //     car.playerId = playerIdText; // Store reference to update later if needed
-                            // }
+                    
+                            // Format playerId for display
+                            const formatPlayerId = (playerId) => {
+                                const firstPart = playerId.substring(0, 4);
+                                const lastPart = playerId.substring(playerId.length - 4);
+                                return `${firstPart}...${lastPart}`;
+                            };
+                    
+                            // Create or update playerId text separately, positioned above the battery
+                            let playerIdText = car.playerIdText; // Use car.playerIdText for storing the text mesh
+                            const font = this.resources.items.orbitronFont; // Ensure the font is correctly loaded
+                            
+                            if (!playerIdText && font) {
+                                // Only create new text if it doesn't exist and the font is loaded
+                                const playerIdMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+                                const playerIdGeometry = new THREE.TextGeometry(formatPlayerId(data.playerId), {
+                                    font: font, 
+                                    size: 0.1, // Adjust size as needed
+                                    height: 0.02, // Adjust depth of the text
+                                    curveSegments: 12,
+                                    bevelEnabled: false
+                                });
+                    
+                                playerIdText = new THREE.Mesh(playerIdGeometry, playerIdMaterial);
+                                car.playerIdText = playerIdText; // Store reference to update later
+                    
+                                // Add playerIdText separately, not as a child of the battery
+                                car.chassis.object.add(playerIdText); 
+                            }
+                    
+                            if (playerIdText) {
+                                // Update the position of the playerId text to be just above the battery
+                                const batteryPosition = car.backLightsBattery.object.position; // Get the battery's position
+                                playerIdText.position.set(batteryPosition.x, batteryPosition.y - 0.45, batteryPosition.z + 0.3); // Offset on z-axis above the battery
+                                playerIdText.rotation.set(1.56, 1.56, 0); // Rotate to horizontal display
+                            }
+                    
                         } else {
-                            console.error("We cannot find the battery object")
+                            console.error("We cannot find the battery object");
                         }
-
-                    }
+                    }                                                  
 
                     if (data.wheels) {
                         data.wheels.forEach((wheelData, index) => {

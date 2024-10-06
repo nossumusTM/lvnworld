@@ -1,4 +1,5 @@
 import EventEmitter from './EventEmitter.js';
+import { FontLoader } from './FontLoader.js';
 
 import * as THREE from 'three'; // Ensure THREE is imported globally
 
@@ -27,6 +28,7 @@ export default class Resources extends EventEmitter {
         this.gltfLoader.setDRACOLoader(dracoLoader);
         
         this.fbxLoader = new FBXLoader();
+        this.fontLoader = new FontLoader();
 
         // Add loaders to an array for easier access
         this.loaders = [
@@ -89,6 +91,20 @@ export default class Resources extends EventEmitter {
                     video.onerror = () => this.fileLoadEnd(_resource, video);
                 },
             },
+            {
+                extensions: ['json'], // Font files typically end in .json
+                action: (_resource) => {
+                    this.fontLoader.load(
+                        _resource.source,
+                        (font) => {
+                            this.fileLoadEnd(_resource, font);
+                            console.log(`Font loaded: ${_resource.name}`);
+                        },
+                        undefined,
+                        (error) => console.error(`Error loading font: ${_resource.source}`, error)
+                    );
+                },
+            }
         ];
     }
 
