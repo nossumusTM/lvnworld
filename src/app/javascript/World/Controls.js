@@ -103,7 +103,6 @@ export default class Controls extends EventEmitter
             switch(_event.key)
             {
                 case 'ArrowUp':
-                case 'z':
                 case 'w':
                     this.camera.pan.reset()
                     this.actions.up = true
@@ -122,7 +121,6 @@ export default class Controls extends EventEmitter
                     break
 
                 case 'ArrowLeft':
-                case 'q':
                 case 'a':
                     this.camera.pan.reset()
                     this.actions.left = true
@@ -134,7 +132,7 @@ export default class Controls extends EventEmitter
                     break
 
                 case 'Shift':
-                    this.actions.boost = true
+                    this.addBoostActionToQueue();
                     break
 
                 case '1':
@@ -159,6 +157,19 @@ export default class Controls extends EventEmitter
                 //     break
             }
         }
+
+        // Throttle boost action
+        this.addBoostActionToQueue = () => {
+            if (!this.boostCooldown) {
+                this.actions.boost = true;
+                this.boostCooldown = true;
+
+                // Set a cooldown time for boost to prevent repeated triggering
+                setTimeout(() => {
+                    this.boostCooldown = false;
+                }, 1000); // Adjust the cooldown duration as needed
+            }
+        };
 
         this.keyboard.events.keyUp = (_event) =>
         {
@@ -245,6 +256,7 @@ export default class Controls extends EventEmitter
         this.touch.mute.$element.style.height = muteButtonHeight;
 
         const radioButtonBottom = this.isVerticalDisplay() ? '0px' : 'unset';
+        const radioButtonWidth = this.isVerticalDisplay() ? '0px' : 'unset';
         const radioButtonTop = this.isVerticalDisplay() ? '45px' : '22px';
         const radioButtonLeft = this.isVerticalDisplay() ? '285px' : '285px';
         const radioButtonRotation = this.isVerticalDisplay() ? '270deg' : '0deg';
@@ -260,11 +272,11 @@ export default class Controls extends EventEmitter
         this.touch.radio.$border.style.border = radioButtonBorder;
         this.touch.radio.$border.style.opacity = radioButtonOpacity;
 
-        const radioButtonElementTop = this.isVerticalDisplay() ? 'calc(50% - 30px)' : 'calc(50% - 42px)';
-        const radioButtonElementHeight = this.isVerticalDisplay() ? '70px': '93px';
-        const radioButtonElementWidth = this.isVerticalDisplay() ? '95px': '65px';
-        const radioButtonIconTop = this.isVerticalDisplay() ? 'calc(50% - 13px)' : 'calc(50% - 13px)';
-        const radioButtonIconLeft = this.isVerticalDisplay() ? 'calc(50% + 2px)' : 'calc(50% - 13.5px)';
+        const radioButtonElementTop = this.isVerticalDisplay() ? 'calc(50% - 11.5px)' : 'calc(50% - 11.5px)';
+        const radioButtonElementHeight = this.isVerticalDisplay() ? '65px': '65px';
+        const radioButtonElementWidth = this.isVerticalDisplay() ? '65px': '65px';
+        const radioButtonIconTop = this.isVerticalDisplay() ? '50%' : '50%';
+        const radioButtonIconLeft = this.isVerticalDisplay() ? '15%' : '15%';
         const radioButtonIconRotate = this.isVerticalDisplay() ? '90deg' : '0deg';
 
         this.touch.radio.$border.style.top = radioButtonElementTop;
@@ -296,7 +308,6 @@ export default class Controls extends EventEmitter
         // }
 
         // Display none if horizontal
-
         const targetPlayerId = document.getElementById('target-player-id');
         const inviteButton = document.getElementById('invite-button');
         const tradeButton = document.getElementById('trade-button');
@@ -312,7 +323,6 @@ export default class Controls extends EventEmitter
         touchMute.style.display = this.isVerticalDisplay() ? 'none' : 'none';
         touchSlider.style.display = this.isVerticalDisplay() ? 'block' : 'none';
         switchContainer.style.display = this.isVerticalDisplay() ? 'block' : 'none';
-        
     }
 
     setTouch()
@@ -553,7 +563,7 @@ export default class Controls extends EventEmitter
         });
 
         /**
-         * Radio
+         * Radio with Power On/Off, Vinyl Animation, and Tiny Needle with Top-Side Rotation
          */
         this.touch.radio = {};
 
@@ -563,23 +573,22 @@ export default class Controls extends EventEmitter
         this.touch.radio.$element.style.userSelect = 'none';
         this.touch.radio.$element.style.position = 'fixed';
         this.touch.radio.$element.style.bottom = 'calc(70px * 3 + 15px)';
-        this.touch.radio.$element.style.left = '12px'; // Adjust the position as needed
-        this.touch.radio.$element.style.width = '93px';
-        this.touch.radio.$element.style.height = '70px';
+        this.touch.radio.$element.style.left = 'calc(50% - 35px)';
+        this.touch.radio.$element.style.width = '65px';
+        this.touch.radio.$element.style.height = '65px';
         this.touch.radio.$element.style.transition = 'opacity 0.3s 0.4s';
         this.touch.radio.$element.style.willChange = 'opacity';
         this.touch.radio.$element.style.opacity = '0';
-        // this.touch.radio.$element.style.backgroundColor = '#00ff00'; // Uncomment for visual debugging
         document.body.appendChild(this.touch.radio.$element);
 
         this.touch.radio.$border = document.createElement('div');
         this.touch.radio.$border.style.position = 'absolute';
         this.touch.radio.$border.style.top = 'calc(50% - 30px)';
-        this.touch.radio.$border.style.left = 'calc(50% - 30px)';
+        this.touch.radio.$border.style.left = 'calc(50% - 35px)';
         this.touch.radio.$border.style.width = '130px';
-        this.touch.radio.$border.style.height = '70px';
+        this.touch.radio.$border.style.height = '65px';
         this.touch.radio.$border.style.border = 'unset';
-        this.touch.radio.$border.style.background = 'rgba(0, 0, 0, 0.5)'
+        this.touch.radio.$border.style.background = 'rgba(0, 0, 0, 0.5)';
         this.touch.radio.$border.style.borderRadius = '5px';
         this.touch.radio.$border.style.boxSizing = 'border-box';
         this.touch.radio.$border.style.opacity = '0.25';
@@ -590,12 +599,70 @@ export default class Controls extends EventEmitter
         this.touch.radio.$icon.style.position = 'absolute';
         this.touch.radio.$icon.style.top = 'calc(50% - 7px)';
         this.touch.radio.$icon.style.left = 'calc(50% + 20px)';
-        this.touch.radio.$icon.style.width = '32px';
-        this.touch.radio.$icon.style.height = '36px';
-        // Replace with a suitable icon for the radio
+        this.touch.radio.$icon.style.width = '40px';
+        this.touch.radio.$icon.style.height = '40px';
+        // Radio image
         this.touch.radio.$icon.style.backgroundImage = `url(${radio})`;
         this.touch.radio.$icon.style.backgroundSize = 'cover';
         this.touch.radio.$element.appendChild(this.touch.radio.$icon);
+
+        // Needle Element
+        this.touch.radio.$needle = document.createElement('div');
+        this.touch.radio.$needle.style.position = 'absolute';
+        this.touch.radio.$needle.style.top = 'calc(50% + 39px)';
+        this.touch.radio.$needle.style.left = 'calc(50% + 15px)';
+        this.touch.radio.$needle.style.width = '5px';
+        this.touch.radio.$needle.style.height = '25px';
+        this.touch.radio.$needle.style.background = 'rgba(255, 255, 255, 0.8)';
+        this.touch.radio.$needle.style.borderRadius = '3px';
+        this.touch.radio.$needle.style.transition = 'transform 0.3s ease';
+        this.touch.radio.$needle.style.transform = 'rotate(90deg)'; // Default "off" position
+        this.touch.radio.$needle.style.transformOrigin = 'top';  // Rotate from the top
+        this.touch.radio.$element.appendChild(this.touch.radio.$needle);
+
+        // Tiny Needle Element (attached to the main needle)
+        this.touch.radio.$tinyNeedle = document.createElement('div');
+        this.touch.radio.$tinyNeedle.style.position = 'absolute';
+        this.touch.radio.$tinyNeedle.style.top = '23px'; // Adjust the top position inside the main needle
+        this.touch.radio.$tinyNeedle.style.left = '1.5px'; // Adjust the left position inside the main needle
+        this.touch.radio.$tinyNeedle.style.width = '1px';
+        this.touch.radio.$tinyNeedle.style.height = '4px';
+        this.touch.radio.$tinyNeedle.style.background = 'rgba(200, 200, 200, 0.5)'; // Lighter color for the tiny needle
+        this.touch.radio.$tinyNeedle.style.borderRadius = '2px';
+        this.touch.radio.$needle.appendChild(this.touch.radio.$tinyNeedle); // Attach the tiny needle to the main needle
+
+        // Radio Power State
+        this.radioPower = false;  // Power off by default
+
+        // Toggle Power Function
+        this.toggleRadioPower = () => {
+            this.radioPower = !this.radioPower;
+
+            if (this.radioPower) {
+                // Power on: Spin vinyl and move needle
+                this.touch.radio.$icon.style.animation = 'spin 3s linear infinite';
+                this.touch.radio.$needle.style.transform = 'rotate(130deg)';
+                this.sounds.cycleRadioChannel();
+                console.log('Radio powered on');
+            } else {
+                // Power off: Stop spinning and reset needle
+                this.touch.radio.$icon.style.animation = 'none';
+                this.touch.radio.$needle.style.transform = 'rotate(90deg)';
+                this.sounds.radio.sound.stop()
+                console.log('Radio powered off');
+            }
+        };
+
+        // CSS Animation for Spinning
+        const styleSheet = document.createElement("style");
+        styleSheet.type = "text/css";
+        styleSheet.innerText = `
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(styleSheet);
 
         // Events
         this.touch.radio.events = {};
@@ -604,13 +671,11 @@ export default class Controls extends EventEmitter
             _event.preventDefault();
 
             const touch = _event.changedTouches[0];
-
             if (touch) {
                 this.touch.radio.touchIdentifier = touch.identifier;
 
-                this.sounds.cycleRadioChannel();
-
-                // this.touch.radio.$border.style.opacity = '0.5';
+                // Toggle radio power on/off
+                this.toggleRadioPower();
 
                 document.addEventListener('touchend', this.touch.radio.events.touchend);
             }
@@ -621,13 +686,12 @@ export default class Controls extends EventEmitter
             const touch = touches.find((_touch) => _touch.identifier === this.touch.radio.touchIdentifier);
 
             if (touch) {
-                // this.touch.radio.$border.style.opacity = '0.25';
-
                 document.removeEventListener('touchend', this.touch.radio.events.touchend);
             }
         };
 
         this.touch.radio.$element.addEventListener('touchstart', this.touch.radio.events.touchstart);
+
 
 
         /**
@@ -802,7 +866,6 @@ export default class Controls extends EventEmitter
                 this.camera.setPerspective()
             }
         }
-
         
         /**
          * Zoom Slider

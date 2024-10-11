@@ -222,7 +222,7 @@ export default class Camera
         this.zoom = {};
         this.zoom.easing = 0.1;
         this.zoom.minDistance = 7;
-        this.zoom.amplitude = 45;
+        this.zoom.amplitude = 65;
         this.zoom.value = this.config.cyberTruck ? 0.3 : 0.5;
         this.zoom.targetValue = this.zoom.value;
         this.zoom.distance = this.zoom.minDistance + this.zoom.amplitude * this.zoom.value;

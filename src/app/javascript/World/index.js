@@ -111,7 +111,6 @@ export default class
             const targetPlayerId = this.detectNearestTarget();
             if (targetPlayerId && targetPlayerId !== lastTargetPlayerId) {
                 this.showTargetPlayerId(targetPlayerId);
-                // sendInvite(targetPlayerId, playerId, database, car);
                 lastTargetPlayerId = targetPlayerId;
             } else if (!targetPlayerId) {
                 this.hideTargetPlayerId();
@@ -823,14 +822,33 @@ export default class
                 };
 
                 // Add the invite button event listener
+                // document.getElementById('invite-button').addEventListener('click', () => {
+                //     const targetPlayerId = this.detectNearestTarget();
+                //     if (targetPlayerId) {
+                //         const playerId = this.car.playerId;
+                //         console.log(`Sending invite from ${playerId} to ${targetPlayerId}`);
+                //         // if ((this.partyMembers && this.partyMembers.includes(targetPlayerId))) return;
+                //         // console.log("Player is already in party")
+                //         sendInvite(targetPlayerId, playerId);
+                //     } else {
+                //         console.error('No target player found for invite.');
+                //     }
+                // });
+
+                // Add the invite button event listener
                 document.getElementById('invite-button').addEventListener('click', () => {
                     const targetPlayerId = this.detectNearestTarget();
+                    
                     if (targetPlayerId) {
                         const playerId = this.car.playerId;
-                        console.log(`Sending invite from ${playerId} to ${targetPlayerId}`);
-                        // if ((this.partyMembers && this.partyMembers.includes(targetPlayerId))) return;
-                        // console.log("Player is already in party")
-                        sendInvite(targetPlayerId, playerId);
+
+                        // Check if the targetPlayerId is already in a party
+                        if (this.partyMembers && this.partyMembers.includes(targetPlayerId)) {
+                            alert(`Target player ${targetPlayerId} is already in party.`);
+                        } else {
+                            console.log(`Sending invite from ${playerId} to ${targetPlayerId}`);
+                            sendInvite(targetPlayerId, playerId);
+                        }
                     } else {
                         console.error('No target player found for invite.');
                     }
