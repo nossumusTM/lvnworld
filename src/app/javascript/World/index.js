@@ -394,16 +394,29 @@ export default class
             });
         };
 
-        getCarData(playerId) {
-            // Access stored state from the server (this would normally come from a WebSocket message)
-            const playerScore = this.cars[playerId] || {}; // Assuming this.otherPlayers stores received data from the server
+        // getCarData(playerId) {
+        //     // Access stored state from the server (this would normally come from a WebSocket message)
+        //     const playerScore = this.cars[playerId] || {}; // Assuming this.otherPlayers stores received data from the server
             
-            // Fetch data related to the player's car
-            return {
-                playerId: playerId,
-                score: playerScore.score, // Retrieve score from the server state
-            };
-        }
+        //     // Fetch data related to the player's car
+        //     return {
+        //         playerId: playerId,
+        //         score: playerScore.score, // Retrieve score from the server state
+        //     };
+        // }
+
+        requestPlayerScore(playerId) {
+            if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+                const getScoreMessage = {
+                    type: 'getScore',
+                    playerId: playerId
+                };
+                console.log(`Requesting score for player ${playerId}`);
+                this.ws.send(JSON.stringify(getScoreMessage));
+            } else {
+                console.error('WebSocket connection is not open. From request player score');
+            }
+        }       
 
         setupMultiplayer = async (playerId, token) => {
             try {
@@ -443,6 +456,9 @@ export default class
                     ws.send(JSON.stringify({ type: 'join', playerId: this.playerId, worldId: this.worldId }));
                     console.log('Connected to WebSocket server with worldId', this.worldId);
 
+                    // Request the player's score from the server
+                    this.requestPlayerScore(this.playerId);
+
                     while (messageQueue.length > 0) {
                         ws.send(JSON.stringify(messageQueue.shift()));
                     }
@@ -466,12 +482,23 @@ export default class
                             });
                             break;
 
+                        // case 'playerScore':
+                        //         // Update the player's score upon retrieval from the server
+                        //         if (message.playerId === this.playerId) {
+                        //             this.cars[message.playerId].score = message.score;
+                        //             this.updateScoreStatus(this.cars[message.playerId].score); // Display updated score
+                        //         }
+                        //     break;
+
                         case 'playerScore':
-                                // Update the player's score upon retrieval from the server
-                                if (message.playerId === this.playerId) {
-                                    this.cars[message.playerId].score = message.score;
-                                    this.updateScoreStatus(this.cars[message.playerId].score); // Display updated score
+                            // Update the player's score upon retrieval from the server
+                            if (message.playerId === this.playerId) {
+                                if (!this.cars[message.playerId]) {
+                                    this.cars[message.playerId] = {}; // Initialize if not present
                                 }
+                                this.cars[message.playerId].score = message.score;
+                                this.updateScoreStatus(this.cars[message.playerId].score); // Display updated score
+                            }
                             break;
         
                         case 'playerJoined':
@@ -699,13 +726,13 @@ export default class
                 this.cars[playerId] = playerCar;
 
                 // Retrieve car data for the player
-                const carData = this.getCarData(playerId);
-                if (carData) {
-                    playerCar.score = carData.score || 0;
-                    this.updateScoreStatus(playerCar.score); // Update the score display
-                } else {
-                    playerCar.score = 0;
-                }
+                // const carData = this.requestPlayerScore(playerId);
+                // if (carData) {
+                //     playerCar.score = carData.score || 0;
+                //     this.updateScoreStatus(playerCar.score); // Update the score display
+                // } else {
+                //     playerCar.score = 0;
+                // }
 
                 // Airdrop
                 const airdropObj = this.resources.items.airdropBase.scene;
@@ -1881,7 +1908,7 @@ export default class
         }
 
         const miniMapSize = 100; // The size of the mini-map in pixels
-        const mapScale = 0.15; // Scale factor to convert world coordinates to mini-map coordinates
+        const mapScale = 0.05; // Scale factor to convert world coordinates to mini-map coordinates
 
         const mapX = miniMapSize / 2 + x * mapScale;
         const mapY = miniMapSize / 2 - y * mapScale;

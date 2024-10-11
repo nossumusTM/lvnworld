@@ -132,7 +132,7 @@ addWorldBorders() {
     // Wall dimensions (adjust these according to your world size)
     const wallThickness = 5;
     const wallHeight = 25;
-    const worldSize = 700;
+    const worldSize = 1000;
 
     // Four walls surrounding the world
     this.walls = [

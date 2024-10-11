@@ -55,7 +55,6 @@ const introBCollisionSource = '/models/intro/b/collision.glb'
 
 const introRBaseSource = '/models/intro/r/base.glb'
 const introRCollisionSource = '/models/intro/r/collision.glb'
-const introRTextureSource = 'models/intro/static/introRTexture.png'
 
 const introUBaseSource = '/models/intro/u/base.glb'
 const introUCollisionSource = '/models/intro/u/collision.glb'
@@ -248,7 +247,6 @@ export default class Resources extends EventEmitter
 
             { name: 'introRBase', source: introRBaseSource },
             { name: 'introRCollision', source: introRCollisionSource },
-            { name: 'introRTexture', source: introRTextureSource, type: 'texture' },
 
             { name: 'introUBase', source: introUBaseSource },
             { name: 'introUCollision', source: introUCollisionSource },
