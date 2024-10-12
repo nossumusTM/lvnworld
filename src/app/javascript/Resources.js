@@ -80,6 +80,14 @@ const introCreativeCollisionSource = '/models/intro/creative/collision.glb'
 const introDevBaseSource = '/models/intro/dev/base.glb'
 const introDevCollisionSource = '/models/intro/dev/collision.glb'
 
+// Intro Part
+const introPartStaticBaseSource = '/models/introPart/static/base.glb'
+const introPartStaticCollisionSource = '/models/introPart/static/collision.glb'
+
+// Intro Guest
+const introGuestStaticBaseSource = '/models/introGuest/static/base.glb'
+const introGuestStaticCollisionSource = '/models/introGuest/static/collision.glb'
+
 // Crossroads
 const crossroadsStaticFloorShadowSource = 'models/crossroads/static/floorShadow.png'
 const crossroadsStaticBaseSource = '/models/crossroads/static/base.glb'
@@ -233,6 +241,14 @@ export default class Resources extends EventEmitter
             { name: 'introStaticBase', source: introStaticBaseSource },
             { name: 'introStaticCollision', source: introStaticCollisionSource },
             { name: 'introStaticFloorShadow', source: introStaticFloorShadowSource, type: 'texture' },
+
+            // Intro Part
+            { name: 'introPartStaticBase', source: introPartStaticBaseSource },
+            { name: 'introPartStaticCollision', source: introPartStaticCollisionSource },
+
+            // Intro Guest
+            { name: 'introGuestStaticBase', source: introGuestStaticBaseSource },
+            { name: 'introGuestStaticCollision', source: introGuestStaticCollisionSource },
 
             { name: 'introInstructionsLabels', source: introInstructionsLabelsSource },
             { name: 'introInstructionsArrows', source: introInstructionsArrowsSource, type: 'texture' },
