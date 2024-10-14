@@ -4,7 +4,6 @@ import { TransformControls } from 'three/examples/jsm/controls/TransformControls
 import Controls1 from './Controls1'
 import { sparkTexture } from './SparkTexture'
 
-
 export default class Car1
 {
     constructor(_options)
