@@ -2055,21 +2055,6 @@ export default class
           }, 300)
         }
 
-            // Other players' cars
-            // Object.values(this.otherPlayers).forEach(otherPlayerCar => {
-            //     const carKey = otherPlayerCar instanceof Car1 ? 'car1' : 
-            //                 otherPlayerCar instanceof Car2 ? 'car2' :
-            //                 otherPlayerCar instanceof Car3 ? 'car3' : 'car4';
-
-            //     otherPlayerCar.physics[carKey].chassis.body.sleep();
-            //     otherPlayerCar.physics[carKey].chassis.body.position.set(Math.random() * 10 - 5, Math.random() * 5 - 10, 12);
-
-            //     window.setTimeout(() => {
-            //         otherPlayerCar.physics[carKey].chassis.body.wakeUp();
-            //     }, 300);
-            // });
-
-
           // Sound
         //   gsap.fromTo(this.sounds.engine.volume, 0.5, { master: 0 }, { master: 0.7, delay: 0.3, ease: Power2.easeIn })
           if (typeof window !== 'undefined') {

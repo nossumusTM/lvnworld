@@ -1,70 +1,44 @@
-import * as THREE from 'three'
-import FloorMaterial from '../Materials/Floor.js'
+import * as THREE from 'three';
+import FloorMaterial from '../Materials/Floor.js';  // Assuming you still use a custom material
 
-export default class Floor
-{
-    constructor(_options)
-    {
+export default class Floor {
+    constructor(_options) {
         // Options
-        this.debug = _options.debug
+        this.debug = _options.debug;
 
         // Container
-        this.container = new THREE.Object3D()
-        this.container.matrixAutoUpdate = false
+        this.container = new THREE.Object3D();
+        this.container.matrixAutoUpdate = false;
 
         // Geometry
-        this.geometry = new THREE.PlaneGeometry(2, 2, 10, 10)
+        this.geometry = new THREE.PlaneGeometry(2, 2, 10, 10); // Larger size for the floor
 
-        // Colors
-        this.colors = {}
-        this.colors.topLeft = '#0213f7'
-        this.colors.topRight = '#0213f7'
-        this.colors.bottomRight = '#0213f7'
-        this.colors.bottomLeft = '#0213f7'
+        // Load texture
+        const floorTexture = new THREE.TextureLoader().load('/images/skybox/floor-texture1.jpg');
+        floorTexture.wrapS = THREE.RepeatWrapping;
+        floorTexture.wrapT = THREE.RepeatWrapping;
+        floorTexture.repeat.set(10, 10); // Repeat the texture over the plane
 
         // Material
-        this.material = new FloorMaterial()
-
-        this.updateMaterial = () =>
-        {
-            const topLeft = new THREE.Color(this.colors.topLeft)
-            const topRight = new THREE.Color(this.colors.topRight)
-            const bottomRight = new THREE.Color(this.colors.bottomRight)
-            const bottomLeft = new THREE.Color(this.colors.bottomLeft)
-
-            const data = new Uint8Array([
-                Math.round(bottomLeft.r * 255), Math.round(bottomLeft.g * 255), Math.round(bottomLeft.b * 255),
-                Math.round(bottomRight.r * 255), Math.round(bottomRight.g * 255), Math.round(bottomRight.b * 255),
-                Math.round(topLeft.r * 255), Math.round(topLeft.g * 255), Math.round(topLeft.b * 255),
-                Math.round(topRight.r * 255), Math.round(topRight.g * 255), Math.round(topRight.b * 255)
-            ])
-
-            this.backgroundTexture = new THREE.DataTexture(data, 2, 2, THREE.RGBFormat)
-            this.backgroundTexture.magFilter = THREE.LinearFilter
-            this.backgroundTexture.needsUpdate = true
-
-            this.material.uniforms.tBackground.value = this.backgroundTexture
-        }
-
-        this.updateMaterial()
+        this.material = new FloorMaterial();
+        this.material.uniforms.tBackground.value = floorTexture; // Use the loaded texture
 
         // Mesh
-        this.mesh = new THREE.Mesh(this.geometry, this.material)
-        this.mesh.frustumCulled = false
-        this.mesh.matrixAutoUpdate = false
-        this.mesh.updateMatrix()
-        this.container.add(this.mesh)
+        this.mesh = new THREE.Mesh(this.geometry, this.material);
+        this.mesh.rotation.x = -Math.PI / 2; // Rotate the plane to be horizontal (floor-like)
+        this.mesh.position.y = 0; // Set the position of the floor
+
+        this.mesh.frustumCulled = false;
+        this.mesh.matrixAutoUpdate = false;
+        this.mesh.updateMatrix();
+
+        // Add the mesh to the container
+        this.container.add(this.mesh);
 
         // Debug
-        if(this.debug)
-        {
-            const folder = this.debug.addFolder('floor')
-            // folder.open()
-
-            folder.addColor(this.colors, 'topLeft').onChange(this.updateMaterial)
-            folder.addColor(this.colors, 'topRight').onChange(this.updateMaterial)
-            folder.addColor(this.colors, 'bottomRight').onChange(this.updateMaterial)
-            folder.addColor(this.colors, 'bottomLeft').onChange(this.updateMaterial)
+        if (this.debug) {
+            const folder = this.debug.addFolder('floor');
+            folder.add(this.material, 'needsUpdate').name('Update Material');
         }
     }
 }
