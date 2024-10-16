@@ -7,6 +7,9 @@ const restart = 'images/mobile/restart.png'
 const sirenIcon = 'images/mobile/siren.png'
 const muteIcon = 'images/mobile/mute.png'
 const radio = 'images/mobile/fm.png'
+const previousIcon = 'images/mobile/previous.png'
+const nextIcon = 'images/mobile/next.png'
+
 import EventEmitter from '../Utils/EventEmitter'
 import Sounds from './Sounds'
 import { TweenLite } from 'gsap/TweenLite'
@@ -877,6 +880,165 @@ export default class Controls extends EventEmitter
                 this.camera.setPerspective()
             }
         }
+
+        /**
+         * Previous
+         */
+
+        this.touch.previous = {};
+
+        // Element
+        this.touch.previous.$element = document.createElement('div');
+        this.touch.previous.$element.style.userSelect = 'none';
+        this.touch.previous.$element.style.position = 'absolute';
+        this.touch.previous.$element.style.top = '20px';
+        this.touch.previous.$element.style.left = '312px';
+        this.touch.previous.$element.style.width = '50px';
+        this.touch.previous.$element.style.height = '50px';
+        this.touch.previous.$element.style.transition = 'opacity 0.3s 0.4s';
+        this.touch.previous.$element.style.willChange = 'opacity';
+        this.touch.previous.$element.style.opacity = '0';
+        // this.touch.previous.$element.style.backgroundColor = '#00ff00'; // Uncomment for visual debugging
+        document.body.appendChild(this.touch.previous.$element);
+
+        this.touch.previous.$border = document.createElement('div');
+        this.touch.previous.$border.style.position = 'absolute';
+        this.touch.previous.$border.style.top = 'calc(50% - 30px)';
+        this.touch.previous.$border.style.left = 'calc(50% - 30px)';
+        this.touch.previous.$border.style.width = '30px';
+        this.touch.previous.$border.style.height = '25px';
+        this.touch.previous.$border.style.border = 'unset';
+        this.touch.previous.$border.style.borderRadius = '5px';
+        this.touch.previous.$border.style.boxSizing = 'border-box';
+        this.touch.previous.$border.style.opacity = '0.5';
+        this.touch.previous.$border.style.background = 'rgba(0, 0, 0)';
+        this.touch.previous.$border.style.backdropFilter = 'blur(5px)';
+        this.touch.previous.$border.style.willChange = 'opacity';
+        this.touch.previous.$element.appendChild(this.touch.previous.$border);
+
+        this.touch.previous.$icon = document.createElement('div');
+        this.touch.previous.$icon.style.position = 'absolute';
+        this.touch.previous.$icon.style.top = '-1px';
+        this.touch.previous.$icon.style.left = '3px';
+        this.touch.previous.$icon.style.width = '15px';
+        this.touch.previous.$icon.style.height = '15px';
+        this.touch.previous.$icon.style.backgroundImage = `url(${previousIcon})`; // Provide a zoom in icon image path
+        this.touch.previous.$icon.style.backgroundSize = 'cover';
+        this.touch.previous.$element.appendChild(this.touch.previous.$icon);
+
+        // Append to body
+        document.body.appendChild(this.touch.previous.$element)
+
+        // Events
+        this.touch.previous.events = {};
+        this.touch.previous.touchIdentifier = null;
+        this.touch.previous.events.touchstart = (_event) => {
+            _event.preventDefault();
+
+            const touch = _event.changedTouches[0];
+
+            if (touch) {
+                this.touch.previous.touchIdentifier = touch.identifier;
+
+                this.camera.zoom.targetValue = Math.max(0, this.camera.zoom.targetValue - 0.1);
+
+                this.touch.previous.$border.style.opacity = '0.5';
+
+                document.addEventListener('touchend', this.touch.previous.events.touchend);
+            }
+        };
+
+        this.touch.previous.events.touchend = (_event) => {
+            const touches = [..._event.changedTouches];
+            const touch = touches.find((_touch) => _touch.identifier === this.touch.previous.touchIdentifier);
+
+            if (touch) {
+                this.touch.previous.$border.style.opacity = '0.5';
+
+                document.removeEventListener('touchend', this.touch.previous.events.touchend);
+            }
+        };
+
+        this.touch.previous.$element.addEventListener('touchstart', this.touch.previous.events.touchstart);
+
+        /**
+         * Next
+         */
+        this.touch.next = {};
+
+        // Element
+        this.touch.next.$element = document.createElement('div');
+        this.touch.next.$element.style.userSelect = 'none';
+        this.touch.next.$element.style.position = 'absolute';
+        this.touch.next.$element.style.top = '20px';
+        this.touch.next.$element.style.left = '346px'; // Adjust the position as needed
+        this.touch.next.$element.style.width = '50px';
+        this.touch.next.$element.style.height = '50px';
+        this.touch.next.$element.style.transition = 'opacity 0.3s 0.4s';
+        this.touch.next.$element.style.willChange = 'opacity';
+        this.touch.next.$element.style.opacity = '0';
+        // this.touch.next.$element.style.backgroundColor = '#000'; // Uncomment for visual debugging
+        document.body.appendChild(this.touch.next.$element);
+
+        this.touch.next.$border = document.createElement('div');
+        this.touch.next.$border.style.position = 'absolute';
+        this.touch.next.$border.style.top = 'calc(50% - 30px)';
+        this.touch.next.$border.style.left = 'calc(50% - 30px)';
+        this.touch.next.$border.style.width = '30px';
+        this.touch.next.$border.style.height = '25px';
+        this.touch.next.$border.style.border = 'unset';
+        this.touch.next.$border.style.borderRadius = '5px';
+        this.touch.next.$border.style.boxSizing = 'border-box';
+        this.touch.next.$border.style.opacity = '0.5';
+        this.touch.next.$border.style.background = 'rgba(0, 0, 0)';
+        this.touch.next.$border.style.backdropFilter = 'blur(5px)';
+        this.touch.next.$border.style.willChange = 'opacity';
+        this.touch.next.$element.appendChild(this.touch.next.$border);
+
+        this.touch.next.$icon = document.createElement('div');
+        this.touch.next.$icon.style.position = 'absolute';
+        this.touch.next.$icon.style.top = '-1px';
+        this.touch.next.$icon.style.left = '3px';
+        this.touch.next.$icon.style.width = '15px';
+        this.touch.next.$icon.style.height = '15px';
+        this.touch.next.$icon.style.backgroundImage = `url(${nextIcon})`; // Provide a zoom out icon image path
+        this.touch.next.$icon.style.backgroundSize = 'cover';
+        this.touch.next.$element.appendChild(this.touch.next.$icon);
+
+        // Append to body
+        document.body.appendChild(this.touch.next.$element)
+
+        // Events
+        this.touch.next.events = {};
+        this.touch.next.touchIdentifier = null;
+        this.touch.next.events.touchstart = (_event) => {
+            _event.preventDefault();
+
+            const touch = _event.changedTouches[0];
+
+            if (touch) {
+                this.touch.next.touchIdentifier = touch.identifier;
+
+                this.camera.zoom.targetValue = Math.min(1, this.camera.zoom.targetValue + 0.1);
+
+                this.touch.next.$border.style.opacity = '0.5';
+
+                document.addEventListener('touchend', this.touch.next.events.touchend);
+            }
+        };
+
+        this.touch.next.events.touchend = (_event) => {
+            const touches = [..._event.changedTouches];
+            const touch = touches.find((_touch) => _touch.identifier === this.touch.next.touchIdentifier);
+
+            if (touch) {
+                this.touch.next.$border.style.opacity = '0.5';
+
+                document.removeEventListener('touchend', this.touch.next.events.touchend);
+            }
+        };
+
+        this.touch.next.$element.addEventListener('touchstart', this.touch.next.events.touchstart);
         
         /**
          * Zoom Slider
@@ -999,6 +1161,7 @@ export default class Controls extends EventEmitter
         this.touch.mute.$border.style.borderRadius = '5px';
         this.touch.mute.$border.style.boxSizing = 'border-box';
         this.touch.mute.$border.style.opacity = '1';
+        // this.touch.mute.$border.style.innerHTML = 'MUTE';
         this.touch.mute.$border.style.willChange = 'opacity';
         this.touch.mute.$element.appendChild(this.touch.mute.$border);
 
@@ -1569,6 +1732,8 @@ export default class Controls extends EventEmitter
             this.touch.reset.$element.style.opacity = 1
             this.touch.radio.$element.style.opacity = 1;
             this.touch.zoomSlider.$element.style.opacity = 1;
+            this.touch.previous.$element.style.opacity = 1;
+            this.touch.next.$element.style.opacity = 1;
             this.touch.siren.$element.style.opacity = 1;
             this.touch.mute.$element.style.opacity = 1;
 
