@@ -2252,6 +2252,7 @@ export default class
             camera: this.camera,
             sounds: this.sounds
         })
+        // this.controls.setTouch();
     }
 
     setMaterials()

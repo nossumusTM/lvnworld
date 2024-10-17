@@ -149,15 +149,6 @@ export default class Controls extends EventEmitter
                 case 'r':
                     this.trigger('action', ['reset'])
                     break
-
-                // case 'Y':
-                // case 'y':
-                //     this.sounds.cycleRadioChannel();
-                //     break;
-
-                // case ' ':
-                //     this.jump(true)
-                //     break
             }
         }
 
@@ -179,7 +170,6 @@ export default class Controls extends EventEmitter
             switch(_event.key)
             {
                 case 'ArrowUp':
-                case 'z':
                 case 'w':
                     this.actions.up = false
                     break
@@ -195,7 +185,6 @@ export default class Controls extends EventEmitter
                     break
 
                 case 'ArrowLeft':
-                case 'q':
                 case 'a':
                     this.actions.left = false
                     break
