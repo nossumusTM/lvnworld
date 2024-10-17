@@ -297,7 +297,7 @@ export default class Car
                 if (randomColor < 0.33) {
                     colors.push(0.0, 0.5 + Math.random() * 0.5, 1.0);  // Blue hues
                 } else if (randomColor < 0.66) {
-                    colors.push(1.0, 0.5 + Math.random() * 0.5, 0.0);  // Orange hues
+                    colors.push(1.0, 1.0 + Math.random() * 0.5, 0.0);  // Orange hues
                 } else {
                     colors.push(0.0, 1.0, 0.5 + Math.random() * 0.5);  // Green hues
                 }
@@ -320,7 +320,7 @@ export default class Car
             this.container.add(particles); // Add particles to the scene
 
             // Calculate the exhaust offset
-            const exhaustOffset = new THREE.Vector3(-0.9, 0, 0.8);
+            const exhaustOffset = new THREE.Vector3(-0.95, 0, 0.6);
             exhaustOffset.applyQuaternion(quaternion);
 
             // Set the initial position of the particles
@@ -340,18 +340,18 @@ export default class Car
                     const localMovement = new THREE.Vector3(
                         -1 * (Math.random() - 0.5) * 0.1, // X-axis jitter
                         -1 * (Math.random() - 0.5) * 0.1, // Y-axis jitter
-                        -1 * (Math.random() * 0.025) // Z-axis forward movement (toward initial position)
+                        -1 * (Math.random() * 0.05) // Z-axis forward movement (toward initial position)
                     );
 
                     // Rotate the movement 90 degrees along the Y-axis
-                    // const yRotation = new THREE.Quaternion();
-                    // yRotation.setFromAxisAngle(new THREE.Vector3(1, 0, 0), Math.PI / 2); // 90 degrees along Y-axis
+                    const yRotation = new THREE.Quaternion();
+                    yRotation.setFromAxisAngle(new THREE.Vector3(1, 0, 0), Math.PI / 2); // 90 degrees along Y-axis
 
-                    // localMovement.applyQuaternion(yRotation); // Apply the Y-axis rotation
+                    localMovement.applyQuaternion(yRotation); // Apply the Y-axis rotation
                     localMovement.applyQuaternion(quaternion); // Align with rocket’s orientation
 
                     // Update the particle positions
-                    positions[i * 3 + 0] += localMovement.x;
+                    positions[i * 3 + 0] += localMovement.x  * 3;
                     positions[i * 3 + 1] += localMovement.y;
                     positions[i * 3 + 2] += localMovement.z;
                 }
