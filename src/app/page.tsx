@@ -205,6 +205,8 @@ export default function Home() {
       <button id="invite-button" style={{ opacity: 0 }}></button>
       <button id="trade-button" style={{ opacity: 0 }}></button>
       <div id="touch-radio" style={{ opacity: 0 }}></div>
+      <div id="touch-previous" style={{ opacity: 0 }}></div>
+      <div id="touch-next" style={{ opacity: 0 }}></div>
       <div id="touch-mute" style={{ opacity: 0 }}></div>
       <input
         id="touch-slider"

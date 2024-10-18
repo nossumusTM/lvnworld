@@ -221,7 +221,7 @@ export default class Controls extends EventEmitter
     updateButtonPositions() {
 
         const userDisplay = document.getElementById('userDisplay');
-        userDisplay.style.display = this.isVerticalDisplay() ? 'unset' : 'none';
+        userDisplay.style.display = this.isVerticalDisplay() ? 'unset' : 'unset';
 
         const batteryContainer = document.getElementById('battery-status');
         batteryContainer.style.top = this.isVerticalDisplay() ? '70px' : '60px';
@@ -285,7 +285,9 @@ export default class Controls extends EventEmitter
         this.touch.camera.$element.style.left = cameraButtonElementLeft;
         
         const resetButtonElementBottom = this.isVerticalDisplay() ? '175px' : '20px';
+        // const resetButtonElementBottom = this.isVerticalDisplay() ? '175px' : '40px';
         const resetButtonElementLeft = this.isVerticalDisplay() ? '83px': '188px';
+        // const resetButtonElementLeft = this.isVerticalDisplay() ? '83px': '165px';
 
         this.touch.reset.$element.style.bottom = resetButtonElementBottom;
         this.touch.reset.$element.style.left = resetButtonElementLeft;
@@ -306,6 +308,8 @@ export default class Controls extends EventEmitter
         const touchRadio = document.getElementById('touch-radio');
         const touchMute = document.getElementById('touch-mute');
         const touchSlider = document.getElementById('touch-slider');
+        const touchPrevious = document.getElementById('touch-previous');
+        const touchNext = document.getElementById('touch-next');
         const switchContainer = document.getElementById('switch-container');
 
         targetPlayerId.style.display = this.isVerticalDisplay() ? 'unset' : 'none';
@@ -313,7 +317,9 @@ export default class Controls extends EventEmitter
         tradeButton.style.display = this.isVerticalDisplay() ? 'none' : 'none';
         touchRadio.style.display = this.isVerticalDisplay() ? 'none' : 'none';
         touchMute.style.display = this.isVerticalDisplay() ? 'none' : 'none';
-        touchSlider.style.display = this.isVerticalDisplay() ? 'block' : 'none';
+        touchSlider.style.display = this.isVerticalDisplay() ? 'none' : 'none';
+        touchPrevious.style.display = this.isVerticalDisplay() ? 'none' : 'none';
+        touchNext.style.display = this.isVerticalDisplay() ? 'none' : 'none';
         switchContainer.style.display = this.isVerticalDisplay() ? 'block' : 'none';
     }
 
@@ -513,6 +519,8 @@ export default class Controls extends EventEmitter
         const touchRadio = document.getElementById('touch-radio');
         const touchMute = document.getElementById('touch-mute');
         const touchSlider = document.getElementById('touch-slider');
+        const touchPrevious = document.getElementById('touch-previous');
+        const touchNext = document.getElementById('touch-next');
         const partyInfo = document.getElementById('party-info');
 
 
@@ -531,7 +539,8 @@ export default class Controls extends EventEmitter
                 touchRadio.style.display = 'block';
                 touchMute.style.display = 'block';
                 touchSlider.style.display = 'block';
-                touchSlider.style.display = 'block';
+                touchPrevious.style.display = 'block';
+                touchNext.style.display = 'block';
                 if (partyInfo) {
                     partyInfo.style.display = 'block';
                 }
@@ -547,6 +556,8 @@ export default class Controls extends EventEmitter
                 touchRadio.style.display = 'none';
                 touchMute.style.display = 'none';
                 touchSlider.style.display = 'none';
+                touchPrevious.style.display = 'none';
+                touchNext.style.display = 'none';
                 if (partyInfo) {
                     partyInfo.style.display = 'none';
                 }
@@ -602,11 +613,12 @@ export default class Controls extends EventEmitter
         this.touch.radio.$tinyNeedleHandler = document.createElement('div');
         this.touch.radio.$tinyNeedleHandler.style.position = 'absolute';
         this.touch.radio.$tinyNeedleHandler.style.top = '66px'; // Adjust the top position inside the main needle
-        this.touch.radio.$tinyNeedleHandler.style.left = '44px'; // Adjust the left position inside the main needle
+        this.touch.radio.$tinyNeedleHandler.style.left = '45px'; // Adjust the left position inside the main needle
         this.touch.radio.$tinyNeedleHandler.style.width = '10px';
         this.touch.radio.$tinyNeedleHandler.style.height = '10px';
         this.touch.radio.$tinyNeedleHandler.style.background = 'rgba(0, 0, 0, 0.5)'; // Lighter color for the tiny needle
         this.touch.radio.$tinyNeedleHandler.style.borderRadius = '1px';
+        // this.touch.radio.$tinyNeedleHandler.style.transform = 'rotate(130deg)';
         this.touch.radio.$element.appendChild(this.touch.radio.$tinyNeedleHandler); // Attach the tiny needle to the main needle
 
         // Needle Element
@@ -614,7 +626,7 @@ export default class Controls extends EventEmitter
         this.touch.radio.$needle.style.position = 'absolute';
         this.touch.radio.$needle.style.top = 'calc(50% + 39px)';
         this.touch.radio.$needle.style.left = 'calc(50% + 15px)';
-        this.touch.radio.$needle.style.width = '5px';
+        this.touch.radio.$needle.style.width = '4px';
         this.touch.radio.$needle.style.height = '25px';
         this.touch.radio.$needle.style.background = 'rgba(255, 255, 255, 0.8)';
         this.touch.radio.$needle.style.borderRadius = '3px';
@@ -627,7 +639,7 @@ export default class Controls extends EventEmitter
         this.touch.radio.$tinyNeedle = document.createElement('div');
         this.touch.radio.$tinyNeedle.style.position = 'absolute';
         this.touch.radio.$tinyNeedle.style.top = '23px'; // Adjust the top position inside the main needle
-        this.touch.radio.$tinyNeedle.style.left = '1.8px'; // Adjust the left position inside the main needle
+        this.touch.radio.$tinyNeedle.style.left = '1.5px'; // Adjust the left position inside the main needle
         this.touch.radio.$tinyNeedle.style.width = '1px';
         this.touch.radio.$tinyNeedle.style.height = '4px';
         this.touch.radio.$tinyNeedle.style.background = 'rgba(200, 200, 200, 0.5)'; // Lighter color for the tiny needle
@@ -877,8 +889,10 @@ export default class Controls extends EventEmitter
         this.touch.previous = {};
 
         // Element
-        this.touch.previous.$element = document.createElement('div');
+        this.touch.previous.$element = document.getElementById('touch-previous');
+        this.touch.previous.$element.id = 'touch-previous';
         this.touch.previous.$element.style.userSelect = 'none';
+        // this.touch.previous.$element.style.display = 'none';
         this.touch.previous.$element.style.position = 'absolute';
         this.touch.previous.$element.style.top = '20px';
         this.touch.previous.$element.style.left = '312px';
@@ -956,8 +970,10 @@ export default class Controls extends EventEmitter
         this.touch.next = {};
 
         // Element
-        this.touch.next.$element = document.createElement('div');
+        this.touch.next.$element = document.getElementById('touch-next');
+        this.touch.next.$element.id = 'touch-next';
         this.touch.next.$element.style.userSelect = 'none';
+        // this.touch.next.$element.style.display = 'none';
         this.touch.next.$element.style.position = 'absolute';
         this.touch.next.$element.style.top = '20px';
         this.touch.next.$element.style.left = '346px'; // Adjust the position as needed

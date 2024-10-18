@@ -201,20 +201,20 @@ export default class Car
                 for (let i = 0; i < particleCount; i++) {
                     // Calculate the movement vector in local space
                     const localMovement = new THREE.Vector3(
-                        (Math.random() - 0.5) * 0.1, // X-axis jitter
-                        (Math.random() - 0.5) * 0.1, // Y-axis jitter
-                        Math.random() * 0 // Z-axis forward movement (toward initial position)
+                        -1 * (Math.random() - 0.5) * 0.1, // X-axis jitter
+                        -1 * (Math.random() - 0.5) * 0.1, // Y-axis jitter
+                        0 // Z-axis forward movement (toward initial position)
                     );
 
                     // Rotate the movement 90 degrees along the Y-axis
                     const yRotation = new THREE.Quaternion();
-                    yRotation.setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI / 2); // 90 degrees along Y-axis
+                    yRotation.setFromAxisAngle(new THREE.Vector3(1, 0, 0), Math.PI / 2); // 90 degrees along Y-axis
 
                     localMovement.applyQuaternion(yRotation); // Apply the Y-axis rotation
                     localMovement.applyQuaternion(quaternion); // Align with rocket’s orientation
 
                     // Update the particle positions
-                    positions[i * 3 + 1] += localMovement.x;
+                    positions[i * 3 + 0] += localMovement.x * -2;
                     positions[i * 3 + 1] += localMovement.y;
                     positions[i * 3 + 2] += localMovement.z;
                 }
