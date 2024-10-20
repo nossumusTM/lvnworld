@@ -14,6 +14,7 @@ export default class InformationSection
         this.x = _options.x + 20
         this.y = _options.y + 20
 
+        
         // Set up
         this.container = new THREE.Object3D()
         this.container.matrixAutoUpdate = false
