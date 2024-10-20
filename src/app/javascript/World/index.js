@@ -501,15 +501,28 @@ export default class
                             const car = this.otherPlayers[message.carId];
                             if (car) {
                                 car.battery = message.battery;
-                                car.createSparkEffect();
+                                // car.createSparkEffect();
+                                car.createCrashEffect(car.chassis.object.position, car.chassis.object.quaternion);
                                 this.updateScoreStatus(message.score);
                                 console.log("Updating bullet collision score info", message.score)
 
                             
                                 if (message.battery <= 0) {
-                                    car.physics.car.recreate();
-                                    car.battery = 100;
-                                }
+                                    // Trigger the crash effect before putting the car to sleep
+                                    // car.createCrashEffect(car.chassis.object.position, car.chassis.object.quaternion);
+                                
+                                    // Put the car to sleep
+                                    // car.physics.car.sleep();
+                                
+                                    // Set a timeout to recreate the car after 5 seconds
+                                    setTimeout(() => {
+                                        // Recreate the car
+                                        car.physics.car.recreate();
+                                
+                                        // Reset the battery to 100
+                                        car.battery = 100;
+                                    }, 5000); // 5 seconds delay
+                                }                                
                             
                                 const twitchForce = new CANNON.Vec3(Math.random() * 10 - 5, Math.random() * 10 - 5, Math.random() * 10 - 5);
                                 car.physics.car.chassis.body.applyImpulse(twitchForce, car.physics.car.chassis.body.position);
@@ -2045,7 +2058,7 @@ export default class
 
           // Car
           this.physics.car.chassis.body.sleep()
-          this.physics.car.chassis.body.position.set(Math.random() * 10 - 5, Math.random() * 5 - 10, 12)
+          this.physics.car.chassis.body.position.set(0, 0, 12)
 
         if (typeof window !== 'undefined') {
           window.setTimeout(() =>
