@@ -37,6 +37,9 @@ export default class Car
 
         this.boostCooldown = false;
         this.boostDuration = 100;
+        this.cooldownDuration = 1000;  // Cooldown time in milliseconds (4 seconds)
+        this.nitroEffectCount = 0;     // Counter to track number of nitro effects triggered
+        this.maxNitroExecutions = 1;   // Limit to how many times createNitroEffect can be executed in one boost
 
         // Debug
         if(this.debug)
@@ -821,19 +824,22 @@ export default class Car
             // }
 
             // Check if boost is active and not on cooldown
-            if (this.controls.actions.boost && !this.boostCooldown) {
+            if (this.controls.actions.boost && !this.boostCooldown && this.nitroEffectCount < this.maxNitroExecutions) {
                 // Trigger the nitro effect when accelerating
                 this.createNitroEffect(this.chassis.object.position, this.chassis.object.quaternion, this.chassis.object);
-        
+                
+                // Increment nitro effect count
+                this.nitroEffectCount += 1;
+                
                 // Set boost on cooldown to prevent re-triggering
                 this.boostCooldown = true;
-        
-                // Reset the cooldown after the specified duration
-                setTimeout(() => {
-                    this.boostCooldown = false;  // Cooldown ends after 2 seconds
-                }, this.boostDuration);
-            }
 
+                // Cooldown to disable boost for 4 seconds after the nitro effect
+                setTimeout(() => {
+                    this.nitroEffectCount = 0;  // Reset nitro effect count after cooldown
+                    this.boostCooldown = false; // Cooldown ends after 4 seconds
+                }, this.cooldownDuration);
+            }
             if(this.movement.localAcceleration.x > 0.03 && this.time.elapsed - this.movement.lastScreech > 5000)
             {
                 this.movement.lastScreech = this.time.elapsed

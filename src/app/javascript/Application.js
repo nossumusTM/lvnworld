@@ -183,7 +183,7 @@ const Application = ({ playerId }) => {
                 // this.camera.instance.position.copy(this.world.car.chassis.object.position).add(offset);
 
                 // Look at the car to keep it centered in the camera view
-                // this.camera.instance.lookAt(this.world.car.chassis.object.position);
+                this.camera.instance.lookAt(this.world.car.chassis.object.position);
             }
 
             // Key event listener for camera action
