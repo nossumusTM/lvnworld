@@ -486,14 +486,6 @@ export default class
                             });
                             break;
 
-                        // case 'playerScore':
-                        //         // Update the player's score upon retrieval from the server
-                        //         if (message.playerId === this.playerId) {
-                        //             this.cars[message.playerId].score = message.score;
-                        //             this.updateScoreStatus(this.cars[message.playerId].score); // Display updated score
-                        //         }
-                        //     break;
-
                         case 'playerScore':
                             // Update the player's score upon retrieval from the server
                             if (message.playerId === this.playerId) {
@@ -552,41 +544,41 @@ export default class
                                 }
                                 break;
 
-                    // Client-side bulletCollision handling in setupMultiplayer
-                    case 'bulletCollision':
-                        console.log("Bullet collision detected:", message);
-                        
-                        if (message.carId !== this.playerId) { // Ensure we update the correct car
-                            const car = this.otherPlayers[message.carId];
-                            if (car) {
-                                car.battery = message.battery;
-                                car.createSparkEffect();
-                                this.updateScoreStatus(message.score);
-                                console.log("Updating bullet collision score info", message.score)
+                        // Client-side bulletCollision handling in setupMultiplayer
+                        case 'bulletCollision':
+                            console.log("Bullet collision detected:", message);
+                            
+                            if (message.carId !== this.playerId) { // Ensure we update the correct car
+                                const car = this.otherPlayers[message.carId];
+                                if (car) {
+                                    car.battery = message.battery;
+                                    car.createSparkEffect();
+                                    this.updateScoreStatus(message.score);
+                                    console.log("Updating bullet collision score info", message.score)
 
-                            
-                                if (message.battery <= 0) {
-                                    // Trigger the crash effect before putting the car to sleep
-                                    // car.createCrashEffect(car.chassis.object.position, car.chassis.object.quaternion);
                                 
-                                    // Put the car to sleep
-                                    // car.physics.car.sleep();
+                                    if (message.battery <= 0) {
+                                        // Trigger the crash effect before putting the car to sleep
+                                        // car.createCrashEffect(car.chassis.object.position, car.chassis.object.quaternion);
+                                    
+                                        // Put the car to sleep
+                                        // car.physics.car.sleep();
+                                    
+                                        // Set a timeout to recreate the car after 5 seconds
+                                        // setTimeout(() => {
+                                        //     // Recreate the car
+                                        //     car.physics.car.recreate();
+                                    
+                                        //     // Reset the battery to 100
+                                        //     car.battery = 100;
+                                        // }, 5000); // 5 seconds delay
+                                    }                                
                                 
-                                    // Set a timeout to recreate the car after 5 seconds
-                                    // setTimeout(() => {
-                                    //     // Recreate the car
-                                    //     car.physics.car.recreate();
-                                
-                                    //     // Reset the battery to 100
-                                    //     car.battery = 100;
-                                    // }, 5000); // 5 seconds delay
-                                }                                
-                            
-                                const twitchForce = new CANNON.Vec3(Math.random() * 10 - 5, Math.random() * 10 - 5, Math.random() * 10 - 5);
-                                car.physics.car.chassis.body.applyImpulse(twitchForce, car.physics.car.chassis.body.position);
+                                    const twitchForce = new CANNON.Vec3(Math.random() * 10 - 5, Math.random() * 10 - 5, Math.random() * 10 - 5);
+                                    car.physics.car.chassis.body.applyImpulse(twitchForce, car.physics.car.chassis.body.position);
+                                }
                             }
-                        }
-                        break;
+                            break;
 
                         case 'invite':
                             console.log(`Received invite from ${message.inviterId}`);
@@ -828,20 +820,6 @@ export default class
                         this.dropAirdrop(playerCar);
                     }
                 };
-
-                // Add the invite button event listener
-                // document.getElementById('invite-button').addEventListener('click', () => {
-                //     const targetPlayerId = this.detectNearestTarget();
-                //     if (targetPlayerId) {
-                //         const playerId = this.car.playerId;
-                //         console.log(`Sending invite from ${playerId} to ${targetPlayerId}`);
-                //         // if ((this.partyMembers && this.partyMembers.includes(targetPlayerId))) return;
-                //         // console.log("Player is already in party")
-                //         sendInvite(targetPlayerId, playerId);
-                //     } else {
-                //         console.error('No target player found for invite.');
-                //     }
-                // });
 
                 // Add the invite button event listener
                 document.getElementById('invite-button').addEventListener('click', () => {
@@ -2320,7 +2298,6 @@ export default class
             camera: this.camera,
             sounds: this.sounds
         })
-        // this.controls.setTouch();
     }
 
     setMaterials()
@@ -2464,12 +2441,12 @@ export default class
         this.container.add(this.sections.introPart.container)
 
         // Intro Guest
-        this.sections.introGuest = new IntroGuestSection({
-            ...options,
-            x: 0,
-            y: 0
-        })
-        this.container.add(this.sections.introGuest.container)
+        // this.sections.introGuest = new IntroGuestSection({
+        //     ...options,
+        //     x: 0,
+        //     y: 0
+        // })
+        // this.container.add(this.sections.introGuest.container)
 
         // Crossroads
         this.sections.crossroads = new CrossroadsSection({

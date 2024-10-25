@@ -241,21 +241,22 @@ addWorldBorders() {
         }
     }
 
-    // Method to update non-collidable cars (e.g., cars waiting for recreation)
-    updateNonCollidableCars(car) {
-        // Retrieve car player IDs from this.cars
-        const carIds = Object.keys(this.cars);
+    // Method to update non-collidable cars (e.g., car1 vs all other cars)
+    updateNonCollidableCars(currentCar, carsArray) {
+        this.nonCollidableCars.clear();  // Clear previous non-collidable pairs
 
-        for (let i = 0; i < carIds.length; i++) {
-            const playerId = carIds[i];
-            const playerCar = this.cars[playerId];
+        // Iterate through all cars in the carsArray (this.cars)
+        for (let i = 0; i < carsArray.length; i++) {
+            const car1 = carsArray[i];
 
-            // Skip adding a car as non-collidable with itself
-            if (car.playerId !== playerCar.playerId) {
-                const pair1 = `${car.playerId}-${playerCar.playerId}`;
-                const pair2 = `${playerCar.playerId}-${car.playerId}`;
-                this.nonCollidableCars.add(pair1); // Add pair to non-collidable cars
-                this.nonCollidableCars.add(pair2); // Add the reverse pair
+            // Skip the current car itself in this check
+            if (currentCar.playerId !== car1.playerId) {
+                const pair1 = `${currentCar.playerId}-${car1.playerId}`;
+                const pair2 = `${car1.playerId}-${currentCar.playerId}`;
+
+                // Add both directions to ensure no collision happens either way
+                this.nonCollidableCars.add(pair1);
+                this.nonCollidableCars.add(pair2);
             }
         }
     }
@@ -8434,7 +8435,10 @@ addWorldBorders() {
             console.error("car.createCrashEffect is not a function");
         }
 
-        this.updateNonCollidableCars(car);
+        // Update non-collidable cars, passing the current car and all cars from this.cars
+        const allCars = Object.values(this.cars);  // Get all cars from this.cars
+        this.updateNonCollidableCars(car, allCars);
+
         car.physics.car.chassis.body.sleep();
 
             setTimeout(() => {
