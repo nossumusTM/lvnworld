@@ -27,6 +27,7 @@ export default class IntroSection
         this.setStatic()
         this.setInstructions()
         this.setOtherInstructions()
+        this.setRamps()
         // this.setTitles()
 
         /*
@@ -1507,6 +1508,54 @@ export default class IntroSection
 
             i++
         }
+    }
+
+    setRamps() {
+        this.ramps = {};
+    
+        /**
+         * Ramp 1
+         */
+        this.ramps.ramp1 = this.objects.add({
+            base: this.resources.items.introRampBase.scene, // Replace with your ramp base model
+            collision: this.resources.items.introRampCollision.scene, // Replace with your ramp collision model
+            offset: new THREE.Vector3(10, 0, 0), // Set the desired position
+            rotation: new THREE.Euler(0, Math.PI / 4, 0), // Set the desired rotation
+            duplicated: false,
+            shadow: { sizeX: 5, sizeY: 2, offsetZ: -0.2, alpha: 0.5 },
+            mass: 0, // Static object, no mass
+            soundName: 'stone'
+        });
+    
+        // /**
+        //  * Ramp 2
+        //  */
+        // this.ramps.ramp2 = this.objects.add({
+        //     base: this.resources.items.rampBase.scene, // Replace with your ramp base model
+        //     collision: this.resources.items.rampCollision.scene, // Replace with your ramp collision model
+        //     offset: new THREE.Vector3(-10, 0, 0), // Set the desired position
+        //     rotation: new THREE.Euler(0, -Math.PI / 4, 0), // Set the desired rotation
+        //     duplicated: false,
+        //     shadow: { sizeX: 5, sizeY: 2, offsetZ: -0.2, alpha: 0.5 },
+        //     mass: 0, // Static object, no mass
+        //     soundName: 'stone'
+        // });
+
+        // /**
+        //  * Ramp 3
+        //  */
+        // this.ramps.ramp3 = this.objects.add({
+        //     base: this.resources.items.rampBase.scene, // Replace with your ramp base model
+        //     collision: this.resources.items.rampCollision.scene, // Replace with your ramp collision model
+        //     offset: new THREE.Vector3(-10, 0, 0), // Set the desired position
+        //     rotation: new THREE.Euler(0, -Math.PI / 4, 0), // Set the desired rotation
+        //     duplicated: false,
+        //     shadow: { sizeX: 5, sizeY: 2, offsetZ: -0.2, alpha: 0.5 },
+        //     mass: 0, // Static object, no mass
+        //     soundName: 'stone'
+        // });
+    
+        // Add more ramps as needed following the same structure
     }
 
     setInstructions()

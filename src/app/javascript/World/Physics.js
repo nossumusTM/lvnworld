@@ -129,50 +129,50 @@ export default class Physics
     }
     
     // New function to add borders and a roof to the physics world
-addWorldBorders() {
-    const wallMaterial = new CANNON.Material("wallMaterial");
+    addWorldBorders() {
+        const wallMaterial = new CANNON.Material("wallMaterial");
 
-    // Wall dimensions (adjust these according to your world size)
-    const wallThickness = 5;
-    const wallHeight = 25;
-    const worldSize = 1000;
+        // Wall dimensions (adjust these according to your world size)
+        const wallThickness = 5;
+        const wallHeight = 25;
+        const worldSize = 1200;
 
-    // Four walls surrounding the world
-    this.walls = [
-        { position: new CANNON.Vec3(-worldSize / 2, 0, wallHeight / 2), size: new CANNON.Vec3(wallThickness, worldSize, wallHeight) },  // Left wall
-        { position: new CANNON.Vec3(worldSize / 2, 0, wallHeight / 2), size: new CANNON.Vec3(wallThickness, worldSize, wallHeight) },   // Right wall
-        { position: new CANNON.Vec3(0, -worldSize / 2, wallHeight / 2), size: new CANNON.Vec3(worldSize, wallThickness, wallHeight) },  // Back wall
-        { position: new CANNON.Vec3(0, worldSize / 2, wallHeight / 2), size: new CANNON.Vec3(worldSize, wallThickness, wallHeight) },   // Front wall
-    ];
+        // Four walls surrounding the world
+        this.walls = [
+            { position: new CANNON.Vec3(-worldSize / 2, 0, wallHeight / 2), size: new CANNON.Vec3(wallThickness, worldSize, wallHeight) },  // Left wall
+            { position: new CANNON.Vec3(worldSize / 2, 0, wallHeight / 2), size: new CANNON.Vec3(wallThickness, worldSize, wallHeight) },   // Right wall
+            { position: new CANNON.Vec3(0, -worldSize / 2, wallHeight / 2), size: new CANNON.Vec3(worldSize, wallThickness, wallHeight) },  // Back wall
+            { position: new CANNON.Vec3(0, worldSize / 2, wallHeight / 2), size: new CANNON.Vec3(worldSize, wallThickness, wallHeight) },   // Front wall
+        ];
 
-    // Add a roof to the world to prevent cars from flying above the walls
-    const roof = {
-        position: new CANNON.Vec3(0, 0, wallHeight + wallThickness / 2),  // Positioned at the top of the walls
-        size: new CANNON.Vec3(worldSize, worldSize, wallThickness)         // Thin roof covering the world
-    };
+        // Add a roof to the world to prevent cars from flying above the walls
+        const roof = {
+            position: new CANNON.Vec3(0, 0, wallHeight + wallThickness / 2),  // Positioned at the top of the walls
+            size: new CANNON.Vec3(worldSize, worldSize, wallThickness)         // Thin roof covering the world
+        };
 
-    // Create and add walls to the physics world
-    this.walls.forEach(wall => {
-        const shape = new CANNON.Box(wall.size);
-        const body = new CANNON.Body({
-            mass: 0,  // Static objects
-            material: wallMaterial,
-            position: wall.position
+        // Create and add walls to the physics world
+        this.walls.forEach(wall => {
+            const shape = new CANNON.Box(wall.size);
+            const body = new CANNON.Body({
+                mass: 0,  // Static objects
+                material: wallMaterial,
+                position: wall.position
+            });
+            body.addShape(shape);
+            this.world.addBody(body);
         });
-        body.addShape(shape);
-        this.world.addBody(body);
-    });
 
-    // Add the roof
-    const roofShape = new CANNON.Box(roof.size);
-    const roofBody = new CANNON.Body({
-        mass: 0,  // Static object
-        material: wallMaterial,
-        position: roof.position
-    });
-    roofBody.addShape(roofShape);
-    this.world.addBody(roofBody);
-}
+        // Add the roof
+        const roofShape = new CANNON.Box(roof.size);
+        const roofBody = new CANNON.Body({
+            mass: 0,  // Static object
+            material: wallMaterial,
+            position: roof.position
+        });
+        roofBody.addShape(roofShape);
+        this.world.addBody(roofBody);
+    }
 
     // setWorld() {
     //     this.world = new CANNON.World();
@@ -274,7 +274,7 @@ addWorldBorders() {
     {
         this.models = {}
         this.models.container = new THREE.Object3D()
-        this.models.container.visible = true
+        this.models.container.visible = false
         this.models.materials = {}
         this.models.materials.static = new THREE.MeshBasicMaterial({ color: 0x0000ff, wireframe: true })
         this.models.materials.dynamic = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true })
@@ -7493,7 +7493,7 @@ addWorldBorders() {
         this.car.options.controlsAcceleratingSpeed = 2 * 4 * 2
         this.car.options.controlsAcceleratingSpeedBoost = 7 * 4 * 2
         this.car.options.controlsAcceleratingQuad = true
-        this.car.options.controlsBrakeStrength = 0.45 * 3
+        this.car.options.controlsBrakeStrength = 0.45 * 9
 
         /**
          * Upsize down

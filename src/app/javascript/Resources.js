@@ -68,6 +68,9 @@ const introInstructionsOtherSource = 'models/intro/instructions/other.png'
 const introArrowKeyBaseSource = '/models/intro/arrowKey/base.glb'
 const introArrowKeyCollisionSource = '/models/intro/arrowKey/collision.glb'
 
+const introRampBaseSource = '/models/intro/arrowKey/base.glb'
+const introRampCollisionSource = '/models/intro/arrowKey/collision.glb'
+
 const introBBaseSource = '/models/intro/b/base.glb'
 const introBCollisionSource = '/models/intro/b/collision.glb'
 
@@ -293,6 +296,9 @@ export default class Resources extends EventEmitter
 
             { name: 'introArrowKeyBase', source: introArrowKeyBaseSource },
             { name: 'introArrowKeyCollision', source: introArrowKeyCollisionSource },
+
+            { name: 'introRampBase', source: introRampBaseSource },
+            { name: 'introRampCollision', source: introRampCollisionSource },
 
             { name: 'introBBase', source: introBBaseSource },
             { name: 'introBCollision', source: introBCollisionSource },
