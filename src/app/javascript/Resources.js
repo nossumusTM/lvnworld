@@ -68,46 +68,48 @@ const introInstructionsOtherSource = 'models/intro/instructions/other.png'
 const introArrowKeyBaseSource = '/models/intro/arrowKey/base.glb'
 const introArrowKeyCollisionSource = '/models/intro/arrowKey/collision.glb'
 
-const introRampBaseSource = '/models/intro/arrowKey/base.glb'
-const introRampCollisionSource = '/models/intro/arrowKey/collision.glb'
+const introRampBaseSource = '/models/intro/ramp/base.glb'
+const introRampCollisionSource = '/models/intro/ramp/collision.glb'
 
-const introBBaseSource = '/models/intro/b/base.glb'
-const introBCollisionSource = '/models/intro/b/collision.glb'
+const introBoxBaseSource = '/models/intro/box/base.glb'
+const introBoxCollisionSource = '/models/intro/box/collision.glb'
 
-const introRBaseSource = '/models/intro/r/base.glb'
-const introRCollisionSource = '/models/intro/r/collision.glb'
+const introCaseBaseSource = '/models/intro/case/base.glb'
+const introCaseCollisionSource = '/models/intro/case/collision.glb'
 
-const introUBaseSource = '/models/intro/u/base.glb'
-const introUCollisionSource = '/models/intro/u/collision.glb'
+const introCentralBaseSource = '/models/intro/central/base.glb'
+const introCentralCollisionSource = '/models/intro/central/collision.glb'
 
-const introNBaseSource = '/models/intro/n/base.glb'
-const introNCollisionSource = '/models/intro/n/collision.glb'
+const introCrownBaseSource = '/models/intro/crown/base.glb'
+const introCrownCollisionSource = '/models/intro/crown/collision.glb'
 
-const introOBaseSource = '/models/intro/o/base.glb'
-const introOCollisionSource = '/models/intro/o/collision.glb'
+const introCrystalBaseSource = '/models/intro/crystal/base.glb'
+const introCrystalCollisionSource = '/models/intro/crystal/collision.glb'
 
-const introSBaseSource = '/models/intro/s/base.glb'
-const introSCollisionSource = '/models/intro/s/collision.glb'
+const introDialBaseSource = '/models/intro/dial/base.glb'
+const introDialCollisionSource = '/models/intro/dial/collision.glb'
 
-const introIBaseSource = '/models/intro/i/base.glb'
-const introICollisionSource = '/models/intro/i/collision.glb'
+const introDoubleRampBaseSource = '/models/intro/doubleramp/base.glb'
+const introDoubleRampCollisionSource = '/models/intro/doubleramp/collision.glb'
 
-const introMBaseSource = '/models/intro/m/base.glb'
-const introMCollisionSource = '/models/intro/m/collision.glb'
+const introHandsBaseSource = '/models/intro/hands/base.glb'
+const introHandsCollisionSource = '/models/intro/hands/collision.glb'
 
-const introCreativeBaseSource = '/models/intro/creative/base.glb'
-const introCreativeCollisionSource = '/models/intro/creative/collision.glb'
+const introLineBaseSource = '/models/intro/line/base.glb'
+const introLineCollisionSource = '/models/intro/line/collision.glb'
 
-const introDevBaseSource = '/models/intro/dev/base.glb'
-const introDevCollisionSource = '/models/intro/dev/collision.glb'
+const introLugsBaseSource = '/models/intro/lugs/base.glb'
+const introLugsCollisionSource = '/models/intro/lugs/collision.glb'
+
+const introMarkersBaseSource = '/models/intro/markers/base.glb'
+const introMarkersCollisionSource = '/models/intro/markers/collision.glb'
+
+const introTrackBaseSource = '/models/intro/track/base.glb'
+const introTrackCollisionSource = '/models/intro/track/collision.glb'
 
 // Intro Part
 const introPartStaticBaseSource = '/models/introPart/static/base.glb'
 const introPartStaticCollisionSource = '/models/introPart/static/collision.glb'
-
-// Intro Guest
-const introGuestStaticBaseSource = '/models/introGuest/static/base.glb'
-const introGuestStaticCollisionSource = '/models/introGuest/static/collision.glb'
 
 // Crossroads
 const crossroadsStaticFloorShadowSource = 'models/crossroads/static/floorShadow.png'
@@ -285,10 +287,6 @@ export default class Resources extends EventEmitter
             { name: 'introPartStaticBase', source: introPartStaticBaseSource },
             { name: 'introPartStaticCollision', source: introPartStaticCollisionSource },
 
-            // Intro Guest
-            { name: 'introGuestStaticBase', source: introGuestStaticBaseSource },
-            { name: 'introGuestStaticCollision', source: introGuestStaticCollisionSource },
-
             { name: 'introInstructionsLabels', source: introInstructionsLabelsSource },
             { name: 'introInstructionsArrows', source: introInstructionsArrowsSource, type: 'texture' },
             { name: 'introInstructionsControls', source: introInstructionsControlsSource, type: 'texture' },
@@ -300,35 +298,41 @@ export default class Resources extends EventEmitter
             { name: 'introRampBase', source: introRampBaseSource },
             { name: 'introRampCollision', source: introRampCollisionSource },
 
-            { name: 'introBBase', source: introBBaseSource },
-            { name: 'introBCollision', source: introBCollisionSource },
+            { name: 'introBoxBase', source: introBoxBaseSource },
+            { name: 'introBoxCollision', source: introBoxCollisionSource },
 
-            { name: 'introRBase', source: introRBaseSource },
-            { name: 'introRCollision', source: introRCollisionSource },
+            { name: 'introCaseBase', source: introCaseBaseSource },
+            { name: 'introCaseCollision', source: introCaseCollisionSource },
 
-            { name: 'introUBase', source: introUBaseSource },
-            { name: 'introUCollision', source: introUCollisionSource },
+            { name: 'introCentralBase', source: introCentralBaseSource },
+            { name: 'introCentralCollision', source: introCentralCollisionSource },
 
-            { name: 'introNBase', source: introNBaseSource },
-            { name: 'introNCollision', source: introNCollisionSource },
+            { name: 'introCrownBase', source: introCrownBaseSource },
+            { name: 'introCrownCollision', source: introCrownCollisionSource },
 
-            { name: 'introOBase', source: introOBaseSource },
-            { name: 'introOCollision', source: introOCollisionSource },
+            { name: 'introCrystalBase', source: introCrystalBaseSource },
+            { name: 'introCrystalCollision', source: introCrystalCollisionSource },
 
-            { name: 'introSBase', source: introSBaseSource },
-            { name: 'introSCollision', source: introSCollisionSource },
+            { name: 'introDialBase', source: introDialBaseSource },
+            { name: 'introDialCollision', source: introDialCollisionSource },
 
-            { name: 'introIBase', source: introIBaseSource },
-            { name: 'introICollision', source: introICollisionSource },
+            { name: 'introDoubleRampBase', source: introDoubleRampBaseSource },
+            { name: 'introDoubleRampCollision', source: introDoubleRampCollisionSource },
 
-            { name: 'introMBase', source: introMBaseSource },
-            { name: 'introMCollision', source: introMCollisionSource },
+            { name: 'introHandsBase', source: introHandsBaseSource },
+            { name: 'introHandsCollision', source: introHandsCollisionSource },
 
-            { name: 'introCreativeBase', source: introCreativeBaseSource },
-            { name: 'introCreativeCollision', source: introCreativeCollisionSource },
+            { name: 'introLineBase', source: introLineBaseSource },
+            { name: 'introLineCollision', source: introLineCollisionSource },
 
-            { name: 'introDevBase', source: introDevBaseSource },
-            { name: 'introDevCollision', source: introDevCollisionSource },
+            { name: 'introLugsBase', source: introLugsBaseSource },
+            { name: 'introLugsCollision', source: introLugsCollisionSource },
+
+            { name: 'introMarkersBase', source: introMarkersBaseSource },
+            { name: 'introMarkersCollision', source: introMarkersCollisionSource },
+
+            { name: 'introTrackBase', source: introTrackBaseSource },
+            { name: 'introTrackCollision', source: introTrackCollisionSource },
 
             // Font
             { name: 'orbitronFont', source: orbitronFont, type: 'font' },

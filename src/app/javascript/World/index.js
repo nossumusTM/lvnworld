@@ -30,7 +30,6 @@ import Tiles from './Tiles.js'
 import Walls from './Walls.js'
 import IntroSection from './Sections/IntroSection.js'
 import IntroPartSection from './Sections/IntroPartSection.js'
-import IntroGuestSection from './Sections/IntroGuestSection.js'
 import CrossroadsSection from './Sections/CrossroadsSection.js'
 import InformationSection from './Sections/InformationSection.js'
 import PlaygroundSection from './Sections/PlaygroundSection.js'
@@ -2433,20 +2432,12 @@ export default class
         this.container.add(this.sections.intro.container)
 
         // Intro Part
-        // this.sections.introPart = new IntroPartSection({
-        //     ...options,
-        //     x: 0,
-        //     y: 0
-        // })
-        // this.container.add(this.sections.introPart.container)
-
-        // Intro Guest
-        // this.sections.introGuest = new IntroGuestSection({
-        //     ...options,
-        //     x: 0,
-        //     y: 0
-        // })
-        // this.container.add(this.sections.introGuest.container)
+        this.sections.introPart = new IntroPartSection({
+            ...options,
+            x: 0,
+            y: 0
+        })
+        this.container.add(this.sections.introPart.container)
 
         // Crossroads
         this.sections.crossroads = new CrossroadsSection({
