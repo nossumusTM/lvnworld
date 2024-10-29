@@ -84,7 +84,7 @@ body {
   height: 190px;
   border-radius: 50%;
   border: none;
-  background-image: url('/images/mobile/speedometerbackground.png');
+  /* background-image: url('/images/mobile/speedometerbackground.png'); */
   background-repeat: no-repeat;
   background-size: contain;
   display: flex;
