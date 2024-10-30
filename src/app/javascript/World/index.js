@@ -1567,6 +1567,7 @@ export default class
                             up: playerCar.controls.actions.up,
                             shoot: playerCar.controls.actions.shoot,
                             steering: playerCar.physics.car.steering,
+                            siren: playerCar.controls.actions.siren
                         },
                         battery: playerCar.battery,
                         score: playerCar.score,
@@ -1776,6 +1777,7 @@ export default class
                         car.controls.actions.boost = data.controls.boost;
                         car.controls.actions.brake = data.controls.brake;
                         car.controls.actions.shoot = data.controls.shoot;
+                        car.controls.actions.siren = data.controls.siren;
         
                         const carSteeringValue = data.controls.steering;
                         car.physics[carKey].vehicle.setSteeringValue(-carSteeringValue, 0);
@@ -1783,6 +1785,13 @@ export default class
 
                         if (data.controls.boost) {
                             car.createNitroEffect(car.physics[carKey].chassis.body.position, car.physics[carKey].chassis.body.quaternion, car.chassis.object)
+                            car.createSirenEffect()
+                        }
+
+                        if (data.controls.siren) {
+                            car.createSirenEffect()
+                        } else {
+                            console.log("There is no siren effect function")
                         }
         
                         if (data.controls.up) {

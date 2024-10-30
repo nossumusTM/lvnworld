@@ -48,6 +48,7 @@ export default class Controls extends EventEmitter
         this.actions.left = false
         this.actions.brake = false
         this.actions.boost = false
+        this.actions.siren = false
         this.actions.shoot = false
         this.actions.camera = true
 
@@ -61,6 +62,7 @@ export default class Controls extends EventEmitter
                 this.actions.left = false
                 this.actions.brake = false
                 this.actions.boost = false
+                this.actions.siren = false
                 this.actions.shoot = false
                 this.actions.camera = true
             }
@@ -202,7 +204,7 @@ export default class Controls extends EventEmitter
                     this.actions.shoot = false
                     break
 
-                case 'Command':
+                case 'y':
                     this.actions.camera = false
                     break
 
@@ -1278,11 +1280,18 @@ export default class Controls extends EventEmitter
                 this.touch.siren.touchIdentifier = touch.identifier;
 
                 // Play random horn sound
-                const hornSounds = ['carHorn1', 'carHorn2', 'carHorn3'];
-                const randomHorn = hornSounds[Math.floor(Math.random() * hornSounds.length)];
-                this.sounds.play(randomHorn);
+                const hornIndices = [12, 13, 14]; // Indices for carHorn1, carHorn2, carHorn3
+                const randomIndex = hornIndices[Math.floor(Math.random() * hornIndices.length)];
+                this.sounds.play(this.sounds.items[randomIndex].name);
+
+                this.actions.siren = true;
 
                 this.touch.siren.$border.style.opacity = '0.5';
+
+                // Add a delay to allow the state to update before the next check
+                setTimeout(() => {
+                    console.log("Waiting before next status check...");
+                }, 500); // 500 ms delay
 
                 document.addEventListener('touchend', this.touch.siren.events.touchend);
             }
@@ -1294,6 +1303,8 @@ export default class Controls extends EventEmitter
 
             if (touch) {
                 this.touch.siren.$border.style.opacity = '0.25';
+
+                this.actions.siren = false;
 
                 document.removeEventListener('touchend', this.touch.siren.events.touchend);
             }

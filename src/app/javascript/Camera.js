@@ -228,7 +228,7 @@ export default class Camera
         this.zoom.distance = this.zoom.minDistance + this.zoom.amplitude * this.zoom.value;
     
         // Listen to mousewheel event
-        document.addEventListener('mousewheel', (_event) => {
+        document.addEventListener('wheel', (_event) => {
             this.zoom.targetValue += _event.deltaY * 0.001;
             this.zoom.targetValue = Math.min(Math.max(this.zoom.targetValue, 0), 1);
         }, { passive: true });
