@@ -1272,6 +1272,7 @@ export default class Controls extends EventEmitter
         this.touch.siren.touchIdentifier = null;
 
         this.touch.siren.events.touchstart = (_event) => {
+            this.actions.siren = true;
             _event.preventDefault();
 
             const touch = _event.changedTouches[0];
@@ -1283,8 +1284,6 @@ export default class Controls extends EventEmitter
                 const hornIndices = [12, 13, 14]; // Indices for carHorn1, carHorn2, carHorn3
                 const randomIndex = hornIndices[Math.floor(Math.random() * hornIndices.length)];
                 this.sounds.play(this.sounds.items[randomIndex].name);
-
-                this.actions.siren = true;
 
                 this.touch.siren.$border.style.opacity = '0.5';
 
@@ -1298,13 +1297,13 @@ export default class Controls extends EventEmitter
         };
 
         this.touch.siren.events.touchend = (_event) => {
+            this.actions.siren = false;
             const touches = [..._event.changedTouches];
             const touch = touches.find((_touch) => _touch.identifier === this.touch.siren.touchIdentifier);
 
             if (touch) {
                 this.touch.siren.$border.style.opacity = '0.25';
 
-                this.actions.siren = false;
 
                 document.removeEventListener('touchend', this.touch.siren.events.touchend);
             }
