@@ -1730,50 +1730,50 @@ export default class IntroSection
         this.instructions.arrows.label.mesh = new THREE.Mesh(this.instructions.arrows.label.geometry, this.instructions.arrows.label.material)
         this.container.add(this.instructions.arrows.label.mesh)
 
-        if(!this.config.touch)
-        {
-            // Keys
-            this.instructions.arrows.up = this.objects.add({
-                base: this.resources.items.introArrowKeyBase.scene,
-                collision: this.resources.items.introArrowKeyCollision.scene,
-                offset: new THREE.Vector3(0, - 12, 0),
-                rotation: new THREE.Euler(0, 0, 0),
-                duplicated: true,
-                shadow: { sizeX: 1, sizeY: 1, offsetZ: - 0.2, alpha: 0.5 },
-                mass: 1.5,
-                soundName: 'brick'
-            })
-            this.instructions.arrows.down = this.objects.add({
-                base: this.resources.items.introArrowKeyBase.scene,
-                collision: this.resources.items.introArrowKeyCollision.scene,
-                offset: new THREE.Vector3(0, - 12.8, 0),
-                rotation: new THREE.Euler(0, 0, Math.PI),
-                duplicated: true,
-                shadow: { sizeX: 1, sizeY: 1, offsetZ: - 0.2, alpha: 0.5 },
-                mass: 1.5,
-                soundName: 'brick'
-            })
-            this.instructions.arrows.left = this.objects.add({
-                base: this.resources.items.introArrowKeyBase.scene,
-                collision: this.resources.items.introArrowKeyCollision.scene,
-                offset: new THREE.Vector3(- 0.8, - 12.8, 0),
-                rotation: new THREE.Euler(0, 0, Math.PI * 0.5),
-                duplicated: true,
-                shadow: { sizeX: 1, sizeY: 1, offsetZ: - 0.2, alpha: 0.5 },
-                mass: 1.5,
-                soundName: 'brick'
-            })
-            this.instructions.arrows.right = this.objects.add({
-                base: this.resources.items.introArrowKeyBase.scene,
-                collision: this.resources.items.introArrowKeyCollision.scene,
-                offset: new THREE.Vector3(0.8, - 12.8, 0),
-                rotation: new THREE.Euler(0, 0, - Math.PI * 0.5),
-                duplicated: true,
-                shadow: { sizeX: 1, sizeY: 1, offsetZ: - 0.2, alpha: 0.5 },
-                mass: 1.5,
-                soundName: 'brick'
-            })
-        }
+        // if(!this.config.touch)
+        // {
+        //     // Keys
+        //     this.instructions.arrows.up = this.objects.add({
+        //         base: this.resources.items.introArrowKeyBase.scene,
+        //         collision: this.resources.items.introArrowKeyCollision.scene,
+        //         offset: new THREE.Vector3(0, - 12, 0),
+        //         rotation: new THREE.Euler(0, 0, 0),
+        //         duplicated: true,
+        //         shadow: { sizeX: 1, sizeY: 1, offsetZ: - 0.2, alpha: 0.5 },
+        //         mass: 1.5,
+        //         soundName: 'brick'
+        //     })
+        //     this.instructions.arrows.down = this.objects.add({
+        //         base: this.resources.items.introArrowKeyBase.scene,
+        //         collision: this.resources.items.introArrowKeyCollision.scene,
+        //         offset: new THREE.Vector3(0, - 12.8, 0),
+        //         rotation: new THREE.Euler(0, 0, Math.PI),
+        //         duplicated: true,
+        //         shadow: { sizeX: 1, sizeY: 1, offsetZ: - 0.2, alpha: 0.5 },
+        //         mass: 1.5,
+        //         soundName: 'brick'
+        //     })
+        //     this.instructions.arrows.left = this.objects.add({
+        //         base: this.resources.items.introArrowKeyBase.scene,
+        //         collision: this.resources.items.introArrowKeyCollision.scene,
+        //         offset: new THREE.Vector3(- 0.8, - 12.8, 0),
+        //         rotation: new THREE.Euler(0, 0, Math.PI * 0.5),
+        //         duplicated: true,
+        //         shadow: { sizeX: 1, sizeY: 1, offsetZ: - 0.2, alpha: 0.5 },
+        //         mass: 1.5,
+        //         soundName: 'brick'
+        //     })
+        //     this.instructions.arrows.right = this.objects.add({
+        //         base: this.resources.items.introArrowKeyBase.scene,
+        //         collision: this.resources.items.introArrowKeyCollision.scene,
+        //         offset: new THREE.Vector3(0.8, - 12.8, 0),
+        //         rotation: new THREE.Euler(0, 0, - Math.PI * 0.5),
+        //         duplicated: true,
+        //         shadow: { sizeX: 1, sizeY: 1, offsetZ: - 0.2, alpha: 0.5 },
+        //         mass: 1.5,
+        //         soundName: 'brick'
+        //     })
+        // }
     }
 
     setOtherInstructions()

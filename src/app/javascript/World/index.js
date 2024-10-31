@@ -135,17 +135,17 @@ export default class
         // Import and apply material to hands, and store them for updating later
         this.hourHand = this.importAndApplyHandMaterial(
             this.resources.items.clockHourBase.scene, 
-            5, 0.8, this.materials.shades.items.sky
+            5, 0.8, this.materials.shades.items.blueGlass
         ); // Hour hand
         
         this.minuteHand = this.importAndApplyHandMaterial(
             this.resources.items.clockMinuteBase.scene, 
-            7, 0.5, this.materials.shades.items.sky
+            7, 0.5, this.materials.shades.items.blueGlass
         ); // Minute hand
 
         this.secondHand = this.importAndApplyHandMaterial(
             this.resources.items.clockSecondBase.scene, 
-            9, 0.3, this.materials.shades.items.sky
+            9, 0.3, this.materials.shades.items.volcano
         ); // Second hand
 
         // Ensure hands start at (0, 0, 0) and rotate around the center
