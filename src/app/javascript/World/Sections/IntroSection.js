@@ -1730,8 +1730,6 @@ export default class IntroSection
         this.instructions.arrows.label.mesh = new THREE.Mesh(this.instructions.arrows.label.geometry, this.instructions.arrows.label.material)
         this.container.add(this.instructions.arrows.label.mesh)
 
-        console.log("Instructions", this.instructions)
-
         if(!this.config.touch)
         {
             // Keys

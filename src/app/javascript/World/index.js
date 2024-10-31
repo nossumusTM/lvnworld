@@ -1587,6 +1587,7 @@ export default class
                         updateData.position.x,
                         updateData.position.y,
                         updateData.rotation,
+                        updateData.wheels[0].rotation,
                         false
                     );
                 });
@@ -1901,17 +1902,61 @@ export default class
     }
 
     // Update the mini-map with player positions
-    updateMiniMap(playerId, x, y, rotation, isOtherPlayer) {
+    // updateMiniMap(playerId, x, y, rotation, isOtherPlayer) {
+    //     if (!this.miniMapElements[playerId]) {
+    //         const newPlayerElement = document.createElement('div');
+    //         newPlayerElement.id = `player-${playerId}`;
+    //         newPlayerElement.style.position = 'absolute';
+    //         newPlayerElement.style.width = '8px';
+    //         newPlayerElement.style.height = '8px';
+    //         newPlayerElement.style.backgroundColor = isOtherPlayer ? '#FF5733' : 'white';
+    //         newPlayerElement.style.transformOrigin = 'center center';
+    //         this.miniMap.appendChild(newPlayerElement);
+    //         this.miniMapElements[playerId] = newPlayerElement;
+    //     }
+
+    //     const miniMapSize = 100; // The size of the mini-map in pixels
+    //     const mapScale = 0.05; // Scale factor to convert world coordinates to mini-map coordinates
+
+    //     const mapX = miniMapSize / 2 + x * mapScale;
+    //     const mapY = miniMapSize / 2 - y * mapScale;
+
+    //     const playerElementToUpdate = this.miniMapElements[playerId];
+    //     playerElementToUpdate.style.left = `${mapX}px`;
+    //     playerElementToUpdate.style.top = `${mapY}px`;
+
+    //     // Calculate the rotation angle in degrees and apply it to the mini-map element
+    //     const angle = rotation.y * (180 / Math.PI); // Convert radians to degrees
+    //     playerElementToUpdate.style.transform = `rotate(${angle}deg)`;
+    // }
+
+    // Update the mini-map with player positions and arrow directions
+    updateMiniMap(playerId, x, y, frontWheelQuaternion, isOtherPlayer) {
         if (!this.miniMapElements[playerId]) {
             const newPlayerElement = document.createElement('div');
             newPlayerElement.id = `player-${playerId}`;
             newPlayerElement.style.position = 'absolute';
-            newPlayerElement.style.width = '8px';
-            newPlayerElement.style.height = '8px';
-            newPlayerElement.style.backgroundColor = isOtherPlayer ? '#FF5733' : 'white';
+            newPlayerElement.style.width = '8px'; // Adjust size for visibility
+            newPlayerElement.style.height = '8px'; // Adjust size for visibility
+            newPlayerElement.style.backgroundColor = isOtherPlayer ? 'white' : '#FF5733';
             newPlayerElement.style.transformOrigin = 'center center';
+            newPlayerElement.style.display = 'flex';
+            newPlayerElement.style.alignItems = 'flex-end'; // Align items to the bottom
             this.miniMap.appendChild(newPlayerElement);
             this.miniMapElements[playerId] = newPlayerElement;
+
+            // Create the triangle element
+            const triangle = document.createElement('div');
+            triangle.style.position = 'absolute';
+            triangle.style.width = '0';
+            triangle.style.height = '0';
+            triangle.style.borderLeft = '8px solid transparent'; // Triangle width
+            triangle.style.borderRight = '8px solid transparent'; // Triangle width
+            triangle.style.borderBottom = '12px solid white'; // Triangle height and color
+            triangle.style.bottom = '100%'; // Position above the square
+            triangle.style.left = '50%'; // Center the triangle
+            triangle.style.transform = 'translateX(-50%)'; // Centering
+            newPlayerElement.appendChild(triangle);
         }
 
         const miniMapSize = 100; // The size of the mini-map in pixels
@@ -1924,8 +1969,13 @@ export default class
         playerElementToUpdate.style.left = `${mapX}px`;
         playerElementToUpdate.style.top = `${mapY}px`;
 
-        // Calculate the rotation angle in degrees and apply it to the mini-map element
-        const angle = rotation.y * (180 / Math.PI); // Convert radians to degrees
+        // Convert front wheel quaternion rotation to degrees
+        const angle = Math.atan2(
+            2.0 * (frontWheelQuaternion.w * frontWheelQuaternion.z + frontWheelQuaternion.x * frontWheelQuaternion.y),
+            1.0 - 2.0 * (frontWheelQuaternion.y * frontWheelQuaternion.y + frontWheelQuaternion.z * frontWheelQuaternion.z)
+        ) * (180 / Math.PI);
+
+        // Apply rotation to the entire mini-map element (including the square and triangle)
         playerElementToUpdate.style.transform = `rotate(${angle}deg)`;
     }
 
