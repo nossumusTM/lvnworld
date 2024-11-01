@@ -55,6 +55,10 @@ const clockHourBaseSource = '/models/clock/hourHand.glb'
 const clockMinuteBaseSource = '/models/clock/minutesHand.glb'
 const clockSecondBaseSource = 'models/clock/secondsHand.glb'
 
+// Coin
+const krashcoinBase = '/models/coin/base.glb'
+const krashcoinCollision = '/models/coin/collision.glb'
+
 // Intro
 const introStaticBaseSource = '/models/intro/static/base.glb'
 const introStaticCollisionSource = '/models/intro/static/collision.glb'
@@ -282,6 +286,10 @@ export default class Resources extends EventEmitter
             { name: 'clockHourBase', source: clockHourBaseSource },
             { name: 'clockMinuteBase', source: clockMinuteBaseSource },
             { name: 'clockSecondBase', source: clockSecondBaseSource },
+
+            // Krashcoin
+            { name: 'krashCoinBase', source: krashcoinBase },
+            { name: 'krashCoinCollision', source: krashcoinCollision },
 
             // Intro Part
             { name: 'introPartStaticBase', source: introPartStaticBaseSource },

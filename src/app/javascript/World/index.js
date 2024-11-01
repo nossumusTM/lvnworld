@@ -370,6 +370,10 @@ export default class
         this.createMiniMap();
         this.setReveal();
         this.setClock();
+
+        setTimeout(() => {
+            this.dropCoinAtPosition()
+        }, 1000)
     }
 
     setCar() {
@@ -576,7 +580,11 @@ export default class
                                 }
                                 this.cars[message.playerId].score = message.score;
                                 this.updateScoreStatus(this.cars[message.playerId].score); // Display updated score
-                                dropAirdrop(this.cars[message.playerId]);
+                                if(this.cars[message.playerId.score] !== 0) {
+                                    dropAirdrop(this.cars[message.playerId]);
+                                } else {
+                                    console.log("Player score is 0")
+                                }
                             }
                             break;
         
@@ -770,6 +778,28 @@ export default class
                                 console.log("Party disbanded")
                             }
                             break;
+
+                        case 'dropKrashcoin':
+                                console.log("Received dropKrashcoin event");
+                                const { position } = message;
+                            
+                                // Place the coin at the given position
+                                this.dropCoinAtPosition(position);
+                            
+                                // Check collision with playerCar
+                                // this.checkCoinCollision(playerCar, position, () => {
+                                //     // Update score by 1
+                                //     this.updateScoreStatus(playerCar.score);
+                                    
+                                //     // Hide the coin
+                                //     this.hideCoin();
+                            
+                                //     // Set a timeout to reappear after 2 minutes (120,000 ms)
+                                //     setTimeout(() => {
+                                //         this.dropCoinAtPosition(this.generateNewPosition()); // Optionally generate a new position for reappearance
+                                //     }, 120000);
+                                // });
+                                break;                            
         
                         default:
                             // console.error('Unknown message type:', message.type);
@@ -1984,16 +2014,32 @@ export default class
         this.miniMapElements = {}; // Store references to mini-map elements
     }
 
-    // Update the mini-map with player positions
-    // updateMiniMap(playerId, x, y, rotation, isOtherPlayer) {
+    // Update the mini-map with player positions and arrow directions
+    // updateMiniMap(playerId, x, y, frontWheelQuaternion, isOtherPlayer) {
     //     if (!this.miniMapElements[playerId]) {
     //         const newPlayerElement = document.createElement('div');
     //         newPlayerElement.id = `player-${playerId}`;
     //         newPlayerElement.style.position = 'absolute';
-    //         newPlayerElement.style.width = '8px';
-    //         newPlayerElement.style.height = '8px';
+    //         newPlayerElement.style.width = '5px'; // Adjust size for visibility
+    //         newPlayerElement.style.height = '5px'; // Adjust size for visibility
     //         newPlayerElement.style.backgroundColor = isOtherPlayer ? '#FF5733' : 'white';
     //         newPlayerElement.style.transformOrigin = 'center center';
+    //         newPlayerElement.style.display = 'flex';
+    //         newPlayerElement.style.alignItems = 'flex-end'; // Align items to the bottom
+            
+    //         // Create the triangle element
+    //         const triangle = document.createElement('div');
+    //         triangle.style.position = 'absolute';
+    //         triangle.style.width = '0';
+    //         triangle.style.height = '0';
+    //         triangle.style.borderLeft = '6px solid transparent'; // Triangle width
+    //         triangle.style.borderRight = '6px solid transparent'; // Triangle width
+    //         triangle.style.borderBottom = isOtherPlayer ? '10px solid #FF5733' : '10px solid white' // Triangle height and color
+    //         triangle.style.bottom = '100%'; // Position above the square
+    //         triangle.style.left = '50%'; // Center the triangle
+    //         triangle.style.transform = 'translateX(-50%)'; // Centering
+    //         newPlayerElement.appendChild(triangle);
+
     //         this.miniMap.appendChild(newPlayerElement);
     //         this.miniMapElements[playerId] = newPlayerElement;
     //     }
@@ -2008,39 +2054,48 @@ export default class
     //     playerElementToUpdate.style.left = `${mapX}px`;
     //     playerElementToUpdate.style.top = `${mapY}px`;
 
-    //     // Calculate the rotation angle in degrees and apply it to the mini-map element
-    //     const angle = rotation.y * (180 / Math.PI); // Convert radians to degrees
-    //     playerElementToUpdate.style.transform = `rotate(${angle}deg)`;
+    //     // Convert front wheel quaternion rotation to degrees
+    //     const angle = Math.atan2(
+    //         2.0 * (frontWheelQuaternion.w * frontWheelQuaternion.z + frontWheelQuaternion.x * frontWheelQuaternion.y),
+    //         1.0 - 2.0 * (frontWheelQuaternion.y * frontWheelQuaternion.y + frontWheelQuaternion.z * frontWheelQuaternion.z)
+    //     ) * (180 / Math.PI);
+
+    //     // Adjust angle for top-down view: Invert the angle
+    //     const adjustedAngle = -angle + 90; // Adjust for camera view
+
+    //     // Apply rotation to the entire mini-map element (including the square and triangle)
+    //     playerElementToUpdate.style.transform = `rotate(${adjustedAngle}deg)`;
     // }
 
-    // Update the mini-map with player positions and arrow directions
-    updateMiniMap(playerId, x, y, frontWheelQuaternion, isOtherPlayer) {
+    // Update the mini-map with player positions and coin position
+    updateMiniMap(playerId, x, y, frontWheelQuaternion, isOtherPlayer, isCoin = false) {
         if (!this.miniMapElements[playerId]) {
-            const newPlayerElement = document.createElement('div');
-            newPlayerElement.id = `player-${playerId}`;
-            newPlayerElement.style.position = 'absolute';
-            newPlayerElement.style.width = '5px'; // Adjust size for visibility
-            newPlayerElement.style.height = '5px'; // Adjust size for visibility
-            newPlayerElement.style.backgroundColor = isOtherPlayer ? '#FF5733' : 'white';
-            newPlayerElement.style.transformOrigin = 'center center';
-            newPlayerElement.style.display = 'flex';
-            newPlayerElement.style.alignItems = 'flex-end'; // Align items to the bottom
-            
-            // Create the triangle element
-            const triangle = document.createElement('div');
-            triangle.style.position = 'absolute';
-            triangle.style.width = '0';
-            triangle.style.height = '0';
-            triangle.style.borderLeft = '6px solid transparent'; // Triangle width
-            triangle.style.borderRight = '6px solid transparent'; // Triangle width
-            triangle.style.borderBottom = isOtherPlayer ? '10px solid #FF5733' : '10px solid white' // Triangle height and color
-            triangle.style.bottom = '100%'; // Position above the square
-            triangle.style.left = '50%'; // Center the triangle
-            triangle.style.transform = 'translateX(-50%)'; // Centering
-            newPlayerElement.appendChild(triangle);
+            const newElement = document.createElement('div');
+            newElement.id = isCoin ? 'coin' : `player-${playerId}`;
+            newElement.style.position = 'absolute';
+            newElement.style.width = '5px'; // Adjust for visibility; coin is larger to stand out
+            newElement.style.height = '5px';
+            newElement.style.backgroundColor = isCoin ? 'red' : isOtherPlayer ? '#FF5733' : 'white';
+            newElement.style.borderRadius = isCoin ? '50%' : '0'; // Coin is circular
+            newElement.style.transformOrigin = 'center center';
 
-            this.miniMap.appendChild(newPlayerElement);
-            this.miniMapElements[playerId] = newPlayerElement;
+            if (!isCoin) {
+                // Player arrow display code
+                const triangle = document.createElement('div');
+                triangle.style.position = 'absolute';
+                triangle.style.width = '0';
+                triangle.style.height = '0';
+                triangle.style.borderLeft = '6px solid transparent';
+                triangle.style.borderRight = '6px solid transparent';
+                triangle.style.borderBottom = isOtherPlayer ? '10px solid #FF5733' : '10px solid white';
+                triangle.style.bottom = '100%';
+                triangle.style.left = '50%';
+                triangle.style.transform = 'translateX(-50%)';
+                newElement.appendChild(triangle);
+            }
+
+            this.miniMap.appendChild(newElement);
+            this.miniMapElements[playerId] = newElement;
         }
 
         const miniMapSize = 100; // The size of the mini-map in pixels
@@ -2049,21 +2104,20 @@ export default class
         const mapX = miniMapSize / 2 + x * mapScale;
         const mapY = miniMapSize / 2 - y * mapScale;
 
-        const playerElementToUpdate = this.miniMapElements[playerId];
-        playerElementToUpdate.style.left = `${mapX}px`;
-        playerElementToUpdate.style.top = `${mapY}px`;
+        const elementToUpdate = this.miniMapElements[playerId];
+        elementToUpdate.style.left = `${mapX}px`;
+        elementToUpdate.style.top = `${mapY}px`;
 
-        // Convert front wheel quaternion rotation to degrees
-        const angle = Math.atan2(
-            2.0 * (frontWheelQuaternion.w * frontWheelQuaternion.z + frontWheelQuaternion.x * frontWheelQuaternion.y),
-            1.0 - 2.0 * (frontWheelQuaternion.y * frontWheelQuaternion.y + frontWheelQuaternion.z * frontWheelQuaternion.z)
-        ) * (180 / Math.PI);
+        if (!isCoin && frontWheelQuaternion) {
+            // Convert front wheel quaternion rotation to degrees
+            const angle = Math.atan2(
+                2.0 * (frontWheelQuaternion.w * frontWheelQuaternion.z + frontWheelQuaternion.x * frontWheelQuaternion.y),
+                1.0 - 2.0 * (frontWheelQuaternion.y * frontWheelQuaternion.y + frontWheelQuaternion.z * frontWheelQuaternion.z)
+            ) * (180 / Math.PI);
 
-        // Adjust angle for top-down view: Invert the angle
-        const adjustedAngle = -angle + 90; // Adjust for camera view
-
-        // Apply rotation to the entire mini-map element (including the square and triangle)
-        playerElementToUpdate.style.transform = `rotate(${adjustedAngle}deg)`;
+            const adjustedAngle = -angle + 90;
+            elementToUpdate.style.transform = `rotate(${adjustedAngle}deg)`;
+        }
     }
 
     // Remove player from the mini-map
@@ -2072,6 +2126,181 @@ export default class
         if (playerElement) {
             this.miniMap.removeChild(playerElement);
             delete this.miniMapElements[playerId];
+        }
+    }
+
+    generateNewPosition() {
+        // Define boundaries for random position generation
+        const xMin = -50;  // Minimum X boundary
+        const xMax = 50;   // Maximum X boundary
+        const zMin = -50;  // Minimum Z boundary
+        const zMax = 50;   // Maximum Z boundary
+        const yHeight = 1; // Fixed Y position (height) above the ground
+    
+        // Generate random coordinates within boundaries
+        const x = Math.random() * (xMax - xMin) + xMin;
+        const z = Math.random() * (zMax - zMin) + zMin;
+    
+        // Return the new position as an object
+        return new THREE.Vector3(x, yHeight, z);
+    }
+
+    // dropCoinAtPosition() {
+    //     // Create a new position vector
+    //     const angle = Math.random() * Math.PI * 2;
+    //     const distance = 10;
+    
+    //     const x = Math.cos(angle) * distance;
+    //     const y = Math.sin(angle) * distance;
+    
+    //     const initialZPosition = 20;  // Drop from 20 units above ground
+    //     const targetZPosition = 0;     // Ground level
+    
+    //     // Add the coin to the scene with specified properties
+    //     const originalCoin = this.objects.add({
+    //         base: this.resources.items.krashCoinBase.scene,
+    //         collision: this.resources.items.krashCoinCollision.scene,
+    //         offset: new THREE.Vector3(x, y, initialZPosition), // Set initial height
+    //         rotation: new THREE.Euler(0, 0, 0),
+    //         duplicated: true,
+    //         shadow: { sizeX: 1, sizeY: 1, offsetZ: -0.2, alpha: 0.5 },
+    //         mass: 0.5,
+    //     });
+    
+    //     if (!originalCoin || !originalCoin.container) {
+    //         console.error("Coin or coin container is not defined.");
+    //         return;
+    //     }
+    
+    //     // Set the material for the original coin
+    //     originalCoin.container.children[0].traverse((child) => {
+    //         if (child.isMesh) {
+    //             child.material = this.materials.shades.items.blueGlass;
+    //         }
+    //     });
+    
+    //     // Log the drop position for verification
+    //     console.log("Coin drop initiated from position z:", initialZPosition);
+    
+    //     // Clone the original coin's container to avoid direct manipulation of the original
+    //     const coinClone = originalCoin.container.clone();
+        
+    //     // Set the position of the cloned coin to drop it to the ground
+    //     coinClone.position.set(x, y, initialZPosition);
+        
+    //     // Add the cloned coin to the scene
+    //     this.container.add(coinClone);
+    
+    //     // Add random spin animation
+    //     gsap.to(coinClone.rotation, 2, {
+    //         x: Math.random() * Math.PI * 2,
+    //         y: Math.random() * Math.PI * 2,
+    //         z: Math.random() * Math.PI * 2,
+    //     });
+    
+    //     // Drop animation from initialZPosition to targetZPosition
+    //     gsap.to(coinClone.position, {
+    //         z: targetZPosition,
+    //         duration: 2,
+    //         ease: "bounce.out",
+    //         onComplete: () => {
+    //             console.log("Coin has reached the ground level:", targetZPosition);
+    //             // The coin remains on the ground after dropping
+    //         }
+    //     });
+    
+    //     // Update mini-map with the coin's position
+    //     this.updateMiniMap('coin', x, y, null, false, true); // Pass 'true' for isCoin
+    // }    
+
+    dropCoinAtPosition() {
+        // Randomly select a coin object
+        const coinObject = this.resources.items.krashCoinBase.scene; // Ensure this is correct
+        coinObject.duplicated = true;
+        coinObject.shadow = { sizeX: 1, sizeY: 1, offsetZ: -0.2, alpha: 0.5 };
+        coinObject.mass = 0.5;
+    
+        // Set the material for the original coin
+        coinObject.children[0].traverse((child) => {
+            if (child.isMesh) {
+                child.material = this.materials.shades.items.blueGlass;
+            }
+        });
+    
+        if (!coinObject) {
+            console.error('Selected coin object is not defined.');
+            return;
+        }
+    
+        // Create a clone of the coin object to add to the scene
+        const coinClone = coinObject.clone();
+        this.container.add(coinClone);
+    
+        // Set the initial position of the coin (above the ground)
+        const initialZPosition = 70; 
+        const x = Math.random() * 10 - 5; // Random x position
+        const y = Math.random() * 10 - 5; // Random y position
+    
+        // Set the initial position of the coin above the ground
+        coinClone.position.set(x, y, initialZPosition);
+        console.log("Coin drop initiated from position:", coinClone.position.clone()); // Log initial position
+    
+        // Add random spin animation for the coin while dropping
+        gsap.to(coinClone.rotation, 5, {
+            x: Math.random() * Math.PI * 2,
+            y: Math.random() * Math.PI * 2,
+            z: Math.random() * Math.PI * 2,
+            ease: "none", // Linear easing for consistent spin
+        });
+    
+        // Animate the coin to drop to the ground
+        gsap.to(coinClone.position,  5, {
+            x: 10,
+            y: 0,
+            z: 0.5,
+            ease: "bounce.out",
+            onComplete: () => {
+                console.log("Coin has reached the ground level:", coinClone.position.z);
+    
+                // Start rotating 360 degrees on the x-axis after dropping
+                gsap.to(coinClone.rotation, 2, {
+                    x: Math.PI * 2,
+                    y: Math.PI * 2,
+                    z: Math.PI * 2,  // Rotate 360 degrees on the x-axis
+                    duration: 60,
+                    ease: "none"      // Linear easing for rotation
+                });
+            }
+        });
+    
+        // Update mini-map with the coin's position
+        this.updateMiniMap('coin', x, y, null, false, true); // Pass 'true' for isCoin
+    }
+    
+    
+    checkCoinCollision(playerCar, coinPosition, onCollision) {
+        // Define a collision threshold based on game scale
+        const collisionThreshold = 1.5;
+    
+        // Calculate distance between player car and coin
+        const distance = playerCar.position.distanceTo(coinPosition);
+    
+        // If distance is within threshold, trigger collision logic
+        if (distance <= collisionThreshold) {
+            console.log("Collision detected with coin!");
+            onCollision();  // Execute the callback for when collision is detected
+        }
+    }
+    
+    hideCoin() {
+        if (this.coin) {
+            this.coin.visible = false;  // Hide the coin visually
+    
+            // Optional: Remove the coin object entirely if needed
+            this.objects.remove(this.coin);
+            this.coin = null;
+    
+            console.log("Coin hidden from scene.");
         }
     }
 
