@@ -373,7 +373,7 @@ export default class
 
         setTimeout(() => {
             this.dropCoinAtPosition()
-        }, 1000)
+        }, 5000)
     }
 
     setCar() {
@@ -2145,137 +2145,129 @@ export default class
         return new THREE.Vector3(x, yHeight, z);
     }
 
-    // dropCoinAtPosition() {
-    //     // Create a new position vector
-    //     const angle = Math.random() * Math.PI * 2;
-    //     const distance = 10;
-    
-    //     const x = Math.cos(angle) * distance;
-    //     const y = Math.sin(angle) * distance;
-    
-    //     const initialZPosition = 20;  // Drop from 20 units above ground
-    //     const targetZPosition = 0;     // Ground level
-    
-    //     // Add the coin to the scene with specified properties
-    //     const originalCoin = this.objects.add({
-    //         base: this.resources.items.krashCoinBase.scene,
-    //         collision: this.resources.items.krashCoinCollision.scene,
-    //         offset: new THREE.Vector3(x, y, initialZPosition), // Set initial height
-    //         rotation: new THREE.Euler(0, 0, 0),
-    //         duplicated: true,
-    //         shadow: { sizeX: 1, sizeY: 1, offsetZ: -0.2, alpha: 0.5 },
-    //         mass: 0.5,
-    //     });
-    
-    //     if (!originalCoin || !originalCoin.container) {
-    //         console.error("Coin or coin container is not defined.");
-    //         return;
-    //     }
-    
-    //     // Set the material for the original coin
-    //     originalCoin.container.children[0].traverse((child) => {
-    //         if (child.isMesh) {
-    //             child.material = this.materials.shades.items.blueGlass;
-    //         }
-    //     });
-    
-    //     // Log the drop position for verification
-    //     console.log("Coin drop initiated from position z:", initialZPosition);
-    
-    //     // Clone the original coin's container to avoid direct manipulation of the original
-    //     const coinClone = originalCoin.container.clone();
-        
-    //     // Set the position of the cloned coin to drop it to the ground
-    //     coinClone.position.set(x, y, initialZPosition);
-        
-    //     // Add the cloned coin to the scene
-    //     this.container.add(coinClone);
-    
-    //     // Add random spin animation
-    //     gsap.to(coinClone.rotation, 2, {
-    //         x: Math.random() * Math.PI * 2,
-    //         y: Math.random() * Math.PI * 2,
-    //         z: Math.random() * Math.PI * 2,
-    //     });
-    
-    //     // Drop animation from initialZPosition to targetZPosition
-    //     gsap.to(coinClone.position, {
-    //         z: targetZPosition,
-    //         duration: 2,
-    //         ease: "bounce.out",
-    //         onComplete: () => {
-    //             console.log("Coin has reached the ground level:", targetZPosition);
-    //             // The coin remains on the ground after dropping
-    //         }
-    //     });
-    
-    //     // Update mini-map with the coin's position
-    //     this.updateMiniMap('coin', x, y, null, false, true); // Pass 'true' for isCoin
-    // }    
-
     dropCoinAtPosition() {
-        // Randomly select a coin object
-        const coinObject = this.resources.items.krashCoinBase.scene; // Ensure this is correct
-        coinObject.duplicated = true;
-        coinObject.shadow = { sizeX: 1, sizeY: 1, offsetZ: -0.2, alpha: 0.5 };
-        coinObject.mass = 0.5;
+        // Generate random position for the drop
+        const angle = Math.random() * Math.PI * 2;
+        const distance = 10;
+        const x = Math.cos(angle) * distance;
+        const y = Math.sin(angle) * distance;
     
-        // Set the material for the original coin
-        coinObject.children[0].traverse((child) => {
+        const initialZPosition = 200;  // Drop from 20 units above ground
+        const targetZPosition = 0;     // Ground level
+    
+        // Create the original coin with visual and collision components
+        const originalCoin = this.objects.add({
+            base: this.resources.items.krashCoinBase.scene,
+            collision: this.resources.items.krashCoinCollision.scene,
+            position: new THREE.Vector3(x, y, initialZPosition), // Start above the ground
+            rotation: new THREE.Euler(0, 0, 0),
+            duplicated: true,
+            shadow: { sizeX: 1, sizeY: 1, offsetZ: -0.2, alpha: 0.5 },
+            mass: 0.5,
+        });
+    
+        // Ensure the originalCoin and its container are defined
+        if (!originalCoin || !originalCoin.container) {
+            console.error("Coin or coin container is not defined.");
+            return;
+        }
+    
+        // Set the material for the original coin's visual component
+        originalCoin.container.traverse((child) => {
             if (child.isMesh) {
                 child.material = this.materials.shades.items.blueGlass;
             }
         });
     
-        if (!coinObject) {
-            console.error('Selected coin object is not defined.');
-            return;
-        }
+        // Set the container's position to the initialZPosition
+        originalCoin.container.position.set(x, y, initialZPosition); // Start position
+ 
+        // Add the original coin to the scene
+        this.container.add(originalCoin.container);  // Add the container to the scene
     
-        // Create a clone of the coin object to add to the scene
-        const coinClone = coinObject.clone();
-        this.container.add(coinClone);
-    
-        // Set the initial position of the coin (above the ground)
-        const initialZPosition = 70; 
-        const x = Math.random() * 10 - 5; // Random x position
-        const y = Math.random() * 10 - 5; // Random y position
-    
-        // Set the initial position of the coin above the ground
-        coinClone.position.set(x, y, initialZPosition);
-        console.log("Coin drop initiated from position:", coinClone.position.clone()); // Log initial position
-    
-        // Add random spin animation for the coin while dropping
-        gsap.to(coinClone.rotation, 5, {
-            x: Math.random() * Math.PI * 2,
-            y: Math.random() * Math.PI * 2,
-            z: Math.random() * Math.PI * 2,
-            ease: "none", // Linear easing for consistent spin
-        });
-    
-        // Animate the coin to drop to the ground
-        gsap.to(coinClone.position,  5, {
-            x: 10,
-            y: 0,
-            z: 0.5,
-            ease: "bounce.out",
-            onComplete: () => {
-                console.log("Coin has reached the ground level:", coinClone.position.z);
-    
-                // Start rotating 360 degrees on the x-axis after dropping
-                gsap.to(coinClone.rotation, 2, {
-                    x: Math.PI * 2,
-                    y: Math.PI * 2,
-                    z: Math.PI * 2,  // Rotate 360 degrees on the x-axis
-                    duration: 60,
-                    ease: "none"      // Linear easing for rotation
-                });
+        // Animate the drop from initialZPosition to targetZPosition
+        gsap.fromTo(originalCoin.container.position, 50,
+            { z: initialZPosition }, // Starting position
+            {
+                z: targetZPosition,    // Ending position (ground level)
+                ease: "bounce.out",    // Bounce effect
+                onComplete: () => {
+                    console.log("Coin has reached the ground level:", targetZPosition);
+                    // Optionally, you can remove the coin from the scene after it reaches the ground
+                    // this.container.remove(originalCoin.container);
+                }
             }
-        });
+        );
     
         // Update mini-map with the coin's position
         this.updateMiniMap('coin', x, y, null, false, true); // Pass 'true' for isCoin
     }
+    
+    
+    
+    // dropCoinAtPosition() {
+    //     // Randomly select a coin object
+    //     const coinObject = this.resources.items.krashCoinBase.scene; // Ensure this is correct
+    //     coinObject.duplicated = true;
+    //     coinObject.shadow = { sizeX: 1, sizeY: 1, offsetZ: -0.2, alpha: 0.5 };
+    //     coinObject.mass = 0.5;
+    
+    //     // Set the material for the original coin
+    //     coinObject.children[0].traverse((child) => {
+    //         if (child.isMesh) {
+    //             child.material = this.materials.shades.items.blueGlass;
+    //         }
+    //     });
+    
+    //     if (!coinObject) {
+    //         console.error('Selected coin object is not defined.');
+    //         return;
+    //     }
+    
+    //     // Create a clone of the coin object to add to the scene
+    //     const coinClone = coinObject.clone();
+    //     this.container.add(coinClone);
+    
+    //     // Set the initial position of the coin (above the ground)
+    //     const initialZPosition = 70; 
+    //     const x = Math.random() * 10 - 5; // Random x position
+    //     const y = Math.random() * 10 - 5; // Random y position
+    
+    //     // Set the initial position of the coin above the ground
+    //     coinClone.position.set(x, y, initialZPosition);
+    //     console.log("Coin drop initiated from position:", coinClone.position.clone()); // Log initial position
+    
+    //     // Add random spin animation for the coin while dropping
+    //     gsap.to(coinClone.rotation, 5, {
+    //         x: Math.random() * Math.PI * 2,
+    //         y: Math.random() * Math.PI * 2,
+    //         z: Math.random() * Math.PI * 2,
+    //         ease: "none", // Linear easing for consistent spin
+    //     });
+    
+    //     // Animate the coin to drop to the ground
+    //     gsap.to(coinClone.position,  5, {
+    //         x: 10,
+    //         y: 0,
+    //         z: 0.5,
+    //         ease: "bounce.out",
+    //         onComplete: () => {
+    //             console.log("Coin has reached the ground level:", coinClone.position.z);
+    
+    //             // Start rotating 360 degrees on the x-axis after dropping
+    //             gsap.to(coinClone.rotation, 2, {
+    //                 x: Math.PI * 2,
+    //                 y: Math.PI * 2,
+    //                 z: Math.PI * 2,  // Rotate 360 degrees on the x-axis
+    //                 duration: 60,
+    //                 ease: "none"      // Linear easing for rotation
+    //             });
+    //         }
+    //     });
+    
+    //     // Update mini-map with the coin's position
+    //     this.updateMiniMap('coin', x, y, null, false, true); // Pass 'true' for isCoin
+    // }
     
     
     checkCoinCollision(playerCar, coinPosition, onCollision) {
