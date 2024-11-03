@@ -2340,6 +2340,11 @@ export default class
     // }    
 
     dropCoinAtPosition(position) {
+
+            // Set the position of the group based on the provided position
+            const initialZPosition = 50; // Start above ground level
+            const targetZPosition = 0;
+            
         // Check if there's already a coin in the scene
         if (this.currentCoin && this.container.children.includes(this.currentCoin)) {
             // Reposition the existing coin
@@ -2353,10 +2358,6 @@ export default class
             const coinGroup = new THREE.Group();
             coinGroup.add(coinVisual);
             coinGroup.add(coinCollision);
-    
-            // Set the position of the group based on the provided position
-            const initialZPosition = 50; // Start above ground level
-            const targetZPosition = 0;
     
             coinGroup.position.set(position.x, position.y, initialZPosition);
             this.currentCoin = coinGroup;
