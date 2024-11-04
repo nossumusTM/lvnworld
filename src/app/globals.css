@@ -421,9 +421,9 @@ opacity: 0;
 
 #world-layer {
   position: absolute;
-  top: 37%;
-  left: 7.7%;
-  transform: translate(-50%, -50%);
+  top: 20%;
+  left: 20px;
+  width: 20%;
   background-color: rgba(255, 255, 255, 0.01); /* Semi-transparent background */
   padding: 20px;
   border-radius: 10px;
@@ -431,8 +431,28 @@ opacity: 0;
   display: block; /* Initially hidden */
   box-shadow: 1px 1px 1px 1px rgba(255, 255, 255, 0.05);
   text-align: center;
-  max-height: 250px; /* Maximum height */
+  max-height: 90%; /* Maximum height */
   overflow-y: auto; /* Vertical scrolling */
+  font-family: 'Orbitron', sans-serif;
+}
+
+@media (max-width: 767px) {
+  #world-layer {
+    position: absolute;
+    top: 60%;
+    left: 20px;
+    width: 90%;
+    background-color: rgba(255, 255, 255, 0.01); /* Semi-transparent background */
+    padding: 20px;
+    border-radius: 10px;
+    z-index: 100; /* Higher z-index to display on top */
+    display: block; /* Initially hidden */
+    box-shadow: 1px 1px 1px 1px rgba(255, 255, 255, 0.05);
+    text-align: center;
+    max-height: 35%; /* Maximum height */
+    overflow-y: auto; /* Vertical scrolling */
+    font-family: 'Orbitron', sans-serif;
+  }
 }
 
 #world-layer h2 {
@@ -440,7 +460,7 @@ opacity: 0;
 }
 
 #world-list {
-  /* list-style-type: none; */
+  list-style-type: none;
   padding: 0;
   margin-top: 15px; /* Add margin to separate from the heading */
   font-size: 10px;
@@ -449,7 +469,7 @@ opacity: 0;
 #world-list li {
   padding: 10px;
   margin: 6px 0;
-  background-color: #007BFF;
+  background-color: hsla(240, 100%, 50%, 0.645);
   color: #fff;
   cursor: pointer;
   border-radius: 4px;
@@ -458,7 +478,8 @@ opacity: 0;
 }
 
 #world-list li:hover {
-  background-color: #0056b3;
+  background-color: #8CFF80;
+  color: black;
 }
 
 .loading-layer {

@@ -42,12 +42,29 @@ const Application = ({ playerId }) => {
           this.setRenderer();
           this.setCamera();
           this.setPasses();
-          this.setWorld();
+          this.initialize();
           this.animate();
 
           // Resize canvas when window size changes
           this.sizes.on('resize', this.resizeCanvas.bind(this));
           this.resizeCanvas(); // Set initial size        
+        }
+
+        async initialize() {
+            // Set up WebSocket and retrieve worldId here
+            await this.setWorld(); // This initializes `this.world` with `ws`
+            
+            // Make sure `worldId` and `ws` are available after setup
+            this.worldId = this.world?.worldId;
+            this.ws = this.world?.ws;
+        }
+
+        getWorldId() {
+            return this.worldId;
+        }
+    
+        getWebSocket() {
+            return this.ws;
         }
 
     /**
@@ -318,7 +335,8 @@ const Application = ({ playerId }) => {
             renderer: this.renderer,
             passes: this.passes,
             canvas: this.$canvas,
-            playerId: this.playerId
+            playerId: this.playerId,
+            ws: this.ws
         })
         this.scene.add(this.world.container)
         console.log("Game World:", this.world)

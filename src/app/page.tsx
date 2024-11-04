@@ -154,14 +154,15 @@ export default function Home() {
             <w3m-button />
               <h1 style={{ paddingTop: '20px', paddingLeft: '15px', fontWeight: '700', fontFamily: 'Orbitron, sans-serif', opacity: '0.8', color: '#B4B4B8'}}>
               
-                {new Date().toLocaleString()}
+                W3 {new Date().toLocaleString()}
                 </h1>
-            </div>
-
-            <div id="world-layer">
+                <div id="world-layer">
                 <h2>Select a World</h2>
                 <ul id="world-list"></ul>
             </div>
+            </div>
+
+            
         </div>
       )}
 
