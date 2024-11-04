@@ -2344,7 +2344,9 @@ export default class
 
         // Set the position of the group based on the provided position
         const initialZPosition = 50; // Start above ground level
-        const targetZPosition = 0;
+        const initialXPosition = position.x + (Math.random() - 0.5) * 20; // Random x offset
+        const initialYPosition = position.y + (Math.random() - 0.5) * 20; // Random y offset
+        const targetZPosition = 1.2;
 
         // Check if there's already a coin in the scene
         if (this.currentCoin && this.container.children.includes(this.currentCoin)) {
@@ -2360,7 +2362,7 @@ export default class
             coinGroup.add(coinVisual);
             coinGroup.add(coinCollision);
     
-            coinGroup.position.set(position.x, position.y, initialZPosition);
+            coinGroup.position.set(initialXPosition, initialYPosition, initialZPosition);
             this.currentCoin = coinGroup;
     
             // Apply material to the visual component only
@@ -2372,12 +2374,27 @@ export default class
     
             // Add the coin group to the scene
             this.container.add(coinGroup);
+
+            // Add a rotation animation
+            gsap.to(this.currentCoin.rotation, 10, {
+                x: Math.PI * 2,
+                // y: Math.PI * 2,
+                z: Math.PI * 2, // Full rotation around the y-axis
+                repeat: -1,     // Infinite repeat for continuous spinning
+                ease: "linear"
+            });
     
             // Animate the drop from initialZPosition to targetZPosition
             gsap.fromTo(
                 coinGroup.position, 2,
-                { z: initialZPosition },
+                { 
+                    x: this.currentCoin.position.x,
+                    y: this.currentCoin.position.y,
+                    z: initialZPosition
+                },
                 {
+                    x: position.x,
+                    y: position.y,
                     z: targetZPosition,
                     ease: "bounce.out",
                     onComplete: () => {
