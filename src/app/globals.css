@@ -520,7 +520,7 @@ opacity: 0;
 
 /* Style for disabled worlds */
 #world-list li.disabled {
-  background-color: hsl(239, 100%, 37%);
+  background-color: hsla(239, 100%, 37%, 0.236);
   color: #777;
   cursor: not-allowed;
 }

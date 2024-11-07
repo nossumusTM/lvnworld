@@ -553,16 +553,16 @@ export default class Controls extends EventEmitter
                 switchButton.style.backdropFilter = 'blur(5px)';
 
                 // Hide elements
-                // targetPlayerId.style.display = 'none';
-                // inviteButton.style.display = 'none';
-                // touchRadio.style.display = 'none';
-                // touchMute.style.display = 'none';
-                // touchSlider.style.display = 'none';
-                // touchPrevious.style.display = 'none';
-                // touchNext.style.display = 'none';
-                // if (partyInfo) {
-                //     partyInfo.style.display = 'none';
-                // }
+                targetPlayerId.style.display = 'none';
+                inviteButton.style.display = 'none';
+                touchRadio.style.display = 'none';
+                touchMute.style.display = 'none';
+                touchSlider.style.display = 'none';
+                touchPrevious.style.display = 'none';
+                touchNext.style.display = 'none';
+                if (partyInfo) {
+                    partyInfo.style.display = 'none';
+                }
 
             }
         });
@@ -1511,20 +1511,20 @@ export default class Controls extends EventEmitter
         this.touch.shoot.$border.style.willChange = 'opacity';
         this.touch.shoot.$element.appendChild(this.touch.shoot.$border);
 
-        this.touch.shoot.$border1 = document.createElement('div');
-        this.touch.shoot.$border1.style.position = 'absolute';
-        this.touch.shoot.$border1.style.top = 'calc(50% - 30px)';
-        this.touch.shoot.$border1.style.left = 'calc(50% - 30px)';
-        this.touch.shoot.$border1.style.width = '60px';
-        this.touch.shoot.$border1.style.height = '60px';
-        this.touch.shoot.$border1.style.border = 'unset';
-        this.touch.shoot.$border1.style.background = 'rgba(0, 0, 0, 0.5)'
-        this.touch.shoot.$border1.style.borderRadius = '10px';
-        this.touch.shoot.$border1.style.boxSizing = 'border-box';
-        this.touch.shoot.$border1.style.opacity = '0.25';
-        this.touch.shoot.$border1.style.willChange = 'opacity';
-        this.touch.shoot.$border1.style.rotate = '45deg';
-        this.touch.shoot.$element.appendChild(this.touch.shoot.$border1);
+        // this.touch.shoot.$border1 = document.createElement('div');
+        // this.touch.shoot.$border1.style.position = 'absolute';
+        // this.touch.shoot.$border1.style.top = 'calc(50% - 30px)';
+        // this.touch.shoot.$border1.style.left = 'calc(50% - 30px)';
+        // this.touch.shoot.$border1.style.width = '60px';
+        // this.touch.shoot.$border1.style.height = '60px';
+        // this.touch.shoot.$border1.style.border = 'unset';
+        // this.touch.shoot.$border1.style.background = 'rgba(0, 0, 0, 0.5)'
+        // this.touch.shoot.$border1.style.borderRadius = '10px';
+        // this.touch.shoot.$border1.style.boxSizing = 'border-box';
+        // this.touch.shoot.$border1.style.opacity = '0.25';
+        // this.touch.shoot.$border1.style.willChange = 'opacity';
+        // this.touch.shoot.$border1.style.rotate = '45deg';
+        // this.touch.shoot.$element.appendChild(this.touch.shoot.$border1);
 
         this.touch.shoot.$icon = document.createElement('div');
         this.touch.shoot.$icon.style.position = 'absolute';
