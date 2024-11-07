@@ -513,7 +513,6 @@ export default class
 
         setupMultiplayer = async (playerId, token) => {
             try {
-
                 // Retrieve the token from localStorage
                 token = localStorage.getItem('token');
 

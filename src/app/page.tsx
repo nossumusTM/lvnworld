@@ -13,6 +13,7 @@ export default function Home() {
   const { address, isConnected } = useAccount();
   const [playerId, setPlayerId] = useState<string | null>(null);
   const [isCanvasInitialized, setIsCanvasInitialized] = useState(false); // State for canvas initialization
+  const [application, setApplication] = useState(false); // State for canvas initialization
   const [showLoadingLayer, setShowLoadingLayer] = useState(false); // State for loading layer
   const [hasAppInitialized, setHasAppInitialized] = useState(false); // Ensure Application is only initialized once
   const [showWalletButton, setShowWalletButton] = useState(false); 
@@ -57,11 +58,11 @@ export default function Home() {
       // Show the loading layer when the wallet connects
       setShowLoadingLayer(true);
 
-      // Fetch the token for the connected player
-      getToken(address);
-
       // Set a flag to ensure the Application only initializes once
       setHasAppInitialized(true);
+
+      // Fetch the token for the connected player
+      getToken(address);
     }
   }, [isConnected, address, hasAppInitialized]);
 
@@ -97,14 +98,20 @@ export default function Home() {
       const worldList = document.getElementById('world-list');
 
       if (worldList) {
-        // const predefinedWorldIds = [
-        //   'Bangkok', 'New York', 'New Delhi', 'Mumbai', 'Tokyo',
-        //   'Munich', 'Florence', 'Hong Kong', 'Seoul', 'Los Angeles'
-        // ];
-
         const predefinedWorldIds = [
-          'world-1', 'world-2', 'world-3', 'world-4', 'world-5',
-          'world-6', 'world-7', 'world-8', 'world-9', 'world-10'
+          'Bangkok', 'New York', 'New Delhi', 'Mumbai', 'Tel Aviv',
+          'Tokyo', 'Munich', 'Florence', 'Beijing', 'Hong Kong',
+          'Seoul', 'Los Angeles', 'Paris', 'Las Vegas', 'Istanbul',
+          'Reykjavik', 'Doha', 'Lima', 'Singapore', 'Jakarta',
+          'Mexico', 'Madrid', 'Prague', 'Oslo', 'Buenos Aires',
+          'Budapest', 'Rio', 'Copenhagen', 'London', 'Dubai',
+          'Sydney', 'Accra', 'Hellsinki', 'Dublin', 'Lisbon',
+          'Zurich', 'Bogota', 'Melbourne', 'Nairobi', 'Stockholm',
+          'Vienna', 'Brussels', 'San Francisco', 'Geneva', 'Cannes',
+          'Berlin', 'Havana', 'Montreal', 'Antananarivo', 'Cape Town',
+          'Boston', 'Milan', 'Baku', 'Rome', 'Barcelona',
+          'Amsterdam', 'Athens', 'Monaco', 'Venice', 'Peru',
+          'Munchen'
         ];
 
         // Clear any existing list items
@@ -116,10 +123,14 @@ export default function Home() {
           listItem.textContent = worldId;
           listItem.onclick = () => {
             console.log(`World selected: ${worldId}`);
-            setSelectedWorldId(worldId); // Set selected world ID
-            localStorage.removeItem('worldId')
-            localStorage.setItem('worldId', worldId)
-            console.log('Local storage', localStorage)
+            
+            if (selectedWorldId !== worldId) { // Reset Application if new world is selected
+              setSelectedWorldId(worldId);
+              setIsCanvasInitialized(false); // Clear current Application state
+              setApplication(false);
+
+              setTimeout(() => setApplication(true), 0); // Reinitialize Application with new worldId
+            }
           };
           worldList.appendChild(listItem);
         });
@@ -127,7 +138,7 @@ export default function Home() {
     }
 
     return () => clearInterval(interval);  // Cleanup on component unmount
-  }, [isMounted]);
+  }, [isMounted, selectedWorldId]);
 
   if (!isMounted) {
     // Return null on the server (or before the component is mounted on the client)
@@ -220,12 +231,12 @@ export default function Home() {
       {/* Pulsing "Select World" message */}
       {isConnected && !selectedWorldId && (
               <div className="pulsing-message">
-                <h2>Select World</h2>
+                <h2>Select Server</h2>
               </div>
             )}
 
         {/* Conditionally render the Application only once */}
-        {isConnected && playerId && selectedWorldId && hasAppInitialized && !isCanvasInitialized && (
+        {isConnected && playerId && selectedWorldId && token && application && (
           <Application playerId={playerId} selectedWorldId={selectedWorldId} token={token}/>
         )}
 

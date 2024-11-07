@@ -431,7 +431,7 @@ opacity: 0;
   display: block; /* Initially hidden */
   box-shadow: 1px 1px 1px 1px rgba(255, 255, 255, 0.05);
   text-align: center;
-  max-height: 90%; /* Maximum height */
+  max-height: 70%; /* Maximum height */
   overflow-y: auto; /* Vertical scrolling */
   font-family: 'Orbitron', sans-serif;
 }
