@@ -496,8 +496,8 @@ opacity: 0;
 
 #world-list li {
   padding: 10px;
-  margin: 6px 0;
-  background-color: hsl(240, 100%, 50%);
+  margin: 10px 0;
+  background-color: rgba(255, 255, 255, 0.01);
   color: #fff;
   cursor: pointer;
   border-radius: 5px;
@@ -542,7 +542,7 @@ opacity: 0;
 
 /* Style for disabled worlds */
 #world-list li.disabled {
-  background-color: hsl(239, 100%, 41%);
+  /* background-color: rgba(0, 0, 0, 0.01); */
   color: #777;
   cursor: not-allowed;
 }
