@@ -195,9 +195,11 @@ export default function Home() {
                   item.classList.add('disabled');
                   item.classList.remove('selected'); // Remove 'selected' class from all other items
                   (item as HTMLElement).onclick = null; // Prevent further clicks
+                  console.log("world list", worldList.children);
               });
 
               // Apply 'selected' class to the clicked item
+              listItem.classList.remove('disabled');
               listItem.classList.add('selected');
 
               // Close WebSocket on world selection
@@ -297,13 +299,13 @@ export default function Home() {
             </div>
 
             <div id="world-layer" className="world-layer-container">
-            <h1 style={{ paddingLeft: '15px', fontWeight: '500', fontFamily: 'Orbitron, sans-serif', color: '#fff'}}>
+            <h1 style={{ paddingLeft: '15px', fontSize: '15px', fontWeight: '500', fontFamily: 'Orbitron, sans-serif', color: '#fff'}}>
               
               {new Date().toLocaleString()}
               </h1>
                     {/* <h2>Select a World</h2> */}
-                    <ul id="world-list"></ul>
-                </div>
+                      <ul id="world-list"></ul>
+                    </div>
         </div>
       )}
 
