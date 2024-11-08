@@ -514,7 +514,7 @@ export default class
         setupMultiplayer = async (playerId, token) => {
             try {
                 // Retrieve the token from localStorage
-                token = localStorage.getItem('token');
+                // token = localStorage.getItem('token');
 
                 // Check if the token is provided
                 if (!token) {
@@ -2576,7 +2576,7 @@ export default class
             }
     
             // Store the playerId in localStorage
-            localStorage.setItem('playerId', playerId);
+            // localStorage.setItem('playerId', playerId);
     
             // Format playerId for display
             const formatPlayerId = (playerId) => {

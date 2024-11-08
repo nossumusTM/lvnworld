@@ -270,6 +270,8 @@ export default function Home() {
       }, 1000);
     };
 
+    localStorage.removeItem('token');
+
     wsRef.current.onmessage = (event) => {
       const message = JSON.parse(event.data);
       console.log("Message", message)
