@@ -419,13 +419,6 @@ opacity: 0;
     justify-content: center;
 }
 
-.world-layer-container {
-  position: relative; /* Make sure this container is relative to the rest of the layout */
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
 #world-layer {
   position: fixed;
   top: 12%;
@@ -498,13 +491,7 @@ opacity: 0;
 #world-list {
   list-style-type: none;
   margin-top: 15px;
-  font-size: 15px;
-}
-
-#world-list::after {
-  content: '';
-  display: block;
-  height: 20px; /* Space at the bottom */
+  font-size: 12px;
 }
 
 #world-list li {
@@ -518,7 +505,26 @@ opacity: 0;
   transition: background-color 0.2s ease;
   backdrop-filter: blur(5px);
   box-shadow: 1px 0px 1px 0px rgba(255, 255, 255, 0.05);
+}
 
+/* Container to hold both player count and world ID */
+.content-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Player count on the left with smaller font */
+.player-count {
+  font-size: 12px;
+  flex: 1;
+  text-align: left;
+}
+
+/* World ID in the center */
+.world-id {
+  flex: 2;
+  text-align: center;
 }
 
 /* Hover effect for selectable worlds */
@@ -539,7 +545,6 @@ opacity: 0;
   background-color: hsl(239, 100%, 41%);
   color: #777;
   cursor: not-allowed;
-  /* pointer-events: none; */
 }
 
 #loading-container {

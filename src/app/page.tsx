@@ -42,6 +42,22 @@ export default function Home() {
     'Munchen'
   ];
 
+  // const predefinedWorldIds = [
+  //   '🇹🇭 Bangkok', '🇺🇸 New York', '🇮🇳 New Delhi', '🇮🇳 Mumbai', '🇮🇱 Tel Aviv',
+  //   '🇯🇵 Tokyo', '🇩🇪 Munich', '🇮🇹 Florence', '🇨🇳 Beijing', '🇨🇳 Hong Kong',
+  //   '🇰🇷 Seoul', '🇺🇸 Los Angeles', '🇫🇷 Paris', '🇺🇸 Las Vegas', '🇹🇷 Istanbul',
+  //   '🇮🇸 Reykjavik', '🇶🇦 Doha', '🇷🇺 Moscow', '🇸🇬 Singapore', '🇮🇩 Jakarta',
+  //   '🇲🇽 Mexico', '🇪🇸 Madrid', '🇨🇿 Prague', '🇳🇴 Oslo', '🇦🇷 Buenos Aires',
+  //   '🇭🇺 Budapest', '🇧🇷 Rio', '🇩🇰 Copenhagen', '🇬🇧 London', '🇦🇪 Dubai',
+  //   '🇦🇺 Sydney', '🇬🇭 Accra', '🇫🇮 Hellsinki', '🇮🇪 Dublin', '🇵🇹 Lisbon',
+  //   '🇨🇭 Zurich', '🇨🇴 Bogota', '🇦🇺 Melbourne', '🇰🇪 Nairobi', '🇸🇪 Stockholm',
+  //   '🇦🇹 Vienna', '🇧🇪 Brussels', '🇺🇸 San Francisco', '🇨🇭 Geneva', '🇫🇷 Cannes',
+  //   '🇩🇪 Berlin', '🇨🇺 Havana', '🇨🇦 Montreal', '🇲🇬 Antananarivo', '🇿🇦 Cape Town',
+  //   '🇺🇸 Boston', '🇮🇹 Milan', '🇦🇿 Baku', '🇮🇹 Rome', '🇪🇸 Barcelona',
+  //   '🇳🇱 Amsterdam', '🇬🇷 Athens', '🇲🇨 Monaco', '🇮🇹 Venice', '🇵🇪 Peru',
+  //   '🇩🇪 Munchen'
+  // ];
+
   // Function to get token from the server
   const getToken = async (playerId: string) => {
     try {
@@ -163,12 +179,31 @@ export default function Home() {
     if (worldList) {
       worldList.innerHTML = ''; // Clear existing list items
 
-      console.log("Selected World ID:", selectedWorldId); // Log to verify it's set
-
       predefinedWorldIds.forEach((worldId) => {
         const listItem = document.createElement('li');
+
         const playerCount = counts[worldId] || 0; // Default to 0 if no count available
-        listItem.textContent = `${worldId} - ${playerCount}/20`;
+
+        // Create a container div for world ID and player count
+        const contentContainer = document.createElement('div');
+        contentContainer.classList.add('content-container');
+
+        // Create and style player count div
+        const playerCountDiv = document.createElement('div');
+        playerCountDiv.textContent = `${playerCount}/20`;
+        playerCountDiv.classList.add('player-count');
+
+        // Create and style world ID div
+        const worldIdDiv = document.createElement('div');
+        worldIdDiv.textContent = worldId;
+        worldIdDiv.classList.add('world-id');
+
+        // Append playerCountDiv and worldIdDiv to the container
+        contentContainer.appendChild(playerCountDiv);
+        contentContainer.appendChild(worldIdDiv);
+
+        // Append the container to the list item
+        listItem.appendChild(contentContainer);
 
         // Disable other worlds if one is already selected
         if (selectedWorldId && selectedWorldId !== worldId) {
@@ -195,7 +230,6 @@ export default function Home() {
                   item.classList.add('disabled');
                   item.classList.remove('selected'); // Remove 'selected' class from all other items
                   (item as HTMLElement).onclick = null; // Prevent further clicks
-                  console.log("world list", worldList.children);
               });
 
               // Apply 'selected' class to the clicked item
@@ -298,8 +332,8 @@ export default function Home() {
                 
             </div>
 
-            <div id="world-layer" className="world-layer-container">
-            <h1 style={{ paddingLeft: '15px', fontSize: '15px', fontWeight: '500', fontFamily: 'Orbitron, sans-serif', color: '#fff'}}>
+            <div id="world-layer">
+            <h1 style={{ paddingLeft: '15px', fontSize: '15px', fontWeight: '500', fontFamily: 'Orbitron, sans-serif', color: '#fff', textAlign: 'center'}}>
               
               {new Date().toLocaleString()}
               </h1>
