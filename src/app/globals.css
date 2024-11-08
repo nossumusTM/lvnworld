@@ -481,7 +481,7 @@ opacity: 0;
     display: block; /* Initially hidden */
     border: 1px solid rgba(255, 255, 255, 0.05);
     text-align: center;
-    max-height: 35%; /* Maximum height */
+    max-height: 38%; /* Maximum height */
     overflow-y: auto; /* Vertical scrolling */
     font-family: 'Orbitron', sans-serif;
     backdrop-filter: blur(5px);
@@ -511,7 +511,7 @@ opacity: 0;
   text-align: center;
   transition: background-color 0.2s ease;
   backdrop-filter: blur(5px);
-  box-shadow: 1px 0px 1px 0px rgba(255, 255, 255, 0.05);
+  /* box-shadow: 1px 0px 1px 0px rgba(255, 255, 255, 0.05); */
 }
 
 /* Container to hold both player count and world ID */
@@ -549,10 +549,10 @@ opacity: 0;
 
 /* Style for disabled worlds */
 #world-list li.disabled {
-  background-color: hsl(240, 100%, 50%);
+  /* background-color: hsl(240, 100%, 50%); */
+  background-color: transparent;
   color: #777;
   cursor: not-allowed;
-  opacity: 0.5;
 }
 
 #loading-container {
