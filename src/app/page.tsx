@@ -333,12 +333,13 @@ export default function Home() {
             </div>
 
             <div id="world-layer">
-            <h1 style={{ paddingLeft: '15px', fontSize: '15px', fontWeight: '500', fontFamily: 'Orbitron, sans-serif', color: '#fff', textAlign: 'center'}}>
-              
+            <h1 style={{ fontSize: '15px', fontWeight: '500', fontFamily: 'Orbitron, sans-serif', color: '#fff', textAlign: 'center'}}>
               {new Date().toLocaleString()}
               </h1>
                     {/* <h2>Select a World</h2> */}
+                    <div className="scroll-container">
                       <ul id="world-list"></ul>
+                    </div>
                     </div>
         </div>
       )}

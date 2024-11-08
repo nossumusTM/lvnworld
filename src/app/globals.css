@@ -419,24 +419,6 @@ opacity: 0;
     justify-content: center;
 }
 
-#world-layer {
-  position: fixed;
-  top: 12%;
-  left: 20px;
-  width: 20%;
-  background-color: rgba(255, 255, 255, 0.01); /* Semi-transparent background */
-  padding: 20px;
-  border-radius: 20px;
-  z-index: 100; /* Higher z-index to display on top */
-  display: block; /* Initially hidden */
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  text-align: center;
-  max-height: 60%;
-  overflow-y: auto; /* Vertical scrolling */
-  font-family: 'Orbitron', sans-serif;
-  backdrop-filter: blur(5px);
-}
-
 .pulsing-message {
   z-index: 100; /* Higher z-index to display on top */
   position: fixed; /* Center the message on the screen */
@@ -464,6 +446,28 @@ opacity: 0;
   }
 }
 
+
+#world-layer {
+  position: fixed;
+  top: 12%;
+  left: 20px;
+  width: 20%;
+  background-color: rgba(255, 255, 255, 0.01); /* Semi-transparent background */
+  padding: 0 20px 0 20px;
+  border-radius: 20px;
+  z-index: 100; /* Higher z-index to display on top */
+  display: block; /* Initially hidden */
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  text-align: center;
+  max-height: 60%;
+  overflow-y: auto; /* Vertical scrolling */
+  font-family: 'Orbitron', sans-serif;
+  backdrop-filter: blur(5px);
+  box-sizing: border-box;
+  border-top: 20px solid transparent;
+  border-bottom: 20px solid transparent;
+}
+
 @media (max-width: 767px) {
   #world-layer {
     position: absolute;
@@ -471,21 +475,24 @@ opacity: 0;
     left: 20px;
     width: 90%;
     background-color: rgba(255, 255, 255, 0.01); /* Semi-transparent background */
-    padding: 20px;
-    border-radius: 10px;
+    padding: 0 20px 0 20px;
+    border-radius: 20px;
     z-index: 100; /* Higher z-index to display on top */
     display: block; /* Initially hidden */
-    box-shadow: 1px 1px 1px 1px rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.05);
     text-align: center;
     max-height: 35%; /* Maximum height */
     overflow-y: auto; /* Vertical scrolling */
     font-family: 'Orbitron', sans-serif;
     backdrop-filter: blur(5px);
+    box-sizing: border-box;
+    border-top: 20px solid transparent;
+    border-bottom: 20px solid transparent;
   }
 }
 
-#world-layer h2 {
-  margin-top: 0;
+#world-layer h1 {
+  margin: 0;
 }
 
 #world-list {
@@ -500,7 +507,7 @@ opacity: 0;
   background-color: hsl(240, 100%, 50%);
   color: #fff;
   cursor: pointer;
-  border-radius: 5px;
+  border-radius: 10px;
   text-align: center;
   transition: background-color 0.2s ease;
   backdrop-filter: blur(5px);
@@ -523,7 +530,7 @@ opacity: 0;
 
 /* World ID in the center */
 .world-id {
-  flex: 2;
+  flex: 10;
   text-align: center;
 }
 
@@ -542,9 +549,10 @@ opacity: 0;
 
 /* Style for disabled worlds */
 #world-list li.disabled {
-  background-color: hsl(239, 100%, 41%);
+  background-color: hsl(240, 100%, 50%);
   color: #777;
   cursor: not-allowed;
+  opacity: 0.5;
 }
 
 #loading-container {
