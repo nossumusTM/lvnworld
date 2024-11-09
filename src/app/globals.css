@@ -529,19 +529,10 @@ opacity: 0;
 
 /* World ID in the center */
 .world-id {
-  flex: 10;
-  text-align: center;
+  flex: 1;
+  text-align: right;
   /* padding-right: 80px; */
   font-size: 15px;
-}
-
-@media (max-width: 767px) {
-  .world-id {
-    flex: 1;
-    text-align: center;
-    padding-right: 90px;
-    /* font-size: 17.5px; */
-  }
 }
 
 /* Hover effect for selectable worlds */
