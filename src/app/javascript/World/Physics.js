@@ -268,6 +268,13 @@ export default class Physics
         return !(this.nonCollidablePlayers.has(pair1) || this.nonCollidablePlayers.has(pair2));
     }
 
+    // Method to check if two cars should collide
+    shouldCollideCars(playerId1, playerId2) {
+        const pair1 = `${playerId1}-${playerId2}`;
+        const pair2 = `${playerId2}-${playerId1}`;
+        return !(this.nonCollidableCars.has(pair1) || this.nonCollidableCars.has(pair2));
+    }
+
     setModels()
     {
         this.models = {}
@@ -8154,6 +8161,11 @@ export default class Physics
                         continue;
                     }
 
+                    // Check if these cars should collide
+                    if (!this.shouldCollideCars(playerId, otherPlayerId)) {
+                        continue;
+                    }
+
                     const playerCarBody = playerCar.physics.car.chassis.body;
                     const otherCarBody = otherPlayerCar instanceof Car1 ? otherPlayerCar.physics.car1.chassis.body :
                                         otherPlayerCar instanceof Car2 ? otherPlayerCar.physics.car2.chassis.body :
@@ -8307,6 +8319,10 @@ export default class Physics
         if (!this.shouldCollide(playerCar.playerId, otherPlayerCar.playerId)) {
             return; // Exit if the cars should not collide (i.e., they are in the same party)
         }
+
+        if (!this.shouldCollideCars(playerCar.playerId, otherPlayerCar.playerId)) {
+            return; // Exit if the cars should not collide (i.e., they are in the same party)
+        }
     
         const handleCollisionEvent = (_event) => {
             const relativeVelocity = _event.contact.getImpactVelocityAlongNormal();
@@ -8442,7 +8458,8 @@ export default class Physics
         car.physics.car.chassis.body.sleep();
 
             setTimeout(() => {
-                this.nonCollidablePlayers.clear()
+                this.nonCollidablePlayers.clear();
+                this.nonCollidableCars.clear();
                 car.physics.car.recreate();
             }, 5000);
     

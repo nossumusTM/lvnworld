@@ -147,7 +147,6 @@ export default function Home() {
 
     wsRef.current.onmessage = (event) => {
       const message = JSON.parse(event.data);
-      console.log("Message", message)
       if (message.type === 'worldCounts') {
         if (!message.hasOwnProperty('counts') || typeof message.counts !== 'object' || message.counts === null) {
           console.log("Invalid counts in worldCounts message:", message.counts);

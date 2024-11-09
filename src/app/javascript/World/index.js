@@ -811,6 +811,32 @@ export default class
                                         this.coinActive = false;
                                     }
                                 break;
+
+                            case 'updateNonCollidablePairs':
+                                // Update the local non-collidable pairs list on the client side
+                                const newNonCollidablePairs = new Set(message.nonCollidablePairs);
+
+                                // Update the physics or collision detection logic with the new non-collidable pairs
+                                this.physics.nonCollidableCars = newNonCollidablePairs;
+                                break;
+
+                            case 'checkBattery':
+                                const car = this.otherPlayers[message.carId];
+                        
+                                if (car && message.battery <= 0) {
+                                    // Update non-collidable cars since battery is zero
+                                    this.physics.updateNonCollidableCars(car, Object.values(this.otherPlayers));
+                        
+                                    // Trigger crash effect and put the car to sleep (optional, based on desired behavior)
+                                    car.createCrashEffect(car.chassis.object.position, car.chassis.object.quaternion);
+                        
+                                    // Set a timeout to recreate the car after 5 seconds
+                                    setTimeout(() => {
+                                        car.recreate(); // Recreate the car
+                                        car.battery = 100; // Reset battery after recreation
+                                    }, 5000); // 5 seconds delay
+                                }
+                                break;
         
                         default:
                             // console.error('Unknown message type:', message.type);
@@ -2055,112 +2081,6 @@ export default class
         this.miniMapElements = {}; // Store references to mini-map elements
     }
 
-    // Update the mini-map with player positions and arrow directions
-    // updateMiniMap(playerId, x, y, frontWheelQuaternion, isOtherPlayer) {
-    //     if (!this.miniMapElements[playerId]) {
-    //         const newPlayerElement = document.createElement('div');
-    //         newPlayerElement.id = `player-${playerId}`;
-    //         newPlayerElement.style.position = 'absolute';
-    //         newPlayerElement.style.width = '5px'; // Adjust size for visibility
-    //         newPlayerElement.style.height = '5px'; // Adjust size for visibility
-    //         newPlayerElement.style.backgroundColor = isOtherPlayer ? '#FF5733' : 'white';
-    //         newPlayerElement.style.transformOrigin = 'center center';
-    //         newPlayerElement.style.display = 'flex';
-    //         newPlayerElement.style.alignItems = 'flex-end'; // Align items to the bottom
-            
-    //         // Create the triangle element
-    //         const triangle = document.createElement('div');
-    //         triangle.style.position = 'absolute';
-    //         triangle.style.width = '0';
-    //         triangle.style.height = '0';
-    //         triangle.style.borderLeft = '6px solid transparent'; // Triangle width
-    //         triangle.style.borderRight = '6px solid transparent'; // Triangle width
-    //         triangle.style.borderBottom = isOtherPlayer ? '10px solid #FF5733' : '10px solid white' // Triangle height and color
-    //         triangle.style.bottom = '100%'; // Position above the square
-    //         triangle.style.left = '50%'; // Center the triangle
-    //         triangle.style.transform = 'translateX(-50%)'; // Centering
-    //         newPlayerElement.appendChild(triangle);
-
-    //         this.miniMap.appendChild(newPlayerElement);
-    //         this.miniMapElements[playerId] = newPlayerElement;
-    //     }
-
-    //     const miniMapSize = 100; // The size of the mini-map in pixels
-    //     const mapScale = 0.05; // Scale factor to convert world coordinates to mini-map coordinates
-
-    //     const mapX = miniMapSize / 2 + x * mapScale;
-    //     const mapY = miniMapSize / 2 - y * mapScale;
-
-    //     const playerElementToUpdate = this.miniMapElements[playerId];
-    //     playerElementToUpdate.style.left = `${mapX}px`;
-    //     playerElementToUpdate.style.top = `${mapY}px`;
-
-    //     // Convert front wheel quaternion rotation to degrees
-    //     const angle = Math.atan2(
-    //         2.0 * (frontWheelQuaternion.w * frontWheelQuaternion.z + frontWheelQuaternion.x * frontWheelQuaternion.y),
-    //         1.0 - 2.0 * (frontWheelQuaternion.y * frontWheelQuaternion.y + frontWheelQuaternion.z * frontWheelQuaternion.z)
-    //     ) * (180 / Math.PI);
-
-    //     // Adjust angle for top-down view: Invert the angle
-    //     const adjustedAngle = -angle + 90; // Adjust for camera view
-
-    //     // Apply rotation to the entire mini-map element (including the square and triangle)
-    //     playerElementToUpdate.style.transform = `rotate(${adjustedAngle}deg)`;
-    // }
-
-    // // Update the mini-map with player positions and coin position
-    // updateMiniMap(playerId, x, y, frontWheelQuaternion, isOtherPlayer, isCoin = false) {
-    //     if (!this.miniMapElements[playerId]) {
-    //         const newElement = document.createElement('div');
-    //         newElement.id = isCoin ? 'coin' : `player-${playerId}`;
-    //         newElement.style.position = 'absolute';
-    //         newElement.style.width = '5px'; // Adjust for visibility; coin is larger to stand out
-    //         newElement.style.height = '5px';
-    //         newElement.style.backgroundColor = isCoin ? 'red' : isOtherPlayer ? '#FF5733' : 'white';
-    //         newElement.style.borderRadius = isCoin ? '50%' : '0'; // Coin is circular
-    //         newElement.style.transformOrigin = 'center center';
-
-    //         if (!isCoin) {
-    //             // Player arrow display code
-    //             const triangle = document.createElement('div');
-    //             triangle.style.position = 'absolute';
-    //             triangle.style.width = '0';
-    //             triangle.style.height = '0';
-    //             triangle.style.borderLeft = '6px solid transparent';
-    //             triangle.style.borderRight = '6px solid transparent';
-    //             triangle.style.borderBottom = isOtherPlayer ? '10px solid #FF5733' : '10px solid white';
-    //             triangle.style.bottom = '100%';
-    //             triangle.style.left = '50%';
-    //             triangle.style.transform = 'translateX(-50%)';
-    //             newElement.appendChild(triangle);
-    //         }
-
-    //         this.miniMap.appendChild(newElement);
-    //         this.miniMapElements[playerId] = newElement;
-    //     }
-
-    //     const miniMapSize = 100; // The size of the mini-map in pixels
-    //     const mapScale = 0.05; // Scale factor to convert world coordinates to mini-map coordinates
-
-    //     const mapX = miniMapSize / 2 + x * mapScale;
-    //     const mapY = miniMapSize / 2 - y * mapScale;
-
-    //     const elementToUpdate = this.miniMapElements[playerId];
-    //     elementToUpdate.style.left = `${mapX}px`;
-    //     elementToUpdate.style.top = `${mapY}px`;
-
-    //     if (!isCoin && frontWheelQuaternion) {
-    //         // Convert front wheel quaternion rotation to degrees
-    //         const angle = Math.atan2(
-    //             2.0 * (frontWheelQuaternion.w * frontWheelQuaternion.z + frontWheelQuaternion.x * frontWheelQuaternion.y),
-    //             1.0 - 2.0 * (frontWheelQuaternion.y * frontWheelQuaternion.y + frontWheelQuaternion.z * frontWheelQuaternion.z)
-    //         ) * (180 / Math.PI);
-
-    //         const adjustedAngle = -angle + 90;
-    //         elementToUpdate.style.transform = `rotate(${adjustedAngle}deg)`;
-    //     }
-    // }
-
     // Update the mini-map with player positions and coin position
     updateMiniMap(playerId, x, y, frontWheelQuaternion, isOtherPlayer, isCoin = false) {
         // Handle player updates
@@ -2278,71 +2198,6 @@ export default class
         return new THREE.Vector3(x, yHeight, z);
     }  
 
-    // dropCoinAtPosition(position) {
-    //     // Check if there's already a coin in the scene
-    //     if (this.currentCoin && this.container.children.includes(this.currentCoin)) {
-    //         // Reposition the existing coin
-    //         this.currentCoin.position.set(position.x, position.y, position.z);
-    //     } else {
-    //         // Generate a random offset position around the specified position
-    //         const angle = Math.random() * Math.PI * 2;
-    //         const distance = 10; // Distance from the player
-    //         const x = position.x + Math.cos(angle) * distance;
-    //         const y = position.y + Math.sin(angle) * distance;
-    //         const initialZPosition = 50; // Start above ground level
-    //         const targetZPosition = 0;
-    
-    //         // Define the visual and collision components
-    //         const coinVisual = this.resources.items.krashCoinBase.scene.clone();
-    //         const coinCollision = this.resources.items.krashCoinCollision.scene.clone();
-    
-    //         // Create a group and add both components to it
-    //         const coinGroup = new THREE.Group();
-    //         coinGroup.add(coinVisual);
-    //         coinGroup.add(coinCollision);
-    
-    //         // Set initial position of the group
-    //         coinGroup.position.set(x, y, initialZPosition);
-    //         this.currentCoin = coinGroup;
-    
-    //         // Apply material to the visual component only
-    //         coinVisual.traverse((child) => {
-    //             if (child.isMesh) {
-    //                 child.material = this.materials.shades.items.blueGlass;
-    //             }
-    //         });
-    
-    //         // Add the coin group to the scene
-    //         this.container.add(coinGroup);
-    
-    //         // Animate the drop from initialZPosition to targetZPosition
-    //         gsap.fromTo(
-    //             coinGroup.position, 2,
-    //             { z: initialZPosition },
-    //             {
-    //                 z: targetZPosition,
-    //                 ease: "bounce.out",
-    //                 onComplete: () => {
-    //                     console.log("Coin has reached ground level:", targetZPosition);
-    //                     coinGroup.position.set(x, y, targetZPosition);
-    //                 }
-    //             }
-    //         );
-    //     }
-    
-    //     // After setting the position, broadcast the updated coin position
-    //     if (this.ws.readyState === WebSocket.OPEN) {
-    //         const dropCoinMessage = {
-    //             type: 'dropKrashcoin',
-    //             position: { x: this.currentCoin.position.x, y: this.currentCoin.position.y, z: this.currentCoin.position.z }
-    //         };
-    //         this.ws.send(JSON.stringify(dropCoinMessage));
-    //     }
-    
-    //     // Update mini-map with the coin's position
-    //     this.updateMiniMap('coin', position.x, position.y, null, false, true); // Pass 'true' for isCoin
-    // }    
-
     dropCoinAtPosition(position) {
 
         // Set the position of the group based on the provided position
@@ -2437,13 +2292,6 @@ export default class
     
         // Define a collision threshold based on game scale
         const collisionThreshold = 1.5;
-    
-        // Calculate distance between player car and coin
-        // const distance = Math.sqrt(
-        //     Math.pow(playerPosition.x - coinPosition.x, 2) +
-        //     Math.pow(playerPosition.y - coinPosition.y, 2) +
-        //     Math.pow(playerPosition.z - coinPosition.z, 2)
-        // );
 
         // Calculate distance between player car and coin
         const dx = playerPosition.x - coinPosition.x;
@@ -2555,15 +2403,6 @@ export default class
         scoreElement.textContent = `❖ ${score}`;
     }
 
-    // Function to detect MetaMask
-    // async detectEthereumProvider() {
-    //     if (typeof window.ethereum !== 'undefined') {
-    //         return window.ethereum;
-    //     } else {
-    //         throw new Error('Ethereum provider not found');
-    //     }
-    // }
-
     async signIn(playerId, token) {
 
         // Use playerId passed in or fallback to the one stored in class
@@ -2574,10 +2413,7 @@ export default class
             if (!id) {
                 throw new Error('No playerId found. Please ensure the wallet is connected.');
             }
-    
-            // Store the playerId in localStorage
-            // localStorage.setItem('playerId', playerId);
-    
+        
             // Format playerId for display
             const formatPlayerId = (playerId) => {
                 const firstPart = playerId.substring(0, 4);
@@ -2604,29 +2440,6 @@ export default class
                 inviteButton.style.opacity = 1;
                 tradeButton.style.opacity = 1;
             }
-    
-            // Request token from your server using `playerId`
-            // const response = await fetch('https://krashbox.glitch.me/getToken', {
-            //     method: 'POST',
-            //     headers: {
-            //         'Content-Type': 'application/json',
-            //     },
-            //     body: JSON.stringify({ playerId }),
-            // });
-    
-            // if (!response.ok) {
-            //     throw new Error('Failed to get token from server');
-            // }
-    
-            // const { token } = await response.json();  // Extract token from response
-            // localStorage.setItem('token', token);  // Store token in localStorage
-    
-            // // Retrieve the token from localStorage for WebSocket connection
-            // const savedToken = localStorage.getItem('token');
-            // console.log('Token:', savedToken);
-    
-            // Call setupMultiplayer and pass playerId and token
-            // await this.setupMultiplayer(playerId, token);
     
             return playerId;
         } catch (error) {
