@@ -481,7 +481,7 @@ opacity: 0;
     /* border: 1.5px solid rgba(255, 255, 255, 0.05); */
     text-align: center;
     max-height: 38%; /* Maximum height */
-    overflow-y: auto; /* Vertical scrolling */
+    overflow-y: hidden; /* Vertical scrolling */
     font-family: 'Orbitron', sans-serif;
     backdrop-filter: blur(2px);
     box-sizing: border-box;
@@ -491,13 +491,22 @@ opacity: 0;
 }
 
 #world-layer h1 {
+  top: 0;
+  background-color: #0213f7;
+  padding: 10px 0;
   margin: 0;
+  z-index: 1;
+  border-radius: 10px;
+  position: sticky;
 }
 
 #world-list {
   list-style-type: none;
   margin-top: 15px;
   font-size: 12px;
+  max-height: calc(62% - 40px); /* Adjusted to account for header height */
+  overflow-y: auto; /* Enables scrolling */
+  padding: 0;
 }
 
 #world-list li {
