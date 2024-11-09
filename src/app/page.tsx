@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useAccount } from 'wagmi';
 
 // Dynamically import the Application component and disable SSR
@@ -26,6 +26,9 @@ export default function Home() {
   const [playerCount, setPlayerCount] = useState(0);
   const [ws, setWs] = useState<WebSocket | null>(null);
   const [isWebSocketReady, setIsWebSocketReady] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  const maxRetries = 5;  // Limit retries to avoid infinite reconnect loop
+  const retryDelay = 2000; // Delay between retries (ms)
 
   const predefinedWorldIds = [
     'Bangkok', 'New York', 'New Delhi', 'Mumbai', 'Tel Aviv',
@@ -83,31 +86,6 @@ export default function Home() {
     }
   };
 
-  // Initialize the application only when the wallet connects
-  useEffect(() => {
-    setIsMounted(true);
-
-    if (isConnected && address && !hasAppInitialized) {
-      setPlayerId(address);
-      // localStorage.setItem('playerId', address);
-      console.log('Wallet connected:', address);
-
-      // Show the loading layer when the wallet connects
-      setShowLoadingLayer(true);
-
-      // Set a flag to ensure the Application only initializes once
-      setHasAppInitialized(true);
-
-      // Only initialize WebSocket once after wallet connects and app initializes
-      initializeWebSocket();
-
-      setIsWebSocketReady(true);
-
-      // Fetch the token for the connected player
-      getToken(address);
-    }
-  }, [isConnected, address, hasAppInitialized]);
-
   // Handle disconnection and refresh the page
   useEffect(() => {
     if (!isConnected && hasAppInitialized) {
@@ -130,12 +108,12 @@ export default function Home() {
     }
   }, [isConnected, hasAppInitialized]);
 
-  const initializeWebSocket = () => {
-    if (wsRef.current) {
-      // Avoid reinitializing if already connected
-      console.log("WebSocket already initialized");
-      return;
-    }
+  const initializeWebSocket = useCallback(() => {
+    // if (wsRef.current) {
+    //   // Avoid reinitializing if already connected
+    //   console.log("WebSocket already initialized");
+    //   return;
+    // }
 
     const token = localStorage.getItem('token');
     const serverAddress = `wss://krashbox.glitch.me?token=${token}`;
@@ -143,6 +121,8 @@ export default function Home() {
 
     wsRef.current.onopen = () => {
       console.log('WebSocket connected');
+      setIsWebSocketReady(true);
+      setRetryCount(0);
       setTimeout(() => {
         wsRef.current?.send(JSON.stringify({ type: 'worldCounts' }));
       }, 1000);
@@ -170,11 +150,20 @@ export default function Home() {
 
     wsRef.current.onclose = () => {
       console.log('WebSocket closed');
-    };
+      setIsWebSocketReady(false);
+      if (retryCount < maxRetries) {
+          setTimeout(() => {
+              setRetryCount((prev) => prev + 1);
+              initializeWebSocket();  // Retry connection
+          }, retryDelay);
+      } else {
+          console.warn('Max retries reached. WebSocket not reconnected.');
+      }
+  };
 
     localStorage.removeItem('token');
 
-  };
+  }, [retryCount]);
 
   const updateWorldList = (counts: Record<string, number>) => {
     const worldList = document.getElementById('world-list');
@@ -252,6 +241,29 @@ export default function Home() {
       });
     }
   };
+
+    // Initialize the application only when the wallet connects
+    useEffect(() => {
+      setIsMounted(true);
+  
+      if (isConnected && address && !hasAppInitialized) {
+        setPlayerId(address);
+        // localStorage.setItem('playerId', address);
+        console.log('Wallet connected:', address);
+  
+        // Show the loading layer when the wallet connects
+        setShowLoadingLayer(true);
+  
+        // Set a flag to ensure the Application only initializes once
+        setHasAppInitialized(true);
+  
+        // Only initialize WebSocket once after wallet connects and app initializes
+        initializeWebSocket();
+  
+        // Fetch the token for the connected player
+        getToken(address);
+      }
+    }, [isConnected, address, hasAppInitialized, initializeWebSocket]);
 
   useEffect(() => {
     const interval = setInterval(() => {
