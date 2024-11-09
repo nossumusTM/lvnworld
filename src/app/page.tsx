@@ -109,11 +109,11 @@ export default function Home() {
   }, [isConnected, hasAppInitialized]);
 
   const initializeWebSocket = useCallback(() => {
-    // if (wsRef.current) {
-    //   // Avoid reinitializing if already connected
-    //   console.log("WebSocket already initialized");
-    //   return;
-    // }
+    if (wsRef.current) {
+      // Avoid reinitializing if already connected
+      console.log("WebSocket already initialized");
+      return;
+    }
 
     const token = localStorage.getItem('token');
     const serverAddress = `wss://krashbox.glitch.me?token=${token}`;
@@ -150,7 +150,7 @@ export default function Home() {
 
     wsRef.current.onclose = () => {
       console.log('WebSocket closed');
-      setIsWebSocketReady(false);
+      // setIsWebSocketReady(false);
       if (retryCount < maxRetries) {
           setTimeout(() => {
               setRetryCount((prev) => prev + 1);
