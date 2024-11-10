@@ -8444,13 +8444,6 @@ export default class Physics
             return;
         }
 
-        // Ensure car has the createCrashEffect method
-        if (typeof car.createCrashEffect === 'function') {
-            car.createCrashEffect(car.chassis.object.position, car.chassis.object.quaternion, car.chassis.object); // Trigger crash effect
-        } else {
-            console.error("car.createCrashEffect is not a function");
-        }
-
         // Update non-collidable cars, passing the current car and all cars from this.cars
         const allCars = Object.values(this.cars);  // Get all cars from this.cars
         this.updateNonCollidableCars(car, allCars);
@@ -8461,7 +8454,14 @@ export default class Physics
                 this.nonCollidablePlayers.clear();
                 this.nonCollidableCars.clear();
                 car.physics.car.recreate();
-            }, 5000);
+            }, 10000);
+
+        // Ensure car has the createCrashEffect method
+        if (typeof car.createCrashEffect === 'function') {
+            car.createCrashEffect(car.chassis.object.position, car.chassis.object.quaternion, car.chassis.object); // Trigger crash effect
+        } else {
+            console.error("car.createCrashEffect is not a function");
+        }
     
         // if (ws && ws.readyState === WebSocket.OPEN) {
         //     ws.send(JSON.stringify({
@@ -8542,9 +8542,18 @@ export default class Physics
                                      otherPlayerCar instanceof Car3 ? otherPlayerCar.physics.car3.chassis.body :
                                      otherPlayerCar.physics.car4.chassis.body;
     
+                // if (this.detectCollision(playerCarBody, otherCarBody)) {
+                //     this.handleCarCollision(playerCar, otherPlayerCar);
+                //     playerCar.createSparkEffect();
+                // }
+
                 if (this.detectCollision(playerCarBody, otherCarBody)) {
                     this.handleCarCollision(playerCar, otherPlayerCar);
-                    playerCar.createSparkEffect();
+                    
+                    // Check if playerCar or otherPlayerCar is non-collidable before creating sparks
+                    if (!this.nonCollidableCars.has(playerCar) && !this.nonCollidableCars.has(otherPlayerCar)) {
+                        otherPlayerCar.createSparkEffect();
+                    }
                 }
             }
         }

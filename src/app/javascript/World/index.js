@@ -652,7 +652,15 @@ export default class
                                 const car = this.otherPlayers[message.carId];
                                 if (car) {
                                     car.battery = message.battery;
-                                    car.createSparkEffect();
+                                    
+                                    // Check if playerCar or otherPlayerCar is non-collidable before creating sparks
+                                    if (!this.physics.nonCollidableCars.has(playerCar) && !this.physics.nonCollidableCars.has(otherPlayerCar)) {
+                                        if (typeof car.createSparkEffect === 'function') {
+                                            car.createSparkEffect();
+                                        }
+                                    }
+                                    
+                                    // car.createSparkEffect();
                                     this.updateScoreStatus(message.score);
                                     console.log("Updating bullet collision score info", message.score)
 
@@ -820,26 +828,26 @@ export default class
                                 this.physics.nonCollidableCars = newNonCollidablePairs;
                                 break;
 
-                            case 'checkBattery':
-                                // const car = this.otherPlayers[message.carId];
-                                const car = this.otherPlayers[message.playerId]
+                            // case 'checkBattery':
+                            //     // const car = this.otherPlayers[message.carId];
+                            //     const car = this.otherPlayers[message.playerId]
                         
-                                if (car && message.battery <= 0) {
-                                    // Update non-collidable cars since battery is zero
-                                    this.physics.updateNonCollidableCars(car, Object.values(this.otherPlayers));
-                                    console.log("Non collidable cars", this.physics.nonCollidableCars)
+                            //     if (car && message.battery <= 0) {
+                            //         // Update non-collidable cars since battery is zero
+                            //         this.physics.updateNonCollidableCars(car, Object.values(this.otherPlayers));
+                            //         console.log("Non collidable cars", this.physics.nonCollidableCars)
                         
-                                    // Trigger crash effect and put the car to sleep (optional, based on desired behavior)
-                                    if (typeof car.createCrashEffect === 'function') {
-                                        car.createCrashEffect(car.chassis.object.position, car.chassis.object.quaternion, car.chassis.object);
-                                    }
-                                    // Set a timeout to recreate the car after 5 seconds
-                                    setTimeout(() => {
-                                        car.recreate(); // Recreate the car
-                                        car.battery = 100; // Reset battery after recreation
-                                    }, 15000); // 5 seconds delay
-                                }
-                                break;
+                            //         // Trigger crash effect and put the car to sleep (optional, based on desired behavior)
+                            //         if (typeof car.createCrashEffect === 'function') {
+                            //             car.createCrashEffect(car.chassis.object.position, car.chassis.object.quaternion, car.chassis.object);
+                            //         }
+                            //         // Set a timeout to recreate the car after 5 seconds
+                            //         setTimeout(() => {
+                            //             car.recreate(); // Recreate the car
+                            //             car.battery = 100; // Reset battery after recreation
+                            //         }, 15000); // 5 seconds delay
+                            //     }
+                            //     break;
         
                         default:
                             // console.error('Unknown message type:', message.type);
