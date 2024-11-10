@@ -793,6 +793,7 @@ export default class
                                 }
                                 if (this.physics) {
                                 this.physics.nonCollidablePlayers.clear(); // Clear all non-collidable pairs
+                                this.physics.nonCollidableCars.clear();
                                 console.log("Party disbanded")
                             }
                             break;
@@ -2215,7 +2216,7 @@ export default class
         const initialZPosition = 50; // Start above ground level
         const initialXPosition = position.x + (Math.random() - 0.5) * 20; // Random x offset
         const initialYPosition = position.y + (Math.random() - 0.5) * 20; // Random y offset
-        const targetZPosition = 1.1;
+        const targetZPosition = 1.15;
 
         // Check if there's already a coin in the scene
         if (this.currentCoin && this.container.children.includes(this.currentCoin)) {

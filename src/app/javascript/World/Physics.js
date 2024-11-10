@@ -503,11 +503,48 @@ export default class Physics
         }
     
         // Recreate method
+        // this.car19.recreate = () => {
+        //     this.car19.destroy()
+        //     this.car19.create()
+        //     this.car19.chassis.body.wakeUp()
+        // }
+
+        // Initialize recreate counter and cooldown timer
+        this.car19.recreateCount = 0;
+        this.car19.recreateCooldown = false;
+
         this.car19.recreate = () => {
-            this.car19.destroy()
-            this.car19.create()
-            this.car19.chassis.body.wakeUp()
-        }
+            if (this.car19.recreateCooldown) {
+                console.log("Recreate is disabled. Please wait 10 minutes before trying again.");
+                return;
+            }
+
+            if (this.car19.recreateCount < 5) {
+                // Perform recreate actions
+                this.car19.destroy();
+                this.car19.create();
+                this.car19.chassis.body.wakeUp();
+
+                // Increment recreate count
+                this.car19.recreateCount += 1;
+                console.log(`Recreate used ${this.car19.recreateCount}/5 times.`);
+
+                // Check if limit has been reached
+                if (this.car19.recreateCount === 5) {
+                    this.car19.recreateCooldown = true;
+                    console.log("Recreate disabled for 10 minutes.");
+
+                    // Set timer to reset count and cooldown after 10 minutes (600,000 ms)
+                    setTimeout(() => {
+                        this.car19.recreateCount = 0;
+                        this.car19.recreateCooldown = false;
+                        console.log("Recreate is available again.");
+                    }, 600000); // 10 minutes in milliseconds
+                }
+            } else {
+                console.log("Recreate limit reached. Please wait 10 minutes.");
+            }
+        };
     
         // Brake
         this.car19.brake = () => {
@@ -7673,12 +7710,83 @@ export default class Physics
         /**
          * Recreate method
          */
-        this.car.recreate = () =>
-        {
-            this.car.destroy()
-            this.car.create()
-            this.car.chassis.body.wakeUp()
+        // this.car.recreate = () =>
+        // {
+        //     this.car.destroy()
+        //     this.car.create()
+        //     this.car.chassis.body.wakeUp()
+        // }
+
+        // Initialize recreate counter and cooldown timer
+        this.car.recreateCount = 0;
+        this.car.recreateCooldown = false;
+
+        // HTML setup (assume this is in your HTML file or dynamically created)
+        const touchReset = document.getElementById('touch-reset');
+        if (touchReset) {
+            const countDisplay = document.createElement('div');
+            countDisplay.id = 'recreateCountDisplay';
+            countDisplay.style.position = 'absolute';
+            countDisplay.style.top = '5px';
+            countDisplay.style.left = '60px';
+            countDisplay.style.backgroundColor = 'transparent';
+            countDisplay.style.color = 'white';
+            countDisplay.style.padding = '5px';
+            countDisplay.style.fontSize = '10px';
+            countDisplay.textContent = `${5 - this.car.recreateCount}`;
+            touchReset.appendChild(countDisplay);
         }
+
+        this.car.recreate = () => {
+            if (this.car.recreateCooldown) {
+                console.log("Recreate is disabled. Please wait 10 minutes before trying again.");
+                return;
+            }
+
+            if (this.car.recreateCount < 5) {
+                // Perform recreate actions
+                this.car.destroy();
+                this.car.create();
+                this.car.chassis.body.wakeUp();
+
+                // Increment recreate count
+                this.car.recreateCount += 1;
+                console.log(`Recreate used ${this.car.recreateCount}/5 times.`);
+
+                // Update the display for remaining resets
+                if (touchReset) {
+                    const countDisplay = document.getElementById('recreateCountDisplay');
+                    countDisplay.textContent = `${5 - this.car.recreateCount}`;
+                }
+
+                // Check if limit has been reached
+                if (this.car.recreateCount === 5) {
+                    this.car.recreateCooldown = true;
+                    console.log("Recreate disabled for 10 minutes.");
+
+                    // Display cooldown notice
+                    if (touchReset) {
+                        const countDisplay = document.getElementById('recreateCountDisplay');
+                        countDisplay.textContent = "0";
+                    }
+
+                    // Set timer to reset count and cooldown after 10 minutes (600,000 ms)
+                    setTimeout(() => {
+                        this.car.recreateCount = 0;
+                        this.car.recreateCooldown = false;
+                        console.log("Recreate is available again.");
+
+                        // Reset the display to 5 resets
+                        if (touchReset) {
+                            const countDisplay = document.getElementById('recreateCountDisplay');
+                            countDisplay.textContent = "5";
+                        }
+                    }, 600000); // 10 minutes in milliseconds
+                }
+            } else {
+                console.log("Recreate limit reached. Please wait 10 minutes.");
+            }
+        };
 
         /**
          * Brake

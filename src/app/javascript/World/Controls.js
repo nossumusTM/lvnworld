@@ -718,6 +718,7 @@ export default class Controls extends EventEmitter
 
         // Element
         this.touch.reset.$element = document.createElement('div');
+        this.touch.reset.$element.id = 'touch-reset';
         this.touch.reset.$element.style.userSelect = 'none';
         this.touch.reset.$element.style.position = 'fixed';
         this.touch.reset.$element.style.bottom = '175px';
