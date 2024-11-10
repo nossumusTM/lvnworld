@@ -831,7 +831,7 @@ export default class
                         
                                     // Trigger crash effect and put the car to sleep (optional, based on desired behavior)
                                     if (typeof car.createCrashEffect === 'function') {
-                                        car.createCrashEffect(car.chassis.object.position, car.chassis.object.quaternion);
+                                        car.createCrashEffect(car.chassis.object.position, car.chassis.object.quaternion, car.chassis.object);
                                     }
                                     // Set a timeout to recreate the car after 5 seconds
                                     setTimeout(() => {
@@ -2207,7 +2207,7 @@ export default class
         const initialZPosition = 50; // Start above ground level
         const initialXPosition = position.x + (Math.random() - 0.5) * 20; // Random x offset
         const initialYPosition = position.y + (Math.random() - 0.5) * 20; // Random y offset
-        const targetZPosition = 1.2;
+        const targetZPosition = 1.1;
 
         // Check if there's already a coin in the scene
         if (this.currentCoin && this.container.children.includes(this.currentCoin)) {

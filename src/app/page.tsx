@@ -123,26 +123,60 @@ export default function Home() {
       console.log('WebSocket connected');
       setIsWebSocketReady(true);
       setRetryCount(0);
-      setTimeout(() => {
-        wsRef.current?.send(JSON.stringify({ type: 'worldCounts' }));
-      }, 1000);
+      // Ensure WebSocket is open before sending
+        if (wsRef.current?.readyState === WebSocket.OPEN) {
+          setTimeout(() => {
+              wsRef.current?.send(JSON.stringify({ type: 'worldCounts' }));
+              console.log("Sent initial worldCounts message");
+          }, 100);
+      } else {
+          console.log("WebSocket is not ready to send the message yet.");
+      }
     };
 
     wsRef.current.onmessage = (event) => {
-      const message = JSON.parse(event.data);
-      if (message.type === 'worldCounts') {
-        if (!message.hasOwnProperty('counts') || typeof message.counts !== 'object' || message.counts === null) {
-          console.log("Invalid counts in worldCounts message:", message.counts);
+      let message;
+      try {
+          // Parse the message from the WebSocket event
+          message = JSON.parse(event.data);
+      } catch (error) {
+          console.error("Error parsing message:", event.data);
           return;
       }
-        // Only update the world list if no world has been selected
-        if (!selectedWorldId) {
-          updateWorldList(message.counts);
-        }
-        console.log("Received world counts:", message.counts);
-
+  
+      // Debug log to check the full message structure
+      console.log("Received message:", message);
+  
+      // Check if the 'counts' property exists
+      if (!message.hasOwnProperty('counts')) {
+          console.log("No 'counts' property found in message.");
+      } else {
+          console.log("Counts found:", message.counts);
       }
-    };
+  
+      // Handle the 'worldCounts' type message
+      if (message.type === 'worldCounts') {
+          // Validate counts property
+          if (!message.hasOwnProperty('counts') || typeof message.counts !== 'object' || message.counts === null) {
+              console.log("Invalid counts in worldCounts message:", message.counts);
+              return;
+          }
+  
+          // Only update the world list if no world has been selected
+          if (!selectedWorldId) {
+              console.log("Updating world list with counts:", message.counts);
+              updateWorldList(message.counts);
+          } else {
+              console.log("World has already been selected, not updating list.");
+          }
+  
+          // Log the received world counts
+          console.log("Received world counts:", message.counts);
+      } else {
+          console.log("Received message of an unexpected type:", message.type);
+      }
+  };
+  
 
     wsRef.current.onerror = (error) => {
       console.error('WebSocket error:', error);
@@ -155,13 +189,13 @@ export default function Home() {
           setTimeout(() => {
               setRetryCount((prev) => prev + 1);
               initializeWebSocket();  // Retry connection
-          }, retryDelay);
+          }, retryDelay * 2);
       } else {
           console.warn('Max retries reached. WebSocket not reconnected.');
       }
   };
 
-    localStorage.removeItem('token');
+    // localStorage.removeItem('token');
 
   }, [retryCount]);
 

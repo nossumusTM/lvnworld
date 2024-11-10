@@ -8446,7 +8446,7 @@ export default class Physics
 
         // Ensure car has the createCrashEffect method
         if (typeof car.createCrashEffect === 'function') {
-            car.createCrashEffect(car.chassis.object); // Trigger crash effect
+            car.createCrashEffect(car.chassis.object.position, car.chassis.object.quaternion, car.chassis.object); // Trigger crash effect
         } else {
             console.error("car.createCrashEffect is not a function");
         }
