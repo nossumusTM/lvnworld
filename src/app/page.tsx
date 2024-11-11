@@ -125,16 +125,26 @@ export default function Home() {
       setRetryCount(0);
       // Ensure WebSocket is open before sending
         if (wsRef.current?.readyState === WebSocket.OPEN) {
-          setTimeout(() => {
-              wsRef.current?.send(JSON.stringify({ type: 'worldCounts' }));
-              console.log("Sent initial worldCounts message");
-          }, 100);
+          // setTimeout(() => {
+          //     wsRef.current?.send(JSON.stringify({ type: 'worldCounts' }));
+          //     console.log("Sent initial worldCounts message");
+          // }, 5000);
       } else {
           console.log("WebSocket is not ready to send the message yet.");
       }
     };
 
+    // Initialize a flag to prevent repeated updates
+    let hasReceivedWorldCounts = false;
+
     wsRef.current.onmessage = (event) => {
+
+      // Check if the message should be ignored
+      if (hasReceivedWorldCounts) {
+          console.log("World counts already received, ignoring further messages.");
+          return;
+      }
+
       let message;
       try {
           // Parse the message from the WebSocket event
@@ -166,6 +176,9 @@ export default function Home() {
           if (!selectedWorldId) {
               console.log("Updating world list with counts:", message.counts);
               updateWorldList(message.counts);
+
+              hasReceivedWorldCounts = true;
+
           } else {
               console.log("World has already been selected, not updating list.");
           }
@@ -309,12 +322,12 @@ export default function Home() {
     };
   }, []); // Initialize once on mount
 
-  useEffect(() => {
-    if (selectedWorldId && wsRef.current) {
-      console.log("Closing WebSocket early due to world selection.");
-      // wsRef.current.close();
-    }
-  }, [selectedWorldId]); // Close WebSocket as soon as a world is selected
+  // useEffect(() => {
+  //   if (selectedWorldId && wsRef.current) {
+  //     console.log("Closing WebSocket early due to world selection.");
+  //     // wsRef.current.close();
+  //   }
+  // }, [selectedWorldId]); // Close WebSocket as soon as a world is selected
 
   if (!isMounted) {
     // Return null on the server (or before the component is mounted on the client)
