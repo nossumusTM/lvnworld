@@ -400,9 +400,9 @@ export default function Home() {
             ) : (
             <>
             <div id='worldclock'>
-            <h1 style={{ fontSize: '15px', fontWeight: '500', fontFamily: 'Orbitron, sans-serif', color: '#fff', textAlign: 'center'}}>
-              {new Date().toLocaleString()}
-              </h1>
+              <h1 style={{ fontSize: '15px', fontWeight: '500', fontFamily: 'Orbitron, sans-serif', color: '#fff', textAlign: 'center'}}>
+                {new Date().toLocaleString()}
+                </h1>
             </div>
             <div id="world-layer">
             
