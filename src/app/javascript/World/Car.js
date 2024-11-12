@@ -25,6 +25,7 @@ export default class Car
         this.shooterId = _options.shooterId
         this.worldId = _options.worldId
         this.ws = _options.ws
+        this.carType = _options.carType
 
         // Set up
         this.container = new THREE.Object3D()

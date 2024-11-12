@@ -7743,7 +7743,7 @@ export default class Physics
                 return;
             }
 
-            if (this.car.recreateCount < 5) {
+            if (this.car.recreateCount < 50) {
                 // Perform recreate actions
                 this.car.destroy();
                 this.car.create();
@@ -7751,16 +7751,16 @@ export default class Physics
 
                 // Increment recreate count
                 this.car.recreateCount += 1;
-                console.log(`Recreate used ${this.car.recreateCount}/5 times.`);
+                console.log(`Recreate used ${this.car.recreateCount}/50 times.`);
 
                 // Update the display for remaining resets
                 if (touchReset) {
                     const countDisplay = document.getElementById('recreateCountDisplay');
-                    countDisplay.textContent = `${5 - this.car.recreateCount}`;
+                    countDisplay.textContent = `${50 - this.car.recreateCount}`;
                 }
 
                 // Check if limit has been reached
-                if (this.car.recreateCount === 5) {
+                if (this.car.recreateCount === 50) {
                     this.car.recreateCooldown = true;
                     console.log("Recreate disabled for 10 minutes.");
 
@@ -8379,7 +8379,7 @@ export default class Physics
                 shooterCar.score += 1;
                 this.updateScoreStatus(shooterCar.score);
             }
-            car.physics.car.sleep();
+            // car.physics.car.sleep();
             car.createSparkEffect();
 
             setTimeout(() => {

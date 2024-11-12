@@ -652,15 +652,7 @@ export default class
                                 const car = this.otherPlayers[message.carId];
                                 if (car) {
                                     car.battery = message.battery;
-                                    
-                                    // Check if playerCar or otherPlayerCar is non-collidable before creating sparks
-                                    if (!this.physics.nonCollidableCars.has(playerCar) && !this.physics.nonCollidableCars.has(otherPlayerCar)) {
-                                        if (typeof car.createSparkEffect === 'function') {
-                                            car.createSparkEffect();
-                                        }
-                                    }
-                                    
-                                    // car.createSparkEffect();
+                                    car.createSparkEffect();
                                     this.updateScoreStatus(message.score);
                                     console.log("Updating bullet collision score info", message.score)
 
@@ -793,7 +785,6 @@ export default class
                                 }
                                 if (this.physics) {
                                 this.physics.nonCollidablePlayers.clear(); // Clear all non-collidable pairs
-                                this.physics.nonCollidableCars.clear();
                                 console.log("Party disbanded")
                             }
                             break;
@@ -829,26 +820,26 @@ export default class
                                 this.physics.nonCollidableCars = newNonCollidablePairs;
                                 break;
 
-                            // case 'checkBattery':
-                            //     // const car = this.otherPlayers[message.carId];
-                            //     const car = this.otherPlayers[message.playerId]
+                            case 'checkBattery':
+                                // const car = this.otherPlayers[message.carId];
+                                const car = playerCar
                         
-                            //     if (car && message.battery <= 0) {
-                            //         // Update non-collidable cars since battery is zero
-                            //         this.physics.updateNonCollidableCars(car, Object.values(this.otherPlayers));
-                            //         console.log("Non collidable cars", this.physics.nonCollidableCars)
+                                if (car && message.battery <= 0) {
+                                    // Update non-collidable cars since battery is zero
+                                    this.physics.updateNonCollidableCars(car, Object.values(this.otherPlayers));
+                                    console.log("Non collidable cars", this.physics.nonCollidableCars)
                         
-                            //         // Trigger crash effect and put the car to sleep (optional, based on desired behavior)
-                            //         if (typeof car.createCrashEffect === 'function') {
-                            //             car.createCrashEffect(car.chassis.object.position, car.chassis.object.quaternion, car.chassis.object);
-                            //         }
-                            //         // Set a timeout to recreate the car after 5 seconds
-                            //         setTimeout(() => {
-                            //             car.recreate(); // Recreate the car
-                            //             car.battery = 100; // Reset battery after recreation
-                            //         }, 15000); // 5 seconds delay
-                            //     }
-                            //     break;
+                                    // Trigger crash effect and put the car to sleep (optional, based on desired behavior)
+                                    if (typeof car.createCrashEffect === 'function') {
+                                        car.createCrashEffect(car.chassis.object.position, car.chassis.object.quaternion);
+                                    }
+                                    // Set a timeout to recreate the car after 5 seconds
+                                    setTimeout(() => {
+                                        car.recreate(); // Recreate the car
+                                        car.battery = 100; // Reset battery after recreation
+                                    }, 15000); // 5 seconds delay
+                                }
+                                break;
         
                         default:
                             // console.error('Unknown message type:', message.type);
@@ -2216,7 +2207,7 @@ export default class
         const initialZPosition = 50; // Start above ground level
         const initialXPosition = position.x + (Math.random() - 0.5) * 20; // Random x offset
         const initialYPosition = position.y + (Math.random() - 0.5) * 20; // Random y offset
-        const targetZPosition = 1.15;
+        const targetZPosition = 1.1;
 
         // Check if there's already a coin in the scene
         if (this.currentCoin && this.container.children.includes(this.currentCoin)) {
@@ -2646,6 +2637,7 @@ export default class
             const loadingLayer = document.getElementById('loading-layer');
             const w3mLayer = document.getElementById('w3m-layer');
             const worldLayer = document.getElementById('world-layer');
+            const garageLayer = document.getElementById('garage');
 
             if (loadingLayer) {
                 loadingLayer.style.display = 'none';
@@ -2657,6 +2649,10 @@ export default class
 
             if (worldLayer) {
                 worldLayer.style.display = 'none';
+            }
+
+            if (garageLayer) {
+                garageLayer.style.display = 'none';
             }
 
             this.startingScreen.area.deactivate()

@@ -23,6 +23,7 @@ export default function Home() {
   const [selectedWorldId, setSelectedWorldId] = useState<string | null>(null); // New state for selected world ID
   const [isWorldSelected, setIsWorldSelected] = useState(false);
   const [token, setToken] = useState<string | null>(null); // State to store the token
+  const [popupGarage, setPopupGarage] = useState(false);
   const [playerCount, setPlayerCount] = useState(0);
   const [ws, setWs] = useState<WebSocket | null>(null);
   const [isWebSocketReady, setIsWebSocketReady] = useState(false);
@@ -123,15 +124,6 @@ export default function Home() {
       console.log('WebSocket connected');
       setIsWebSocketReady(true);
       setRetryCount(0);
-      // Ensure WebSocket is open before sending
-        if (wsRef.current?.readyState === WebSocket.OPEN) {
-          // setTimeout(() => {
-          //     wsRef.current?.send(JSON.stringify({ type: 'worldCounts' }));
-          //     console.log("Sent initial worldCounts message");
-          // }, 5000);
-      } else {
-          console.log("WebSocket is not ready to send the message yet.");
-      }
     };
 
     // Initialize a flag to prevent repeated updates
@@ -198,14 +190,14 @@ export default function Home() {
     wsRef.current.onclose = () => {
       console.log('WebSocket closed');
       // setIsWebSocketReady(false);
-      if (retryCount < maxRetries) {
-          setTimeout(() => {
-              setRetryCount((prev) => prev + 1);
-              initializeWebSocket();  // Retry connection
-          }, retryDelay * 2);
-      } else {
-          console.warn('Max retries reached. WebSocket not reconnected.');
-      }
+      // if (retryCount < maxRetries) {
+      //     setTimeout(() => {
+      //         setRetryCount((prev) => prev + 1);
+      //         initializeWebSocket();  // Retry connection
+      //     }, retryDelay * 2);
+      // } else {
+      //     console.warn('Max retries reached. WebSocket not reconnected.');
+      // }
   };
 
     // localStorage.removeItem('token');
@@ -338,6 +330,11 @@ export default function Home() {
   const handleUserDisplayClick = () => {
     setShowWalletButton(prevState => !prevState);  // Toggle visibility
   };
+  
+  const handleGarageButtonClick = () => {
+    setPopupGarage(prevState => !prevState); // Toggle visibility of the garage popup
+    console.log("Opening pop up")
+  };
 
   return (
     //<main className="min-h-screen px-8 py-0 pb-12 flex-1 flex flex-col items-center" style={{ backgroundColor: '#fff', fontFamily: "'Orbitron', sans-serif" }}>
@@ -411,6 +408,31 @@ export default function Home() {
                       <ul id="world-list"></ul>
                     </div>
                     </div>
+                      <div id='garage' className='garage'>
+                        {/* <button id='garage-button' onClick={handleGarageButtonClick}>GARAGE</button> */}
+                        <button id='garage-button'>GARAGE</button>
+                      </div>
+
+                      {popupGarage && (
+                            <div id="garage-popup" className="garage-popup">
+                              {/* Close Button */}
+                              <button className="close-button" onClick={() => setPopupGarage(false)}>X</button>
+
+                                <div className="circle-menu">
+                                    <div className="menu-section section1">Chassis</div>
+                                    <div className="menu-section section2">Window</div>
+                                    <div className="menu-section section3">Tire</div>
+                                    <div className="menu-section section4">Plate</div>
+                                    <div className="menu-section section5">Wiper</div>
+                                    <div className="menu-section section6">Weapon</div>
+                                    <div className="menu-section section7">Armor</div>
+                                    <div className="menu-section section8">Headlight</div>
+                                </div>
+                                <div className="car-model">
+                                    <div id="car-model-placeholder">3D Model</div>
+                                </div>
+                            </div>
+                        )}
                     </>
                         )}
         </div>
