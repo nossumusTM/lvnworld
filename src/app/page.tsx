@@ -1,8 +1,13 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useAccount } from 'wagmi';
+
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { Object3D, Mesh } from 'three';
 
 // Dynamically import the Application component and disable SSR
 const Application = dynamic(() => import('./javascript/Application'), {
@@ -28,6 +33,29 @@ export default function Home() {
   const [ws, setWs] = useState<WebSocket | null>(null);
   const [isWebSocketReady, setIsWebSocketReady] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
+
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const sceneRef = useRef<THREE.Scene | null>(null);
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
+  const controlsRef = useRef<OrbitControls | null>(null);
+
+  const [activeCarIndex, setActiveCarIndex] = useState(0); // Track which car is displayed
+  const [isOrbitEnabled, setIsOrbitEnabled] = useState(false); // Orbit controls state
+
+  const carModels = useRef<THREE.Object3D[]>([]); // Store all loaded car models
+
+  const [customizations, setCustomizations] = useState({
+    chassis: 'default',
+    window: 'default',
+    tire: 'default',
+    plate: 'default',
+    wiper: 'default',
+    weapon: 'default',
+    armor: 'default',
+    headlight: 'default',
+});
+
   const maxRetries = 5;  // Limit retries to avoid infinite reconnect loop
   const retryDelay = 2000; // Delay between retries (ms)
 
@@ -62,6 +90,100 @@ export default function Home() {
     '🇳🇱', '🇬🇷', '🇲🇨', '🇮🇹', '🇵🇪',
     '🇺🇦'
   ];
+
+  useEffect(() => {
+    setIsMounted(true); // To handle SSR and ensure the component renders only on the client
+  }, []);
+
+  useEffect(() => {
+
+    if (!canvasRef.current) return;
+
+    if (canvasRef.current && !sceneRef.current) {
+      // Scene, Camera, Renderer setup
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      camera.position.set(0, 2, 5);
+      const renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvasRef.current as HTMLCanvasElement });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(window.devicePixelRatio);
+
+      sceneRef.current = scene;
+      cameraRef.current = camera;
+      rendererRef.current = renderer;
+
+      // Add lighting
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+      scene.add(ambientLight);
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+      directionalLight.position.set(5, 5, 5);
+      scene.add(directionalLight);
+
+      // Load car model
+      const loader = new GLTFLoader();
+      const carPaths = ['/garage/car1.glb', '/garage/car2.glb', '/garage/car3.glb']; // Paths to car models
+
+      // Load each car model
+      carPaths.forEach((path, index) => {
+        loader.load(path, (gltf) => {
+          const carModel = gltf.scene;
+          carModel.visible = index === activeCarIndex; // Show only the active car
+          carModels.current.push(carModel);
+          scene.add(carModel);
+        });
+      });
+
+      // Initialize OrbitControls
+      const controls = new OrbitControls(camera, renderer.domElement);
+      controls.enabled = isOrbitEnabled;
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.05;
+      controlsRef.current = controls;
+
+      // Animation loop
+      const animate = () => {
+        requestAnimationFrame(animate);
+        controls.update(); // Update OrbitControls
+        renderer.render(scene, camera);
+      };
+      animate();
+    }
+
+    const handleResize = () => {
+      if (rendererRef.current && cameraRef.current) {
+        rendererRef.current.setSize(window.innerWidth, window.innerHeight);
+        cameraRef.current.aspect = window.innerWidth / window.innerHeight;
+        cameraRef.current.updateProjectionMatrix();
+      }
+    };
+    window.addEventListener('resize', handleResize);
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, [canvasRef.current]);
+
+  useEffect(() => {
+    // Update car parts when customizations change
+    if (sceneRef.current) {
+      const carModel = sceneRef.current.getObjectByName('carModel');
+      if (carModel) {
+        updateCarParts(carModel, customizations);
+      }
+    }
+  }, [customizations]);
+
+  // Toggle orbit controls on click
+  const handleModelClick = () => {
+    setIsOrbitEnabled(true);
+    if (controlsRef.current) controlsRef.current.enabled = true;
+  };
+
+  // Switch the visible car model
+  const handleCarSelection = (index: number) => {
+    carModels.current.forEach((car, idx) => {
+      car.visible = idx === index; // Show only the selected car
+    });
+    setActiveCarIndex(index);
+  };
 
   // Function to get token from the server
   const getToken = async (playerId: string) => {
@@ -189,18 +311,7 @@ export default function Home() {
 
     wsRef.current.onclose = () => {
       console.log('WebSocket closed');
-      // setIsWebSocketReady(false);
-      // if (retryCount < maxRetries) {
-      //     setTimeout(() => {
-      //         setRetryCount((prev) => prev + 1);
-      //         initializeWebSocket();  // Retry connection
-      //     }, retryDelay * 2);
-      // } else {
-      //     console.warn('Max retries reached. WebSocket not reconnected.');
-      // }
   };
-
-    // localStorage.removeItem('token');
 
   }, [retryCount]);
 
@@ -283,7 +394,6 @@ export default function Home() {
 
     // Initialize the application only when the wallet connects
     useEffect(() => {
-      setIsMounted(true);
   
       if (isConnected && address && !hasAppInitialized) {
         setPlayerId(address);
@@ -414,24 +524,17 @@ export default function Home() {
                       </div>
 
                       {popupGarage && (
-                            <div id="garage-popup" className="garage-popup">
-                              {/* Close Button */}
-                              <button className="close-button" onClick={() => setPopupGarage(false)}>X</button>
-
-                                <div className="circle-menu">
-                                    <div className="menu-section section1">Chassis</div>
-                                    <div className="menu-section section2">Window</div>
-                                    <div className="menu-section section3">Tire</div>
-                                    <div className="menu-section section4">Plate</div>
-                                    <div className="menu-section section5">Wiper</div>
-                                    <div className="menu-section section6">Weapon</div>
-                                    <div className="menu-section section7">Armor</div>
-                                    <div className="menu-section section8">Headlight</div>
-                                </div>
-                                <div className="car-model">
-                                    <div id="car-model-placeholder">3D Model</div>
-                                </div>
+                          <div id="garage-popup" className="garage-popup">
+                            <button className="close-button" onClick={() => setPopupGarage(false)}>X</button>
+                              <div className="car-selection">
+                                <button onClick={() => handleCarSelection(0)}>Car 1</button>
+                                <button onClick={() => handleCarSelection(1)}>Car 2</button>
+                                <button onClick={() => handleCarSelection(2)}>Car 3</button>
+                              </div>
+                            <div className="car-model" onClick={handleModelClick}>
+                              <canvas ref={canvasRef} id="car-model-canvas" />
                             </div>
+                          </div>
                         )}
                     </>
                         )}
