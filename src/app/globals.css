@@ -457,14 +457,14 @@ opacity: 0;
   position: fixed;
   top: 20%;
   left: 20px;
-  width: 22%;
+  width: 21%;
   /* background-color: rgba(255, 255, 255, 0.01); */
   padding: 0 20px 0 20px;
   border-radius: 20px;
   z-index: 100; /* Higher z-index to display on top */
   display: block; /* Initially hidden */
   text-align: center;
-  max-height: 75%;
+  max-height: 73%;
   overflow-y: auto; /* Vertical scrolling */
   font-family: 'Orbitron', sans-serif;
   backdrop-filter: blur(5px);
