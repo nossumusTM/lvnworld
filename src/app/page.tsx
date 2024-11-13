@@ -401,11 +401,11 @@ export default function Home() {
                 </div>
             ) : (
             <>
-            <div id='worldclock'>
+            {/* <div id='worldclock'>
               <h1 style={{ paddingTop: '10px', fontSize: '15px', fontWeight: '500', fontFamily: 'Orbitron, sans-serif', color: '#fff', textAlign: 'center'}}>
                 {new Date().toLocaleString()}
                 </h1>
-            </div>
+            </div> */}
             <div id="world-layer">
             
                     {/* <h2>Select a World</h2> */}

@@ -455,7 +455,7 @@ opacity: 0;
 
 #world-layer {
   position: fixed;
-  top: 20%;
+  top: 12%;
   left: 20px;
   width: 21%;
   /* background-color: rgba(255, 255, 255, 0.01); */
@@ -464,7 +464,7 @@ opacity: 0;
   z-index: 100; /* Higher z-index to display on top */
   display: block; /* Initially hidden */
   text-align: center;
-  max-height: 73%;
+  max-height: 80%;
   overflow-y: auto; /* Vertical scrolling */
   font-family: 'Orbitron', sans-serif;
   backdrop-filter: blur(5px);
