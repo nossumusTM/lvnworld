@@ -2638,6 +2638,7 @@ export default class
             const w3mLayer = document.getElementById('w3m-layer');
             const worldLayer = document.getElementById('world-layer');
             const garageLayer = document.getElementById('garage');
+            const worldClock = document.getElementById('worldclock');
 
             if (loadingLayer) {
                 loadingLayer.style.display = 'none';
@@ -2653,6 +2654,10 @@ export default class
 
             if (garageLayer) {
                 garageLayer.style.display = 'none';
+            }
+
+            if (worldClock) {
+                worldClock.style.display = 'none';
             }
 
             this.startingScreen.area.deactivate()
