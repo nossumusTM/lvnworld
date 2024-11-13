@@ -474,7 +474,6 @@ opacity: 0;
   border-bottom: 20px solid transparent;
 }
 
-
 /* #garage-button {
   position: fixed;
   bottom: 30px;
@@ -575,7 +574,7 @@ opacity: 0;
     position: absolute;
     top: 55%;
     left: 20px;
-    width: 90%;
+    width: 88%;
     /* background-color: rgba(255, 255, 255, 0.01); Semi-transparent background */
     padding: 0 20px 0 20px;
     border-radius: 20px;

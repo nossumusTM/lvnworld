@@ -400,7 +400,7 @@ export default function Home() {
             ) : (
             <>
             <div id='worldclock'>
-              <h1 style={{ fontSize: '15px', fontWeight: '500', fontFamily: 'Orbitron, sans-serif', color: '#fff', textAlign: 'center'}}>
+              <h1 style={{ paddingTop: '10px', fontSize: '15px', fontWeight: '500', fontFamily: 'Orbitron, sans-serif', color: '#fff', textAlign: 'center'}}>
                 {new Date().toLocaleString()}
                 </h1>
             </div>
