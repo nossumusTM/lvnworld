@@ -582,7 +582,7 @@ opacity: 0;
     display: block; /* Initially hidden */
     /* border: 1.5px solid rgba(255, 255, 255, 0.05); */
     text-align: center;
-    max-height: 38%; /* Maximum height */
+    max-height: 39%; /* Maximum height */
     overflow-y: auto; /* Vertical scrolling */
     font-family: 'Orbitron', sans-serif;
     backdrop-filter: blur(2px);
