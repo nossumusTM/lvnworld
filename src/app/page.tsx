@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { useEffect, useState, useRef, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAccount } from 'wagmi';
 
 // Dynamically import the Application component and disable SSR
@@ -23,11 +24,13 @@ export default function Home() {
   const [selectedWorldId, setSelectedWorldId] = useState<string | null>(null); // New state for selected world ID
   const [isWorldSelected, setIsWorldSelected] = useState(false);
   const [token, setToken] = useState<string | null>(null); // State to store the token
-  const [popupGarage, setPopupGarage] = useState(false);
+  // const [popupGarage, setPopupGarage] = useState(false);
   const [playerCount, setPlayerCount] = useState(0);
   const [ws, setWs] = useState<WebSocket | null>(null);
   const [isWebSocketReady, setIsWebSocketReady] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
+
+  const router = useRouter();
   const maxRetries = 5;  // Limit retries to avoid infinite reconnect loop
   const retryDelay = 2000; // Delay between retries (ms)
 
@@ -332,9 +335,8 @@ export default function Home() {
   };
   
   const handleGarageButtonClick = () => {
-    setPopupGarage(prevState => !prevState); // Toggle visibility of the garage popup
-    console.log("Opening pop up")
-  };
+    router.push('/garage');
+};
 
   return (
     //<main className="min-h-screen px-8 py-0 pb-12 flex-1 flex flex-col items-center" style={{ backgroundColor: '#fff', fontFamily: "'Orbitron', sans-serif" }}>
@@ -415,16 +417,6 @@ export default function Home() {
                         <button id='garage-button' onClick={handleGarageButtonClick}>GARAGE</button>
                         {/* <button id='garage-button'>GARAGE</button> */}
                       </div>
-
-                      {popupGarage && (
-                            <div id="garage-popup" className="garage-popup">
-                              {/* Close Button */}
-                              <button className="close-button" onClick={() => setPopupGarage(false)}>X</button>
-                                <div className="car-model">
-                                    <div id="car-model-placeholder">Cybertruck</div>
-                                </div>
-                            </div>
-                        )}
                     </>
                         )}
         </div>
