@@ -6,6 +6,10 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader';
 
+import Slider from 'react-slick';
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+
 export default function GaragePage() {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const carGroupRef = useRef<THREE.Group>(new THREE.Group());
@@ -42,12 +46,12 @@ export default function GaragePage() {
     const svgIcons: { [key: string]: string } = {
         chassis: '/garage/chassis.svg',
         chassisbottom: '/garage/chassisbottom.svg',
-        bumper: '/garage/bumper.svg',
-        spoiler: '/garage/spoiler.svg',
+        bumper: '/garage/frame.svg',
+        spoiler: '/garage/frame.svg',
         window: '/garage/window.svg',
         wheels: '/garage/wheel.svg',
-        tire: '/garage/tire.svg',
-        antena: '/garage/antena.svg',
+        tire: '/garage/frame.svg',
+        antena: '/garage/frame.svg',
     };    
 
     // Load matcap textures
@@ -275,16 +279,40 @@ export default function GaragePage() {
         // setSelectedPart(null);
     };
 
+    const sliderSettings = {
+        arrows: true,         // No navigation dots
+        infinite: true,      // Disable infinite loop
+        speed: 500,           // Transition speed
+        slidesToShow: 3,      // Show 3 icons per slide
+        slidesToScroll: 1,    // Scroll 1 icon at a time
+        responsive: [
+            {
+                breakpoint: 768,
+                settings: {
+                    slidesToShow: 2, // Show 2 icons on smaller screens
+                    slidesToScroll: 1,
+                }
+            },
+            {
+                breakpoint: 480,
+                settings: {
+                    slidesToShow: 2, // Show 1 icon on very small screens
+                    slidesToScroll: 1,
+                }
+            }
+        ]
+    };    
+
     return (
         <div style={{ position: 'relative', width: '100%', height: '100%' }}>
             <canvas ref={canvasRef} style={{ width: '100%', height: '100%' }} />
 
-            <div style={{ position: 'absolute', bottom: '15%', left: '10%', transform: 'translateY(-50%)' }}>
+            {/* <div style={{ position: 'absolute', bottom: '15%', left: '10%', transform: 'translateY(-50%)' }}>
                 <button onClick={handlePreviousCar}>←</button>
             </div>
             <div style={{ position: 'absolute', bottom: '15%', right: '10%', transform: 'translateY(-50%)' }}>
                 <button onClick={handleNextCar}>→</button>
-            </div>
+            </div> */}
 
             <div
                 style={{
@@ -298,75 +326,27 @@ export default function GaragePage() {
                 }}
             >
                 <h3 style={{fontSize: '30px'}}>Cybertruck</h3>
-                <button style={{paddingTop: '30px'}} onClick={handleCarClick}>CUSTOMIZE</button>
+                <button style={{paddingTop: '20px'}} onClick={handleCarClick}>CUSTOMIZE</button>
             </div>
 
             {/* Customization Menu */}
             {showCustomizationMenu && (
-                <div
-                    style={{
-                        position: 'absolute',
-                        bottom: '10%',
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        display: 'flex',
-                        gap: '20px',
-                        backgroundColor: 'transparent',
-                        backdropFilter: 'blur(5px)',
-                        padding: '10px',
-                        borderRadius: '20px',
-                        overflowX: 'auto',
-                        maxWidth: '90%', // Restrict the menu width and make it scrollable
-                        alignItems: 'center',
-                    }}
-                >
-                    {Object.keys(svgIcons).map((partName) => (
-                        <button
-                        key={partName}
-                        onClick={() => handlePartSelection(partName)}
-                        style={{
-                            position: 'relative',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            width: '120px', // Adjusted for outer circle padding
-                            height: '120px',
-                            backgroundColor: 'rgba(24, 255, 0, 0.15)', // Slight transparent green overlay
-                            border: 'none',
-                            borderRadius: '10px',
-                            padding: '10px',
-                            overflow: 'hidden',
-                            backdropFilter: 'blur(8px)',
-                            boxShadow: '0px 0px 10px rgba(24, 255, 0, 0.3)', // Subtle glow
-                        }}
-                    >
-                        {/* Highlighted Circle */}
-                        {/* <div
-                            style={{
-                                position: 'absolute',
-                                width: '100%',
-                                height: '100%',
-                                borderRadius: '50%',
-                                backgroundColor: '#18ff00',
-                                opacity: 0.3, // Slight transparency to see through
-                                top: 0,
-                                left: 0,
-                                zIndex: 1,
-                            }}
-                        ></div> */}
-                    
-                        {/* Icon Image */}
-                        <img
-                            src={svgIcons[partName]}
-                            alt={`${partName} icon`}
-                            style={{
-                                position: 'relative',
-                                width: '100%',
-                                zIndex: 2,
-                            }}
-                        />
-                    </button>
-                    ))}
+                <div className="customization-menu">
+                    <Slider {...sliderSettings} className="customization-slider">
+                        {Object.keys(svgIcons).map((partName) => (
+                            <button
+                                key={partName}
+                                onClick={() => handlePartSelection(partName)}
+                                className="customization-button"
+                            >
+                                <img
+                                    src={svgIcons[partName]}
+                                    alt={`${partName} icon`}
+                                    className="customization-icon"
+                                />
+                            </button>
+                        ))}
+                    </Slider>
                 </div>
             )}
 

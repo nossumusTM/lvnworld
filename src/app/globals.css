@@ -1378,3 +1378,61 @@ opacity: 0;
   max-width: 80%;
   font-size: 12px;
 }
+
+/* Customization Menu Container */
+.customization-menu {
+  position: absolute;
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  background-color: transparent;
+  backdrop-filter: blur(5px);
+  padding: 10px;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.slick-prev {
+  left: 0!important;
+}
+
+.slick-next {
+  right: 0!important;
+}
+
+/* Slider Styling */
+.customization-slider .slick-slide {
+  display: flex;
+  justify-content: center;
+  padding: 0 10px; /* Adjust left and right padding to create a gap between slides */
+}
+
+.slick-prev, .slick-next {
+  color: #18ff00; /* Customize navigation arrow color */
+  z-index: 1;     /* Ensure arrows are above slider content */
+  width: auto;
+}
+
+/* Button Styling */
+.customization-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(24, 255, 0, 0.15);
+  border: none;
+  border-radius: 10px;
+  padding: 10px;
+  overflow: hidden;
+  backdrop-filter: blur(8px);
+  box-shadow: 0px 0px 10px rgba(24, 255, 0, 0.3);
+}
+
+/* Icon Styling */
+.customization-icon {
+  width: 100%;
+  position: relative;
+  z-index: 2;
+}
