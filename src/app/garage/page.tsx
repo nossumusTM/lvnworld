@@ -18,6 +18,7 @@ export default function GaragePage() {
     const [showCustomizationMenu, setShowCustomizationMenu] = useState(false);
     const [showMatcapMenu, setShowMatcapMenu] = useState(false);
     const [selectedPart, setSelectedPart] = useState<string | null>(null);
+    const cameraRef = useRef<THREE.PerspectiveCamera | null>(null); // Reference for camera
 
     const carModels = [
         { 
@@ -69,8 +70,8 @@ export default function GaragePage() {
         // Initialize the scene
         const scene = new THREE.Scene();
         scene.background = new THREE.Color('#0213f7'); // Updated background color
-        const camera = new THREE.PerspectiveCamera(1.2, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.set(0, -200, 2);
+        cameraRef.current = new THREE.PerspectiveCamera(1.2, window.innerWidth / window.innerHeight, 0.1, 1000);
+        cameraRef.current.position.set(0, -200, 2);
     
         const renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvasRef.current });
         renderer.setSize(window.innerWidth, window.innerHeight);
@@ -84,9 +85,9 @@ export default function GaragePage() {
         scene.add(directionalLight);
     
         // Initialize OrbitControls for the car group only
-        controlsRef.current = new OrbitControls(camera, renderer.domElement);
+        controlsRef.current = new OrbitControls(cameraRef.current, renderer.domElement);
         controlsRef.current.enableDamping = true;
-        controlsRef.current.dampingFactor = 0.05;
+        controlsRef.current.dampingFactor = 0.01;
         controlsRef.current.enabled = isOrbitEnabled;
 
         // Limit zoom in and zoom out distance
@@ -149,14 +150,18 @@ export default function GaragePage() {
             if (controlsRef.current) {
                 controlsRef.current.update();
             }
-            renderer.render(scene, camera);
+            if (cameraRef.current) {
+                renderer.render(scene, cameraRef.current);
+            }
         };
         animate();
 
         const handleResize = () => {
             renderer.setSize(window.innerWidth, window.innerHeight);
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
+            if (cameraRef.current) {
+                cameraRef.current.aspect = window.innerWidth / window.innerHeight;
+                cameraRef.current.updateProjectionMatrix();
+            }
         };
         window.addEventListener('resize', handleResize);
 
@@ -165,8 +170,9 @@ export default function GaragePage() {
         
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-        
-            raycaster.setFromCamera(mouse, camera);
+            if (cameraRef.current) {
+                raycaster.setFromCamera(mouse, cameraRef.current);
+            }
             const intersects = raycaster.intersectObjects(customizationPoints.current);
         
             if (intersects.length > 0) {
@@ -209,6 +215,11 @@ export default function GaragePage() {
 
     const handlePartSelection = (partName: string) => {
         setSelectedPart(partName);
+        if (partName === 'chassis') {
+            cameraRef.current?.position.set(0, -100, 2);
+        } else if (partName === 'wheels') {
+            cameraRef.current?.position.set(15, 20, 40);
+        }
         setShowCustomizationMenu(false);
     };
 
