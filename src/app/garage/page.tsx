@@ -259,10 +259,10 @@ export default function GaragePage() {
         <div style={{ position: 'relative', width: '100%', height: '100%' }}>
             <canvas ref={canvasRef} style={{ width: '100%', height: '100%' }} />
 
-            <div style={{ position: 'absolute', bottom: '21%', left: '30%', transform: 'translateY(-50%)' }}>
+            <div style={{ position: 'absolute', bottom: '21%', left: '10%', transform: 'translateY(-50%)' }}>
                 <button onClick={handlePreviousCar}>←</button>
             </div>
-            <div style={{ position: 'absolute', bottom: '21%', right: '30%', transform: 'translateY(-50%)' }}>
+            <div style={{ position: 'absolute', bottom: '21%', right: '10%', transform: 'translateY(-50%)' }}>
                 <button onClick={handleNextCar}>→</button>
             </div>
 
