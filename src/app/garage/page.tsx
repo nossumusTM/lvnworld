@@ -15,7 +15,7 @@ export default function GaragePage() {
     const [selectedPart, setSelectedPart] = useState<string | null>(null);
 
     const carModels = [
-        { chassis: '/models/car/default/chassis.glb', wheels: '/models/car/default/wheels.glb', antena: '/models/car/default/antena.glb' },
+        { chassis: '/models/car/default/chassis.glb', wheels: '/models/car/default/wheels.glb', tire: '/models/car/default/tire.glb', antena: '/models/car/default/antena.glb' },
     ];
 
     const controlsRef = useRef<OrbitControls | null>(null);
@@ -35,49 +35,30 @@ export default function GaragePage() {
 
     useEffect(() => {
         if (!canvasRef.current) return;
-
+    
+        // Initialize the scene
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(5, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.set(0, -60, 50);
-
+        const camera = new THREE.PerspectiveCamera(1.2, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, -200, 2);
+    
         const renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvasRef.current });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
-
+    
+        // Add lighting
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
         scene.add(ambientLight);
         const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
         directionalLight.position.set(5, 5, 5);
         scene.add(directionalLight);
-
+    
+        // Initialize OrbitControls for the car group only
         controlsRef.current = new OrbitControls(camera, renderer.domElement);
         controlsRef.current.enableDamping = true;
         controlsRef.current.dampingFactor = 0.05;
         controlsRef.current.enabled = isOrbitEnabled;
-
-        let carGroup = new THREE.Group();
-        const loadCar = (index: number) => {
-            carGroupRef.current.clear();
-            const loader = new GLTFLoader();
-
-            const carParts = carModels[index];
-            Object.entries(carParts).forEach(([partName, partPath]) => {
-                loader.load(partPath, (gltf) => {
-                    const part = gltf.scene;
-                    part.name = partName;
-                    
-                    if (partName === 'chassis') {
-                        applyMatcap(part, 'elevator');
-                        addArrowCustomizationPoint(part, '/garage/arrow.svg');
-                    }
-
-                    carGroupRef.current.add(part);
-                });
-            });
-
-            scene.add(carGroupRef.current);
-        };
-
+    
+        // Function to apply a matcap texture to parts
         const applyMatcap = (part: THREE.Object3D, matcapName: string) => {
             const texture = matcapTextures.current[matcapName];
             if (texture) {
@@ -87,6 +68,55 @@ export default function GaragePage() {
                         child.material.needsUpdate = true;
                     }
                 });
+            }
+        };
+    
+        // Load and add the static gas station model
+        const loader = new GLTFLoader();
+        loader.load('/garage/gasstation.glb', (gltf) => {
+            const gasStation = gltf.scene;
+
+            gasStation.position.set(1.5, 0, -0.1);
+            gasStation.rotation.x = Math.PI / 2;
+            gasStation.rotation.y = Math.PI;
+            // gasStation.rotation.z = Math.PI;
+
+            gasStation.scale.set(1, 1, 1);
+
+            // Add gas station directly to the scene so it stays fixed
+            scene.add(gasStation);
+        });
+    
+        // Initialize carGroup and load car parts
+        carGroupRef.current = new THREE.Group();
+        const loadCar = (index: number) => {
+            carGroupRef.current.clear();
+            const loader = new GLTFLoader();
+            const carParts = carModels[index];
+    
+            Object.entries(carParts).forEach(([partName, partPath]) => {
+                loader.load(partPath, (gltf) => {
+                    const part = gltf.scene;
+                    part.name = partName;
+                    
+                    if (partName === 'chassis') {
+                        applyMatcap(part, 'elevator');
+                        addArrowCustomizationPoint(part, '/garage/arrow.svg');
+                    } else if (partName === 'wheels') {
+                        applyMatcap(part, 'elevator');
+                        addWheelCustomizationPoint(part, '/garage/arrow.svg'); 
+                    } else if (partName === 'tire') {
+                        applyMatcap(part, 'black');
+                        addTireCustomizationPoint(part, '/garage/arrow.svg')
+                    }
+    
+                    carGroupRef.current.add(part);
+                });
+            });
+    
+            scene.add(carGroupRef.current);
+            if (controlsRef.current) {
+                controlsRef.current.target.copy(carGroupRef.current.position); // Focus controls on carGroup only
             }
         };
 
@@ -140,9 +170,112 @@ export default function GaragePage() {
             });
         };
 
+        // Add arrow customization points to each wheel part
+        const addWheelCustomizationPoint = (part: THREE.Object3D, svgPath: string) => {
+            const loader = new SVGLoader();
+
+            loader.load(svgPath, (data) => {
+                const paths = data.paths;
+                const group = new THREE.Group();
+
+                // Extrusion settings to give the arrow shape depth
+                const extrudeSettings = {
+                    depth: 2,
+                    bevelEnabled: false,
+                };
+
+                paths.forEach((path) => {
+                    const shapes = SVGLoader.createShapes(path);
+                    shapes.forEach((shape) => {
+                        const material = new THREE.MeshBasicMaterial({
+                            color: 0xffffff,
+                            wireframe: true,
+                            side: THREE.DoubleSide,
+                        });
+
+                        const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+                        const mesh = new THREE.Mesh(geometry, material);
+
+                        // Set position and scale for each arrow
+                        mesh.position.set(0, 0, 0.1);
+                        mesh.scale.set(0.02, 0.02, 0.02);
+
+                        mesh.userData.partName = part.name; // Set partName to track wheel part
+                        customizationPoints.current.push(mesh);
+                        group.add(mesh);
+                    });
+                });
+
+                group.position.set(0.8, -0.4, -0.5); // Adjust position based on wheel part
+                group.rotation.y = -Math.PI / 2;
+
+                part.add(group);
+
+                const animatePulsate = () => {
+                    requestAnimationFrame(animatePulsate);
+                    const scale = Math.sin(Date.now() * 0.003) * 0.3 + 0.7;
+                    group.scale.set(scale, scale, scale);
+                };
+                animatePulsate();
+            });
+        };
+
+        // Add arrow customization points to each tire part
+        const addTireCustomizationPoint = (part: THREE.Object3D, svgPath: string) => {
+            const loader = new SVGLoader();
+
+            loader.load(svgPath, (data) => {
+                const paths = data.paths;
+                const group = new THREE.Group();
+
+                // Extrusion settings to give the arrow shape depth
+                const extrudeSettings = {
+                    depth: 2,
+                    bevelEnabled: false,
+                };
+
+                paths.forEach((path) => {
+                    const shapes = SVGLoader.createShapes(path);
+                    shapes.forEach((shape) => {
+                        const material = new THREE.MeshBasicMaterial({
+                            color: 0xffffff,
+                            wireframe: true,
+                            side: THREE.DoubleSide,
+                        });
+
+                        const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+                        const mesh = new THREE.Mesh(geometry, material);
+
+                        // Set position and scale for each arrow
+                        mesh.position.set(0, 0, 0.1);
+                        mesh.scale.set(0.02, 0.02, 0.02);
+
+                        mesh.userData.partName = part.name; // Set partName to track tire part
+                        customizationPoints.current.push(mesh);
+                        group.add(mesh);
+                    });
+                });
+
+                // Position the group relative to the tire part
+                group.position.set(-1.4, -0.5, 0.3); // Adjust position based on tire part positioning
+                group.rotation.x = -Math.PI / 2;
+
+                part.add(group);
+
+                const animatePulsate = () => {
+                    requestAnimationFrame(animatePulsate);
+                    const scale = Math.sin(Date.now() * 0.003) * 0.3 + 0.7;
+                    group.scale.set(scale, scale, scale);
+                };
+                animatePulsate();
+            });
+        };
+
         const animate = () => {
             requestAnimationFrame(animate);
-            controlsRef.current?.update();
+            if (controlsRef.current) {
+                controlsRef.current.update();
+            }
             renderer.render(scene, camera);
         };
         animate();
@@ -202,6 +335,7 @@ export default function GaragePage() {
 
     const handlePartCustomization = (matcapName: string) => {
         const texture = matcapTextures.current[matcapName];
+        
         if (!texture) {
             console.warn("Matcap texture not found:", matcapName);
             return;
@@ -211,25 +345,60 @@ export default function GaragePage() {
             return;
         }
     
-        console.log("Applying texture to part:", selectedPart); // Debug log
+        console.log("Applying texture to part:", selectedPart);
     
-        // Traverse through carGroupRef to find and apply texture to `shadeelevator`
-        carGroupRef.current.traverse((child) => {
-            if (child instanceof THREE.Mesh) {
-                console.log("Checking child:", child.name); // Log each child name for clarity
-    
-                if (child.name === 'shadeelevator' && selectedPart === 'chassis') {
-                    console.log(`Applying matcap texture to ${child.name}`); // Confirm specific part
-    
+        // Separate traversal for chassis and wheels
+        if (selectedPart === 'chassis') {
+            // Apply the texture only to chassis
+            carGroupRef.current.traverse((child) => {
+                console.log("Checking child for chassis:", child.name); // Debugging log
+                if (child instanceof THREE.Mesh && child.name === 'shadeelevator') {
+                    console.log(`Applying matcap texture to chassis: ${child.name}`);
                     child.material = new THREE.MeshMatcapMaterial({ matcap: texture });
                     child.material.needsUpdate = true;
-                    console.log(`Updated ${child.name} with ${matcapName} matcap`);
+                    console.log(`Updated chassis with ${matcapName} matcap`);
                 }
+            });
+        } else if (selectedPart === 'wheels') {
+        // Apply the texture only to wheels
+        carGroupRef.current.traverse((child) => {
+            console.log("Checking child for wheels:", child.name); // Debugging log
+            if (child instanceof THREE.Mesh 
+                    && (child.name.includes('wheels') 
+                    || child.name === 'shadeelevator005' 
+                    || child.name === 'shadeelevator006'
+                    || child.name === 'shadeelevator007'
+                    || child.name === 'shadeelevator008'
+                    || child.name === 'shadeelevator009' 
+                    || child.name === 'shadeelevator010'
+                    || child.name === 'shadeelevator011'
+                    || child.name === 'shadeelevator012'
+                )) {
+                console.log(`Applying matcap texture to wheel: ${child.name}`);
+                child.material = new THREE.MeshMatcapMaterial({ matcap: texture });
+                child.material.needsUpdate = true;
+                console.log(`Updated wheel ${child.name} with ${matcapName} matcap`);
             }
         });
+    } else if (selectedPart === 'tires') {
+        // Apply the texture only to tires
+        carGroupRef.current.traverse((child) => {
+            console.log("Checking child for tires:", child.name); // Debugging log
+            if (child instanceof THREE.Mesh && 
+                (child.name.includes('tires') || 
+                 ['tirePart1', 'tirePart2', 'tirePart3', 'tirePart4'].includes(child.name))
+            ) {
+                console.log(`Applying matcap texture to tire: ${child.name}`);
+                child.material = new THREE.MeshMatcapMaterial({ matcap: texture });
+                child.material.needsUpdate = true;
+                console.log(`Updated tire ${child.name} with ${matcapName} matcap`);
+            }
+        });
+    }
     
         setShowMatcapMenu(false);
     };
+
 
     return (
         <div style={{ position: 'relative', width: '100%', height: '100%' }}>
