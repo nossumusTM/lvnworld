@@ -40,14 +40,14 @@ export default function GaragePage() {
     // };
 
     const svgIcons: { [key: string]: string } = {
-        chassisbottom: '/garage/chassisbottom.svg',
         chassis: '/garage/chassis.svg',
-        bumper: '/garage/chassisbottom.svg',
-        spoiler: '/garage/chassisbottom.svg',
-        window: '/garage/chassisbottom.svg',
+        chassisbottom: '/garage/chassisbottom.svg',
+        bumper: '/garage/bumper.svg',
+        spoiler: '/garage/spoiler.svg',
+        window: '/garage/window.svg',
         wheels: '/garage/wheel.svg',
-        tire: '/garage/chassisbottom.svg',
-        antena: '/garage/chassisbottom.svg',
+        tire: '/garage/tire.svg',
+        antena: '/garage/antena.svg',
     };    
 
     // Load matcap textures
@@ -272,7 +272,7 @@ export default function GaragePage() {
     }
     
         setShowMatcapMenu(false);
-        setSelectedPart(null);
+        // setSelectedPart(null);
     };
 
     return (
@@ -306,14 +306,15 @@ export default function GaragePage() {
                 <div
                     style={{
                         position: 'absolute',
-                        bottom: '7%',
+                        bottom: '10%',
                         left: '50%',
                         transform: 'translateX(-50%)',
                         display: 'flex',
                         gap: '20px',
-                        backgroundColor: '#0213f7',
+                        backgroundColor: 'transparent',
+                        backdropFilter: 'blur(5px)',
                         padding: '10px',
-                        borderRadius: '8px',
+                        borderRadius: '20px',
                         overflowX: 'auto',
                         maxWidth: '90%', // Restrict the menu width and make it scrollable
                         alignItems: 'center',
@@ -321,21 +322,49 @@ export default function GaragePage() {
                 >
                     {Object.keys(svgIcons).map((partName) => (
                         <button
-                            key={partName}
-                            onClick={() => handlePartSelection(partName)}
+                        key={partName}
+                        onClick={() => handlePartSelection(partName)}
+                        style={{
+                            position: 'relative',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '120px', // Adjusted for outer circle padding
+                            height: '120px',
+                            backgroundColor: 'rgba(24, 255, 0, 0.15)', // Slight transparent green overlay
+                            border: 'none',
+                            borderRadius: '10px',
+                            padding: '10px',
+                            overflow: 'hidden',
+                            backdropFilter: 'blur(8px)',
+                            boxShadow: '0px 0px 10px rgba(24, 255, 0, 0.3)', // Subtle glow
+                        }}
+                    >
+                        {/* Highlighted Circle */}
+                        {/* <div
                             style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                width: '50px',
-                                height: '50px',
-                                backgroundColor: '#555',
-                                border: 'none',
-                                borderRadius: '8px',
-                                padding: '5px',
+                                position: 'absolute',
+                                width: '100%',
+                                height: '100%',
+                                borderRadius: '50%',
+                                backgroundColor: '#18ff00',
+                                opacity: 0.3, // Slight transparency to see through
+                                top: 0,
+                                left: 0,
+                                zIndex: 1,
                             }}
-                        >
-                    <img src={svgIcons[partName]} alt={`${partName} icon`} style={{ width: '50%' }} />
+                        ></div> */}
+                    
+                        {/* Icon Image */}
+                        <img
+                            src={svgIcons[partName]}
+                            alt={`${partName} icon`}
+                            style={{
+                                position: 'relative',
+                                width: '100%',
+                                zIndex: 2,
+                            }}
+                        />
                     </button>
                     ))}
                 </div>
