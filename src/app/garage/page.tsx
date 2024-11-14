@@ -44,6 +44,7 @@ export default function GaragePage() {
     
         // Initialize the scene
         const scene = new THREE.Scene();
+        scene.background = new THREE.Color('#0213f7'); // Updated background color
         const camera = new THREE.PerspectiveCamera(1.2, window.innerWidth / window.innerHeight, 0.1, 1000);
         camera.position.set(0, -200, 2);
     
@@ -63,6 +64,10 @@ export default function GaragePage() {
         controlsRef.current.enableDamping = true;
         controlsRef.current.dampingFactor = 0.05;
         controlsRef.current.enabled = isOrbitEnabled;
+
+        // Limit zoom in and zoom out distance
+        controlsRef.current.minDistance = 100; // Minimum zoom distance
+        controlsRef.current.maxDistance = 200; // Maximum zoom distance
     
         // Function to apply a matcap texture to parts
         const applyMatcap = (part: THREE.Object3D, matcapName: string) => {
@@ -401,10 +406,10 @@ export default function GaragePage() {
         <div style={{ position: 'relative', width: '100%', height: '100%' }}>
             <canvas ref={canvasRef} style={{ width: '100%', height: '100%' }} />
 
-            <div style={{ position: 'absolute', top: '50%', left: '10%', transform: 'translateY(-50%)' }}>
+            <div style={{ position: 'absolute', bottom: '15%', left: '10%', transform: 'translateY(-50%)' }}>
                 <button onClick={handlePreviousCar}>←</button>
             </div>
-            <div style={{ position: 'absolute', top: '50%', right: '10%', transform: 'translateY(-50%)' }}>
+            <div style={{ position: 'absolute', bottom: '15%', right: '10%', transform: 'translateY(-50%)' }}>
                 <button onClick={handleNextCar}>→</button>
             </div>
 

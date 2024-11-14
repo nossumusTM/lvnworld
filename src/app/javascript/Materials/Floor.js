@@ -6,7 +6,7 @@ import shaderVertex from '../../shaders/floor/vertex.glsl'
 export default function()
 {
     const uniforms = {
-        tBackground: { value: "18ff00" }
+        tBackground: { value: "#0213f7" }
     }
 
     const material = new THREE.ShaderMaterial({
