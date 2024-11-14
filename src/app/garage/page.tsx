@@ -11,6 +11,7 @@ export default function GaragePage() {
     const carGroupRef = useRef<THREE.Group>(new THREE.Group());
     const [currentCarIndex, setCurrentCarIndex] = useState(0);
     const [isOrbitEnabled, setIsOrbitEnabled] = useState(false);
+    const [showCustomizationMenu, setShowCustomizationMenu] = useState(false);
     const [showMatcapMenu, setShowMatcapMenu] = useState(false);
     const [selectedPart, setSelectedPart] = useState<string | null>(null);
 
@@ -23,6 +24,11 @@ export default function GaragePage() {
     const mouse = new THREE.Vector2();
     const customizationPoints = useRef<THREE.Mesh[]>([]);
     const matcapTextures = useRef<{ [key: string]: THREE.Texture }>({});
+    const svgIcons: { chassis: string; wheels: string; tire: string } = {
+        chassis: '/garage/chassis.svg',
+        wheels: '/garage/wheel.svg',
+        tire: '/garage/rocket.svg'
+    };
 
     // Load matcap textures
     useEffect(() => {
@@ -71,22 +77,6 @@ export default function GaragePage() {
             }
         };
     
-        // Load and add the static gas station model
-        // const loader = new GLTFLoader();
-        // loader.load('/garage/gasstation.glb', (gltf) => {
-        //     const gasStation = gltf.scene;
-
-        //     gasStation.position.set(1.5, 0, -0.1);
-        //     gasStation.rotation.x = Math.PI / 2;
-        //     gasStation.rotation.y = Math.PI;
-        //     // gasStation.rotation.z = Math.PI;
-
-        //     gasStation.scale.set(1, 1, 1);
-
-        //     // Add gas station directly to the scene so it stays fixed
-        //     scene.add(gasStation);
-        // });
-    
         // Initialize carGroup and load car parts
         carGroupRef.current = new THREE.Group();
         const loadCar = (index: number) => {
@@ -101,13 +91,13 @@ export default function GaragePage() {
                     
                     if (partName === 'chassis') {
                         applyMatcap(part, 'elevator');
-                        addArrowCustomizationPoint(part, '/garage/arrow.svg');
+                        // addArrowCustomizationPoint(part, '/garage/chassis.svg');
                     } else if (partName === 'wheels') {
                         applyMatcap(part, 'elevator');
-                        addWheelCustomizationPoint(part, '/garage/arrow.svg'); 
+                        // addWheelCustomizationPoint(part, '/garage/arrow.svg'); 
                     } else if (partName === 'tire') {
                         applyMatcap(part, 'black');
-                        addTireCustomizationPoint(part, '/garage/arrow.svg')
+                        // addTireCustomizationPoint(part, '/garage/arrow.svg')
                     }
     
                     carGroupRef.current.add(part);
@@ -115,161 +105,161 @@ export default function GaragePage() {
             });
     
             scene.add(carGroupRef.current);
-            if (controlsRef.current) {
-                controlsRef.current.target.copy(carGroupRef.current.position); // Focus controls on carGroup only
-            }
+            // if (controlsRef.current) {
+            //     controlsRef.current.target.copy(carGroupRef.current.position); // Focus controls on carGroup only
+            // }
         };
 
         loadCar(currentCarIndex);
 
-        const addArrowCustomizationPoint = (part: THREE.Object3D, svgPath: string) => {
-            const loader = new SVGLoader();
+        // const addArrowCustomizationPoint = (part: THREE.Object3D, svgPath: string) => {
+        //     const loader = new SVGLoader();
         
-            loader.load(svgPath, (data) => {
-                const paths = data.paths;
-                const group = new THREE.Group();
+        //     loader.load(svgPath, (data) => {
+        //         const paths = data.paths;
+        //         const group = new THREE.Group();
         
-                // Extrusion settings for depth
-                const extrudeSettings = {
-                    depth: 2,
-                    bevelEnabled: false,
-                };
+        //         // Extrusion settings for depth
+        //         const extrudeSettings = {
+        //             depth: 2,
+        //             bevelEnabled: false,
+        //         };
         
-                paths.forEach((path) => {
-                    const shapes = SVGLoader.createShapes(path);
-                    shapes.forEach((shape) => {
-                        const material = new THREE.MeshBasicMaterial({
-                            color: 0xffffff,
-                            wireframe: true,
-                            side: THREE.DoubleSide,
-                        });
+        //         paths.forEach((path) => {
+        //             const shapes = SVGLoader.createShapes(path);
+        //             shapes.forEach((shape) => {
+        //                 const material = new THREE.MeshBasicMaterial({
+        //                     color: 0xffffff,
+        //                     wireframe: true,
+        //                     side: THREE.DoubleSide,
+        //                 });
         
-                        const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-                        const mesh = new THREE.Mesh(geometry, material);
+        //                 const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+        //                 const mesh = new THREE.Mesh(geometry, material);
         
-                        // Set position and scale for visibility
-                        mesh.position.set(0, 0, 0.1);
-                        mesh.scale.set(0.02, 0.02, 0.02);
+        //                 // Set position and scale for visibility
+        //                 mesh.position.set(0, 0, 0.1);
+        //                 mesh.scale.set(0.005, 0.005, 0.005);
         
-                        mesh.userData.partName = part.name; // Set partName based on part
-                        customizationPoints.current.push(mesh);
-                        group.add(mesh);
-                    });
-                });
+        //                 mesh.userData.partName = part.name; // Set partName based on part
+        //                 customizationPoints.current.push(mesh);
+        //                 group.add(mesh);
+        //             });
+        //         });
         
-                group.position.set(0, 0, 1.5);
-                group.rotation.y = Math.PI / 2;
-                part.add(group);
+        //         group.position.set(0, 0, 1.5);
+        //         group.rotation.y = Math.PI / 2;
+        //         part.add(group);
         
-                const animatePulsate = () => {
-                    requestAnimationFrame(animatePulsate);
-                    const scale = Math.sin(Date.now() * 0.003) * 0.3 + 0.7;
-                    group.scale.set(scale, scale, scale);
-                };
-                animatePulsate();
-            });
-        };
+        //         const animatePulsate = () => {
+        //             requestAnimationFrame(animatePulsate);
+        //             const scale = Math.sin(Date.now() * 0.003) * 0.3 + 0.7;
+        //             group.scale.set(scale, scale, scale);
+        //         };
+        //         animatePulsate();
+        //     });
+        // };
 
-        // Add arrow customization points to each wheel part
-        const addWheelCustomizationPoint = (part: THREE.Object3D, svgPath: string) => {
-            const loader = new SVGLoader();
+        // // Add arrow customization points to each wheel part
+        // const addWheelCustomizationPoint = (part: THREE.Object3D, svgPath: string) => {
+        //     const loader = new SVGLoader();
 
-            loader.load(svgPath, (data) => {
-                const paths = data.paths;
-                const group = new THREE.Group();
+        //     loader.load(svgPath, (data) => {
+        //         const paths = data.paths;
+        //         const group = new THREE.Group();
 
-                // Extrusion settings to give the arrow shape depth
-                const extrudeSettings = {
-                    depth: 2,
-                    bevelEnabled: false,
-                };
+        //         // Extrusion settings to give the arrow shape depth
+        //         const extrudeSettings = {
+        //             depth: 2,
+        //             bevelEnabled: false,
+        //         };
 
-                paths.forEach((path) => {
-                    const shapes = SVGLoader.createShapes(path);
-                    shapes.forEach((shape) => {
-                        const material = new THREE.MeshBasicMaterial({
-                            color: 0xffffff,
-                            wireframe: true,
-                            side: THREE.DoubleSide,
-                        });
+        //         paths.forEach((path) => {
+        //             const shapes = SVGLoader.createShapes(path);
+        //             shapes.forEach((shape) => {
+        //                 const material = new THREE.MeshBasicMaterial({
+        //                     color: 0xffffff,
+        //                     wireframe: true,
+        //                     side: THREE.DoubleSide,
+        //                 });
 
-                        const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-                        const mesh = new THREE.Mesh(geometry, material);
+        //                 const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+        //                 const mesh = new THREE.Mesh(geometry, material);
 
-                        // Set position and scale for each arrow
-                        mesh.position.set(0, 0, 0.1);
-                        mesh.scale.set(0.02, 0.02, 0.02);
+        //                 // Set position and scale for each arrow
+        //                 mesh.position.set(0, 0, 0.1);
+        //                 mesh.scale.set(0.0002, 0.0002, 0.0002);
 
-                        mesh.userData.partName = part.name; // Set partName to track wheel part
-                        customizationPoints.current.push(mesh);
-                        group.add(mesh);
-                    });
-                });
+        //                 mesh.userData.partName = part.name; // Set partName to track wheel part
+        //                 customizationPoints.current.push(mesh);
+        //                 group.add(mesh);
+        //             });
+        //         });
 
-                group.position.set(0.8, -0.4, -0.5); // Adjust position based on wheel part
-                group.rotation.y = -Math.PI / 2;
+        //         group.position.set(0.8, -0.4, -0.5); // Adjust position based on wheel part
+        //         group.rotation.x = -Math.PI / 2;
 
-                part.add(group);
+        //         part.add(group);
 
-                const animatePulsate = () => {
-                    requestAnimationFrame(animatePulsate);
-                    const scale = Math.sin(Date.now() * 0.003) * 0.3 + 0.7;
-                    group.scale.set(scale, scale, scale);
-                };
-                animatePulsate();
-            });
-        };
+        //         const animatePulsate = () => {
+        //             requestAnimationFrame(animatePulsate);
+        //             const scale = Math.sin(Date.now() * 0.003) * 0.3 + 0.7;
+        //             group.scale.set(scale, scale, scale);
+        //         };
+        //         animatePulsate();
+        //     });
+        // };
 
-        // Add arrow customization points to each tire part
-        const addTireCustomizationPoint = (part: THREE.Object3D, svgPath: string) => {
-            const loader = new SVGLoader();
+        // // Add arrow customization points to each tire part
+        // const addTireCustomizationPoint = (part: THREE.Object3D, svgPath: string) => {
+        //     const loader = new SVGLoader();
 
-            loader.load(svgPath, (data) => {
-                const paths = data.paths;
-                const group = new THREE.Group();
+        //     loader.load(svgPath, (data) => {
+        //         const paths = data.paths;
+        //         const group = new THREE.Group();
 
-                // Extrusion settings to give the arrow shape depth
-                const extrudeSettings = {
-                    depth: 2,
-                    bevelEnabled: false,
-                };
+        //         // Extrusion settings to give the arrow shape depth
+        //         const extrudeSettings = {
+        //             depth: 2,
+        //             bevelEnabled: false,
+        //         };
 
-                paths.forEach((path) => {
-                    const shapes = SVGLoader.createShapes(path);
-                    shapes.forEach((shape) => {
-                        const material = new THREE.MeshBasicMaterial({
-                            color: 0xffffff,
-                            wireframe: true,
-                            side: THREE.DoubleSide,
-                        });
+        //         paths.forEach((path) => {
+        //             const shapes = SVGLoader.createShapes(path);
+        //             shapes.forEach((shape) => {
+        //                 const material = new THREE.MeshBasicMaterial({
+        //                     color: 0xffffff,
+        //                     wireframe: true,
+        //                     side: THREE.DoubleSide,
+        //                 });
 
-                        const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-                        const mesh = new THREE.Mesh(geometry, material);
+        //                 const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+        //                 const mesh = new THREE.Mesh(geometry, material);
 
-                        // Set position and scale for each arrow
-                        mesh.position.set(0, 0, 0.1);
-                        mesh.scale.set(0.02, 0.02, 0.02);
+        //                 // Set position and scale for each arrow
+        //                 mesh.position.set(0, 0, 0.1);
+        //                 mesh.scale.set(0.0002, 0.0002, 0.0002);
 
-                        mesh.userData.partName = part.name; // Set partName to track tire part
-                        customizationPoints.current.push(mesh);
-                        group.add(mesh);
-                    });
-                });
+        //                 mesh.userData.partName = part.name; // Set partName to track tire part
+        //                 customizationPoints.current.push(mesh);
+        //                 group.add(mesh);
+        //             });
+        //         });
 
-                // Position the group relative to the tire part
-                group.position.set(-1.4, -0.5, 0.3); // Adjust position based on tire part positioning
-                group.rotation.x = -Math.PI / 2;
+        //         // Position the group relative to the tire part
+        //         group.position.set(-1.4, -0.5, 0.3); // Adjust position based on tire part positioning
+        //         group.rotation.x = -Math.PI / 2;
 
-                part.add(group);
+        //         part.add(group);
 
-                const animatePulsate = () => {
-                    requestAnimationFrame(animatePulsate);
-                    const scale = Math.sin(Date.now() * 0.003) * 0.3 + 0.7;
-                    group.scale.set(scale, scale, scale);
-                };
-                animatePulsate();
-            });
-        };
+        //         const animatePulsate = () => {
+        //             requestAnimationFrame(animatePulsate);
+        //             const scale = Math.sin(Date.now() * 0.003) * 0.3 + 0.7;
+        //             group.scale.set(scale, scale, scale);
+        //         };
+        //         animatePulsate();
+        //     });
+        // };
 
         const animate = () => {
             requestAnimationFrame(animate);
@@ -331,6 +321,12 @@ export default function GaragePage() {
 
     const handleCarClick = () => {
         setIsOrbitEnabled(true);
+        setShowCustomizationMenu(true);
+    };
+
+    const handlePartSelection = (partName: string) => {
+        setSelectedPart(partName);
+        setShowCustomizationMenu(false);
     };
 
     const handlePartCustomization = (matcapName: string) => {
@@ -397,6 +393,7 @@ export default function GaragePage() {
     }
     
         setShowMatcapMenu(false);
+        setSelectedPart(null);
     };
 
 
@@ -419,13 +416,85 @@ export default function GaragePage() {
                     transform: 'translateX(-50%)',
                     textAlign: 'center',
                     color: '#fff',
+                    fontFamily: 'Orbitron'
                 }}
             >
-                <h3>Cybertruck {currentCarIndex + 1}</h3>
-                <button onClick={handleCarClick}>Customize</button>
+                <h3 style={{fontSize: '30px'}}>Cybertruck</h3>
+                <button style={{paddingTop: '30px'}} onClick={handleCarClick}>CUSTOMIZE</button>
             </div>
 
-            {showMatcapMenu && (
+            {/* Customization Menu */}
+            {showCustomizationMenu && (
+                <div
+                    style={{
+                        position: 'absolute',
+                        bottom: '10%',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        display: 'flex',
+                        gap: '20px',
+                        backgroundColor: '#333',
+                        padding: '10px',
+                        borderRadius: '8px',
+                    }}
+                >
+                    {Object.keys(svgIcons).map((partName) => (
+                        <button
+                            key={partName}
+                            onClick={() => handlePartSelection(partName)}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: '50px',
+                                height: '50px',
+                                backgroundColor: '#555',
+                                border: 'none',
+                                borderRadius: '8px',
+                                padding: '5px',
+                            }}
+                        >
+                        <img src={svgIcons[partName as keyof typeof svgIcons]} alt={`${partName} icon`} style={{ width: '100%' }} />
+                        </button>
+                    ))}
+                </div>
+            )}
+
+            {/* Material Selection Menu */}
+            {selectedPart && (
+                <div
+                    style={{
+                        position: 'absolute',
+                        top: '10%',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        backgroundColor: '#333',
+                        padding: '10px',
+                        borderRadius: '8px',
+                    }}
+                >
+                    <h4>Select Material for {selectedPart}</h4>
+                    {Object.keys(matcapTextures.current).map((matcapName) => (
+                        <button
+                            key={matcapName}
+                            onClick={() => handlePartCustomization(matcapName)}
+                            style={{
+                                margin: '5px',
+                                padding: '5px',
+                                color: '#fff',
+                                backgroundColor: '#555',
+                            }}
+                        >
+                            {matcapName}
+                        </button>
+                    ))}
+                    <button onClick={() => setSelectedPart(null)} style={{ marginTop: '10px' }}>
+                        Close
+                    </button>
+                </div>
+            )}
+
+            {/* {showMatcapMenu && (
                 <div
                     style={{
                         position: 'absolute',
@@ -456,7 +525,7 @@ export default function GaragePage() {
                         Close
                     </button>
                 </div>
-            )}
+            )} */}
         </div>
     );
 }
