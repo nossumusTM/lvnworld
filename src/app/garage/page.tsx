@@ -31,7 +31,8 @@ export default function GaragePage() {
             window: '/models/car/default/window.glb',
             wheels: '/models/car/default/wheels.glb', 
             tire: '/models/car/default/tire.glb', 
-            antena: '/models/car/default/antena.glb'
+            antena: '/models/car/default/antena.glb',
+            rocket: '/garage/rocket.glb',
         },
     ];
 
@@ -47,6 +48,7 @@ export default function GaragePage() {
         chassisbottom: '/garage/bottom.png',
         spoiler: '/garage/spoiler.png',
         window: '/garage/window.png',
+        rocket: '/garage/window.png'
     };     
 
     // Load matcap textures
@@ -108,39 +110,52 @@ export default function GaragePage() {
     
         // Initialize carGroup and load car parts
         carGroupRef.current = new THREE.Group();
-        const loadCar = (index: number) => {
+        const loadCar = async (index: number) => {
             carGroupRef.current.clear();
             const loader = new GLTFLoader();
             const carParts = carModels[index];
+            const loadingPromises: Promise<THREE.Object3D>[] = [];
     
             Object.entries(carParts).forEach(([partName, partPath]) => {
-                loader.load(partPath, (gltf) => {
-                    const part = gltf.scene;
-                    part.name = partName;
-                    
-                    if (partName === 'chassis') {
-                        applyMatcap(part, 'blueGlass');
-                    } else if (partName === 'wheels') {
-                        applyMatcap(part, 'metal');
-                    } else if (partName === 'tire') {
-                        applyMatcap(part, 'black');
-                    } else if (partName === 'chassisbottom') {
-                        applyMatcap(part, 'black');
-                    } else if (partName === 'bumper') {
-                        applyMatcap(part, 'black');
-                    } else if (partName === 'spoiler') {
-                        applyMatcap(part, 'black');
-                    } else if (partName === 'window') {
-                        applyMatcap(part, 'black');
-                    }
-    
-                    carGroupRef.current.add(part);
-                });
-            });
-    
-            scene.add(carGroupRef.current);
+                const promise: Promise<THREE.Object3D> = new Promise((resolve) => {
+                    loader.load(partPath, (gltf) => {
+                        const part = gltf.scene as THREE.Object3D;
+                        part.name = partName;
+                        
+                        if (partName === 'chassis') {
+                            applyMatcap(part, 'blueGlass');
+                        } else if (partName === 'rocket') {
+                            console.log("Rocket loaded and added to the scene.");
+                            part.position.set(0, 0, 0); // Ensure it's at the origin
+                            part.scale.set(1, 1, 1); // Reset scale
+                            part.rotation.set(0, 0, 0); // Reset rotation
+                            part.visible = false; // Initially hide the rocket
+                        } else if (partName === 'wheels') {
+                            applyMatcap(part, 'metal');
+                        } else if (partName === 'tire') {
+                            applyMatcap(part, 'black');
+                        } else if (partName === 'chassisbottom') {
+                            applyMatcap(part, 'black');
+                        } else if (partName === 'bumper') {
+                            applyMatcap(part, 'black');
+                        } else if (partName === 'spoiler') {
+                            applyMatcap(part, 'black');
+                        } else if (partName === 'window') {
+                            applyMatcap(part, 'black');
+                        }
+        
+                        carGroupRef.current.add(part);
+                        resolve(part); // Resolve the promise once the part is loaded
+                        });
+                    });
 
-        };
+                    loadingPromises.push(promise);
+                });
+
+                // Wait for all parts to finish loading
+                await Promise.all(loadingPromises);
+                scene.add(carGroupRef.current);
+            };
 
         loadCar(currentCarIndex);
 
@@ -231,17 +246,54 @@ export default function GaragePage() {
     const handlePartSelection = (partName: string) => {
         setSelectedPart(partName);
 
-            // Define target positions and lookAt based on part
-            let targetPosition = new THREE.Vector3(0, -200, 2);
-            let targetLookAt = new THREE.Vector3(0, -100, 2);
+        console.log(`Part selected: ${partName}`);
+
+        let rocketFound = false;
+
+        carGroupRef.current.traverse((child) => {
+            if (child instanceof THREE.Object3D) {
+                if (child.name === 'rocket') {
+                    rocketFound = true;
+                }
+
+                if (partName === 'rocket') {
+                    if (child.name === 'rocket') {
+                        rocketFound = true;
+                        child.visible = true; // Explicitly set visible for the rocket
+                        console.log(`Rocket visibility set to: ${child.visible}`);
+                    } else {
+                        child.visible = false; // Hide all other parts
+                    }
+                } else {
+                    child.visible = child.name !== 'rocket'; // Show all except rocket
+                }
+
+                console.log(`After - Child name: ${child.name}, Visibility: ${child.visible}`);
+
+            }
+        });
+
+        if (!rocketFound) {
+            console.warn("Rocket part not found in the scene!");
+        }
+
+        // Define target positions and lookAt based on part
+        let targetPosition = new THREE.Vector3(0, -200, 2);
+        let targetLookAt = new THREE.Vector3(0, -100, 2);
             
         if (partName === 'chassis') {
-
-            cameraRef.current?.position.set(0, -100, 2);
-            smoothCameraTransition(targetPosition, targetLookAt)
+            targetPosition = new THREE.Vector3(0, -200, 50);
+            targetLookAt = new THREE.Vector3(0, -100, 0);
         } else if (partName === 'wheels') {
-            cameraRef.current?.position.set(15, 20, 40);
+            targetPosition = new THREE.Vector3(0, -200, 50);
+            targetLookAt = new THREE.Vector3(15, 20, 40);
+        } else if (partName === 'rocket') {
+            setShowCustomizationMenu(false);
+            targetPosition = new THREE.Vector3(0, -200, 2); // Adjust for rocket view
+            targetLookAt = new THREE.Vector3(0, -200, 2);
         }
+
+        smoothCameraTransition(targetPosition, targetLookAt)
         setShowCustomizationMenu(false);
     };
 
@@ -417,7 +469,7 @@ export default function GaragePage() {
                             onClick={() => setSelectedPart(null)}
                             className="close-button"
                         >
-                            DONE
+                            CONFIRM
                         </button>
                     </div>
                 </div>
