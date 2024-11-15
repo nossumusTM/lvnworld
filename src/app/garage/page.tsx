@@ -10,6 +10,8 @@ import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
+import gsap from 'gsap';
+
 export default function GaragePage() {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const carGroupRef = useRef<THREE.Group>(new THREE.Group());
@@ -213,10 +215,33 @@ export default function GaragePage() {
         setShowCustomizationMenu(true);
     };
 
+    // Smooth camera transition function
+    const smoothCameraTransition = (position: THREE.Vector3, lookAt: THREE.Vector3) => {
+        if (!cameraRef.current) return;
+        
+        gsap.to(cameraRef.current.position, {
+            duration: 1.5, // Duration in seconds
+            x: position.x,
+            y: position.y,
+            z: position.z,
+            onUpdate: () => {
+                cameraRef.current?.lookAt(lookAt);
+                controlsRef.current?.update();
+            }
+        });
+    };
+
     const handlePartSelection = (partName: string) => {
         setSelectedPart(partName);
+
+            // Define target positions and lookAt based on part
+            let targetPosition = new THREE.Vector3(0, -200, 2);
+            let targetLookAt = new THREE.Vector3(0, -100, 2);
+            
         if (partName === 'chassis') {
+
             cameraRef.current?.position.set(0, -100, 2);
+            smoothCameraTransition(targetPosition, targetLookAt)
         } else if (partName === 'wheels') {
             cameraRef.current?.position.set(15, 20, 40);
         }
@@ -336,8 +361,8 @@ export default function GaragePage() {
                     fontFamily: 'Orbitron'
                 }}
             >
-                <h3 style={{fontSize: '30px'}}>Cybertruck</h3>
-                <button style={{paddingTop: '20px'}} onClick={handleCarClick}>CUSTOMIZE</button>
+                <h3 style={{fontSize: '30px', textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)',}}>Cybertruck</h3>
+                <button style={{paddingTop: '20px', animation: 'pulse 1.5s infinite', textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)'}} onClick={handleCarClick}>CUSTOMIZE</button>
             </div>
 
             {/* Customization Menu */}
@@ -362,38 +387,44 @@ export default function GaragePage() {
             )}
 
             {/* Material Selection Menu */}
-            {selectedPart && (
-                <div
-                    style={{
-                        position: 'absolute',
-                        top: '10%',
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        backgroundColor: '#333',
-                        padding: '10px',
-                        borderRadius: '8px',
-                    }}
-                >
-                    <h4>Select Material for {selectedPart}</h4>
+                {selectedPart && (
+                <div className="texture-menu">
+                    <div className="menu-header">
+                    {/* <h4 style={{  textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)',}}>{selectedPart.toUpperCase()}</h4> */}
+                    <h4 style={{  textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)',}}>TEXTURE</h4>
+                    </div>
+                    <Slider
+                    className="texture-slider"
+                    slidesToShow={5}
+                    slidesToScroll={1}
+                    infinite={true}
+                    arrows={true}
+                    >
                     {Object.keys(matcapTextures.current).map((matcapName) => (
+                        <div key={matcapName} className="texture-slider-item">
                         <button
-                            key={matcapName}
                             onClick={() => handlePartCustomization(matcapName)}
-                            style={{
-                                margin: '5px',
-                                padding: '5px',
-                                color: '#fff',
-                                backgroundColor: '#555',
-                            }}
+                            className="texture-button"
                         >
-                            {matcapName}
+                            <img
+                            src={matcapTextures.current[matcapName].image.currentSrc}
+                            alt={matcapName}
+                            className="texture-icon"
+                            />
                         </button>
+                        </div>
                     ))}
-                    <button onClick={() => setSelectedPart(null)} style={{ marginTop: '10px' }}>
-                        Close
-                    </button>
+                    </Slider>
+                    <div className='x-button'>
+                        <button
+                            onClick={() => setSelectedPart(null)}
+                            className="close-button"
+                        >
+                            DONE
+                        </button>
+                    </div>
                 </div>
-            )}
+                )}
         </div>
     );
 }
