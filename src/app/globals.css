@@ -1513,11 +1513,30 @@ opacity: 0;
 }
 
 /* Slider Styling */
+.texture-slider {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.texture-slider .slick-list {
+  display: flex;
+  overflow: hidden;
+  white-space: nowrap; /* Ensure single row */
+}
+
+.texture-slider .slick-track {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .texture-slider .slick-slide {
   display: flex;
   justify-content: center;
-  padding: 0 0px; /* Adjust left and right padding to create a gap between slides */
-  margin-left: 0.1%;
+  align-items: center;
+  flex: 0 0 auto; /* Prevent wrapping */
 }
 
 .slick-prev,

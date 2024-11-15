@@ -40,27 +40,24 @@ export default function GaragePage() {
     const mouse = new THREE.Vector2();
     const customizationPoints = useRef<THREE.Mesh[]>([]);
     const matcapTextures = useRef<{ [key: string]: THREE.Texture }>({});
-    // const svgIcons = {
-    //     chassis: '/garage/chassis.svg',
-    //     wheels: '/garage/wheel.svg',
-    //     tire: '/garage/rocket.svg',
-    // };
 
-    const svgIcons: { [key: string]: string } = {
-        chassis: '/garage/chassis.svg',
-        chassisbottom: '/garage/chassisbottom.svg',
-        // bumper: '/garage/frame.svg',
-        spoiler: '/garage/spoiler.svg',
-        window: '/garage/window.svg',
-        wheels: '/garage/wheel.svg',
-        // tire: '/garage/frame.svg',
-        // antena: '/garage/frame.svg',
-    };    
+    const pngIcons: { [key: string]: string } = {
+        chassis: '/garage/chassis.png',
+        wheels: '/garage/wheel.png',
+        chassisbottom: '/garage/bottom.png',
+        spoiler: '/garage/spoiler.png',
+        window: '/garage/window.png',
+    };     
 
     // Load matcap textures
     useEffect(() => {
         const textureLoader = new THREE.TextureLoader();
-        const matcaps = ['elevator', 'blueGlass', 'metal', 'volcano'];
+        const matcaps = ['elevator', 'blueGlass', 'metal', 'volcano', 'amazon', 'black', 'blacksea',
+                          'blue', 'blueeye', 'bw', 'charcoal', 'darkEmerald', 'darkMetal', 'divo',
+                          'emeraldGreen', 'exotic', 'gold', 'gray', 'green', 'greenBulb', 'indigo',
+                          'lemonblue', 'line', 'marble', 'mixature', 'offwhite', 'panacea', 'purple',
+                          'red', 'sky', 'sunearth', 'transparentLand', 'valakas', 'violetorange',
+                          'white', 'whiteblue', 'wine', 'yellow'];
         matcaps.forEach((matcap) => {
             matcapTextures.current[matcap] = textureLoader.load(`/models/matcaps/${matcap}.png`);
         });
@@ -369,14 +366,14 @@ export default function GaragePage() {
             {showCustomizationMenu && (
                 <div className="customization-menu">
                     <Slider {...sliderSettings} className="customization-slider">
-                        {Object.keys(svgIcons).map((partName) => (
+                        {Object.keys(pngIcons).map((partName) => (
                             <button
                                 key={partName}
                                 onClick={() => handlePartSelection(partName)}
                                 className="customization-button"
                             >
                                 <img
-                                    src={svgIcons[partName]}
+                                    src={pngIcons[partName]}
                                     alt={`${partName} icon`}
                                     className="customization-icon"
                                 />
