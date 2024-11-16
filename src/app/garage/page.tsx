@@ -32,6 +32,7 @@ export default function GaragePage() {
         {
             name: 'Kybertruck',
             price: 1000,
+            image: '/garage/kybertruck.png',
             parts: {
                 chassisbottom: '/models/car/default/chassisbottom.glb',
                 chassis: '/models/car/default/chassisbody.glb',
@@ -47,6 +48,7 @@ export default function GaragePage() {
         {
             name: 'Aventador',
             price: 500000,
+            image: '/garage/Aventador.png',
             parts: {
                 chassisbottom: '/models/car/default/chassisbottom.glb',
                 chassis: '/models/car/default/chassisbody.glb',
@@ -209,7 +211,7 @@ export default function GaragePage() {
         scene = new THREE.Scene();
         scene.background = new THREE.Color('#0213f7'); // Updated background color
         cameraRef.current = new THREE.PerspectiveCamera(1.2, window.innerWidth / window.innerHeight, 0.1, 1000);
-        cameraRef.current.position.set(0, -200, 2);
+        cameraRef.current.position.set(0, -200, 1);
     
         const renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvasRef.current });
         renderer.setSize(window.innerWidth, window.innerHeight);
@@ -663,6 +665,30 @@ export default function GaragePage() {
         ]
     };    
 
+    const showroomSliderSettings = {
+        arrows: true,         // No navigation dots
+        infinite: true,      // Disable infinite loop
+        speed: 500,           // Transition speed
+        slidesToShow: 1,      // Show 3 icons per slide
+        slidesToScroll: 1,    // Scroll 1 icon at a time
+        responsive: [
+            {
+                breakpoint: 768,
+                settings: {
+                    slidesToShow: 1, // Show 2 icons on smaller screens
+                    slidesToScroll: 1,
+                }
+            },
+            {
+                breakpoint: 480,
+                settings: {
+                    slidesToShow: 1, // Show 1 icon on very small screens
+                    slidesToScroll: 1,
+                }
+            }
+        ]
+    }; 
+
     return (
         <div style={{ position: 'relative', width: '100%', height: '100%' }}>
             <canvas ref={canvasRef} style={{ width: '100%', height: '100%' }} />
@@ -885,7 +911,7 @@ export default function GaragePage() {
                 </div>
             </div> */}
 
-            {view === 'showroom' && (
+            {/* {view === 'showroom' && (
                 <div
                     style={{
                         position: 'absolute',
@@ -930,6 +956,97 @@ export default function GaragePage() {
                             </div>
                         ))}
                     </div>
+                </div>
+            )} */}
+
+            {view === 'showroom' && (
+                <div
+                    style={{
+                        position: 'absolute',
+                        bottom: '0',
+                        marginBottom: '120px',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        boxShadow: "0px 0px 10px rgb(0, 0, 0, 0.5)",
+                        padding: '30px',
+                        backdropFilter: 'blur(5px)',
+                        borderRadius: '20px',
+                        color: '#fff',
+                        textAlign: 'center',
+                        zIndex: 1000,
+                        width: '80%',
+                    }}
+                >
+                    <Slider {...showroomSliderSettings}>
+                        {cars.map((car, index) => (
+                            <div
+                                key={car.name}
+                                style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    padding: '20px',
+                                    background: 'rgba(0, 0, 0, 0.5)',
+                                    borderRadius: '10px',
+                                    boxShadow: '0px 0px 10px rgba(255, 255, 255, 0.5)',
+                                    cursor: 'pointer',
+                                }}
+                                onClick={() => handleCarSelection(car.name)}
+                            >
+                                {/* Car Name and Price */}
+                                <h4 style={{ fontFamily: 'Orbitron', fontSize: '24px', marginBottom: '10px' }}>
+                                    {car.name}
+                                </h4>
+                                <p style={{ fontFamily: 'Orbitron', fontSize: '20px', marginBottom: '20px' }}>
+                                    {car.price} ❖
+                                </p>
+                                
+                                {/* Render Car in Slider */}
+                                {/* <div
+                                    style={{
+                                        width: '300px',
+                                        height: '200px',
+                                        backgroundColor: 'transparent',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        borderRadius: '10px',
+                                        backdropFilter: 'blur(5px)',
+                                        overflow: 'hidden',
+                                    }}
+                                > */}
+                                    {/* Render car image */}
+                                    {/* <img
+                                        src={car.image} // Use the car's image property
+                                        alt={car.name} // Set the alt text to the car's name
+                                        style={{
+                                            width: '100%',
+                                            height: '100%',
+                                            marginLeft: '25px',
+                                            objectFit: 'cover', // Ensure the image fits nicely within the container
+                                        }}
+                                    />
+                                </div> */}
+                                
+                                {/* Select Button */}
+                                <button
+                                    style={{
+                                        padding: '10px 20px',
+                                        borderRadius: '5px',
+                                        color: '#fff',
+                                        fontFamily: 'Orbitron',
+                                        fontSize: '16px',
+                                        marginTop: '20px',
+                                        cursor: 'pointer',
+                                        animation: 'pulse 1.5s infinite'
+                                    }}
+                                >
+                                    SELECT
+                                </button>
+                            </div>
+                        ))}
+                    </Slider>
                 </div>
             )}
 
