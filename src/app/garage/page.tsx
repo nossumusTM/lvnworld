@@ -44,8 +44,23 @@ export default function GaragePage() {
                 // rocket: '/models/rocket/base.glb',
             },
         },
+        {
+            name: 'Aventador',
+            price: 500000,
+            parts: {
+                chassisbottom: '/models/car/default/chassisbottom.glb',
+                chassis: '/models/car/default/chassisbody.glb',
+                bumper: '/models/car/default/bumper.glb',
+                spoiler: '/models/car/default/spoiler.glb',
+                window: '/models/car/default/window.glb',
+                wheels: '/models/car/default/wheels.glb',
+                tire: '/models/car/default/tire.glb',
+                antena: '/models/car/default/antena.glb',
+                // rocket: '/models/rocket/base.glb',
+            },
+        },
         // Add more cars here later
-    ];    
+    ];
 
     const toggleView = (selectedView: 'menu' | 'car' | 'rocket' | 'showroom' | 'customize') => {
         console.log('Toggling view to:', selectedView);
@@ -152,7 +167,7 @@ export default function GaragePage() {
             wheels: '/models/car/default/wheels.glb', 
             tire: '/models/car/default/tire.glb', 
             antena: '/models/car/default/antena.glb',
-            rocket: '/models/rocket/base.glb', // Ensure this path is correct
+            // rocket: '/models/rocket/base.glb', // Ensure this path is correct
         },
     ];
 
@@ -212,97 +227,26 @@ export default function GaragePage() {
         controlsRef.current.enableDamping = true;
         controlsRef.current.dampingFactor = 0.01;
         controlsRef.current.enabled = isOrbitEnabled;
-
-        // Limit zoom in and zoom out distance
         controlsRef.current.minDistance = 100; // Minimum zoom distance
         controlsRef.current.maxDistance = 200; // Maximum zoom distance
     
-        // Function to apply a matcap texture to parts
-        const applyMatcap = (part: THREE.Object3D, matcapName: string) => {
-            const texture = matcapTextures.current[matcapName];
-            if (texture) {
-                part.traverse((child) => {
-                    if (child instanceof THREE.Mesh) {
-                        child.material = new THREE.MeshMatcapMaterial({ matcap: texture });
-                        child.material.needsUpdate = true;
-                    }
-                });
-            }
-        };
-    
         // Initialize carGroup and load car parts
-        carGroupRef.current = new THREE.Group();
-        rocketGroupRef.current = new THREE.Group();
-        showroomGroupRef.current = new THREE.Group();
+        // carGroupRef.current = new THREE.Group();
+        // rocketGroupRef.current = new THREE.Group();
+        // showroomGroupRef.current = new THREE.Group();
 
         // Initially hide showroom group
         showroomGroupRef.current.visible = false;
+        rocketGroupRef.current.visible = false;
 
-        const loadCar = async (index: number) => {
-            carGroupRef.current.clear();
-            rocketGroupRef.current.clear();
-
-            const loader = new GLTFLoader();
-            const carParts = kybertruck[index];
-            const loadingPromises: Promise<THREE.Object3D>[] = [];
-    
-            Object.entries(carParts).forEach(([partName, partPath]) => {
-                const promise: Promise<THREE.Object3D> = new Promise((resolve) => {
-                    loader.load(partPath, (gltf) => {
-                        const part = gltf.scene as THREE.Object3D;
-                        part.name = partName;
-                        
-                        if (partName === 'chassis') {
-                            applyMatcap(part, 'blueGlass');
-                        } else if (partName === 'wheels') {
-                            applyMatcap(part, 'metal');
-                        } else if (partName === 'tire') {
-                            applyMatcap(part, 'black');
-                        } else if (partName === 'chassisbottom') {
-                            applyMatcap(part, 'black');
-                        } else if (partName === 'bumper') {
-                            applyMatcap(part, 'black');
-                        } else if (partName === 'spoiler') {
-                            applyMatcap(part, 'black');
-                        } else if (partName === 'window') {
-                            applyMatcap(part, 'black');
-                        }
-
-                        if (partName === 'rocket') {
-                            console.log('Adding rocket to rocketGroupRef:', part); // Debug log
-                            rocketGroupRef.current.add(part);
-                            part.visible = false; // Hide rocket initially
-                            part.position.set(-1, 0, 0); // Scale down the rocket
-                            part.scale.set(0.5, 0.5, 0.5); // Scale down the rocket
-                            applyMatcap(part, 'valakas');
-                        } else {
-                            carGroupRef.current.add(part); // Add other parts to car group
-                        }
-        
-                        // carGroupRef.current.add(part);
-                        resolve(part); // Resolve the promise once the part is loaded
-                        });
-                    });
-
-                    loadingPromises.push(promise);
-                });
-
-                // Wait for all parts to finish loading
-                await Promise.all(loadingPromises);
-                scene.add(carGroupRef.current);
-                scene.add(rocketGroupRef.current);
-                scene.add(showroomGroupRef.current);
-
-            };
-
+        // Load assets
         const loadAssets = async () => {
-            // Load the current car
-            await loadCar(currentCarIndex);
-        
-            // Load showroom cars
-            await loadShowroomCar(cars);
+            await Promise.all([loadCar(currentCarIndex), loadShowroomCar(cars), loadRocket()]);
+            scene.add(carGroupRef.current);
+            scene.add(rocketGroupRef.current);
+            scene.add(showroomGroupRef.current);
         };
-        
+
         loadAssets();
 
         const animate = () => {
@@ -368,38 +312,191 @@ export default function GaragePage() {
     }, [currentCarIndex]);
 
     
-    const loadShowroomCar = async (cars: Array<{ name: string; parts: Record<string, string>; price: number }>) => {
-        showroomGroupRef.current.clear();
+    // const loadCar = async (index: number) => {
+    //     carGroupRef.current.clear();
+
+    //     const loader = new GLTFLoader();
+    //     // const carParts = kybertruck[index];
+    //     const carParts = index < kybertruck.length ? kybertruck[index] : cars[index]?.parts;
+    //     if (!carParts) {
+    //         console.warn(`No parts found for car index: ${index}. Defaulting to Kybertruck.`);
+    //         setCurrentCarIndex(0); // Default to Kybertruck
+    //         return;
+    //     }
+
+        // Function to apply a matcap texture to parts
+        // const applyMatcap = (part: THREE.Object3D, matcapName: string) => {
+        //     const texture = matcapTextures.current[matcapName];
+        //     if (texture) {
+        //         part.traverse((child) => {
+        //             if (child instanceof THREE.Mesh) {
+        //                 child.material = new THREE.MeshMatcapMaterial({ matcap: texture });
+        //                 child.material.needsUpdate = true;
+        //             }
+        //         });
+        //     }
+        // };
+
+        // const loadingPromises: Promise<THREE.Object3D>[] = [];
+
+        // Object.entries(carParts).forEach(([partName, partPath]) => {
+        //     const promise: Promise<THREE.Object3D> = new Promise((resolve) => {
+        //         loader.load(partPath, (gltf) => {
+        //             const part = gltf.scene as THREE.Object3D;
+        //             part.name = partName;
+                    
+        //             if (partName === 'chassis') {
+        //                 applyMatcap(part, 'blueGlass');
+        //             } else if (partName === 'wheels') {
+        //                 applyMatcap(part, 'metal');
+        //             } else if (partName === 'tire') {
+        //                 applyMatcap(part, 'black');
+        //             } else if (partName === 'chassisbottom') {
+        //                 applyMatcap(part, 'black');
+        //             } else if (partName === 'bumper') {
+        //                 applyMatcap(part, 'black');
+        //             } else if (partName === 'spoiler') {
+        //                 applyMatcap(part, 'black');
+        //             } else if (partName === 'window') {
+        //                 applyMatcap(part, 'black');
+        //             }
+
+        //             if (partName === 'rocket') {
+        //                 console.log('Adding rocket to rocketGroupRef:', part); // Debug log
+        //                 rocketGroupRef.current.add(part);
+        //                 part.visible = false; // Hide rocket initially
+        //                 part.position.set(-1, 0, 0); // Scale down the rocket
+        //                 part.scale.set(0.5, 0.5, 0.5); // Scale down the rocket
+        //                 applyMatcap(part, 'valakas');
+        //             } else {
+        //                 carGroupRef.current.add(part); // Add other parts to car group
+        //             }
     
-        const loader = new GLTFLoader();
-    
-        for (let i = 0; i < cars.length; i++) {
-            const car = cars[i];
-            const carGroup = new THREE.Group();
-            const loadingPromises: Promise<THREE.Object3D>[] = [];
-    
-            Object.entries(car.parts).forEach(([partName, partPath]) => {
-                const promise: Promise<THREE.Object3D> = new Promise((resolve) => {
-                    loader.load(partPath, (gltf) => {
-                        const part = gltf.scene as THREE.Object3D;
-                        part.name = `${car.name}_${partName}`;
-                        carGroup.add(part);
-                        resolve(part);
-                    });
+        //             // carGroupRef.current.add(part);
+        //             resolve(part); // Resolve the promise once the part is loaded
+        //             });
+        //         });
+
+        //         loadingPromises.push(promise);
+        //     });
+
+        //     // Wait for all parts to finish loading
+        //     await Promise.all(loadingPromises);
+        //     scene.add(carGroupRef.current);
+        //     scene.add(rocketGroupRef.current);
+        //     // scene.add(showroomGroupRef.current);
+
+        // };
+
+        // Function to apply a matcap texture to parts
+        const applyMatcap = (part: THREE.Object3D, matcapName: string) => {
+            const texture = matcapTextures.current[matcapName];
+            if (texture) {
+                part.traverse((child) => {
+                    if (child instanceof THREE.Mesh) {
+                        child.material = new THREE.MeshMatcapMaterial({ matcap: texture });
+                        child.material.needsUpdate = true;
+                    }
                 });
-    
-                loadingPromises.push(promise);
-            });
-    
+            }
+        };
+
+        const loadCar = async (index: number) => {
+            carGroupRef.current.clear();
+
+            showroomGroupRef.current.visible = false;
+            rocketGroupRef.current.visible = false;
+        
+            const loader = new GLTFLoader();
+            const carParts = index < kybertruck.length ? kybertruck[index] : cars[index]?.parts;
+            if (!carParts) return;
+        
+            const loadingPromises = Object.entries(carParts).map(([partName, partPath]) =>
+                new Promise<void>((resolve) => {
+                    loader.load(partPath, (gltf) => {
+                        const part = gltf.scene;
+                        part.name = partName;
+
+                        
+                        if (partName === 'chassis') {
+                            applyMatcap(part, 'volcano');
+                        } else if (partName === 'wheels') {
+                            applyMatcap(part, 'green');
+                        } else if (partName === 'tire') {
+                            applyMatcap(part, 'black');
+                        } else if (partName === 'chassisbottom') {
+                            applyMatcap(part, 'black');
+                        } else if (partName === 'bumper') {
+                            applyMatcap(part, 'black');
+                        } else if (partName === 'spoiler') {
+                            applyMatcap(part, 'black');
+                        } else if (partName === 'window') {
+                            applyMatcap(part, 'black');
+                        }
+                        
+                        carGroupRef.current.add(part);
+                        resolve();
+                    });
+                })
+            );
+        
             await Promise.all(loadingPromises);
+        };
     
-            // Position cars side-by-side in the showroom
-            carGroup.position.set(i * 10, 0, 0);
-            showroomGroupRef.current.add(carGroup);
-        }
-    
-        scene?.add(showroomGroupRef.current);
-    };
+        const loadShowroomCar = async (cars: Array<{ name: string; parts: Record<string, string>; price: number }>) => {
+            showroomGroupRef.current.clear();
+        
+            const loader = new GLTFLoader();
+        
+            await Promise.all(
+                cars.map((car, i) =>
+                    new Promise<void>((resolve) => {
+                        const carGroup = new THREE.Group();
+                        Object.entries(car.parts).forEach(([partName, partPath]) => {
+                            loader.load(partPath, (gltf) => {
+                                const part = gltf.scene;
+                                carGroup.add(part);
+                            });
+                        });
+                        carGroup.position.set(i * 10, 0, 0); // Position cars side by side
+                        showroomGroupRef.current.add(carGroup);
+                        resolve();
+                    })
+                )
+            );
+        };      
+        
+        const loadRocket = async () => {
+            rocketGroupRef.current.clear();
+        
+            const loader = new GLTFLoader();
+            loader.load('/models/rocket/base.glb', (gltf) => {
+                const rocket = gltf.scene;
+                rocket.name = 'rocket';
+
+                // if (partName === 'rocket') {
+                //     console.log('Adding rocket to rocketGroupRef:', part); // Debug log
+                //     part.visible = false; // Hide rocket initially
+                //     part.position.set(-1, 0, 0); // Scale down the rocket
+                //     part.scale.set(0.5, 0.5, 0.5); // Scale down the rocket
+                //     applyMatcap(part, 'valakas');
+                // }
+                applyMatcap(rocket, 'valakas');
+                rocket.scale.set(0.5, 0.5, 0.5);
+                rocket.position.set(-1, 0, 0);
+                rocketGroupRef.current.add(rocket);
+            });
+        };
+        
+
+    useEffect(() => {
+        const loadAssets = async () => {
+            await loadCar(currentCarIndex); // Load the dynamically selected car
+            await loadShowroomCar(cars);   // Load all cars in the showroom
+        };
+
+        loadAssets();
+    }, [currentCarIndex]);
 
     useEffect(() => {
         if (controlsRef.current) {
@@ -426,8 +523,12 @@ export default function GaragePage() {
         const selectedCar = cars.find((car) => car.name === carName);
         if (selectedCar) {
             // loadCarParts(selectedCar.parts); // Load the selected car's parts
-            setCurrentCarIndex(cars.indexOf(selectedCar)); // Update the car index
+            const carIndex = cars.indexOf(selectedCar);
+            setCurrentCarIndex(carIndex);
             toggleView('car'); // Switch back to the car view
+        } else {
+            console.warn(`Car not found for name: ${carName}. Defaulting to Kybertruck.`);
+            setCurrentCarIndex(0); // Default to Kybertruck
         }
     };
 
@@ -806,7 +907,7 @@ export default function GaragePage() {
                                     background: 'transparent',
                                     borderRadius: '10px',
                                     backdropFilter: 'blur(5px)',
-                                    boxShadow: '0px 0px 10px rgba(24, 255, 0)',
+                                    boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.5)',
                                     cursor: 'pointer',
                                 }}
                                 onClick={() => handleCarSelection(car.name)}
