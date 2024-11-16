@@ -22,7 +22,7 @@ export default function GaragePage() {
     const [currentCarIndex, setCurrentCarIndex] = useState(0);
     const [isOrbitEnabled, setIsOrbitEnabled] = useState(false);
     const [showCustomizationMenu, setShowCustomizationMenu] = useState(false);
-    const [view, setView] = useState<'car' | 'rocket' | 'showroom'>('car');
+    const [view, setView] = useState<'menu' | 'car' | 'rocket' | 'showroom' | 'customize'>('menu');
     const [showMatcapMenu, setShowMatcapMenu] = useState(false);
     const [selectedPart, setSelectedPart] = useState<string | null>(null);
     const cameraRef = useRef<THREE.PerspectiveCamera | null>(null); // Reference for camera
@@ -46,7 +46,7 @@ export default function GaragePage() {
         // Add more cars here later
     ];    
 
-    const toggleView = (selectedView: 'car' | 'rocket' | 'showroom') => {
+    const toggleView = (selectedView: 'menu' | 'car' | 'rocket' | 'showroom' | 'customize') => {
         console.log('Toggling view to:', selectedView);
     
         setView(selectedView); // Update the state
@@ -63,6 +63,9 @@ export default function GaragePage() {
                     child.visible = false; // Hide the rocket
                 }
             });
+
+            setView('customize');
+
         } else if (selectedView === 'rocket') {
             carGroupRef.current.traverse((child) => {
                 if (child instanceof THREE.Object3D) {
@@ -78,9 +81,15 @@ export default function GaragePage() {
                     child.visible = true; // Show the rocket
                 }
             });
+
+            setView('rocket');
+
         } else if (selectedView === 'showroom') {
             // Handle showroom-specific logic if needed
             console.log('Entering showroom view');
+            setView('showroom');
+        } else if (selectedView === 'menu') {
+            setView('menu');
         }
     
         console.log('Rocket group visibility:', rocketGroupRef.current.children.map((c) => c.visible)); // Debug log
@@ -470,10 +479,151 @@ export default function GaragePage() {
             </div> */}
 
             <div className="coin-layer">
-                {playerBalance} KRASH
+                ACCOUNT: {playerBalance} ❖
             </div>
 
-            <div style={{ position: 'absolute', bottom: '50px', left: '50%', transform: 'translateX(-50%)', textAlign: 'center', color: '#fff', fontFamily: 'Orbitron' }}>
+            <div
+                style={{
+                    position: 'absolute',
+                    bottom: '40px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    textAlign: 'center',
+                    color: '#fff',
+                    fontFamily: 'Orbitron',
+                }}
+            >
+                {view === 'car' && (
+                    <h3
+                        style={{
+                            fontSize: '30px',
+                            textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)',
+                        }}
+                    >
+                        Kybertruck
+                    </h3>
+                )}
+                {view === 'rocket' && (
+                    <h3
+                        style={{
+                            fontSize: '30px',
+                            textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)',
+                        }}
+                    >
+                        Venerium
+                    </h3>
+                )}
+                {view === 'showroom' && (
+                    <h3
+                        style={{
+                            fontSize: '30px',
+                            textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)',
+                        }}
+                    >
+                        Showroom
+                    </h3>
+                )}
+
+                {/* Main Menu Buttons */}
+                {view === 'menu' && (
+                    <div style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
+                        <button
+                            style={{
+                                padding: '20px 0',
+                                animation: 'pulse 1.5s infinite',
+                                textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)',
+                                borderRadius: '8px',
+                                cursor: 'pointer',
+                            }}
+                            onClick={() => toggleView('car')}
+                        >
+                            AUTO
+                        </button>
+                        <button
+                            style={{
+                                padding: '20px 0',
+                                animation: 'pulse 1.5s infinite',
+                                textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)',
+                                borderRadius: '8px',
+                                cursor: 'pointer',
+                            }}
+                            onClick={() => toggleView('rocket')}
+                        >
+                            WEAPON
+                        </button>
+                        <button
+                            style={{
+                                padding: '20px 0',
+                                animation: 'pulse 1.5s infinite',
+                                textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)',
+                                borderRadius: '8px',
+                                cursor: 'pointer',
+                            }}
+                            onClick={() => toggleView('showroom')}
+                        >
+                            SHOWROOM
+                        </button>
+                    </div>
+                )}
+
+                {/* Customize View */}
+                {view === 'customize' && (
+                    <div
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '20px',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <button
+                            style={{
+                                padding: '0',
+                                // animation: 'pulse 1.5s infinite',
+                                textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)',
+                                borderRadius: '8px',
+                                cursor: 'pointer',
+                            }}
+                            onClick={handleCarClick}
+                        >
+                            CUSTOMIZE
+                        </button>
+                        {/* <button
+                            style={{
+                                padding: '10px 20px',
+                                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                                border: '1px solid rgba(255, 255, 255, 0.3)',
+                                borderRadius: '8px',
+                                color: '#fff',
+                                cursor: 'pointer',
+                            }}
+                            onClick={() => toggleView('menu')}
+                        >
+                            BACK TO MENU
+                        </button> */}
+                    </div>
+                )}
+
+                {/* Back to Menu button for all other views */}
+                {view !== 'menu' && (
+                    <button
+                        style={{
+                            padding: '20px 0',
+                            animation: 'pulse 1.5s infinite',
+                            textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)',
+                            color: '#fff',
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                        }}
+                        onClick={() => toggleView('menu')}
+                    >
+                        BACK TO MENU
+                    </button>
+                )}
+            </div>
+
+            {/* <div style={{ position: 'absolute', bottom: '50px', left: '50%', transform: 'translateX(-50%)', textAlign: 'center', color: '#fff', fontFamily: 'Orbitron' }}>
                 {view === 'car' && (
                     <h3 style={{ fontSize: '30px', textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)' }}>
                         Kybertruck
@@ -536,7 +686,7 @@ export default function GaragePage() {
                         SHOWROOM
                     </button>
                 </div>
-            </div>
+            </div> */}
 
             {view === 'showroom' && (
                 <div
