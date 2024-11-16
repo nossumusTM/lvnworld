@@ -29,6 +29,7 @@ export default function Home() {
   const [ws, setWs] = useState<WebSocket | null>(null);
   const [isWebSocketReady, setIsWebSocketReady] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
+  const [playerBalance, setPlayerBalance] = useState(0);
 
   const router = useRouter();
   const maxRetries = 5;  // Limit retries to avoid infinite reconnect loop
@@ -335,8 +336,9 @@ export default function Home() {
   };
   
   const handleGarageButtonClick = () => {
-    router.push('/garage');
-};
+      const balance = playerBalance; // Assume `playerBalance` contains the fetched balance
+      router.push(`/garage?balance=${balance}`);
+  };
 
   return (
     //<main className="min-h-screen px-8 py-0 pb-12 flex-1 flex flex-col items-center" style={{ backgroundColor: '#fff', fontFamily: "'Orbitron', sans-serif" }}>
@@ -414,7 +416,7 @@ export default function Home() {
                     </div>
                     </div>
                       <div id='garage' className='garage'>
-                        <button id='garage-button' onClick={handleGarageButtonClick}>GARAGE</button>
+                        <button id='garage-button' onClick={handleGarageButtonClick}>WORKSHOP</button>
                         {/* <button id='garage-button'>GARAGE</button> */}
                       </div>
                     </>

@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader';
+import { useSearchParams } from 'next/navigation';
 
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
@@ -13,14 +14,66 @@ import "slick-carousel/slick/slick-theme.css";
 import gsap from 'gsap';
 
 export default function GaragePage() {
+    const searchParams = useSearchParams();
+    const [playerBalance, setPlayerBalance] = useState<number>(365);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const carGroupRef = useRef<THREE.Group>(new THREE.Group());
+    const rocketGroupRef = useRef<THREE.Group>(new THREE.Group());
     const [currentCarIndex, setCurrentCarIndex] = useState(0);
     const [isOrbitEnabled, setIsOrbitEnabled] = useState(false);
     const [showCustomizationMenu, setShowCustomizationMenu] = useState(false);
+    const [view, setView] = useState<'car' | 'rocket'>('car'); // Default to 'car'
     const [showMatcapMenu, setShowMatcapMenu] = useState(false);
     const [selectedPart, setSelectedPart] = useState<string | null>(null);
     const cameraRef = useRef<THREE.PerspectiveCamera | null>(null); // Reference for camera
+
+    const toggleView = (selectedView: 'car' | 'rocket') => {
+        console.log('Toggling view to:', selectedView);
+    
+        setView(selectedView); // Update the state
+    
+        if (selectedView === 'car') {
+            carGroupRef.current.traverse((child) => {
+                if (child instanceof THREE.Object3D) {
+                    child.visible = true; // Show all car parts
+                }
+            });
+    
+            rocketGroupRef.current.traverse((child) => {
+                if (child instanceof THREE.Object3D) {
+                    child.visible = false; // Hide the rocket
+                }
+            });
+        } else if (selectedView === 'rocket') {
+            carGroupRef.current.traverse((child) => {
+                if (child instanceof THREE.Object3D) {
+                    child.visible = false; // Hide all car parts
+                }
+            });
+    
+            setIsOrbitEnabled(true);
+    
+            rocketGroupRef.current.traverse((child) => {
+                console.log(`Setting rocket visibility to true for: ${child.name}`); // Debug log
+                if (child instanceof THREE.Object3D) {
+                    child.visible = true; // Show the rocket
+                }
+            });
+        }
+    
+        console.log('Rocket group visibility:', rocketGroupRef.current.children.map((c) => c.visible)); // Debug log
+    };    
+
+    useEffect(() => {
+        // toggleView('car'); // Default to car view when the scene initializes
+
+        const balance = searchParams.get('balance');
+
+        // Parse the balance and set it in state
+        if (balance && !isNaN(Number(balance))) {
+            setPlayerBalance(Number(balance));
+        }
+    }, [searchParams]); // Run when searchParams change
 
     const carModels = [
         { 
@@ -32,7 +85,7 @@ export default function GaragePage() {
             wheels: '/models/car/default/wheels.glb', 
             tire: '/models/car/default/tire.glb', 
             antena: '/models/car/default/antena.glb',
-            rocket: '/garage/rocket.glb',
+            rocket: '/models/rocket/base.glb', // Ensure this path is correct
         },
     ];
 
@@ -48,7 +101,6 @@ export default function GaragePage() {
         chassisbottom: '/garage/bottom.png',
         spoiler: '/garage/spoiler.png',
         window: '/garage/window.png',
-        rocket: '/garage/window.png'
     };     
 
     // Load matcap textures
@@ -110,8 +162,12 @@ export default function GaragePage() {
     
         // Initialize carGroup and load car parts
         carGroupRef.current = new THREE.Group();
+        rocketGroupRef.current = new THREE.Group();
+
         const loadCar = async (index: number) => {
             carGroupRef.current.clear();
+            rocketGroupRef.current.clear();
+
             const loader = new GLTFLoader();
             const carParts = carModels[index];
             const loadingPromises: Promise<THREE.Object3D>[] = [];
@@ -124,12 +180,6 @@ export default function GaragePage() {
                         
                         if (partName === 'chassis') {
                             applyMatcap(part, 'blueGlass');
-                        } else if (partName === 'rocket') {
-                            console.log("Rocket loaded and added to the scene.");
-                            part.position.set(0, 0, 0); // Ensure it's at the origin
-                            part.scale.set(1, 1, 1); // Reset scale
-                            part.rotation.set(0, 0, 0); // Reset rotation
-                            part.visible = false; // Initially hide the rocket
                         } else if (partName === 'wheels') {
                             applyMatcap(part, 'metal');
                         } else if (partName === 'tire') {
@@ -143,8 +193,19 @@ export default function GaragePage() {
                         } else if (partName === 'window') {
                             applyMatcap(part, 'black');
                         }
+
+                        if (partName === 'rocket') {
+                            console.log('Adding rocket to rocketGroupRef:', part); // Debug log
+                            part.visible = false; // Hide rocket initially
+                            part.position.set(-1, 0, 0); // Scale down the rocket
+                            part.scale.set(0.5, 0.5, 0.5); // Scale down the rocket
+                            rocketGroupRef.current.add(part); // Add to rocket group
+                            applyMatcap(part, 'valakas');
+                        } else {
+                            carGroupRef.current.add(part); // Add other parts to car group
+                        }
         
-                        carGroupRef.current.add(part);
+                        // carGroupRef.current.add(part);
                         resolve(part); // Resolve the promise once the part is loaded
                         });
                     });
@@ -155,12 +216,29 @@ export default function GaragePage() {
                 // Wait for all parts to finish loading
                 await Promise.all(loadingPromises);
                 scene.add(carGroupRef.current);
+                scene.add(rocketGroupRef.current);
+
             };
 
         loadCar(currentCarIndex);
 
         const animate = () => {
             requestAnimationFrame(animate);
+
+            // Spin the car group
+            if (carGroupRef.current) {
+                // carGroupRef.current.rotation.x += 0.001; // Adjust speed as needed
+                // carGroupRef.current.rotation.y += 0.001;
+                // carGroupRef.current.rotation.z += 0.01;
+            }
+
+            // Spin the rocket group
+            if (rocketGroupRef.current) {
+                rocketGroupRef.current.rotation.x += 0.005; // Adjust speed as needed
+                rocketGroupRef.current.rotation.y += 0.005;
+                rocketGroupRef.current.rotation.z += 0.005;
+            }
+
             if (controlsRef.current) {
                 controlsRef.current.update();
             }
@@ -244,38 +322,7 @@ export default function GaragePage() {
     };
 
     const handlePartSelection = (partName: string) => {
-        setSelectedPart(partName);
-
-        console.log(`Part selected: ${partName}`);
-
-        let rocketFound = false;
-
-        carGroupRef.current.traverse((child) => {
-            if (child instanceof THREE.Object3D) {
-                if (child.name === 'rocket') {
-                    rocketFound = true;
-                }
-
-                if (partName === 'rocket') {
-                    if (child.name === 'rocket') {
-                        rocketFound = true;
-                        child.visible = true; // Explicitly set visible for the rocket
-                        console.log(`Rocket visibility set to: ${child.visible}`);
-                    } else {
-                        child.visible = false; // Hide all other parts
-                    }
-                } else {
-                    child.visible = child.name !== 'rocket'; // Show all except rocket
-                }
-
-                console.log(`After - Child name: ${child.name}, Visibility: ${child.visible}`);
-
-            }
-        });
-
-        if (!rocketFound) {
-            console.warn("Rocket part not found in the scene!");
-        }
+        setSelectedPart(partName);            
 
         // Define target positions and lookAt based on part
         let targetPosition = new THREE.Vector3(0, -200, 2);
@@ -316,6 +363,7 @@ export default function GaragePage() {
             // Apply the texture only to chassis
             carGroupRef.current.traverse((child) => {
                 console.log("Checking child for chassis:", child.name); // Debugging log
+
                 if (child instanceof THREE.Mesh && child.name === 'shadeTransparentLand003') {
                     console.log(`Applying matcap texture to chassis: ${child.name}`);
                     child.material = new THREE.MeshMatcapMaterial({ matcap: texture });
@@ -399,19 +447,54 @@ export default function GaragePage() {
                 <button onClick={handleNextCar}>→</button>
             </div> */}
 
-            <div
-                style={{
-                    position: 'absolute',
-                    bottom: '100px',
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    textAlign: 'center',
-                    color: '#fff',
-                    fontFamily: 'Orbitron'
-                }}
-            >
-                <h3 style={{fontSize: '30px', textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)',}}>Cybertruck</h3>
-                <button style={{paddingTop: '20px', animation: 'pulse 1.5s infinite', textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)'}} onClick={handleCarClick}>CUSTOMIZE</button>
+            <div className="coin-layer">
+                {playerBalance} KRASH
+            </div>
+
+            <div style={{ position: 'absolute', bottom: '100px', left: '50%', transform: 'translateX(-50%)', textAlign: 'center', color: '#fff', fontFamily: 'Orbitron' }}>
+                {view === 'car' && (
+                    <h3 style={{ fontSize: '30px', textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)' }}>
+                        Kybertruck
+                    </h3>
+                )}
+                {view === 'rocket' && (
+                    <h3 style={{ fontSize: '30px', textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)' }}>
+                        Venerium
+                    </h3>
+                )}
+                <div style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
+                    <button
+                        style={{
+                            padding: '20px 0',
+                            animation: 'pulse 1.5s infinite',
+                            textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)',
+                            // backgroundColor: '#18ff00',
+                            // color: '#000',
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                        }}
+                        onClick={() => {
+                            toggleView('car'); // Toggle the view to car
+                            handleCarClick();  // Handle car customization click
+                        }}
+                    >
+                        CUSTOMIZE
+                    </button>
+                    <button
+                        style={{
+                            padding: '20px 0',
+                            animation: 'pulse 1.5s infinite',
+                            textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)',
+                            // backgroundColor: '#ff0018',
+                            color: '#fff',
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                        }}
+                        onClick={() => toggleView('rocket')}
+                    >
+                        WEAPON
+                    </button>
+                </div>
             </div>
 
             {/* Customization Menu */}
@@ -451,6 +534,9 @@ export default function GaragePage() {
                     >
                     {Object.keys(matcapTextures.current).map((matcapName) => (
                         <div key={matcapName} className="texture-slider-item">
+                            <div>
+                        
+                        </div>
                         <button
                             onClick={() => handlePartCustomization(matcapName)}
                             className="texture-button"
@@ -464,15 +550,16 @@ export default function GaragePage() {
                         </div>
                     ))}
                     </Slider>
-                    <div className='x-button'>
+                    <div className="x-button">
                         <button
                             onClick={() => setSelectedPart(null)}
                             className="close-button"
                         >
                             CONFIRM
                         </button>
-                    </div>
+                        </div>
                 </div>
+                
                 )}
         </div>
     );
