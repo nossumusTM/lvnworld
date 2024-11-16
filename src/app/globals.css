@@ -1581,7 +1581,7 @@ opacity: 0;
   left: 50%;
   transform: translateX(-50%);
   padding: 10px 50px;
-  border-radius: 20px;
+  border-radius: 10px;
   text-shadow: 0px 0px 1px #ffffff;
   background: transparent;
   box-shadow: 0px 0px 10px rgba(24, 255, 0);

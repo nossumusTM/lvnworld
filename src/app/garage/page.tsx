@@ -608,7 +608,7 @@ export default function GaragePage() {
                         Venerium
                     </h3>
                 )}
-                {view === 'showroom' && (
+                {/* {view === 'showroom' && (
                     <h3
                         style={{
                             fontSize: '30px',
@@ -617,7 +617,7 @@ export default function GaragePage() {
                     >
                         Showroom
                     </h3>
-                )}
+                )} */}
 
                 {/* Main Menu Buttons */}
                 {view === 'menu' && (
@@ -788,7 +788,7 @@ export default function GaragePage() {
                 <div
                     style={{
                         position: 'absolute',
-                        bottom: '50px',
+                        bottom: '0',
                         marginBottom: '120px',
                         left: '50%',
                         transform: 'translateX(-50%)',
@@ -812,7 +812,7 @@ export default function GaragePage() {
                                 onClick={() => handleCarSelection(car.name)}
                             >
                                 <h4 style={{ fontFamily: 'Orbitron', fontSize: '30px', marginBottom: '10px' }}>{car.name}</h4>
-                                <p style={{ fontFamily: 'Orbitron', marginBottom: '10px' }}>VALUE: {car.price} ❖</p>
+                                <p style={{ fontFamily: 'Orbitron', marginBottom: '10px', fontSize: '30px' }}>{car.price} ❖</p>
                                 <button
                                     style={{
                                         padding: '10px',
