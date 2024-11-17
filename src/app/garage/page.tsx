@@ -30,6 +30,7 @@ export default function GaragePage() {
     const [selectedCar, setSelectedCar] = useState<Car | null>(null);
 
     const cameraRef = useRef<THREE.PerspectiveCamera | null>(null); // Reference for camera
+    const coinCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
     type Car = {
         name: string;
@@ -134,11 +135,6 @@ export default function GaragePage() {
             console.log('Loading showroom cars...', showroomGroupRef.current );
 
             setIsOrbitEnabled(true);
-
-            // Show only the first car
-            if (showroomGroupRef.current.children.length > 0) {
-                switchShowroomCar(2); // Pass index 0 to display the first car
-            }
     
             carGroupRef.current.traverse((child) => {
                 if (child instanceof THREE.Object3D) {
@@ -159,11 +155,21 @@ export default function GaragePage() {
             });
 
             // Ensure only the first car is visible
-            showroomGroupRef.current.children.forEach((child, index) => {
-                if (child instanceof THREE.Object3D) {
-                    child.visible = index !== 1; // Show only the first car
-                }
-            });
+            // showroomGroupRef.current.children.forEach((child, index) => {
+            //     if (child instanceof THREE.Object3D) {
+            //         child.visible = index !== 0; // Show only the first car
+            //     }
+            // });
+
+            // Ensure only the first car in the slider is displayed initially
+            if (showroomGroupRef.current.children.length > 0) {
+                const firstCarName = cars[0].name; // Get the name of the first car
+                showroomGroupRef.current.children.forEach((carGroup) => {
+                    if (carGroup instanceof THREE.Object3D) {
+                        carGroup.visible = carGroup.name === firstCarName;
+                    }
+                });
+            }
     
             console.log('Entering showroom view');
             setView('showroom');
@@ -276,7 +282,7 @@ export default function GaragePage() {
             }
 
             await Promise.all([loadCar(currentCarIndex), loadShowroomCar(cars), loadRocket()]);
-            switchShowroomCar(1);
+            // switchShowroomCar(1);
             scene.add(carGroupRef.current);
             scene.add(rocketGroupRef.current);
             scene.add(showroomGroupRef.current);
@@ -525,7 +531,8 @@ export default function GaragePage() {
             await Promise.all(
                 cars.map(async (car, i) => {
                     const carGroup = new THREE.Group(); // Create a group for the car
-        
+                    carGroup.name = car.name;
+
                     // Load all parts of the car
                     await Promise.all(
                         Object.entries(car.parts).map(([partName, partPath]) => {
@@ -564,7 +571,7 @@ export default function GaragePage() {
             scene.add(showroomGroupRef.current);
             
             // Initially show the first car
-            switchShowroomCar(1);
+            // switchShowroomCar(1);
         };        
         
         const loadRocket = async () => {
@@ -602,19 +609,141 @@ export default function GaragePage() {
             setCurrentCarIndex(index); // Update the selected car index
         };
 
+        const loadCoinModel = async () => {
+            if (!coinCanvasRef.current) return;
+        
+            const canvas = coinCanvasRef.current;
+            const renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+        
+            // Create scene, camera, and lighting
+            const scene = new THREE.Scene();
+            scene.background = new THREE.Color('#0213f7'); // Updated background color
+            const camera = new THREE.PerspectiveCamera(
+                45,
+                window.innerWidth / window.innerHeight,
+                0.1,
+                1000
+            );
+            camera.position.set(0, 0, 5);
+        
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambientLight);
+        
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+            directionalLight.position.set(10, 10, 10);
+            scene.add(directionalLight);
+        
+            // Load the coin model
+            const loader = new GLTFLoader();
+            loader.load(
+                "/models/coin/base.glb", // Path to your coin model
+                (gltf) => {
+                    const coin = gltf.scene;
+                    coin.scale.set(1.5, 1.5, 1.5);
+                    coin.rotation.set(0, 0, 0); // Initial rotation
+                    applyMatcap(coin, 'volcano');
+                    scene.add(coin);
+        
+                    // Render the coin
+                    const animate = () => {
+                        requestAnimationFrame(animate);
+        
+                        // Add rotation for animation later
+                        coin.rotation.x += 0.01;
+                        coin.rotation.y += 0.01;
+                        coin.rotation.z += 0.01;
+        
+                        renderer.render(scene, camera);
+                    };
+        
+                    animate();
+                },
+                undefined,
+                (error) => {
+                    console.error("Error loading coin model:", error);
+                }
+            );
+        
+            // Adjust on resize
+            const handleResize = () => {
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+            };
+        
+            window.addEventListener("resize", handleResize);
+        
+            return () => {
+                window.removeEventListener("resize", handleResize);
+                renderer.dispose();
+            };
+        };
+
+        const resizeCoinCanvas = () => {
+            if (!coinCanvasRef.current) return;
+        
+            const coinLayer = document.querySelector(".coin-layer");
+            if (coinLayer && coinCanvasRef.current) {
+                const { width, height } = coinLayer.getBoundingClientRect();
+                const renderer = new THREE.WebGLRenderer({
+                    antialias: true,
+                    canvas: coinCanvasRef.current,
+                });
+        
+                renderer.setSize(width, height); // Set canvas size to match coin-layer
+                renderer.setPixelRatio(window.devicePixelRatio);
+            }
+        };
+        
+        useEffect(() => {
+            resizeCoinCanvas(); // Initial resize
+            window.addEventListener("resize", resizeCoinCanvas); // Handle window resize
+            return () => {
+                window.removeEventListener("resize", resizeCoinCanvas);
+            };
+        }, []);
+
+        useEffect(() => {
+            resizeCoinCanvas(); // Initial resize
+            window.addEventListener("resize", resizeCoinCanvas); // Handle window resize
+            return () => {
+                window.removeEventListener("resize", resizeCoinCanvas);
+            };
+        }, []);
+        
     useEffect(() => {
         const loadAssets = async () => {
             await loadCar(currentCarIndex); // Load the dynamically selected car
             await loadShowroomCar(cars);   // Load all cars in the showroom
+            await loadCoinModel();
             switchShowroomCar(1);
         };
 
         loadAssets();
     }, [currentCarIndex]);
 
+    // const switchShowroomCar = (index: number) => {
+    //     showroomGroupRef.current.children.forEach((carGroup, i) => {
+    //         carGroup.visible = i === index; // Show the selected car, hide others
+    //         console.log(`Car at index ${i}: visible = ${carGroup.visible}`);
+    //     });
+    // };   
+    
     const switchShowroomCar = (index: number) => {
-        showroomGroupRef.current.children.forEach((carGroup, i) => {
-            carGroup.visible = i === index; // Show the selected car, hide others
+        const selectedCar = cars[index]; // Get the car associated with the current slide
+        if (!selectedCar) {
+            console.error(`No car found for index ${index}`);
+            return;
+        }
+    
+        showroomGroupRef.current.children.forEach((carGroup) => {
+            if (carGroup instanceof THREE.Object3D) {
+                // Match carGroup name with the selected car's name
+                carGroup.visible = carGroup.name === selectedCar.name;
+                console.log(`CarGroup ${carGroup.name}: visible = ${carGroup.visible}`);
+            }
         });
     };    
 
@@ -904,7 +1033,28 @@ export default function GaragePage() {
             </div> */}
 
             <div className="coin-layer">
-                RESERVE: {playerBalance} KRASH
+            {/* Coin Animation Canvas */}
+            <canvas
+                ref={coinCanvasRef}
+                style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                maxWidth: "100%",
+                maxHeight: "100%",
+                zIndex: -1, // Ensure it is behind the text but above the primary canvas
+                pointerEvents: "none", // Prevent interaction
+                }}
+            />
+            {/* Coin Layer Content */}
+            <div
+                style={{
+                position: "relative",
+                zIndex: 2, // Text content above the coin canvas
+                }}
+            >
+                {playerBalance}
+            </div>
             </div>
 
             <div
@@ -1200,7 +1350,7 @@ export default function GaragePage() {
                                 <h4 style={{ fontFamily: 'Orbitron', fontSize: '24px', marginBottom: '10px', textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)' }}>
                                     {car.name}
                                 </h4>
-                                <p style={{ fontFamily: 'Orbitron', fontSize: '40px', marginTop: '10px', textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)'}}>
+                                <p style={{ fontFamily: 'Orbitron', fontSize: '20px', marginTop: '10px', textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)'}}>
                                     {car.price}❖
                                 </p>
                                 
