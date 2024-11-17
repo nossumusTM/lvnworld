@@ -263,11 +263,6 @@ export default function GaragePage() {
         controlsRef.current.enabled = isOrbitEnabled;
         controlsRef.current.minDistance = 100; // Minimum zoom distance
         controlsRef.current.maxDistance = 200; // Maximum zoom distance
-    
-        // Initialize carGroup and load car parts
-        // carGroupRef.current = new THREE.Group();
-        // rocketGroupRef.current = new THREE.Group();
-        // showroomGroupRef.current = new THREE.Group();
 
         // Initially hide showroom group
         showroomGroupRef.current.visible = false;
@@ -352,83 +347,6 @@ export default function GaragePage() {
         };
     }, [currentCarIndex]);
 
-    
-    // const loadCar = async (index: number) => {
-    //     carGroupRef.current.clear();
-
-    //     const loader = new GLTFLoader();
-    //     // const carParts = kybertruck[index];
-    //     const carParts = index < kybertruck.length ? kybertruck[index] : cars[index]?.parts;
-    //     if (!carParts) {
-    //         console.warn(`No parts found for car index: ${index}. Defaulting to Kybertruck.`);
-    //         setCurrentCarIndex(0); // Default to Kybertruck
-    //         return;
-    //     }
-
-        // Function to apply a matcap texture to parts
-        // const applyMatcap = (part: THREE.Object3D, matcapName: string) => {
-        //     const texture = matcapTextures.current[matcapName];
-        //     if (texture) {
-        //         part.traverse((child) => {
-        //             if (child instanceof THREE.Mesh) {
-        //                 child.material = new THREE.MeshMatcapMaterial({ matcap: texture });
-        //                 child.material.needsUpdate = true;
-        //             }
-        //         });
-        //     }
-        // };
-
-        // const loadingPromises: Promise<THREE.Object3D>[] = [];
-
-        // Object.entries(carParts).forEach(([partName, partPath]) => {
-        //     const promise: Promise<THREE.Object3D> = new Promise((resolve) => {
-        //         loader.load(partPath, (gltf) => {
-        //             const part = gltf.scene as THREE.Object3D;
-        //             part.name = partName;
-                    
-        //             if (partName === 'chassis') {
-        //                 applyMatcap(part, 'blueGlass');
-        //             } else if (partName === 'wheels') {
-        //                 applyMatcap(part, 'metal');
-        //             } else if (partName === 'tire') {
-        //                 applyMatcap(part, 'black');
-        //             } else if (partName === 'chassisbottom') {
-        //                 applyMatcap(part, 'black');
-        //             } else if (partName === 'bumper') {
-        //                 applyMatcap(part, 'black');
-        //             } else if (partName === 'spoiler') {
-        //                 applyMatcap(part, 'black');
-        //             } else if (partName === 'window') {
-        //                 applyMatcap(part, 'black');
-        //             }
-
-        //             if (partName === 'rocket') {
-        //                 console.log('Adding rocket to rocketGroupRef:', part); // Debug log
-        //                 rocketGroupRef.current.add(part);
-        //                 part.visible = false; // Hide rocket initially
-        //                 part.position.set(-1, 0, 0); // Scale down the rocket
-        //                 part.scale.set(0.5, 0.5, 0.5); // Scale down the rocket
-        //                 applyMatcap(part, 'valakas');
-        //             } else {
-        //                 carGroupRef.current.add(part); // Add other parts to car group
-        //             }
-    
-        //             // carGroupRef.current.add(part);
-        //             resolve(part); // Resolve the promise once the part is loaded
-        //             });
-        //         });
-
-        //         loadingPromises.push(promise);
-        //     });
-
-        //     // Wait for all parts to finish loading
-        //     await Promise.all(loadingPromises);
-        //     scene.add(carGroupRef.current);
-        //     scene.add(rocketGroupRef.current);
-        //     // scene.add(showroomGroupRef.current);
-
-        // };
-
         // Function to apply a matcap texture to parts
         const applyMatcap = (part: THREE.Object3D, matcapName: string) => {
             const texture = matcapTextures.current[matcapName];
@@ -484,37 +402,13 @@ export default function GaragePage() {
 
             // Position the car in the center
             carGroupRef.current.position.set(0, 0, -0.5);
-            // carGroupRef.current.scale.set(0.5, 0.5, 0.5); // Scale down the car if needed
 
              // Adjust camera to look at the car
             if (cameraRef.current) {
                 cameraRef.current.position.set(0, -200, 5); // Pull camera twice the distance out
                 cameraRef.current.lookAt(carGroupRef.current.position);
             }
-        };
-    
-        // const loadShowroomCar = async (cars: Array<{ name: string; parts: Record<string, string>; price: number }>) => {
-        //     showroomGroupRef.current.clear();
-        
-        //     const loader = new GLTFLoader();
-        
-        //     await Promise.all(
-        //         cars.map((car, i) =>
-        //             new Promise<void>((resolve) => {
-        //                 const carGroup = new THREE.Group();
-        //                 Object.entries(car.parts).forEach(([partName, partPath]) => {
-        //                     loader.load(partPath, (gltf) => {
-        //                         const part = gltf.scene;
-        //                         carGroup.add(part);
-        //                     });
-        //                 });
-        //                 carGroup.position.set(i * 10, 0, 0); // Position cars side by side
-        //                 showroomGroupRef.current.add(carGroup);
-        //                 resolve();
-        //             })
-        //         )
-        //     );
-        // };      
+        };  
 
         const loadShowroomCar = async (
             cars: Array<{ name: string; parts: Record<string, string>; price: number }>
@@ -555,9 +449,6 @@ export default function GaragePage() {
                         })
                     );
         
-                    // Position the car group within the showroom
-                    // carGroup.position.set(i * 10, 0, 0); // Position cars side-by-side
-                    // carGroup.visible = false;
                     // Initially hide all cars
                     carGroup.visible = i === 0; // Only show the first car
                     showroomGroupRef.current.position.set(-0.07, 0, -0.5);
@@ -570,8 +461,6 @@ export default function GaragePage() {
             // Add the showroom group to the scene
             scene.add(showroomGroupRef.current);
             
-            // Initially show the first car
-            // switchShowroomCar(1);
         };        
         
         const loadRocket = async () => {
@@ -619,7 +508,6 @@ export default function GaragePage() {
         
             // Create scene, camera, and lighting
             const scene = new THREE.Scene();
-            scene.background = new THREE.Color('#0213f7'); // Updated background color
             const camera = new THREE.PerspectiveCamera(
                 45,
                 window.innerWidth / window.innerHeight,
@@ -638,12 +526,11 @@ export default function GaragePage() {
             // Load the coin model
             const loader = new GLTFLoader();
             loader.load(
-                "/models/coin/base.glb", // Path to your coin model
+                "/models/coin/coin.glb", // Path to your coin model
                 (gltf) => {
                     const coin = gltf.scene;
                     coin.scale.set(1.5, 1.5, 1.5);
                     coin.rotation.set(0, 0, 0); // Initial rotation
-                    applyMatcap(coin, 'volcano');
                     scene.add(coin);
         
                     // Render the coin
@@ -651,9 +538,7 @@ export default function GaragePage() {
                         requestAnimationFrame(animate);
         
                         // Add rotation for animation later
-                        coin.rotation.x += 0.01;
                         coin.rotation.y += 0.01;
-                        coin.rotation.z += 0.01;
         
                         renderer.render(scene, camera);
                     };
@@ -680,39 +565,8 @@ export default function GaragePage() {
                 renderer.dispose();
             };
         };
+        
 
-        const resizeCoinCanvas = () => {
-            if (!coinCanvasRef.current) return;
-        
-            const coinLayer = document.querySelector(".coin-layer");
-            if (coinLayer && coinCanvasRef.current) {
-                const { width, height } = coinLayer.getBoundingClientRect();
-                const renderer = new THREE.WebGLRenderer({
-                    antialias: true,
-                    canvas: coinCanvasRef.current,
-                });
-        
-                renderer.setSize(width, height); // Set canvas size to match coin-layer
-                renderer.setPixelRatio(window.devicePixelRatio);
-            }
-        };
-        
-        useEffect(() => {
-            resizeCoinCanvas(); // Initial resize
-            window.addEventListener("resize", resizeCoinCanvas); // Handle window resize
-            return () => {
-                window.removeEventListener("resize", resizeCoinCanvas);
-            };
-        }, []);
-
-        useEffect(() => {
-            resizeCoinCanvas(); // Initial resize
-            window.addEventListener("resize", resizeCoinCanvas); // Handle window resize
-            return () => {
-                window.removeEventListener("resize", resizeCoinCanvas);
-            };
-        }, []);
-        
     useEffect(() => {
         const loadAssets = async () => {
             await loadCar(currentCarIndex); // Load the dynamically selected car
@@ -781,13 +635,25 @@ export default function GaragePage() {
     //     }
     // };
 
+    // const handleCarSelection = (carName: string) => {
+    //     const selectedCar = cars.find((car) => car.name === carName);
+    //     if (selectedCar) {
+    //         setCurrentCarIndex(cars.indexOf(selectedCar));
+    //         renderCarInShowroom(selectedCar); // Render in showroom
+    //     }
+    // };
+
     const handleCarSelection = (carName: string) => {
         const selectedCar = cars.find((car) => car.name === carName);
         if (selectedCar) {
-            setCurrentCarIndex(cars.indexOf(selectedCar));
-            renderCarInShowroom(selectedCar); // Render in showroom
+            const selectedIndex = cars.indexOf(selectedCar);
+            setCurrentCarIndex(selectedIndex); // Update the current car index
+            toggleView('car'); // Switch to the car view
+            loadCar(selectedIndex); // Load the selected car into the car view
+        } else {
+            console.warn(`Car not found for name: ${carName}`);
         }
-    };
+    };    
 
     const renderCarInShowroom = (car: Car) => {
         setSelectedCar(car);
@@ -899,7 +765,6 @@ export default function GaragePage() {
     }
     
         setShowMatcapMenu(false);
-        // setSelectedPart(null);
     };
 
     function SampleNextArrow({ onClick }: { onClick?: () => void }) {
@@ -1031,30 +896,11 @@ export default function GaragePage() {
             <div style={{ position: 'absolute', bottom: '15%', right: '10%', transform: 'translateY(-50%)' }}>
                 <button onClick={handleNextCar}>→</button>
             </div> */}
-
-            <div className="coin-layer">
-            {/* Coin Animation Canvas */}
-            <canvas
-                ref={coinCanvasRef}
-                style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                maxWidth: "100%",
-                maxHeight: "100%",
-                zIndex: -1, // Ensure it is behind the text but above the primary canvas
-                pointerEvents: "none", // Prevent interaction
-                }}
-            />
-            {/* Coin Layer Content */}
-            <div
-                style={{
-                position: "relative",
-                zIndex: 2, // Text content above the coin canvas
-                }}
-            >
-                {playerBalance}
-            </div>
+            <div className="coin-element">
+                <div className="coin-container">
+                    <div className="coin-icon" style={{ fontSize: "25px", animation: "rotateClockwise 6s linear infinite" }}>❖</div>
+                    <div className="coin-layer">{playerBalance}</div>
+                </div>
             </div>
 
             <div
@@ -1199,119 +1045,6 @@ export default function GaragePage() {
                 )}
             </div>
 
-            {/* <div style={{ position: 'absolute', bottom: '50px', left: '50%', transform: 'translateX(-50%)', textAlign: 'center', color: '#fff', fontFamily: 'Orbitron' }}>
-                {view === 'car' && (
-                    <h3 style={{ fontSize: '30px', textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)' }}>
-                        Kybertruck
-                    </h3>
-                )}
-                {view === 'rocket' && (
-                    <h3 style={{ fontSize: '30px', textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)' }}>
-                        Venerium
-                    </h3>
-                )}
-                {view === 'showroom' && (
-                    <h3 style={{ fontSize: '30px', textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)' }}>
-                        Showroom
-                    </h3>
-
-                )}
-                <div style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
-                    <button
-                        style={{
-                            padding: '20px 0',
-                            animation: 'pulse 1.5s infinite',
-                            textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)',
-                            // backgroundColor: '#18ff00',
-                            // color: '#000',
-                            borderRadius: '8px',
-                            cursor: 'pointer',
-                        }}
-                        onClick={() => {
-                            toggleView('car'); // Toggle the view to car
-                            handleCarClick();  // Handle car customization click
-                        }}
-                    >
-                        CUSTOMIZE
-                    </button>
-                    <button
-                        style={{
-                            padding: '20px 0',
-                            animation: 'pulse 1.5s infinite',
-                            textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)',
-                            // backgroundColor: '#ff0018',
-                            color: '#fff',
-                            borderRadius: '8px',
-                            cursor: 'pointer',
-                        }}
-                        onClick={() => toggleView('rocket')}
-                    >
-                        WEAPON
-                    </button>
-                    <button
-                        style={{
-                            padding: '20px 0',
-                            animation: 'pulse 1.5s infinite',
-                            textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)',
-                            color: '#fff',
-                            borderRadius: '8px',
-                            cursor: 'pointer',
-                        }}
-                        // onClick={() => toggleView('showroom')}
-                    >
-                        SHOWROOM
-                    </button>
-                </div>
-            </div> */}
-
-            {/* {view === 'showroom' && (
-                <div
-                    style={{
-                        position: 'absolute',
-                        bottom: '0',
-                        marginBottom: '120px',
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        color: '#fff',
-                        textAlign: 'center',
-                        zIndex: 1000,
-                    }}
-                >
-                    <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', alignItems: 'left' }}>
-                        {cars.map((car) => (
-                            <div
-                                key={car.name}
-                                style={{
-                                    padding: '20px 80px 20px 80px',
-                                    background: 'transparent',
-                                    borderRadius: '10px',
-                                    backdropFilter: 'blur(5px)',
-                                    boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.5)',
-                                    cursor: 'pointer',
-                                }}
-                                onClick={() => handleCarSelection(car.name)}
-                            >
-                                <h4 style={{ fontFamily: 'Orbitron', fontSize: '30px', marginBottom: '10px' }}>{car.name}</h4>
-                                <p style={{ fontFamily: 'Orbitron', marginBottom: '10px', fontSize: '30px' }}>{car.price} ❖</p>
-                                <button
-                                    style={{
-                                        padding: '10px',
-                                        borderRadius: '5px',
-                                        // background: '#18ff00',
-                                        // color: '#000',
-                                        cursor: 'pointer',
-                                        fontFamily: 'Orbitron',
-                                        animation: 'pulse 1.5s infinite'
-                                    }}
-                                >
-                                    SELECT
-                                </button>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )} */}
-
             {view === 'showroom' && (
                 <div className='showroom-layer'
                     style={{
@@ -1402,8 +1135,6 @@ export default function GaragePage() {
                 {selectedPart && (
                 <div className="texture-menu">
                     <div className="menu-header">
-                    {/* <h4 style={{  textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)',}}>{selectedPart.toUpperCase()}</h4> */}
-                    {/* <h4 style={{  textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)',}}>TEXTURE</h4> */}
                     </div>
                     <Slider
                     className="texture-slider"
