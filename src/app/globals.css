@@ -1398,14 +1398,14 @@ opacity: 0;
 /* Customization Menu Container */
 .customization-menu {
   position: absolute;
-  bottom: 7%;
+  bottom: 10px;
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
   background-color: transparent;
   backdrop-filter: blur(5px);
   padding: 10px;
-  border-radius: 20px;
+  /* border-radius: 20px; */
   overflow: hidden;
   transition: all 3 ease;
 }
@@ -1472,7 +1472,6 @@ opacity: 0;
   overflow: hidden;
 }
 
-
 /* Menu Header */
 .menu-header {
   display: flex;
@@ -1505,7 +1504,7 @@ opacity: 0;
   background-color: transparent;
   color: #18ff00;
   border: none;
-  border-radius: 8px;
+  /* border-radius: 8px; */
   padding: 10px;
   margin: 20px;
   font-family: 'Orbitron', sans-serif;
@@ -1537,7 +1536,7 @@ opacity: 0;
 .texture-slider .slick-track {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 1px;
 }
 
 .texture-slider .slick-slide {
@@ -1552,6 +1551,18 @@ opacity: 0;
   color: #18ff00; /* Customize navigation arrow color */
   z-index: 1; /* Ensure arrows are above slider content */
   width: auto;
+}
+
+/* Hide default arrows */
+.slick-arrow {
+  display: none !important;
+}
+
+/* Style custom arrows */
+.custom-next-arrow,
+.custom-prev-arrow {
+  display: flex !important;
+  z-index: 1000;
 }
 
 /* Button Styling */

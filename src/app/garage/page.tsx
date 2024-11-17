@@ -8,6 +8,7 @@ import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader';
 import { useSearchParams } from 'next/navigation';
 
 import Slider from 'react-slick';
+import { CustomArrowProps } from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
@@ -47,8 +48,8 @@ export default function GaragePage() {
 
     const cars: Car[] = [
         {
-            name: 'Kybertruck',
-            price: 1000,
+            name: 'Kybertruck V2',
+            price: 378000,
             parts: {
                 chassisbottom: '/models/car/default/chassisbottom.glb',
                 chassis: '/models/car/default/chassisbody.glb',
@@ -61,17 +62,17 @@ export default function GaragePage() {
             },
         },
         {
-            name: 'Truck',
-            price: 500000,
+            name: 'Banger VFX',
+            price: 542000,
             parts: {
-                chassisbottom: '/models/car/kyber/chassisbottom.glb',
-                chassis: '/models/car/kyber/chassisbody.glb',
-                bumper: '/models/car/kyber/empty.glb',
-                spoiler: '/models/car/kyber/spoiler.glb',
-                window: '/models/car/kyber/window.glb',
-                wheels: '/models/car/kyber/wheels.glb',
-                tire: '/models/car/kyber/tire.glb',
-                antena: '/models/car/kyber/antena.glb',
+                chassisbottom: '/models/car/monster/chassisbottom.glb',
+                chassis: '/models/car/monster/chassis.glb',
+                bumper: '/models/car/monster/empty.glb',
+                spoiler: '/models/car/monster/empty.glb',
+                window: '/models/car/monster/window.glb',
+                wheels: '/models/car/monster/wheels.glb',
+                tire: '/models/car/monster/empty.glb',
+                antena: '/models/car/monster/antena.glb',
             },
         },
         // Add more cars here later
@@ -134,8 +135,9 @@ export default function GaragePage() {
 
             setIsOrbitEnabled(true);
 
-            if (showroomGroupRef.current && showroomGroupRef.current.children.length > 0) {
-                switchShowroomCar(0); // Ensure only the first car is visible in showroom view
+            // Show only the first car
+            if (showroomGroupRef.current.children.length > 0) {
+                switchShowroomCar(2); // Pass index 0 to display the first car
             }
     
             carGroupRef.current.traverse((child) => {
@@ -153,6 +155,13 @@ export default function GaragePage() {
             showroomGroupRef.current.traverse((child) => {
                 if (child instanceof THREE.Object3D) {
                     child.visible = true; // Hide the rocket
+                }
+            });
+
+            // Ensure only the first car is visible
+            showroomGroupRef.current.children.forEach((child, index) => {
+                if (child instanceof THREE.Object3D) {
+                    child.visible = index !== 1; // Show only the first car
                 }
             });
     
@@ -267,7 +276,7 @@ export default function GaragePage() {
             }
 
             await Promise.all([loadCar(currentCarIndex), loadShowroomCar(cars), loadRocket()]);
-            switchShowroomCar(0);
+            switchShowroomCar(1);
             scene.add(carGroupRef.current);
             scene.add(rocketGroupRef.current);
             scene.add(showroomGroupRef.current);
@@ -541,7 +550,10 @@ export default function GaragePage() {
         
                     // Position the car group within the showroom
                     // carGroup.position.set(i * 10, 0, 0); // Position cars side-by-side
-                    carGroup.visible = false;
+                    // carGroup.visible = false;
+                    // Initially hide all cars
+                    carGroup.visible = i === 0; // Only show the first car
+                    showroomGroupRef.current.position.set(-0.07, 0, -0.5);
         
                     // Add the car group to the showroom group
                     showroomGroupRef.current.add(carGroup);
@@ -552,7 +564,7 @@ export default function GaragePage() {
             scene.add(showroomGroupRef.current);
             
             // Initially show the first car
-            switchShowroomCar(0);
+            switchShowroomCar(1);
         };        
         
         const loadRocket = async () => {
@@ -594,7 +606,7 @@ export default function GaragePage() {
         const loadAssets = async () => {
             await loadCar(currentCarIndex); // Load the dynamically selected car
             await loadShowroomCar(cars);   // Load all cars in the showroom
-            switchShowroomCar(0);
+            switchShowroomCar(1);
         };
 
         loadAssets();
@@ -761,6 +773,66 @@ export default function GaragePage() {
         // setSelectedPart(null);
     };
 
+    function SampleNextArrow({ onClick }: { onClick?: () => void }) {
+        return (
+            <div
+                className="custom-next-arrow"
+                style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    cursor: "pointer",
+                    position: "absolute",
+                    top: "50%",
+                    right: "10px",
+                    transform: "translateY(-50%)",
+                    zIndex: 2,
+                }}
+                onClick={onClick}
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="white"
+                    width="40px"
+                    height="40px"
+                >
+                    <path d="M9.29 16.29a1 1 0 001.41 0L15 12l-4.3-4.3a1 1 0 00-1.4 1.42L12.18 12l-2.89 2.88a1 1 0 000 1.41z" />
+                </svg>
+            </div>
+        );
+    }
+    
+    function SamplePrevArrow({ onClick }: { onClick?: () => void }) {
+        return (
+            <div
+                className="custom-prev-arrow"
+                style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    cursor: "pointer",
+                    position: "absolute",
+                    top: "50%",
+                    left: "10px",
+                    transform: "translateY(-50%)",
+                    zIndex: 2,
+                }}
+                onClick={onClick}
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="white"
+                    width="40px"
+                    height="40px"
+                >
+                    <path d="M14.71 16.29a1 1 0 01-1.42 0L9 12l4.3-4.3a1 1 0 011.4 1.42L11.82 12l2.89 2.88a1 1 0 010 1.41z" />
+                </svg>
+            </div>
+        );
+    }    
+
     const sliderSettings = {
         arrows: true,         // No navigation dots
         dots: false,
@@ -769,6 +841,8 @@ export default function GaragePage() {
         lazyload: true,
         slidesToShow: 3,      // Show 3 icons per slide
         slidesToScroll: 1,    // Scroll 1 icon at a time
+        nextArrow: <SampleNextArrow />,
+        prevArrow: <SamplePrevArrow />,
         responsive: [
             {
                 breakpoint: 768,
@@ -795,6 +869,8 @@ export default function GaragePage() {
         speed: 1000,           // Transition speed
         slidesToShow: 1,      // Show 3 icons per slide
         slidesToScroll: 1,    // Scroll 1 icon at a time
+        nextArrow: <SampleNextArrow />,
+        prevArrow: <SamplePrevArrow />,
         afterChange: (index: number) => {
             switchShowroomCar(index); // Update visible car based on slider index
         },
@@ -828,7 +904,7 @@ export default function GaragePage() {
             </div> */}
 
             <div className="coin-layer">
-                {playerBalance} KRASH
+                RESERVE: {playerBalance} KRASH
             </div>
 
             <div
@@ -1091,7 +1167,7 @@ export default function GaragePage() {
                     style={{
                         position: 'absolute',
                         bottom: '0',
-                        marginBottom: '120px',
+                        marginBottom: '100px',
                         left: '50%',
                         transform: 'translateX(-50%)',
                         boxShadow: "0px 0px 10px rgb(0, 0, 0, 0.5)",
@@ -1121,11 +1197,11 @@ export default function GaragePage() {
                                 }}
                             >
                                 {/* Car Name and Price */}
-                                <h4 style={{ fontFamily: 'Orbitron', fontSize: '24px', marginBottom: '10px' }}>
+                                <h4 style={{ fontFamily: 'Orbitron', fontSize: '24px', marginBottom: '10px', textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)' }}>
                                     {car.name}
                                 </h4>
-                                <p style={{ fontFamily: 'Orbitron', fontSize: '20px', marginBottom: '20px' }}>
-                                    {car.price} ❖
+                                <p style={{ fontFamily: 'Orbitron', fontSize: '40px', marginTop: '10px', textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)'}}>
+                                    {car.price}❖
                                 </p>
                                 
                                 {/* Select Button */}
@@ -1138,6 +1214,7 @@ export default function GaragePage() {
                                         fontSize: '16px',
                                         marginTop: '0px',
                                         cursor: 'pointer',
+                                        textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)',
                                         animation: 'pulse 1.5s infinite'
                                     }}
                                     onClick={() => handleCarSelection(car.name)}
@@ -1180,10 +1257,10 @@ export default function GaragePage() {
                     </div>
                     <Slider
                     className="texture-slider"
-                    slidesToShow={5}
-                    slidesToScroll={1}
+                    slidesToShow={4}
+                    slidesToScroll={5}
                     infinite={true}
-                    arrows={true}
+                    arrows={false}
                     >
                     {Object.keys(matcapTextures.current).map((matcapName) => (
                         <div key={matcapName} className="texture-slider-item">
