@@ -28,6 +28,7 @@ export default function GaragePage() {
     const [showMatcapMenu, setShowMatcapMenu] = useState(false);
     const [selectedPart, setSelectedPart] = useState<string | null>(null);
     const [selectedCar, setSelectedCar] = useState<Car | null>(null);
+    const showroomLoaded = useRef(false);
 
     const cameraRef = useRef<THREE.PerspectiveCamera | null>(null); // Reference for camera
     const coinCanvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -199,6 +200,14 @@ export default function GaragePage() {
             //     }
             // });
 
+            // Load the showroom cars only if they haven't been loaded
+            if (!showroomLoaded.current) {
+                loadShowroomCar(cars).then(() => {
+                    showroomLoaded.current = true; // Mark as loaded
+                    console.log('Showroom cars loaded.');
+                });
+            }
+
             // Ensure only the first car in the slider is displayed initially
             if (showroomGroupRef.current.children.length > 0) {
                 const firstCarName = cars[0].name; // Get the name of the first car
@@ -307,21 +316,31 @@ export default function GaragePage() {
         rocketGroupRef.current.visible = false;
 
         // Load assets
-        const loadAssets = async () => {
+        // const loadAssets = async () => {
 
-            if (!scene) {
-                console.error('Scene is not initialized yet.');
-                return;
-            }
+        //     if (!scene) {
+        //         console.error('Scene is not initialized yet.');
+        //         return;
+        //     }
 
-            await Promise.all([loadCar(currentCarIndex), loadShowroomCar(cars), loadRocket()]);
-            // switchShowroomCar(1);
+        //     await Promise.all([loadCar(currentCarIndex), loadShowroomCar(cars), loadRocket()]);
+        //     // switchShowroomCar(1);
+        //     showroomLoaded.current = true;
+            
+        // };
+
+        // Add groups to the scene if not already added
+        if (!scene.children.includes(carGroupRef.current)) {
             scene.add(carGroupRef.current);
+        }
+        if (!scene.children.includes(rocketGroupRef.current)) {
             scene.add(rocketGroupRef.current);
+        }
+        if (!scene.children.includes(showroomGroupRef.current)) {
             scene.add(showroomGroupRef.current);
-        };
+        }
 
-        loadAssets();
+        // loadAssets();
 
         const animate = () => {
             requestAnimationFrame(animate);
@@ -525,14 +544,13 @@ export default function GaragePage() {
                     // Initially hide all cars
                     carGroup.visible = i === 0; // Only show the first car
                     showroomGroupRef.current.position.set(-0.07, 0, -0.5);
-        
                     // Add the car group to the showroom group
                     showroomGroupRef.current.add(carGroup);
                 })
             );
         
             // Add the showroom group to the scene
-            scene.add(showroomGroupRef.current);
+            // scene.add(showroomGroupRef.current);
             
         };        
         
@@ -551,20 +569,22 @@ export default function GaragePage() {
                 //     part.scale.set(0.5, 0.5, 0.5); // Scale down the rocket
                 //     applyMatcap(part, 'valakas');
                 // }
-                applyMatcap(rocket, 'valakas');
+
+                // Apply a random matcap from the available options
+                const randomMatcap = () => {
+                    const matcapKeys = Object.keys(matcapTextures.current);
+                    const randomIndex = Math.floor(Math.random() * matcapKeys.length);
+                    return matcapKeys[randomIndex];
+                };
+
+                const randomMatcapName = randomMatcap();
+
+                applyMatcap(rocket, randomMatcapName);
                 rocket.scale.set(0.5, 0.5, 0.5);
                 rocket.position.set(-1, 0, 0);
                 rocketGroupRef.current.add(rocket);
             });
         };
-        
-        // const handleSliderChange = (index: number) => {
-        //     const selectedCar = cars[index];
-        //     if (selectedCar) {
-        //         setCurrentCarIndex(index); // Update the selected car index
-        //         renderCarInShowroom(selectedCar); // Dynamically render the selected car
-        //     }
-        // }; 
         
         const handleSliderChange = (index: number) => {
             switchShowroomCar(index); // Toggle visibility of cars
@@ -645,34 +665,13 @@ export default function GaragePage() {
             await loadCar(currentCarIndex); // Load the dynamically selected car
             await loadShowroomCar(cars);   // Load all cars in the showroom
             await loadCoinModel();
+            await loadRocket();
+            showroomLoaded.current = true;
             // switchShowroomCar(1);
         };
 
         loadAssets();
-    }, [currentCarIndex]);
-
-    // const switchShowroomCar = (index: number) => {
-    //     showroomGroupRef.current.children.forEach((carGroup, i) => {
-    //         carGroup.visible = i === index; // Show the selected car, hide others
-    //         console.log(`Car at index ${i}: visible = ${carGroup.visible}`);
-    //     });
-    // };   
-    
-    // const switchShowroomCar = (index: number) => {
-    //     const selectedCar = cars[index]; // Get the car associated with the current slide
-    //     if (!selectedCar) {
-    //         console.error(`No car found for index ${index}`);
-    //         return;
-    //     }
-    
-    //     showroomGroupRef.current.children.forEach((carGroup) => {
-    //         if (carGroup instanceof THREE.Object3D) {
-    //             // Match carGroup name with the selected car's name
-    //             carGroup.visible = carGroup.name === selectedCar.name;
-    //             console.log(`CarGroup ${carGroup.name}: visible = ${carGroup.visible}`);
-    //         }
-    //     });
-    // };    
+    }, [currentCarIndex]);  
 
     const switchShowroomCar = (index: number) => {
         const selectedCar = cars[index]; // Get the car associated with the current slide
@@ -792,27 +791,6 @@ export default function GaragePage() {
         setShowCustomizationMenu(true);
     };
 
-    // const handleCarSelection = (carName: string) => {
-    //     const selectedCar = cars.find((car) => car.name === carName);
-    //     if (selectedCar) {
-    //         // loadCarParts(selectedCar.parts); // Load the selected car's parts
-    //         const carIndex = cars.indexOf(selectedCar);
-    //         setCurrentCarIndex(carIndex);
-    //         toggleView('car'); // Switch back to the car view
-    //     } else {
-    //         console.warn(`Car not found for name: ${carName}. Defaulting to Kybertruck.`);
-    //         setCurrentCarIndex(0); // Default to Kybertruck
-    //     }
-    // };
-
-    // const handleCarSelection = (carName: string) => {
-    //     const selectedCar = cars.find((car) => car.name === carName);
-    //     if (selectedCar) {
-    //         setCurrentCarIndex(cars.indexOf(selectedCar));
-    //         renderCarInShowroom(selectedCar); // Render in showroom
-    //     }
-    // };
-
     const handleCarSelection = (carName: string) => {
         const selectedCar = cars.find((car) => car.name === carName);
         if (selectedCar) {
@@ -823,13 +801,7 @@ export default function GaragePage() {
         } else {
             console.warn(`Car not found for name: ${carName}`);
         }
-    };    
-
-    const renderCarInShowroom = (car: Car) => {
-        setSelectedCar(car);
-        loadShowroomCar([car]); // Load only the selected car for showroom view
     };
-    
 
     // Smooth camera transition function
     const smoothCameraTransition = (position: THREE.Vector3, lookAt: THREE.Vector3) => {
