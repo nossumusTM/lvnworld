@@ -100,6 +100,7 @@ export default function GaragePage() {
                 spoiler: '/models/cannavaro/spoiler.glb',
                 steering: '/models/cannavaro/steering.glb',
                 wheels: '/models/cannavaro/wheels.glb',
+                tire: '/models/cannavaro/tire.glb',
             },
         },
         {
@@ -110,7 +111,7 @@ export default function GaragePage() {
                 backlights1: '/models/chevy1957/backlights1.glb',
                 bumper: '/models/chevy1957/bumper.glb',
                 chassisbody: '/models/chevy1957/chassisbody.glb',
-                chassisbottom: '/models/chevy1957/chassisbottom.glb',
+                // chassisbottom: '/models/chevy1957/chassisbottom.glb',
                 doors: '/models/chevy1957/doors.glb',
                 headlights: '/models/chevy1957/headlights.glb',
                 headlights2: '/models/chevy1957/headlights2.glb',
