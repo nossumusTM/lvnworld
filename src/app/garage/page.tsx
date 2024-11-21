@@ -328,7 +328,7 @@ export default function GaragePage() {
                           'blue', 'blueeye', 'bw', 'charcoal', 'darkEmerald', 'darkMetal', 'divo',
                           'emeraldGreen', 'exotic', 'gold', 'gray', 'green', 'greenBulb', 'indigo',
                           'lemonblue', 'line', 'marble', 'mixature', 'offwhite', 'panacea', 'purple',
-                          'red', 'sky', 'sunearth', 'transparentLand', 'valakas', 'violetorange',
+                          'red', 'sky', 'sunearth', 'transparentLand', 'valakas',
                           'white', 'whiteblue', 'wine', 'yellow'];
         matcaps.forEach((matcap) => {
             matcapTextures.current[matcap] = textureLoader.load(`/models/matcaps/${matcap}.png`);
