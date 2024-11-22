@@ -110,7 +110,7 @@ export default function GaragePage() {
                 spoiler: '/models/suzuki/spoiler.glb',
                 tire: '/models/suzuki/tire.glb',
                 // engine: '/models/suzuki/engine.glb',
-                // nitro: '/models/suzuki/nitro.glb',
+                nitro: '/models/suzuki/nitro.glb',
                 wheels: '/models/suzuki/wheels.glb',
                 windows: '/models/suzuki/windows.glb',
             },
