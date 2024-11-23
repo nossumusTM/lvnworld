@@ -1178,6 +1178,69 @@ export default function GaragePage() {
                     <div className="coin-layer">{playerBalance}</div>
                 </div>          
             </div>
+
+                <div
+                    style={{
+                        position: 'absolute',
+                        top: '100px',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        textAlign: 'center',
+                        color: '#fff',
+                        fontFamily: 'Orbitron',
+                    }}
+                >
+                    {currentCarAttributes && (
+                        <div className="flex flex-col items-center" style={{ marginTop: '20px', width: '100%' }}>
+                            {(Object.keys(currentCarAttributes) as Array<keyof typeof currentCarAttributes>).map((attr) => {
+                                const value = currentCarAttributes[attr];
+                                const getBarColor = (value: number) => {
+                                    if (value <= 30) return 'red';
+                                    if (value <= 60) return 'orange';
+                                    return '#18FF00';
+                                };
+
+                                return (
+                                    <div key={attr} style={{ marginBottom: '10px', width: '100%' }}>
+                                        <p
+                                            style={{
+                                                fontFamily: 'Orbitron',
+                                                fontSize: '12px',
+                                                marginBottom: '0px',
+                                                textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)',
+                                                textAlign: 'left',
+                                                width: '250px'
+                                            }}
+                                        >
+                                            {attr}: {value}
+                                        </p>
+                                        <div
+                                            style={{
+                                                position: 'relative',
+                                                height: '5px',
+                                                width: '100%',
+                                                background: 'transparent',
+                                                borderRadius: '2px',
+                                                overflow: 'hidden'
+                                            }}
+                                        >
+                                            <div
+                                                className="battery-bar"
+                                                style={{
+                                                    height: '5px',
+                                                    width: `${Math.min(value, 100)}%`, // Cap value to 100%
+                                                    background: getBarColor(value),
+                                                    transition: 'width 0.3s ease',
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
+                </div>
+
             <div
                 style={{
                     position: 'absolute',
@@ -1189,6 +1252,21 @@ export default function GaragePage() {
                     fontFamily: 'Orbitron',
                 }}
             >
+                <div
+                    style={{
+                        position: 'absolute',
+                        top: '100px',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        textAlign: 'center',
+                        color: '#fff',
+                        fontFamily: 'Orbitron',
+                    }}
+                >
+                    
+                                
+                </div>
+
                 {view === 'car' && (
                     <h3
                         style={{
@@ -1261,57 +1339,6 @@ export default function GaragePage() {
                         </button>
                     </div>
                 )}
-
-                <div className='flex flex-col items-center'>
-                    {currentCarAttributes && (
-                        <div className="flex flex-col items-center" style={{ marginTop: '20px', width: '100%' }}>
-                            {(Object.keys(currentCarAttributes) as Array<keyof typeof currentCarAttributes>).map((attr) => {
-                                const value = currentCarAttributes[attr];
-                                const getBarColor = (value: number) => {
-                                    if (value <= 30) return 'red';
-                                    if (value <= 60) return 'orange';
-                                    return '#18FF00'; // Green for 75-100+
-                                };
-
-                                return (
-                                    <div key={attr} style={{ marginBottom: '5px', width: '100%' }}>
-                                        <p
-                                            style={{
-                                                fontFamily: 'Orbitron',
-                                                fontSize: '12px',
-                                                marginBottom: '0px',
-                                                textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)',
-                                                textAlign: 'left',
-                                            }}
-                                        >
-                                            {attr}: {value}
-                                        </p>
-                                        <div
-                                            style={{
-                                                position: 'relative',
-                                                height: '5px',
-                                                width: '100%',
-                                                background: 'transparent',
-                                                borderRadius: '2px',
-                                                overflow: 'hidden',
-                                            }}
-                                        >
-                                            <div
-                                                className="battery-bar"
-                                                style={{
-                                                    height: '5px',
-                                                    width: `${Math.min(value, 100)}%`, // Cap value to 100%
-                                                    background: getBarColor(value),
-                                                    transition: 'width 0.3s ease',
-                                                }}
-                                            />
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    )}
-                </div>
 
                 {/* Customize View */}
                 {view === 'customize' && (
@@ -1393,10 +1420,8 @@ export default function GaragePage() {
                     style={{
                         position: 'absolute',
                         bottom: '0',
-                        // marginBottom: '0px',
                         left: '50%',
                         transform: 'translateX(-50%)',
-                        // boxShadow: "0px 0px 10px rgb(0, 0, 0, 0.5)",
                         padding: '30px',
                         paddingTop: '70px',
                         backdropFilter: 'blur(5px)',
@@ -1478,43 +1503,43 @@ export default function GaragePage() {
 
             {/* Material Selection Menu */}
                 {selectedPart && (
-                <div className="texture-menu">
-                    <div className="menu-header">
+                    <div className="texture-menu">
+                        <div className="menu-header">
+                        </div>
+                        <Slider
+                        className="texture-slider"
+                        slidesToShow={4}
+                        slidesToScroll={5}
+                        infinite={true}
+                        arrows={false}
+                        >
+                        {Object.keys(matcapTextures.current).map((matcapName) => (
+                            <div key={matcapName} className="texture-slider-item">
+                                <div>
+                            
+                            </div>
+                            <button
+                                onClick={() => handlePartCustomization(matcapName)}
+                                className="texture-button"
+                            >
+                                <img
+                                src={matcapTextures.current[matcapName].image.currentSrc}
+                                alt={matcapName}
+                                className="texture-icon"
+                                />
+                            </button>
+                            </div>
+                        ))}
+                        </Slider>
+                        <div className="x-button">
+                            <button
+                                onClick={() => setSelectedPart(null)}
+                                className="close-button"
+                            >
+                                CONFIRM
+                            </button>
+                            </div>
                     </div>
-                    <Slider
-                    className="texture-slider"
-                    slidesToShow={4}
-                    slidesToScroll={5}
-                    infinite={true}
-                    arrows={false}
-                    >
-                    {Object.keys(matcapTextures.current).map((matcapName) => (
-                        <div key={matcapName} className="texture-slider-item">
-                            <div>
-                        
-                        </div>
-                        <button
-                            onClick={() => handlePartCustomization(matcapName)}
-                            className="texture-button"
-                        >
-                            <img
-                            src={matcapTextures.current[matcapName].image.currentSrc}
-                            alt={matcapName}
-                            className="texture-icon"
-                            />
-                        </button>
-                        </div>
-                    ))}
-                    </Slider>
-                    <div className="x-button">
-                        <button
-                            onClick={() => setSelectedPart(null)}
-                            className="close-button"
-                        >
-                            CONFIRM
-                        </button>
-                        </div>
-                </div>
                 
                 )}
         </div>
