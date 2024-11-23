@@ -887,7 +887,6 @@ export default function GaragePage() {
         });
     };
     
-
     useEffect(() => {
         if (controlsRef.current) {
             controlsRef.current.enabled = isOrbitEnabled;
@@ -908,18 +907,6 @@ export default function GaragePage() {
         setIsOrbitEnabled(true);
         setShowCustomizationMenu(true);
     };
-
-    // const handleCarSelection = (carName: string) => {
-    //     const selectedCar = cars.find((car) => car.name === carName);
-    //     if (selectedCar) {
-    //         const selectedIndex = cars.indexOf(selectedCar);
-    //         setCurrentCarIndex(selectedIndex); // Update the current car index
-    //         toggleView('car'); // Switch to the car view
-    //         loadCar(selectedIndex); // Load the selected car into the car view
-    //     } else {
-    //         console.warn(`Car not found for name: ${carName}`);
-    //     }
-    // };
 
     const handleCarSelection = async (carName: string) => {
         const selectedCar = cars.find((car) => car.name === carName);
@@ -1172,11 +1159,43 @@ export default function GaragePage() {
             <div style={{ position: 'absolute', bottom: '15%', right: '10%', transform: 'translateY(-50%)' }}>
                 <button onClick={handleNextCar}>→</button>
             </div> */}
-            <div className="coin-element">
+            {/* <div className="coin-element">
                 <div className="coin-container">
                     <div className="coin-icon" style={{ fontSize: "25px", animation: "rotateClockwise 6s linear infinite" }}>❖</div>
                     <div className="coin-layer">{playerBalance}</div>
                 </div>          
+            </div> */}
+            <div className="coin-element">
+                <div className="coin-container">
+                    <div
+                        className="button-element"
+                        style={{ left: "-80px", backdropFilter: "blur(10px)"}} // Adjust positioning for the left button
+                        onClick={() => console.log("Left button clicked")}
+                    >
+                        <div
+                            className="button-icon"
+                            style={{
+                                backgroundImage: `url('/images/mobile/doubleTriangle.png')`,
+                            }}
+                        />
+                    </div>
+                    <div className="coin-icon" style={{ fontSize: "25px", animation: "rotateClockwise 6s linear infinite" }}>
+                        ❖
+                    </div>
+                    <div className="coin-layer">{playerBalance}</div>
+                    <div
+                        className="button-element"
+                        style={{ right: "-80px", backdropFilter: "blur(10px)" }} // Adjust positioning for the right button
+                        onClick={() => console.log("Right button clicked")}
+                    >
+                        <div
+                            className="button-icon"
+                            style={{
+                                backgroundImage: `url('/images/mobile/paperPlane.png')`,
+                            }}
+                        />
+                    </div>
+                </div>
             </div>
 
                 <div

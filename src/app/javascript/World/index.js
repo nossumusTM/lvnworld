@@ -2378,7 +2378,6 @@ export default class
     //     }
     // }
     
-    
     // Function to update battery status in HTML
     updateBatteryStatus(battery) {
         const batteryStatusElement = document.getElementById('battery-status');

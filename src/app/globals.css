@@ -1616,6 +1616,32 @@ opacity: 0;
   text-align: center;
 }
 
+.button-element {
+  position: absolute;
+  top: 0;
+  width: 70px;
+  height: 70px;
+  /* background: rgba(0, 0, 0, 0.5); */
+  backdrop-filter: blur(10px);
+  border-radius: 0;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* transition: opacity 0.3s 0.4s; */
+  opacity: 1;
+}
+
+/* .button-element:hover {
+  opacity: 0.5;
+} */
+
+.button-icon {
+  width: 22px;
+  height: 26px;
+  background-size: cover;
+}
+
 .coin-layer {
   position: relative;
   display: flex;
