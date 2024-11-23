@@ -1455,7 +1455,7 @@ export default function GaragePage() {
                 <div className='showroom-layer'
                     style={{
                         position: 'absolute',
-                        bottom: '-100px',
+                        bottom: '-50px',
                         left: '50%',
                         transform: 'translateX(-50%)',
                         padding: '30px',
