@@ -1218,7 +1218,7 @@ export default function GaragePage() {
                 <div
                     style={{
                         position: 'absolute',
-                        top: '100px',
+                        top: '80px',
                         left: '50%',
                         transform: 'translateX(-50%)',
                         textAlign: 'center',
