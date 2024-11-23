@@ -31,6 +31,7 @@ export default function GaragePage() {
     const [showMatcapMenu, setShowMatcapMenu] = useState(false);
     const [selectedPart, setSelectedPart] = useState<string | null>(null);
     const [selectedCar, setSelectedCar] = useState<Car | null>(null);
+    const [currentCarAttributes, setCurrentCarAttributes] = useState<{ [key: string]: number } | null>(null);
     const showroomLoaded = useRef(false);
 
     const cameraRef = useRef<THREE.PerspectiveCamera | null>(null); // Reference for camera
@@ -49,6 +50,32 @@ export default function GaragePage() {
     };
 
     const cars: Car[] = [
+        {
+            name: 'Kybertruck V2',
+            price: 378000,
+            parts: {
+                accessories: '/models/car/default/empty.glb',
+                backlights: '/models/car/default/empty.glb',
+                chassisinside: '/models/car/default/empty.glb',
+                engine: '/models/car/default/empty.glb',
+                headlights: '/models/car/default/empty.glb',
+                saloon: '/models/car/default/empty.glb',
+                chassisbottom: '/models/car/default/chassisbottom.glb',
+                chassis: '/models/car/default/chassisbody.glb',
+                bumper: '/models/car/default/bumper.glb',
+                spoiler: '/models/car/default/spoiler.glb',
+                window: '/models/car/default/window.glb',
+                wheels: '/models/car/default/wheels.glb',
+                tire: '/models/car/default/tire.glb',
+                antena: '/models/car/default/antena.glb',
+            },
+            attributes: {
+                PWR: 55,
+                HP: 70,
+                SPD: 80,
+                BRK: 95,
+            },
+        },
         {
             name: 'Charger Power Bank',
             price: 998000,
@@ -69,10 +96,10 @@ export default function GaragePage() {
                 antena: '/models/charger/empty.glb',
             },
             attributes: {
-                PWR: 85,
-                HP: 120,
-                SPD: 95,
-                BRK: 80,
+                PWR: 55,
+                HP: 70,
+                SPD: 35,
+                BRK: 40,
             },
         },
         {
@@ -96,10 +123,10 @@ export default function GaragePage() {
                 wheels: '/models/chevy1957/wheels.glb',
             },
             attributes: {
-                PWR: 90,
-                HP: 100,
-                SPD: 80,
-                BRK: 70,
+                PWR: 43,
+                HP: 80,
+                SPD: 30,
+                BRK: 55,
             },
         },
         {
@@ -118,32 +145,12 @@ export default function GaragePage() {
                 windows: '/models/suzuki/windows.glb',
             },
             attributes: {
-                PWR: 100,
-                HP: 150,
+                PWR: 70,
+                HP: 40,
                 SPD: 110,
                 BRK: 90,
             },
         },
-        // {
-        //     name: 'Kybertruck V2',
-        //     price: 378000,
-        //     parts: {
-        //         accessories: '/models/car/default/empty.glb',
-        //         backlights: '/models/car/default/empty.glb',
-        //         chassisinside: '/models/car/default/empty.glb',
-        //         engine: '/models/car/default/empty.glb',
-        //         headlights: '/models/car/default/empty.glb',
-        //         saloon: '/models/car/default/empty.glb',
-        //         chassisbottom: '/models/car/default/chassisbottom.glb',
-        //         chassis: '/models/car/default/chassisbody.glb',
-        //         bumper: '/models/car/default/bumper.glb',
-        //         spoiler: '/models/car/default/spoiler.glb',
-        //         window: '/models/car/default/window.glb',
-        //         wheels: '/models/car/default/wheels.glb',
-        //         tire: '/models/car/default/tire.glb',
-        //         antena: '/models/car/default/antena.glb',
-        //     },
-        // },
         {
             name: 'Wrang Dirty Slipper',
             price: 378000,
@@ -162,7 +169,7 @@ export default function GaragePage() {
                 PWR: 100,
                 HP: 150,
                 SPD: 110,
-                BRK: 90,
+                BRK: 70,
             },
         },
         {
@@ -178,10 +185,10 @@ export default function GaragePage() {
                 wheels: '/models/rctruck/wheels.glb',
             },
             attributes: {
-                PWR: 100,
+                PWR: 70,
                 HP: 150,
                 SPD: 110,
-                BRK: 90,
+                BRK: 80,
             },
         },
         {
@@ -199,9 +206,9 @@ export default function GaragePage() {
             },
             attributes: {
                 PWR: 100,
-                HP: 150,
+                HP: 130,
                 SPD: 110,
-                BRK: 90,
+                BRK: 80,
             },
         },
         {
@@ -218,7 +225,7 @@ export default function GaragePage() {
                 window: '/models/zimbow/window.glb',
             },
             attributes: {
-            PWR: 100,
+            PWR: 80,
             HP: 150,
             SPD: 110,
             BRK: 90,
@@ -226,42 +233,6 @@ export default function GaragePage() {
         },
         // Add more cars here later
     ];
-
-    const createGlowingText = async (
-        text: string,
-        position: THREE.Vector3,
-        scene: THREE.Scene
-    ) => {
-        const fontLoader = new FontLoader();
-        const font = await fontLoader.loadAsync('/fonts/orbitron.json'); // Ensure the font file is available in your public folder.
-    
-        const textGeometry = new TextGeometry(text, {
-            font,
-            size: 0.5,
-            height: 0.1,
-            curveSegments: 12,
-        });
-    
-        const textMaterial = new THREE.MeshStandardMaterial({
-            color: 0xffffff,
-            emissive: 0x00ffcc, // Glow color
-            emissiveIntensity: 1,
-        });
-    
-        const textMesh = new THREE.Mesh(textGeometry, textMaterial);
-        textMesh.position.copy(position);
-    
-        scene.add(textMesh);
-    
-        // Optional: Add reveal animation
-        gsap.fromTo(
-            textMesh.material,
-            { opacity: 0 },
-            { opacity: 1, duration: 1, ease: 'power2.out' }
-        );
-    
-        return textMesh;
-    };
 
     const toggleView = (selectedView: 'menu' | 'car' | 'rocket' | 'showroom' | 'customize') => {
         console.log('Toggling view to:', selectedView);
@@ -824,6 +795,8 @@ export default function GaragePage() {
             console.error(`No car found for index ${index}`);
             return;
         }
+
+        setCurrentCarAttributes(selectedCar.attributes);
     
         const outDuration = 1; // Duration for the outgoing animation in seconds
         const inDuration = 0.5; // Duration for the incoming animation in seconds
@@ -957,11 +930,6 @@ export default function GaragePage() {
             await loadCar(selectedIndex);
     
             // Display attributes in the scene
-            const attributePosition = new THREE.Vector3(0, 1, 2); // Adjust position
-            createGlowingText(`PWR: ${selectedCar.attributes.PWR}`, attributePosition.clone().add(new THREE.Vector3(0, 0.5, 0)), scene);
-            createGlowingText(`HP: ${selectedCar.attributes.HP}`, attributePosition.clone().add(new THREE.Vector3(0, 0, 0)), scene);
-            createGlowingText(`SPD: ${selectedCar.attributes.SPD}`, attributePosition.clone().add(new THREE.Vector3(0, -0.5, 0)), scene);
-            createGlowingText(`BRK: ${selectedCar.attributes.BRK}`, attributePosition.clone().add(new THREE.Vector3(0, -1, 0)), scene);
         } else {
             console.warn(`Car not found for name: ${carName}`);
         }
@@ -1208,9 +1176,8 @@ export default function GaragePage() {
                 <div className="coin-container">
                     <div className="coin-icon" style={{ fontSize: "25px", animation: "rotateClockwise 6s linear infinite" }}>❖</div>
                     <div className="coin-layer">{playerBalance}</div>
-                </div>
+                </div>          
             </div>
-
             <div
                 style={{
                     position: 'absolute',
@@ -1294,6 +1261,57 @@ export default function GaragePage() {
                         </button>
                     </div>
                 )}
+
+                <div className='flex flex-col items-center'>
+                    {currentCarAttributes && (
+                        <div className="flex flex-col items-center" style={{ marginTop: '20px', width: '100%' }}>
+                            {(Object.keys(currentCarAttributes) as Array<keyof typeof currentCarAttributes>).map((attr) => {
+                                const value = currentCarAttributes[attr];
+                                const getBarColor = (value: number) => {
+                                    if (value <= 30) return 'red';
+                                    if (value <= 60) return 'orange';
+                                    return '#18FF00'; // Green for 75-100+
+                                };
+
+                                return (
+                                    <div key={attr} style={{ marginBottom: '5px', width: '100%' }}>
+                                        <p
+                                            style={{
+                                                fontFamily: 'Orbitron',
+                                                fontSize: '12px',
+                                                marginBottom: '0px',
+                                                textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)',
+                                                textAlign: 'left',
+                                            }}
+                                        >
+                                            {attr}: {value}
+                                        </p>
+                                        <div
+                                            style={{
+                                                position: 'relative',
+                                                height: '5px',
+                                                width: '100%',
+                                                background: 'transparent',
+                                                borderRadius: '2px',
+                                                overflow: 'hidden',
+                                            }}
+                                        >
+                                            <div
+                                                className="battery-bar"
+                                                style={{
+                                                    height: '5px',
+                                                    width: `${Math.min(value, 100)}%`, // Cap value to 100%
+                                                    background: getBarColor(value),
+                                                    transition: 'width 0.3s ease',
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
+                </div>
 
                 {/* Customize View */}
                 {view === 'customize' && (
@@ -1431,52 +1449,6 @@ export default function GaragePage() {
                                 >
                                     SELECT
                                 </button>
-                                <div className="flex flex-col items-center">
-                                    {(Object.keys(car.attributes) as Array<keyof typeof car.attributes>).map((attr) => {
-                                        const value = car.attributes[attr];
-                                        const getBarColor = (value: number) => {
-                                            if (value <= 50) return 'red';
-                                            if (value <= 90) return 'orange';
-                                            return '#8CFF80'; // Green for 75-100+
-                                        };
-
-                                        return (
-                                            <div key={attr} style={{ marginBottom: '5px', width: '70%' }}>
-                                                <p
-                                                    style={{
-                                                        fontFamily: 'Orbitron',
-                                                        fontSize: '12px',
-                                                        marginBottom: '0px',
-                                                        textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)',
-                                                        textAlign: 'left',
-                                                    }}
-                                                >
-                                                    {attr}: {value}
-                                                </p>
-                                                <div
-                                                    style={{
-                                                        position: 'relative',
-                                                        height: '5px',
-                                                        width: '100%',
-                                                        background: '#333',
-                                                        borderRadius: '2px',
-                                                        overflow: 'hidden',
-                                                    }}
-                                                >
-                                                    <div
-                                                        className="battery-bar"
-                                                        style={{
-                                                            height: '5px',
-                                                            width: `${Math.min(value, 100)}%`, // Cap value to 100%
-                                                            background: getBarColor(value),
-                                                            transition: 'width 0.3s ease',
-                                                        }}
-                                                    />
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
                             </div>
                         ))}
                     </Slider>
