@@ -173,6 +173,27 @@ export default function GaragePage() {
             },
         },
         {
+            name: 'F40',
+            price: 7500000,
+            parts: {
+                backlights: '/models/f40/backlights.glb',
+                chassis: '/models/f40/chassis1.glb',
+                headlights1: '/models/f40/headlights1.glb',
+                headlightscover: '/models/f40/headlightscover.glb',
+                lightscover: '/models/f40/lightscover.glb',
+                mirrors: '/models/f40/mirrors.glb',
+                tire: '/models/f40/tire.glb',
+                wheels: '/models/f40/wheels.glb',
+                window: '/models/f40/window.glb',
+            },
+            attributes: {
+                PWR: 70,
+                HP: 40,
+                SPD: 110,
+                BRK: 90,
+            },
+        },
+        {
             name: 'Wran Wreckstone',
             price: 378000,
             parts: {
