@@ -102,33 +102,33 @@ export default function GaragePage() {
                 BRK: 40,
             },
         },
-        {
-            name: 'Chevy Impavido',
-            price: 2500000,
-            parts: {
-                backlights: '/models/chevy1957/backlights.glb',
-                backlights1: '/models/chevy1957/backlights1.glb',
-                bumper: '/models/chevy1957/bumper1.glb',
-                chassisbody: '/models/chevy1957/chassisbody.glb',
-                doors: '/models/chevy1957/doors.glb',
-                headlights: '/models/chevy1957/headlights.glb',
-                headlights2: '/models/chevy1957/headlights2.glb',
-                mirrors: '/models/chevy1957/mirrors.glb',
-                seat: '/models/chevy1957/seat.glb',
-                steering: '/models/chevy1957/steering.glb',
-                tires: '/models/chevy1957/tires.glb',
-                truck: '/models/chevy1957/truck.glb',
-                turnsignals: '/models/chevy1957/turnsignals.glb',
-                windows: '/models/chevy1957/windows.glb',
-                wheels: '/models/chevy1957/wheels.glb',
-            },
-            attributes: {
-                PWR: 43,
-                HP: 80,
-                SPD: 30,
-                BRK: 55,
-            },
-        },
+        // {
+        //     name: 'Chevy Impavido',
+        //     price: 2500000,
+        //     parts: {
+        //         backlights: '/models/chevy1957/backlights.glb',
+        //         backlights1: '/models/chevy1957/backlights1.glb',
+        //         bumper: '/models/chevy1957/bumper1.glb',
+        //         chassisbody: '/models/chevy1957/chassisbody.glb',
+        //         doors: '/models/chevy1957/doors.glb',
+        //         headlights: '/models/chevy1957/headlights.glb',
+        //         headlights2: '/models/chevy1957/headlights2.glb',
+        //         mirrors: '/models/chevy1957/mirrors.glb',
+        //         seat: '/models/chevy1957/seat.glb',
+        //         steering: '/models/chevy1957/steering.glb',
+        //         tires: '/models/chevy1957/tires.glb',
+        //         truck: '/models/chevy1957/truck.glb',
+        //         turnsignals: '/models/chevy1957/turnsignals.glb',
+        //         windows: '/models/chevy1957/windows.glb',
+        //         wheels: '/models/chevy1957/wheels.glb',
+        //     },
+        //     attributes: {
+        //         PWR: 43,
+        //         HP: 80,
+        //         SPD: 30,
+        //         BRK: 55,
+        //     },
+        // },
         {
             name: 'Carnage Solar-System',
             price: 5500000,
@@ -139,7 +139,6 @@ export default function GaragePage() {
                 mirrors: '/models/suzuki/mirrors.glb',
                 spoiler: '/models/suzuki/spoiler.glb',
                 tire: '/models/suzuki/tire.glb',
-                // engine: '/models/suzuki/engine.glb',
                 nitro: '/models/suzuki/nitro.glb',
                 wheels: '/models/suzuki/wheels.glb',
                 windows: '/models/suzuki/windows.glb',
@@ -361,7 +360,6 @@ export default function GaragePage() {
             wheels: '/models/car/default/wheels.glb', 
             tire: '/models/car/default/tire.glb', 
             antena: '/models/car/default/antena.glb',
-            // rocket: '/models/rocket/base.glb', // Ensure this path is correct
         },
     ];
 
@@ -402,10 +400,10 @@ export default function GaragePage() {
         // Initialize the scene
         scene = new THREE.Scene();
         scene.background = new THREE.Color('#0213f7'); // Updated background color
-        cameraRef.current = new THREE.PerspectiveCamera(1.2, window.innerWidth / window.innerHeight, 0.1, 1000);
+        cameraRef.current = new THREE.PerspectiveCamera(1.2, window.innerWidth / window.innerHeight, 1, 500);
         cameraRef.current.position.set(0, -200, 1);
 
-        const renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvasRef.current });
+        const renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvasRef.current, logarithmicDepthBuffer: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
     
@@ -428,20 +426,6 @@ export default function GaragePage() {
         showroomGroupRef.current.visible = false;
         rocketGroupRef.current.visible = false;
 
-        // Load assets
-        // const loadAssets = async () => {
-
-        //     if (!scene) {
-        //         console.error('Scene is not initialized yet.');
-        //         return;
-        //     }
-
-        //     await Promise.all([loadCar(currentCarIndex), loadShowroomCar(cars), loadRocket()]);
-        //     // switchShowroomCar(1);
-        //     showroomLoaded.current = true;
-            
-        // };
-
         // Add groups to the scene if not already added
         if (!scene.children.includes(carGroupRef.current)) {
             scene.add(carGroupRef.current);
@@ -453,10 +437,10 @@ export default function GaragePage() {
             scene.add(showroomGroupRef.current);
         }
 
-        // loadAssets();
+        let animationFrameId: number;
 
         const animate = () => {
-            requestAnimationFrame(animate);
+            animationFrameId = requestAnimationFrame(animate);
 
             // Spin the car group
             if (carGroupRef.current) {
@@ -480,6 +464,13 @@ export default function GaragePage() {
             }
         };
         animate();
+
+        return () => {
+            cancelAnimationFrame(animationFrameId); // Properly clean up
+            window.removeEventListener('resize', handleResize);
+            window.removeEventListener('click', handleMouseClick);
+            renderer.dispose();
+        };
 
         const handleResize = () => {
             renderer.setSize(window.innerWidth, window.innerHeight);
@@ -565,6 +556,15 @@ export default function GaragePage() {
                                     });
                                 }
                             });
+                        } else if (partName === 'backlights') {
+                            part.traverse((child) => {
+                                if (child instanceof THREE.Mesh) {
+                                    child.material = new THREE.MeshStandardMaterial({
+                                        emissive: new THREE.Color(0xFF0000),
+                                        emissiveIntensity: 1.5,
+                                    });
+                                }
+                            });
                         }
                         
                         if (partName === 'chassis') {
@@ -604,8 +604,8 @@ export default function GaragePage() {
         };  
 
         const addHeadlightEffect = (carGroup: THREE.Group) => {
-            const headlightLight = new THREE.PointLight(0xffffff, 1, 10); // Adjust intensity and distance
-            headlightLight.position.set(0, 1, 2); // Adjust position relative to the car
+            const headlightLight = new THREE.PointLight(0xffffff, 2, 50); // Adjust intensity and distance
+            headlightLight.position.set(0, 2, 5); // Adjust position relative to the car
             carGroup.add(headlightLight);
         };
 
@@ -659,6 +659,24 @@ export default function GaragePage() {
                                             applyMatcap(part, 'black');
                                         } else if (partName === 'window') {
                                             applyMatcap(part, 'black');
+                                        } else if (partName === 'headlights') {
+                                            part.traverse((child) => {
+                                                if (child instanceof THREE.Mesh) {
+                                                    child.material = new THREE.MeshStandardMaterial({
+                                                        emissive: new THREE.Color(0xffffff),
+                                                        emissiveIntensity: 1.5,
+                                                    });
+                                                }
+                                            });
+                                        } else if (partName === 'backlights') {
+                                            part.traverse((child) => {
+                                                if (child instanceof THREE.Mesh) {
+                                                    child.material = new THREE.MeshStandardMaterial({
+                                                        emissive: new THREE.Color(0xFF0000),
+                                                        emissiveIntensity: 1.5,
+                                                    });
+                                                }
+                                            });
                                         }
 
                                         carGroup.add(part); // Add the part to the car group
@@ -724,80 +742,79 @@ export default function GaragePage() {
             setCurrentCarIndex(index); // Update the selected car index
         };
 
-        const loadCoinModel = async () => {
-            if (!coinCanvasRef.current) return;
+        // const loadCoinModel = async () => {
+        //     if (!coinCanvasRef.current) return;
         
-            const canvas = coinCanvasRef.current;
-            const renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
+        //     const canvas = coinCanvasRef.current;
+        //     const renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
+        //     renderer.setSize(window.innerWidth, window.innerHeight);
+        //     renderer.setPixelRatio(window.devicePixelRatio);
         
-            // Create scene, camera, and lighting
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(
-                45,
-                window.innerWidth / window.innerHeight,
-                0.1,
-                1000
-            );
-            camera.position.set(0, 0, 5);
+        //     // Create scene, camera, and lighting
+        //     const scene = new THREE.Scene();
+        //     const camera = new THREE.PerspectiveCamera(
+        //         45,
+        //         window.innerWidth / window.innerHeight,
+        //         0.1,
+        //         1000
+        //     );
+        //     camera.position.set(0, 0, 5);
         
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-            scene.add(ambientLight);
+        //     const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        //     scene.add(ambientLight);
         
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-            directionalLight.position.set(10, 10, 10);
-            scene.add(directionalLight);
+        //     const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        //     directionalLight.position.set(10, 10, 10);
+        //     scene.add(directionalLight);
         
-            // Load the coin model
-            const loader = new GLTFLoader();
-            loader.load(
-                "/models/coin/coin.glb", // Path to your coin model
-                (gltf) => {
-                    const coin = gltf.scene;
-                    coin.scale.set(1.5, 1.5, 1.5);
-                    coin.rotation.set(0, 0, 0); // Initial rotation
-                    scene.add(coin);
+        //     // Load the coin model
+        //     const loader = new GLTFLoader();
+        //     loader.load(
+        //         "/models/coin/coin.glb", // Path to your coin model
+        //         (gltf) => {
+        //             const coin = gltf.scene;
+        //             coin.scale.set(1.5, 1.5, 1.5);
+        //             coin.rotation.set(0, 0, 0); // Initial rotation
+        //             scene.add(coin);
         
-                    // Render the coin
-                    const animate = () => {
-                        requestAnimationFrame(animate);
+        //             // Render the coin
+        //             const animate = () => {
+        //                 requestAnimationFrame(animate);
         
-                        // Add rotation for animation later
-                        coin.rotation.y += 0.01;
+        //                 // Add rotation for animation later
+        //                 coin.rotation.y += 0.01;
         
-                        renderer.render(scene, camera);
-                    };
+        //                 renderer.render(scene, camera);
+        //             };
         
-                    animate();
-                },
-                undefined,
-                (error) => {
-                    console.error("Error loading coin model:", error);
-                }
-            );
+        //             animate();
+        //         },
+        //         undefined,
+        //         (error) => {
+        //             console.error("Error loading coin model:", error);
+        //         }
+        //     );
         
-            // Adjust on resize
-            const handleResize = () => {
-                renderer.setSize(window.innerWidth, window.innerHeight);
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-            };
+        //     // Adjust on resize
+        //     const handleResize = () => {
+        //         renderer.setSize(window.innerWidth, window.innerHeight);
+        //         camera.aspect = window.innerWidth / window.innerHeight;
+        //         camera.updateProjectionMatrix();
+        //     };
         
-            window.addEventListener("resize", handleResize);
+        //     window.addEventListener("resize", handleResize);
         
-            return () => {
-                window.removeEventListener("resize", handleResize);
-                renderer.dispose();
-            };
-        };
+        //     return () => {
+        //         window.removeEventListener("resize", handleResize);
+        //         renderer.dispose();
+        //     };
+        // };
         
 
     useEffect(() => {
         const loadAssets = async () => {
             await loadCar(currentCarIndex); // Load the dynamically selected car
             await loadShowroomCar(cars);   // Load all cars in the showroom
-            await loadCoinModel();
             await loadRocket();
             showroomLoaded.current = true;
             // switchShowroomCar(1);
@@ -1186,7 +1203,7 @@ export default function GaragePage() {
                 <div className="coin-container">
                     <div
                         className="button-element"
-                        style={{ left: "-80px", backdropFilter: "blur(10px)"}} // Adjust positioning for the left button
+                        style={{ left: "-90px", backdropFilter: "blur(10px)"}} // Adjust positioning for the left button
                         onClick={() => console.log("Left button clicked")}
                     >
                         <div
@@ -1202,7 +1219,7 @@ export default function GaragePage() {
                     <div className="coin-layer">{formatBalance(playerBalance)}</div>
                     <div
                         className="button-element"
-                        style={{ right: "-80px", backdropFilter: "blur(10px)" }} // Adjust positioning for the right button
+                        style={{ right: "-90px", backdropFilter: "blur(10px)" }} // Adjust positioning for the right button
                         onClick={() => console.log("Right button clicked")}
                     >
                         <div
