@@ -1231,21 +1231,23 @@ export default function GaragePage() {
                             {(Object.keys(currentCarAttributes) as Array<keyof typeof currentCarAttributes>).map((attr) => {
                                 const value = currentCarAttributes[attr];
                                 const getBarColor = (value: number) => {
-                                    if (value <= 30) return 'red';
-                                    if (value <= 60) return 'orange';
+                                    if (value <= 30) return '#FF8000';
+                                    if (value <= 60) return '#8CFF80';
                                     return '#18FF00';
                                 };
 
                                 return (
-                                    <div key={attr} style={{ marginBottom: '10px', width: '100%' }}>
+                                    <div key={attr} className="flex items-center" style={{ marginBottom: '10px', width: '100%', display: 'flex', alignItems: 'center' }}>
                                         <p
                                             style={{
                                                 fontFamily: 'Orbitron',
-                                                fontSize: '12px',
+                                                fontSize: '10px',
                                                 marginBottom: '0px',
                                                 textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)',
                                                 textAlign: 'left',
-                                                width: '250px'
+                                                width: '250px',
+                                                flex: '1',
+                                                marginRight: '10px',
                                             }}
                                         >
                                             {attr}: {value}
@@ -1254,6 +1256,7 @@ export default function GaragePage() {
                                             style={{
                                                 position: 'relative',
                                                 height: '5px',
+                                                flex: '3',
                                                 width: '100%',
                                                 background: 'transparent',
                                                 borderRadius: '2px',
