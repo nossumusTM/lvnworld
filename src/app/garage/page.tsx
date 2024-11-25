@@ -216,6 +216,26 @@ export default function GaragePage() {
             },
         },
         {
+            name: 'Howler Packard',
+            price: 378000,
+            parts: {
+                backlights: '/models/howler/backlights.glb',
+                bumper: '/models/howler/bumper.glb',
+                chassis: '/models/howler/chassis.glb',
+                chassisbottom: '/models/howler/chassisbottom.glb',
+                headlights: '/models/howler/headlights.glb',
+                rocket: '/models/howler/rocket.glb',
+                tire: '/models/howler/tire.glb',
+                wheels: '/models/howler/wheels.glb',
+            },
+            attributes: {
+                PWR: 100,
+                HP: 150,
+                SPD: 110,
+                BRK: 70,
+            },
+        },
+        {
             name: 'RC TraxShark',
             price: 4800000,
             parts: {
