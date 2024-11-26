@@ -62,7 +62,7 @@ export default function GaragePage() {
                 saloon: '/models/car/default/empty.glb',
                 chassisbottom: '/models/car/default/chassisbottom.glb',
                 chassis: '/models/car/default/chassisbody.glb',
-                bumper: '/models/car/default/bumper.glb',
+                // bumper: '/models/car/default/bumper.glb',
                 spoiler: '/models/car/default/spoiler.glb',
                 window: '/models/car/default/window.glb',
                 wheels: '/models/car/default/wheels.glb',
@@ -172,27 +172,27 @@ export default function GaragePage() {
                 BRK: 90,
             },
         },
-        {
-            name: 'F40',
-            price: 7500000,
-            parts: {
-                backlights: '/models/f40/backlights.glb',
-                chassis: '/models/f40/chassis1.glb',
-                headlights1: '/models/f40/headlights1.glb',
-                headlightscover: '/models/f40/headlightscover.glb',
-                lightscover: '/models/f40/lightscover.glb',
-                mirrors: '/models/f40/mirrors.glb',
-                tire: '/models/f40/tire.glb',
-                wheels: '/models/f40/wheels1.glb',
-                window: '/models/f40/window.glb',
-            },
-            attributes: {
-                PWR: 90,
-                HP: 70,
-                SPD: 110,
-                BRK: 90,
-            },
-        },
+        // {
+        //     name: 'F40',
+        //     price: 7500000,
+        //     parts: {
+        //         backlights: '/models/f40/backlights.glb',
+        //         chassis: '/models/f40/chassis1.glb',
+        //         headlights1: '/models/f40/headlights1.glb',
+        //         headlightscover: '/models/f40/headlightscover.glb',
+        //         lightscover: '/models/f40/lightscover.glb',
+        //         mirrors: '/models/f40/mirrors.glb',
+        //         tire: '/models/f40/tire.glb',
+        //         wheels: '/models/f40/wheels1.glb',
+        //         window: '/models/f40/window.glb',
+        //     },
+        //     attributes: {
+        //         PWR: 90,
+        //         HP: 70,
+        //         SPD: 110,
+        //         BRK: 90,
+        //     },
+        // },
         {
             name: 'Wran Wreckstone',
             price: 378000,
@@ -459,7 +459,8 @@ export default function GaragePage() {
         { 
             chassisbottom: '/models/car/default/chassisbottom.glb',
             chassis: '/models/car/default/chassisbody.glb',
-            bumper: '/models/car/default/bumper.glb',
+            headlights: '/models/car/default/headlights.glb',
+            // bumper: '/models/car/default/bumper.glb',
             spoiler: '/models/car/default/spoiler.glb',
             window: '/models/car/default/window.glb',
             wheels: '/models/car/default/wheels.glb', 
@@ -600,7 +601,7 @@ export default function GaragePage() {
         // Initialize the scene
         scene = new THREE.Scene();
         scene.background = new THREE.Color('#0213f7'); // Updated background color
-        cameraRef.current = new THREE.PerspectiveCamera(1.2, window.innerWidth / window.innerHeight, 1, 500);
+        cameraRef.current = new THREE.PerspectiveCamera(1.0, window.innerWidth / window.innerHeight, 1, 500);
         cameraRef.current.position.set(0, -200, 1);
 
         const renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvasRef.current, logarithmicDepthBuffer: true });
