@@ -239,6 +239,25 @@ export default function GaragePage() {
                 BRK: 90,
             },
         },
+        {
+            name: '240 GTI',
+            price: 7500000,
+            parts: {
+                backlights: '/models/240gti/backlights.glb',
+                chassis: '/models/240gti/chassis.glb',
+                chassisbottom: '/models/240gti/chassisbottom.glb',
+                headlights: '/models/240gti/headlights.glb',
+                tire: '/models/240gti/tire.glb',
+                wheels: '/models/240gti/wheels.glb',
+                windows: '/models/240gti/windows.glb',
+            },
+            attributes: {
+                PWR: 110,
+                HP: 80,
+                SPD: 110,
+                BRK: 90,
+            },
+        },
         // {
         //     name: 'F40',
         //     price: 7500000,
