@@ -259,6 +259,33 @@ export default function GaragePage() {
             },
         },
         // {
+        //     name: 'Lexus',
+        //     price: 7500000,
+        //     parts: {
+        //         accessories: '/models/lexus/accessories.glb',
+        //         backlights: '/models/lexus/backlights.glb',
+        //         brake: '/models/lexus/brake.glb',
+        //         chassis: '/models/lexus/chassis.glb',
+        //         chassisbottom: '/models/lexus/chassisbottom.glb',
+        //         doors: '/models/lexus/doors.glb',
+        //         headlights: '/models/lexus/headlights.glb',
+        //         logo: '/models/lexus/logo.glb',
+        //         mesh: '/models/lexus/mesh.glb',
+        //         mirrors: '/models/lexus/mirrors.glb',
+        //         salon: '/models/lexus/salon.glb',
+        //         spoiler: '/models/lexus/spoiler.glb',
+        //         tire: '/models/lexus/tire1.glb',
+        //         wheels: '/models/lexus/wheels1.glb',
+        //         windows: '/models/lexus/windows.glb',
+        //     },
+        //     attributes: {
+        //         PWR: 110,
+        //         HP: 80,
+        //         SPD: 110,
+        //         BRK: 90,
+        //     },
+        // },
+        // {
         //     name: 'F40',
         //     price: 7500000,
         //     parts: {

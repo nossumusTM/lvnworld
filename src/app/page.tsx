@@ -128,6 +128,20 @@ export default function Home() {
       console.log('WebSocket connected');
       setIsWebSocketReady(true);
       setRetryCount(0);
+
+      // Send a message to request the player's score
+      const playerId = localStorage.getItem('playerId'); // Replace with how you store playerId
+      if (playerId) {
+          wsRef.current?.send(
+              JSON.stringify({
+                  type: 'getScore',
+                  playerId: playerId
+              })
+          );
+      } else {
+          console.error('Player ID not found in localStorage');
+      }
+
     };
 
     // Initialize a flag to prevent repeated updates
@@ -158,6 +172,21 @@ export default function Home() {
           console.log("No 'counts' property found in message.");
       } else {
           console.log("Counts found:", message.counts);
+      }
+
+      // Player score
+      if (message.type === 'playerScore') {
+          if (typeof message.score === 'number') {
+              console.log(`Player score received for player ${message.playerId}:`, message.score);
+              setPlayerBalance(message.score); // Update the state with the player's score
+          } else {
+              console.error("Invalid score received:", message.score);
+          }
+          
+          console.log("PLAYER SCORE", playerBalance)
+
+      } else {
+          console.log("Unknown message type:", message.type);
       }
   
       // Handle the 'worldCounts' type message
@@ -277,6 +306,7 @@ export default function Home() {
               // Close WebSocket on world selection
               if (wsRef.current) {
                 wsRef.current.close();
+                wsRef.current = null;
               }
           }
       };
