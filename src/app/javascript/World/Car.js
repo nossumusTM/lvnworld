@@ -850,6 +850,17 @@ export default class Car
     
                 console.log("Setting McLaren")
                 break;
+
+            case '240 GTI':
+                this.models.chassis = this.resources.items.gtiChassis;
+                this.models.wheel = this.resources.items.gtiWheels;
+                this.models.antena = this.resources.items.gtiAntena;
+                this.models.backLightsBrake = this.resources.items.gtiBacklights;
+                this.models.backLightsReverse = this.resources.items.gtiBacklightsReverse;
+                this.models.backLightsBattery = this.resources.items.carDefaultBackLightsBattery;
+    
+                console.log("Setting McLaren")
+                break;
     
             default:
                 // Fallback to default car models if carName doesn't match

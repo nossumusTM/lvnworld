@@ -165,6 +165,13 @@ const mclarenBacklightsReverseSource = '/models/mclaren/backlightsReverse.glb'
 const mclarenWheelsSource = '/models/mclaren/wheel.glb'
 const mclarenAntenaSource = '/models/mclaren/antena.glb'
 
+// 240 GTI
+const gtiChassisSource = '/models/240gti/auto.glb'
+const gtiBacklightsSource = '/models/240gti/backlights.glb'
+const gtiBacklightsReverseSource = '/models/240gti/backlightsReverse.glb'
+const gtiWheelsSource = '/models/240gti/wheel.glb'
+const gtiAntenaSource = '/models/240gti/antena.glb'
+
 // Car default 1
 const car1DefaultChassisSource = '/models/car1/default/chassis.glb'
 const car1DefaultWheelSource = '/models/car1/default/wheel.glb'
@@ -430,6 +437,13 @@ export default class Resources extends EventEmitter
             { name: 'mclarenBacklightsReverse', source: mclarenBacklightsReverseSource },
             { name: 'mclarenWheels', source: mclarenWheelsSource },
             { name: 'mclarenAntena', source: mclarenAntenaSource },
+
+            // 240 GTI
+            { name: 'gtiChassis', source: gtiChassisSource },
+            { name: 'gtiBacklights', source: gtiBacklightsSource },
+            { name: 'gtiBacklightsReverse', source: gtiBacklightsReverseSource },
+            { name: 'gtiWheels', source: gtiWheelsSource },
+            { name: 'gtiAntena', source: gtiAntenaSource },
 
             // Car1 default
             { name: 'car1DefaultChassis', source: car1DefaultChassisSource },
