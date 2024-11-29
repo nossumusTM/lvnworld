@@ -839,6 +839,17 @@ export default class Car
     
                 console.log("Setting Wreckslinger")
                 break;
+
+            case 'McLaren':
+                this.models.chassis = this.resources.items.mclarenChassis;
+                this.models.wheel = this.resources.items.mclarenWheels;
+                this.models.antena = this.resources.items.mclarenAntena;
+                this.models.backLightsBrake = this.resources.items.mclarenBacklights;
+                this.models.backLightsReverse = this.resources.items.mclarenBacklightsReverse;
+                this.models.backLightsBattery = this.resources.items.carDefaultBackLightsBattery;
+    
+                console.log("Setting McLaren")
+                break;
     
             default:
                 // Fallback to default car models if carName doesn't match

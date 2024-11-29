@@ -158,6 +158,13 @@ const gangoverBacklightsReverseSource = '/models/gangover/backlightsReverse.glb'
 const gangoverWheelsSource = '/models/gangover/wheels.glb'
 const gangoverAntenaSource = '/models/gangover/antena.glb'
 
+// McLaren
+const mclarenChassisSource = '/models/mclaren/auto.glb'
+const mclarenBacklightsSource = '/models/mclaren/backlights.glb'
+const mclarenBacklightsReverseSource = '/models/mclaren/backlightsReverse.glb'
+const mclarenWheelsSource = '/models/mclaren/wheel.glb'
+const mclarenAntenaSource = '/models/mclaren/antena.glb'
+
 // Car default 1
 const car1DefaultChassisSource = '/models/car1/default/chassis.glb'
 const car1DefaultWheelSource = '/models/car1/default/wheel.glb'
@@ -416,6 +423,13 @@ export default class Resources extends EventEmitter
             { name: 'gangoverBacklightsReverse', source: gangoverBacklightsReverseSource },
             { name: 'gangoverWheels', source: gangoverWheelsSource },
             { name: 'gangoverAntena', source: gangoverAntenaSource },
+
+            // McLaren
+            { name: 'mclarenChassis', source: mclarenChassisSource },
+            { name: 'mclarenBacklights', source: mclarenBacklightsSource },
+            { name: 'mclarenBacklightsReverse', source: mclarenBacklightsReverseSource },
+            { name: 'mclarenWheels', source: mclarenWheelsSource },
+            { name: 'mclarenAntena', source: mclarenAntenaSource },
 
             // Car1 default
             { name: 'car1DefaultChassis', source: car1DefaultChassisSource },
