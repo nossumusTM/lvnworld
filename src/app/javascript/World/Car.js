@@ -861,6 +861,17 @@ export default class Car
     
                 console.log("Setting McLaren")
                 break;
+
+            case 'Howler Packard':
+                this.models.chassis = this.resources.items.howlerChassis;
+                this.models.wheel = this.resources.items.howlerWheels;
+                this.models.antena = this.resources.items.howlerAntena;
+                this.models.backLightsBrake = this.resources.items.howlerBacklights;
+                this.models.backLightsReverse = this.resources.items.howlerBacklightsReverse;
+                this.models.backLightsBattery = this.resources.items.carDefaultBackLightsBattery;
+        
+                console.log("Howler Packard")
+                break;
     
             default:
                 // Fallback to default car models if carName doesn't match

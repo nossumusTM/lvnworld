@@ -172,6 +172,13 @@ const gtiBacklightsReverseSource = '/models/240gti/backlightsReverse.glb'
 const gtiWheelsSource = '/models/240gti/wheel.glb'
 const gtiAntenaSource = '/models/240gti/antena.glb'
 
+// Howler Packard
+const howlerChassisSource = '/models/howler/auto.glb'
+const howlerBacklightsSource = '/models/howler/backlights.glb'
+const howlerBacklightsReverseSource = '/models/howler/backlightsReverse.glb'
+const howlerWheelsSource = '/models/howler/wheel.glb'
+const howlerAntenaSource = '/models/howler/antena.glb'
+
 // Car default 1
 const car1DefaultChassisSource = '/models/car1/default/chassis.glb'
 const car1DefaultWheelSource = '/models/car1/default/wheel.glb'
@@ -444,6 +451,13 @@ export default class Resources extends EventEmitter
             { name: 'gtiBacklightsReverse', source: gtiBacklightsReverseSource },
             { name: 'gtiWheels', source: gtiWheelsSource },
             { name: 'gtiAntena', source: gtiAntenaSource },
+
+            // Howler Packard
+            { name: 'howlerChassis', source: howlerChassisSource },
+            { name: 'howlerBacklights', source: howlerBacklightsSource },
+            { name: 'howlerBacklightsReverse', source: howlerBacklightsReverseSource },
+            { name: 'howlerWheels', source: howlerWheelsSource },
+            { name: 'howlerAntena', source: howlerAntenaSource },
 
             // Car1 default
             { name: 'car1DefaultChassis', source: car1DefaultChassisSource },
