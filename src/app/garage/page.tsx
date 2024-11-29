@@ -136,7 +136,7 @@ export default function GaragePage() {
             price: 5500000,
             parts: {
                 backlights: '/models/suzuki/backlights.glb',
-                chassis: '/models/suzuki/chassis1.glb',
+                chassis: '/models/suzuki/chassis.glb',
                 headlights: '/models/suzuki/headlights.glb',
                 mirrors: '/models/suzuki/mirrors.glb',
                 spoiler: '/models/suzuki/spoiler.glb',

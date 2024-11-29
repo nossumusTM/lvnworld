@@ -828,6 +828,17 @@ export default class Car
     
                 console.log("Setting Wreckslinger")
                 break;
+
+            case 'Gangover':
+                this.models.chassis = this.resources.items.gangoverChassis;
+                this.models.wheel = this.resources.items.gangoverWheels;
+                this.models.antena = this.resources.items.gangoverAntena;
+                this.models.backLightsBrake = this.resources.items.gangoverBacklights;
+                this.models.backLightsReverse = this.resources.items.gangoverBacklightsReverse;
+                this.models.backLightsBattery = this.resources.items.carDefaultBackLightsBattery;
+    
+                console.log("Setting Wreckslinger")
+                break;
     
             default:
                 // Fallback to default car models if carName doesn't match
