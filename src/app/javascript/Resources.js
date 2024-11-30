@@ -123,6 +123,7 @@ const crossroadsStaticCollisionSource = '/models/crossroads/static/collision.glb
 // Car default
 const carDefaultChassisSource = '/models/car/default/chassis.glb'
 const carDefaultWheelSource = '/models/car/default/wheel.glb'
+const carDefaultHeadlightsSource = '/models/car/default/headlights.glb'
 const carDefaultBackLightsBrakeSource = '/models/car/default/backLightsBrake.glb'
 const carDefaultBackLightsReverseSource = '/models/car/default/backLightsReverse.glb'
 const carDefaultBackLightsBatterySource = '/models/car/default/backLightsBattery.glb'
@@ -146,6 +147,7 @@ const chargerAntenaSource = '/models/charger/antena.glb'
 
 // Wreckslinger
 const wreckslingerChassisSource = '/models/wreckslinger/auto.glb'
+const wreckslingerHeadlightsSource = '/models/wreckslinger/headlights.glb'
 const wreckslingerBacklightsSource = '/models/wreckslinger/backlights.glb'
 const wreckslingerBacklightsReverseSource = '/models/wreckslinger/backlightsReverse.glb'
 const wreckslingerWheelsSource = '/models/wreckslinger/wheels.glb'
@@ -155,12 +157,14 @@ const wreckslingerAntenaSource = '/models/wreckslinger/antena.glb'
 const gangoverChassisSource = '/models/gangover/auto.glb'
 const gangoverBacklightsSource = '/models/gangover/backlights.glb'
 const gangoverBacklightsReverseSource = '/models/gangover/backlightsReverse.glb'
+const gangoverHeadlightsSource = '/models/gangover/headlights.glb'
 const gangoverWheelsSource = '/models/gangover/wheels.glb'
 const gangoverAntenaSource = '/models/gangover/antena.glb'
 
 // McLaren
 const mclarenChassisSource = '/models/mclaren/auto.glb'
 const mclarenBacklightsSource = '/models/mclaren/backlights.glb'
+const mclarenHeadlightsSource = '/models/mclaren/headlights.glb'
 const mclarenBacklightsReverseSource = '/models/mclaren/backlightsReverse.glb'
 const mclarenWheelsSource = '/models/mclaren/wheel.glb'
 const mclarenAntenaSource = '/models/mclaren/antena.glb'
@@ -169,6 +173,7 @@ const mclarenAntenaSource = '/models/mclaren/antena.glb'
 const gtiChassisSource = '/models/240gti/auto.glb'
 const gtiBacklightsSource = '/models/240gti/backlights.glb'
 const gtiBacklightsReverseSource = '/models/240gti/backlightsReverse.glb'
+const gtiHeadlightsSource = '/models/240gti/headlights.glb'
 const gtiWheelsSource = '/models/240gti/wheel.glb'
 const gtiAntenaSource = '/models/240gti/antena.glb'
 
@@ -176,6 +181,7 @@ const gtiAntenaSource = '/models/240gti/antena.glb'
 const howlerChassisSource = '/models/howler/auto.glb'
 const howlerBacklightsSource = '/models/howler/backlights.glb'
 const howlerBacklightsReverseSource = '/models/howler/backlightsReverse.glb'
+const howlerHeadlightsSource = '/models/howler/headlights.glb'
 const howlerWheelsSource = '/models/howler/wheel.glb'
 const howlerAntenaSource = '/models/howler/antena.glb'
 
@@ -206,6 +212,7 @@ const impactusAntenaSource = '/models/impactus/antena.glb'
 // Car default 1
 const car1DefaultChassisSource = '/models/car1/default/chassis.glb'
 const car1DefaultWheelSource = '/models/car1/default/wheel.glb'
+const car1DefaultHeadlightsSource = '/models/car1/default/headlights.glb'
 const car1DefaultBackLightsBrakeSource = '/models/car1/default/backLightsBrake.glb'
 const car1DefaultBackLightsReverseSource = '/models/car1/default/backLightsReverse.glb'
 const car1DefaultBackLightsBatterySource = '/models/car1/default/backLightsBattery.glb'
@@ -214,6 +221,7 @@ const car1DefaultAntenaSource = '/models/car1/default/antena.glb'
 // Car default 2
 const car2DefaultChassisSource = '/models/car2/default/chassis.glb'
 const car2DefaultWheelSource = '/models/car2/default/wheel.glb'
+const car2DefaultHeadlightsSource = '/models/car1/default/headlights.glb'
 const car2DefaultBackLightsBrakeSource = '/models/car2/default/backLightsBrake.glb'
 const car2DefaultBackLightsReverseSource = '/models/car2/default/backLightsReverse.glb'
 const car2DefaultBackLightsBatterySource = '/models/car2/default/backLightsBattery.glb'
@@ -223,6 +231,7 @@ const car2DefaultAntenaSource = '/models/car2/default/antena.glb'
 const car3DefaultChassisSource = '/models/car3/default/chassis.glb'
 const car3DefaultWheelSource = '/models/car3/default/wheel.glb'
 const car3DefaultBackLightsBrakeSource = '/models/car3/default/backLightsBrake.glb'
+const car3DefaultHeadlightsSource = '/models/car1/default/headlights.glb'
 const car3DefaultBackLightsReverseSource = '/models/car3/default/backLightsReverse.glb'
 const car3DefaultBackLightsBatterySource = '/models/car3/default/backLightsBattery.glb'
 const car3DefaultAntenaSource = '/models/car3/default/antena.glb'
@@ -428,6 +437,7 @@ export default class Resources extends EventEmitter
             // Car default
             { name: 'carDefaultChassis', source: carDefaultChassisSource },
             { name: 'carDefaultWheel', source: carDefaultWheelSource },
+            { name: 'carDefaultHeadlights', source: carDefaultHeadlightsSource },
             { name: 'carDefaultBackLightsBrake', source: carDefaultBackLightsBrakeSource },
             { name: 'carDefaultBackLightsReverse', source: carDefaultBackLightsReverseSource },
             { name: 'carDefaultBackLightsBattery', source: carDefaultBackLightsBatterySource },
@@ -450,6 +460,7 @@ export default class Resources extends EventEmitter
 
             // Wreckslinger
             { name: 'wreckslingerChassis', source: wreckslingerChassisSource },
+            { name: 'wreckslingerHeadlights', source: wreckslingerHeadlightsSource },
             { name: 'wreckslingerBacklights', source: wreckslingerBacklightsSource },
             { name: 'wreckslingerBacklightsReverse', source: wreckslingerBacklightsReverseSource },
             { name: 'wreckslingerWheels', source: wreckslingerWheelsSource },
@@ -458,6 +469,7 @@ export default class Resources extends EventEmitter
             // Gangover
             { name: 'gangoverChassis', source: gangoverChassisSource },
             { name: 'gangoverBacklights', source: gangoverBacklightsSource },
+            { name: 'gangoverHeadlights', source: gangoverHeadlightsSource },
             { name: 'gangoverBacklightsReverse', source: gangoverBacklightsReverseSource },
             { name: 'gangoverWheels', source: gangoverWheelsSource },
             { name: 'gangoverAntena', source: gangoverAntenaSource },
@@ -465,6 +477,7 @@ export default class Resources extends EventEmitter
             // McLaren
             { name: 'mclarenChassis', source: mclarenChassisSource },
             { name: 'mclarenBacklights', source: mclarenBacklightsSource },
+            { name: 'mclarenHeadlights', source: mclarenHeadlightsSource },
             { name: 'mclarenBacklightsReverse', source: mclarenBacklightsReverseSource },
             { name: 'mclarenWheels', source: mclarenWheelsSource },
             { name: 'mclarenAntena', source: mclarenAntenaSource },
@@ -472,6 +485,7 @@ export default class Resources extends EventEmitter
             // 240 GTI
             { name: 'gtiChassis', source: gtiChassisSource },
             { name: 'gtiBacklights', source: gtiBacklightsSource },
+            { name: 'gtiHeadlights', source: gtiHeadlightsSource },
             { name: 'gtiBacklightsReverse', source: gtiBacklightsReverseSource },
             { name: 'gtiWheels', source: gtiWheelsSource },
             { name: 'gtiAntena', source: gtiAntenaSource },
@@ -479,6 +493,7 @@ export default class Resources extends EventEmitter
             // Howler Packard
             { name: 'howlerChassis', source: howlerChassisSource },
             { name: 'howlerBacklights', source: howlerBacklightsSource },
+            { name: 'howlerHeadlights', source: howlerHeadlightsSource },
             { name: 'howlerBacklightsReverse', source: howlerBacklightsReverseSource },
             { name: 'howlerWheels', source: howlerWheelsSource },
             { name: 'howlerAntena', source: howlerAntenaSource },

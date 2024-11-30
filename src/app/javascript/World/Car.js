@@ -811,6 +811,7 @@ export default class Car
                 this.models.chassis = this.resources.items.chargerChassis;
                 this.models.wheel = this.resources.items.chargerWheels;
                 this.models.antena = this.resources.items.chargerAntena;
+                this.models.headLights = this.resources.items.chargerHeadlights;
                 this.models.backLightsBrake = this.resources.items.chargerBacklights;
                 this.models.backLightsReverse = this.resources.items.chargerBacklightsReverse;
                 this.models.backLightsBattery = this.resources.items.carDefaultBackLightsBattery;
@@ -822,6 +823,7 @@ export default class Car
                 this.models.chassis = this.resources.items.wreckslingerChassis;
                 this.models.wheel = this.resources.items.wreckslingerWheels;
                 this.models.antena = this.resources.items.wreckslingerAntena;
+                this.models.headLights = this.resources.items.wreckslingerHeadlights;
                 this.models.backLightsBrake = this.resources.items.wreckslingerBacklights;
                 this.models.backLightsReverse = this.resources.items.wreckslingerBacklightsReverse;
                 this.models.backLightsBattery = this.resources.items.carDefaultBackLightsBattery;
@@ -833,6 +835,7 @@ export default class Car
                 this.models.chassis = this.resources.items.gangoverChassis;
                 this.models.wheel = this.resources.items.gangoverWheels;
                 this.models.antena = this.resources.items.gangoverAntena;
+                this.models.headLights = this.resources.items.gangoverHeadlights;
                 this.models.backLightsBrake = this.resources.items.gangoverBacklights;
                 this.models.backLightsReverse = this.resources.items.gangoverBacklightsReverse;
                 this.models.backLightsBattery = this.resources.items.carDefaultBackLightsBattery;
@@ -844,6 +847,7 @@ export default class Car
                 this.models.chassis = this.resources.items.mclarenChassis;
                 this.models.wheel = this.resources.items.mclarenWheels;
                 this.models.antena = this.resources.items.mclarenAntena;
+                this.models.headLights = this.resources.items.mclarenHeadlights;
                 this.models.backLightsBrake = this.resources.items.mclarenBacklights;
                 this.models.backLightsReverse = this.resources.items.mclarenBacklightsReverse;
                 this.models.backLightsBattery = this.resources.items.carDefaultBackLightsBattery;
@@ -855,6 +859,7 @@ export default class Car
                 this.models.chassis = this.resources.items.gtiChassis;
                 this.models.wheel = this.resources.items.gtiWheels;
                 this.models.antena = this.resources.items.gtiAntena;
+                this.models.headLights = this.resources.items.gtiHeadlights;
                 this.models.backLightsBrake = this.resources.items.gtiBacklights;
                 this.models.backLightsReverse = this.resources.items.gtiBacklightsReverse;
                 this.models.backLightsBattery = this.resources.items.carDefaultBackLightsBattery;
@@ -866,6 +871,7 @@ export default class Car
                 this.models.chassis = this.resources.items.howlerChassis;
                 this.models.wheel = this.resources.items.howlerWheels;
                 this.models.antena = this.resources.items.howlerAntena;
+                this.models.headLights = this.resources.items.howlerHeadlights;
                 this.models.backLightsBrake = this.resources.items.howlerBacklights;
                 this.models.backLightsReverse = this.resources.items.howlerBacklightsReverse;
                 this.models.backLightsBattery = this.resources.items.carDefaultBackLightsBattery;
@@ -913,6 +919,7 @@ export default class Car
                 // Fallback to default car models if carName doesn't match
                 this.models.chassis = this.resources.items.carDefaultChassis;
                 this.models.antena = this.resources.items.carDefaultAntena;
+                this.models.headLights = this.resources.items.carDefaultHeadlights;
                 this.models.backLightsBrake = this.resources.items.carDefaultBackLightsBrake;
                 this.models.backLightsReverse = this.resources.items.carDefaultBackLightsReverse;
                 this.models.backLightsBattery = this.resources.items.carDefaultBackLightsBattery;
