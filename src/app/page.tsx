@@ -191,8 +191,6 @@ export default function Home() {
               console.error("Invalid score received:", message.score);
           }
 
-          console.log("PLAYER SCORE", playerAccount)
-
       } else {
           console.log("Unknown message type:", message.type);
       }
@@ -374,8 +372,9 @@ export default function Home() {
   };
   
   const handleGarageButtonClick = () => {
-      const balance = playerAccount; // Assume `playerAccount` contains the fetched balance
-      router.push(`/garage?balance=${balance}`);
+      const account = playerAccount; // Assume `playerAccount` contains the fetched account
+      console.log("PLAYER SCORE", account)
+      router.push(`/garage?account=${account}`);
   };
 
   return (

@@ -559,19 +559,22 @@ export default function GaragePage() {
         console.log('Rocket group visibility:', rocketGroupRef.current.children.map((c) => c.visible)); // Debug log
     };
 
-    const formatBalance = (balance: number) => {
-        return balance.toLocaleString('en-US').replace(/,/g, ' '); // Replace commas with spaces
+    const formatBalance = (account: number) => {
+        return account.toLocaleString('en-US').replace(/,/g, ' '); // Replace commas with spaces
     };
 
     useEffect(() => {
         // toggleView('car'); // Default to car view when the scene initializes
 
-        const balance = searchParams.get('balance');
+        const account = searchParams.get('account');
 
         // Parse the balance and set it in state
-        if (balance && !isNaN(Number(balance))) {
-            setPlayerAccount(Number(balance));
+        if (account && !isNaN(Number(account))) {
+            setPlayerAccount(Number(account));
         }
+        
+        setPlayerAccount(Number(account));
+
     }, [searchParams]); // Run when searchParams change
 
     const kybertruck = [

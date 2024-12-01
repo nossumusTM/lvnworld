@@ -914,6 +914,18 @@ export default class Car
                     
                 console.log("Impactus")
                 break;
+
+            case 'Crushinator':
+                this.models.chassis = this.resources.items.zimbowChassis;
+                this.models.wheel = this.resources.items.zimbowWheels;
+                this.models.antena = this.resources.items.zimbowAntena;
+                this.models.headLights = this.resources.items.zimbowHeadlights;
+                this.models.backLightsBrake = this.resources.items.zimbowBacklights;
+                this.models.backLightsReverse = this.resources.items.zimbowBacklightsReverse;
+                this.models.backLightsBattery = this.resources.items.carDefaultBackLightsBattery;
+                        
+                console.log("Impactus")
+                break;
     
             default:
                 // Fallback to default car models if carName doesn't match
