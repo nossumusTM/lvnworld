@@ -186,8 +186,8 @@ const howlerWheelsSource = '/models/howler/wheel.glb'
 const howlerAntenaSource = '/models/howler/antena.glb'
 
 // RC TraxShark
-const rcTruckChassisSource = '/models/rctruck/auto.glb'
-const rcTruckBacklightsSource = '/models/rctruck/backlights.glb'
+const rcTruckChassisSource = '/models/rctruck/auto1.glb'
+const rcTruckBacklightsSource = '/models/rctruck/backlights1.glb'
 const rcTruckHeadlightsSource = '/models/rctruck/headlights1.glb'
 const rcTruckBacklightsReverseSource = '/models/rctruck/backlightsReverse.glb'
 const rcTruckWheelsSource = '/models/rctruck/wheel1.glb'
