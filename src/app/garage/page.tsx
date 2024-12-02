@@ -698,6 +698,7 @@ export default function GaragePage() {
 
     useEffect(() => {
         const account = searchParams.get('account');
+        console.log('Query param account:', account); // Check the value on mobile
 
         // Parse the balance and set it in state
         if (account && !isNaN(Number(account))) {

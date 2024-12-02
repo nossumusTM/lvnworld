@@ -373,8 +373,11 @@ export default function Home() {
   
   const handleGarageButtonClick = () => {
       const account = playerAccount; // Assume `playerAccount` contains the fetched account
-      console.log("PLAYER SCORE", account)
-      router.push(`/garage?account=${account}`);
+      if (account) {
+        router.push(`/garage?account=${account}`);
+    } else {
+        console.error('Player account is missing or invalid');
+    }
   };
 
   return (
