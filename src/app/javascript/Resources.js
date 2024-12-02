@@ -153,10 +153,11 @@ const wreckslingerWheelsSource = '/models/wreckslinger/wheels.glb'
 const wreckslingerAntenaSource = '/models/wreckslinger/antena.glb'
 
 // Gangover
-const gangoverChassisSource = '/models/gangover/auto.glb'
+const gangoverChassisSource = '/models/gangover/auto1.glb'
 const gangoverBacklightsSource = '/models/gangover/backlights.glb'
 const gangoverBacklightsReverseSource = '/models/gangover/backlightsReverse.glb'
-const gangoverHeadlightsSource = '/models/gangover/headlights2.glb'
+const gangoverHeadlightsSource = '/models/gangover/headlights3.glb'
+const gangoverHeadlightsBottomSource = '/models/gangover/headlightsBottom.glb'
 const gangoverWheelsSource = '/models/gangover/wheels.glb'
 const gangoverAntenaSource = '/models/gangover/antena.glb'
 
@@ -485,6 +486,7 @@ export default class Resources extends EventEmitter
             { name: 'gangoverChassis', source: gangoverChassisSource },
             { name: 'gangoverBacklights', source: gangoverBacklightsSource },
             { name: 'gangoverHeadlights', source: gangoverHeadlightsSource },
+            { name: 'gangoverHeadlightsBottom', source: gangoverHeadlightsBottomSource },
             { name: 'gangoverBacklightsReverse', source: gangoverBacklightsReverseSource },
             { name: 'gangoverWheels', source: gangoverWheelsSource },
             { name: 'gangoverAntena', source: gangoverAntenaSource },

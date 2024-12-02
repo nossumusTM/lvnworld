@@ -444,8 +444,8 @@ export default function GaragePage() {
                 chassis: '/models/impactus/chassis.glb',
                 brake: '/models/impactus/brake.glb',
                 headlights: '/models/impactus/headlights.glb',
-                rims: '/models/impactus/rims.glb',
-                tire: '/models/impactus/tire.glb',
+                rims: '/models/impactus/showroomwheel.glb',
+                tire: '/models/impactus/showroomtire.glb',
                 windows: '/models/impactus/windows.glb',
                 roof: '/models/impactus/roof.glb',
             },
@@ -889,9 +889,9 @@ export default function GaragePage() {
         if (!scene.children.includes(rocketGroupRef.current)) {
             scene.add(rocketGroupRef.current);
         }
-        if (!scene.children.includes(showroomGroupRef.current)) {
-            scene.add(showroomGroupRef.current);
-        }
+        // if (!scene.children.includes(showroomGroupRef.current)) {
+        //     scene.add(showroomGroupRef.current);
+        // }
 
         let animationFrameId: number;
 
@@ -1163,7 +1163,7 @@ export default function GaragePage() {
             );
         
             // Add the showroom group to the scene
-            // scene.add(showroomGroupRef.current);
+            scene.add(showroomGroupRef.current);
             
         };        
         
