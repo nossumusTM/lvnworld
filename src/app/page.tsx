@@ -372,10 +372,15 @@ export default function Home() {
   };
   
   const handleGarageButtonClick = () => {
-      const account = playerAccount; // Assume `playerAccount` contains the fetched account
-      console.log("PLAYER SCORE", playerAccount)
-      router.push(`/garage?account=${account}`);
-  };
+    const account = playerAccount;
+    if (account > 0) {
+        const encodedAccount = encodeURIComponent(account);
+        router.push(`/garage?account=${encodedAccount}`);
+    } else {
+        console.error('Player account is missing or invalid');
+    }
+};
+
 
   return (
     //<main className="min-h-screen px-8 py-0 pb-12 flex-1 flex flex-col items-center" style={{ backgroundColor: '#fff', fontFamily: "'Orbitron', sans-serif" }}>
