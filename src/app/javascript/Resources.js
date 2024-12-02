@@ -195,8 +195,8 @@ const rcTruckAntenaSource = '/models/rctruck/antena.glb'
 
 // Pusher Crowd
 const pusherCrowdChassisSource = '/models/pushpushpush/auto.glb'
-const pusherCrowdBacklightsSource = '/models/pushpushpush/backlights1.glb'
-const pusherCrowdHeadlightsSource = '/models/pushpushpush/headlights1.glb'
+const pusherCrowdBacklightsSource = '/models/pushpushpush/backlights2.glb'
+const pusherCrowdHeadlightsSource = '/models/pushpushpush/headlights2.glb'
 const pusherCrowdBacklightsReverseSource = '/models/pushpushpush/backlightsReverse.glb'
 const pusherCrowdWheelsSource = '/models/pushpushpush/wheel.glb'
 const pusherCrowdAntenaSource = '/models/pushpushpush/antena.glb'
@@ -206,7 +206,7 @@ const impactusChassisSource = '/models/impactus/auto.glb'
 const impactusBacklightsSource = '/models/impactus/backlights1.glb'
 const impactusHeadlightsSource = '/models/impactus/headlights1.glb'
 const impactusBacklightsReverseSource = '/models/impactus/backlightsReverse.glb'
-const impactusWheelsSource = '/models/impactus/wheel.glb'
+const impactusWheelsSource = '/models/impactus/wheel1.glb'
 const impactusAntenaSource = '/models/impactus/antena.glb'
 
 // Crushinator
