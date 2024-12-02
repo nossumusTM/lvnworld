@@ -22,6 +22,7 @@ export default function GaragePage() {
     const [navigateToPage, setNavigateToPage] = useState<string | null>(null); // Track navigation target
     const searchParams = useSearchParams();
     const [playerAccount, setPlayerAccount] = useState<number>(0);
+    const [loadingAccount, setLoadingAccount] = useState(true);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const carGroupRef = useRef<THREE.Group>(new THREE.Group());
     const rocketGroupRef = useRef<THREE.Group>(new THREE.Group());
@@ -691,21 +692,22 @@ export default function GaragePage() {
     };    
 
     const formatBalance = (account: number) => {
+        if (!account || isNaN(account)) return '0'; // Handle invalid account values
         return account.toLocaleString('en-US').replace(/,/g, ' '); // Replace commas with spaces
     };
 
     useEffect(() => {
-        // toggleView('car'); // Default to car view when the scene initializes
-
         const account = searchParams.get('account');
 
         // Parse the balance and set it in state
         if (account && !isNaN(Number(account))) {
             setPlayerAccount(Number(account));
+        } else {
+            setPlayerAccount(0); // Default to 0 if the account is invalid
         }
-        
-        setPlayerAccount(Number(account));
 
+        setLoadingAccount(false);
+        
     }, [searchParams]); // Run when searchParams change
 
     const kybertruck = [
@@ -1701,7 +1703,7 @@ export default function GaragePage() {
                     <div className="coin-icon" style={{ fontSize: "25px", animation: "rotateClockwise 5s linear infinite" }}>
                     ❖
                     </div>
-                    <div className="coin-layer">{formatBalance(playerAccount)}</div>
+                    <div className="coin-layer">{loadingAccount ? 'Loading...' : formatBalance(playerAccount)}</div>
                     <div
                         className="button-element"
                         style={{ right: "-90px", backdropFilter: "blur(10px)" }} // Adjust positioning for the right button
