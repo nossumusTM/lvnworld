@@ -341,18 +341,52 @@ export default function Home() {
   
         // Fetch the token for the connected player
         getToken(address);
+
+        // Listen for WebSocket messages and update playerAccount
+      //   if (wsRef.current) {
+      //     wsRef.current.onmessage = (event) => {
+      //         try {
+      //             const message = JSON.parse(event.data);
+
+      //             if (message.type === 'playerScore' && typeof message.score === 'number') {
+      //                 console.log(`WebSocket received player score: ${message.score}`);
+      //                 setPlayerAccount(message.score); // Update playerAccount
+      //             }
+      //         } catch (error) {
+      //             console.error('Error parsing WebSocket message:', event.data, error);
+      //         }
+      //     };
+      // }
       }
     }, [isConnected, address, hasAppInitialized, initializeWebSocket]);
 
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setCurrentTime(new Date());
+  //   }, 1000);
+
+  //   return () => {
+  //     clearInterval(interval);
+  //   };
+  // }, []); // Initialize once on mount
+
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentTime(new Date());
+        setCurrentTime(new Date());
+
+        if (playerAccount) {
+            console.log('Player Account:', playerAccount);
+            // Add any logic that needs to execute periodically and depends on playerAccount
+        } else {
+            console.warn('Player Account is not set');
+        }
     }, 1000);
 
     return () => {
-      clearInterval(interval);
+        clearInterval(interval);
     };
-  }, []); // Initialize once on mount
+}, [playerAccount]); // Re-run the effect when playerAccount changes
+
 
   // useEffect(() => {
   //   if (selectedWorldId && wsRef.current) {
