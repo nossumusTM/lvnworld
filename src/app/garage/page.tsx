@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
@@ -22,6 +22,8 @@ export default function GaragePage() {
     const [navigateToPage, setNavigateToPage] = useState<string | null>(null); // Track navigation target
     const searchParams = useSearchParams();
     const [playerAccount, setPlayerAccount] = useState<number>(0);
+    const [isWebSocketReady, setIsWebSocketReady] = useState(false);
+    const wsRef = useRef<WebSocket | null>(null);
     const [loadingAccount, setLoadingAccount] = useState(true);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const carGroupRef = useRef<THREE.Group>(new THREE.Group());
@@ -1027,9 +1029,9 @@ export default function GaragePage() {
                         }
                         
                         if (partName === 'chassis') {
-                            applyMatcap(part, randomMatcapName);
+                            applyMatcap(part, 'darkEmerald');
                         } else if (partName === 'wheels') {
-                            applyMatcap(part, randomMatcapName);
+                            applyMatcap(part, 'darkEmerald');
                         } else if (partName === 'tire') {
                             applyMatcap(part, 'black');
                         } else if (partName === 'chassisbottom') {
@@ -1111,9 +1113,9 @@ export default function GaragePage() {
                                         const randomMatcapName = randomMatcap();
                                         
                                         if (partName === 'chassis') {
-                                            applyMatcap(part, randomMatcapName);
+                                            applyMatcap(part, 'darkEmerald');
                                         } else if (partName === 'wheels') {
-                                            applyMatcap(part, randomMatcapName);
+                                            applyMatcap(part, 'darkEmerald');
                                         } else if (partName === 'tire') {
                                             applyMatcap(part, 'black');
                                         } else if (partName === 'chassisbottom') {
@@ -1197,7 +1199,7 @@ export default function GaragePage() {
 
                 const randomMatcapName = randomMatcap();
 
-                applyMatcap(rocket, randomMatcapName);
+                applyMatcap(rocket, 'transparentLand');
                 rocket.scale.set(0.5, 0.5, 0.5);
                 rocket.position.set(-1, 0, 0);
                 rocketGroupRef.current.add(rocket);
@@ -1664,6 +1666,78 @@ export default function GaragePage() {
             }
         ]
     }; 
+
+     // WebSocket initialization
+     const initializeWebSocket = useCallback(() => {
+        if (wsRef.current) {
+            console.log('WebSocket already initialized');
+            return;
+        }
+
+        const token = localStorage.getItem('token');
+        const serverAddress = `wss://krashbox.glitch.me?token=${token}`;
+        wsRef.current = new WebSocket(serverAddress);
+
+        wsRef.current.onopen = () => {
+            console.log('WebSocket connected');
+            setIsWebSocketReady(true);
+
+            // Request player score after WebSocket connects
+            const playerId = localStorage.getItem('playerId');
+            if (playerId) {
+                wsRef.current?.send(
+                    JSON.stringify({
+                        type: 'getScore',
+                        playerId: playerId,
+                    })
+                );
+            } else {
+                console.error('Player ID not found in localStorage');
+            }
+        };
+
+        wsRef.current.onmessage = (event) => {
+            let message;
+            try {
+                message = JSON.parse(event.data);
+            } catch (error) {
+                console.error('Error parsing WebSocket message:', event.data);
+                return;
+            }
+
+            console.log('Received WebSocket message:', message);
+
+            // Handle player score message
+            if (message.type === 'playerScore') {
+                if (typeof message.score === 'number') {
+                    console.log(`Player score received: ${message.score}`);
+                    setPlayerAccount(message.score);
+                } else {
+                    console.error('Invalid score received:', message.score);
+                }
+            }
+        };
+
+        wsRef.current.onerror = (error) => {
+            console.error('WebSocket error:', error);
+        };
+
+        wsRef.current.onclose = () => {
+            console.log('WebSocket closed');
+        };
+    }, []);
+
+    // Initialize WebSocket when component mounts
+    useEffect(() => {
+        initializeWebSocket();
+
+        return () => {
+            // Clean up WebSocket connection
+            if (wsRef.current) {
+                wsRef.current.close();
+            }
+        };
+    }, [initializeWebSocket]);
 
     return (
         <div style={{ position: 'relative', width: '100%', height: '100%' }}>
