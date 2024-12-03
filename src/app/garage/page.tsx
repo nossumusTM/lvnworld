@@ -19,12 +19,13 @@ import gsap from 'gsap';
 
 export default function GaragePage() {
     const router = useRouter();
-    const [navigateToPage, setNavigateToPage] = useState<string | null>(null); // Track navigation target
+    const [navigateToPage, setNavigateToPage] = useState<string | null>(null);
     const searchParams = useSearchParams();
+    const playerId = searchParams.get('playerId');
     const [playerAccount, setPlayerAccount] = useState<number>(0);
     const [isWebSocketReady, setIsWebSocketReady] = useState(false);
     const wsRef = useRef<WebSocket | null>(null);
-    const [loadingAccount, setLoadingAccount] = useState(true);
+    const [loadingAccount, setLoadingAccount] = useState<boolean>(true); // Initially loading
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const carGroupRef = useRef<THREE.Group>(new THREE.Group());
     const rocketGroupRef = useRef<THREE.Group>(new THREE.Group());
@@ -696,21 +697,6 @@ export default function GaragePage() {
         if (!account || isNaN(account)) return '0'; // Handle invalid account values
         return account.toLocaleString('en-US').replace(/,/g, ' '); // Replace commas with spaces
     };
-
-    useEffect(() => {
-        const account = localStorage.getItem('playerAccount');;
-
-        if (account && !isNaN(Number(account))) {
-            setPlayerAccount(parseInt(account, 10));
-        } else {
-            setPlayerAccount(0); // Default to 0 if account is invalid
-        }
-
-        // Remove the account from localStorage
-        localStorage.removeItem('playerAccount');
-
-        setLoadingAccount(false);
-    }, [searchParams]);
 
     const kybertruck = [
         { 
@@ -1683,12 +1669,11 @@ export default function GaragePage() {
             setIsWebSocketReady(true);
 
             // Request player score after WebSocket connects
-            const playerId = localStorage.getItem('playerId');
             if (playerId) {
                 wsRef.current?.send(
                     JSON.stringify({
                         type: 'getScore',
-                        playerId: playerId,
+                        playerId,
                     })
                 );
             } else {
@@ -1712,14 +1697,17 @@ export default function GaragePage() {
                 if (typeof message.score === 'number') {
                     console.log(`Player score received: ${message.score}`);
                     setPlayerAccount(message.score);
+                    setLoadingAccount(false);
                 } else {
                     console.error('Invalid score received:', message.score);
+                    setLoadingAccount(false);
                 }
             }
         };
 
         wsRef.current.onerror = (error) => {
             console.error('WebSocket error:', error);
+            setLoadingAccount(false);
         };
 
         wsRef.current.onclose = () => {

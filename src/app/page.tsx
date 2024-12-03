@@ -372,9 +372,11 @@ export default function Home() {
   };
   
   const handleGarageButtonClick = () => {
-      const account = playerAccount; // Assume `playerAccount` contains the fetched account
-      localStorage.setItem('playerAccount', account.toString())
-      router.push('/garage');
+      if (playerId) {
+        router.push(`/garage?playerId=${encodeURIComponent(playerId)}`);
+    } else {
+        console.error('Player ID is missing');
+    }
   };
 
   return (

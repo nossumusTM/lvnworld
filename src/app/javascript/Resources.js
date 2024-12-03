@@ -147,7 +147,7 @@ const chargerAntenaSource = '/models/charger/antena.glb'
 // Wreckslinger
 const wreckslingerChassisSource = '/models/wreckslinger/auto.glb'
 const wreckslingerHeadlightsSource = '/models/wreckslinger/headlights.glb'
-const wreckslingerBacklightsSource = '/models/wreckslinger/backlights.glb'
+const wreckslingerBacklightsSource = '/models/wreckslinger/backlights5.glb'
 const wreckslingerBacklightsReverseSource = '/models/wreckslinger/backlightsReverse.glb'
 const wreckslingerWheelsSource = '/models/wreckslinger/wheels.glb'
 const wreckslingerAntenaSource = '/models/wreckslinger/antena.glb'
