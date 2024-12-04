@@ -1402,12 +1402,26 @@ export default function GaragePage() {
         if (selectedCar) {
             const selectedIndex = cars.indexOf(selectedCar);
             setCurrentCarIndex(selectedIndex);
+
+            // Send the selected car to the server
+            const playerId = new URLSearchParams(window.location.search).get('playerId');
+            if (playerId) {
+                wsRef.current?.send(
+                    JSON.stringify({
+                        type: 'setSelectedCar',
+                        playerId,
+                        carName,
+                    })
+                );
+            }
+            
             toggleView('car');
             await loadCar(selectedIndex);
 
             // Save the selected car name to localStorage
-            localStorage.setItem('selectedCar', carName);
-            console.log("Selected car", localStorage);
+            // localStorage.setItem('selectedCar', carName);
+            // localStorage.removeItem('selectedCar');
+            // console.log("Selected car", localStorage);
 
             // Queue navigation
             setNavigateToPage('/');
@@ -1678,6 +1692,17 @@ export default function GaragePage() {
             } else {
                 console.error('Player ID not found in localStorage');
             }
+
+            if (playerId) {
+                wsRef.current?.send(
+                    JSON.stringify({
+                        type: 'getSelectedCar',
+                        playerId,
+                    })
+                );
+            } else {
+                console.error('Selected car not found in localStorage');
+            }
         };
 
         wsRef.current.onmessage = (event) => {
@@ -1701,6 +1726,13 @@ export default function GaragePage() {
                     console.error('Invalid score received:', message.score);
                     setLoadingAccount(false);
                 }
+            }
+
+            if (message.type === 'selectedCar') {
+                setSelectedCar(message.selectedCar || 'kybertruck');
+                setCurrentCarIndex(
+                    cars.findIndex((car) => car.name === message.selectedCar) || 0
+                );
             }
         };
 

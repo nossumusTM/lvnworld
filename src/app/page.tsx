@@ -85,14 +85,16 @@ export default function Home() {
       localStorage.setItem('token', token); // Store token in localStorage
       setToken(token); // Set token in state
 
-      const storedCarName = localStorage.getItem('selectedCar');
+      // const storedCarName = localStorage.getItem('selectedCar');
+      // console.log(`Selected car "${localStorage}"`);
 
-      if (storedCarName) {
-        setCarName(storedCarName);
-        // Optionally delete carName after loading
-        localStorage.removeItem('selectedCar');
-        console.log(`Car name "${storedCarName}" loaded and removed from localStorage.`);
-    }
+    //   if (storedCarName) {
+    //     setCarName(storedCarName);
+    //     // Optionally delete carName after loading
+    //     // localStorage.removeItem('selectedCar');
+    //     console.log(`Car name "${storedCarName}" loaded and removed from localStorage.`);
+    // }
+      // console.log("SELECTED CAR NAME", carName);
       console.log('Token received and stored:', token);
     } catch (error) {
       console.error('Error fetching token:', error);
@@ -121,7 +123,13 @@ export default function Home() {
     }
   }, [isConnected, hasAppInitialized]);
 
-  const initializeWebSocket = useCallback(() => {
+  const initializeWebSocket = useCallback((playerId: string) => {
+
+    if (!playerId) {
+        console.error("Cannot initialize WebSocket: playerId is missing");
+        return;
+    }
+
     if (wsRef.current) {
       // Avoid reinitializing if already connected
       console.log("WebSocket already initialized");
@@ -137,18 +145,30 @@ export default function Home() {
       setIsWebSocketReady(true);
       setRetryCount(0);
 
-      // Send a message to request the player's score
-      const playerId = localStorage.getItem('playerId'); // Replace with how you store playerId
       if (playerId) {
+          console.log('Requesting selected car for playerId:', playerId);
           wsRef.current?.send(
               JSON.stringify({
-                  type: 'getScore',
-                  playerId: playerId
+                  type: 'getSelectedCar',
+                  playerId,
               })
           );
       } else {
-          console.error('Player ID not found in localStorage');
-      }
+          console.error('Player ID is missing or invalid');
+      }    
+
+      // Send a message to request the player's score
+      // const playerId = localStorage.getItem('playerId'); // Replace with how you store playerId
+      // if (playerId) {
+      //     wsRef.current?.send(
+      //         JSON.stringify({
+      //             type: 'getScore',
+      //             playerId: playerId
+      //         })
+      //     );
+      // } else {
+      //     console.error('Player ID not found in localStorage');
+      // }
 
     };
 
@@ -181,6 +201,17 @@ export default function Home() {
       } else {
           console.log("Counts found:", message.counts);
       }
+
+      // Handle `selectedCar` message
+      if (message.type === 'selectedCar') {
+        if (message.selectedCar) {
+            setCarName(message.selectedCar);
+            console.log('Selected car set to:', message.selectedCar);
+        } else {
+            console.warn('No selected car found. Defaulting to kybertruck.');
+            setCarName('kybertruck');
+        }
+    }
 
       // Player score
       if (message.type === 'playerScore') {
@@ -329,7 +360,8 @@ export default function Home() {
         setPlayerId(address);
         // localStorage.setItem('playerId', address);
         console.log('Wallet connected:', address);
-  
+        // localStorage.removeItem('playerId');
+        localStorage.removeItem('worldId');
         // Show the loading layer when the wallet connects
         setShowLoadingLayer(true);
   
@@ -337,7 +369,7 @@ export default function Home() {
         setHasAppInitialized(true);
   
         // Only initialize WebSocket once after wallet connects and app initializes
-        initializeWebSocket();
+        initializeWebSocket(address);
   
         // Fetch the token for the connected player
         getToken(address);
