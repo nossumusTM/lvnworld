@@ -6,6 +6,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader';
 import { useSearchParams, useRouter } from 'next/navigation';
+import feather from 'feather-icons'
 
 import { FontLoader } from '../javascript/Utils/FontLoader';
 import { TextGeometry } from '../javascript/Utils/TextGeometry';
@@ -924,9 +925,9 @@ export default function GaragePage() {
 
             // Spin the rocket group
             if (rocketGroupRef.current) {
-                rocketGroupRef.current.rotation.x += 0.005; // Adjust speed as needed
-                rocketGroupRef.current.rotation.y += 0.005;
-                rocketGroupRef.current.rotation.z += 0.005;
+                rocketGroupRef.current.rotation.x += 0.0005; // Adjust speed as needed
+                rocketGroupRef.current.rotation.y += 0.0005;
+                rocketGroupRef.current.rotation.z += 0.0005;
             }
 
             if (controlsRef.current) {
@@ -1161,35 +1162,45 @@ export default function GaragePage() {
             carGroup.add(headlightLight);
         };
 
-        const applyBlinkEffect = (carGroup: THREE.Group) => {
-            const clock = new THREE.Clock();
-            const blinkDuration = 0.7; // Duration for each blink state
-        
-            const toggleBlink = () => {
-                carGroup.traverse((child) => {
-                    if (child instanceof THREE.Mesh && child.material instanceof THREE.MeshStandardMaterial) {
-                        const elapsedTime = clock.getElapsedTime();
-        
-                        // Toggle emissive intensity based on time
-                        child.material.emissiveIntensity =
-                            Math.floor(elapsedTime / blinkDuration) % 2 === 0 ? 1.5 : 0.5;
-                    }
-                });
-        
-                requestAnimationFrame(toggleBlink);
-            };
-        
-            toggleBlink();
-        };     
-        
+        let blinkAnimationFrame: number | null = null;
+
         const applyStaticEffect = (carGroup: THREE.Group) => {
+            // Clear any existing animation frame
+            if (blinkAnimationFrame !== null) {
+                cancelAnimationFrame(blinkAnimationFrame);
+                blinkAnimationFrame = null;
+            }
+
             carGroup.traverse((child) => {
                 if (child instanceof THREE.Mesh && child.material instanceof THREE.MeshStandardMaterial) {
-                    // Reset emissive intensity to static value
-                    child.material.emissiveIntensity = 1.5;
+                    const material = child.material;
+                    material.emissiveIntensity = 1.5; // Static light intensity
                 }
             });
-        };  
+        };
+
+        const applyBlinkEffect = (carGroup: THREE.Group) => {
+            const blinkDuration = 0.7; // Duration for each state (on/off) in seconds
+            let isBlinkingOn = true;
+
+            const blink = () => {
+                carGroup.traverse((child) => {
+                    if (child instanceof THREE.Mesh && child.material instanceof THREE.MeshStandardMaterial) {
+                        const material = child.material;
+                        material.emissiveIntensity = isBlinkingOn ? 1.5 : 0.3; // Toggle intensity
+                    }
+                });
+
+                isBlinkingOn = !isBlinkingOn; // Toggle the blinking state
+
+                // Schedule the next frame
+                blinkAnimationFrame = requestAnimationFrame(() => {
+                    setTimeout(blink, blinkDuration * 1000); // Delay for blink duration
+                });
+            };
+
+            blink(); // Start blinking
+        };
         
         const toggleHeadlightEffect = () => {
             if (carGroupRef.current) {
@@ -1202,7 +1213,7 @@ export default function GaragePage() {
             } else {
                 console.error('Car group reference is null.');
             }
-        };
+        };        
 
         const loadShowroomCar = async (
             cars: Array<{ name: string; parts: Record<string, string>; price: number }>
@@ -1960,33 +1971,6 @@ export default function GaragePage() {
                         />
                     </div>
                 </div>
-                <div
-                    className="slide-to-start-container"
-                    style={{
-                        position: "absolute",
-                        top: "100px",
-                        width: "100%",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                    }}
-                >
-                            <button
-                            style={{
-                                padding: '0',
-                                // animation: 'pulse 1.5s infinite',
-                                textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)',
-                                borderRadius: '8px',
-                                cursor: 'pointer',
-                                fontSize: '15px',
-                                fontFamily: 'Orbitron',
-                                animation: 'pulse 1.5s infinite',
-                            }}
-                            onClick={() => setNavigateToPage('/')}
-                            >
-                            READY
-                        </button>
-                </div>
             </div>
 
                 <div
@@ -2076,7 +2060,6 @@ export default function GaragePage() {
                         fontFamily: 'Orbitron',
                     }}
                 >
-                    
                                 
                 </div>
 
@@ -2112,46 +2095,89 @@ export default function GaragePage() {
                 )} */}
 
                 {/* Main Menu Buttons */}
-                {view === 'menu' && (
-                    <div style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
+                <div
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '20px',
+                        position: 'relative', // Allow absolute positioning of child elements
+                    }}
+                >
+                    {/* READY Button - Hidden in non-menu views */}
+                    {view === 'menu' && (
                         <button
                             style={{
-                                padding: '20px 0',
-                                animation: 'pulse 1.5s infinite',
+                                paddingTop: '5px',
                                 textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)',
                                 borderRadius: '8px',
                                 cursor: 'pointer',
+                                fontSize: '20px',
+                                fontFamily: 'Orbitron',
+                                // animation: 'pulse 1.5s infinite',
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                position: 'absolute', // Position above the menu
+                                top: '-50px', // Adjust spacing above the menu
+                                zIndex: 10, // Ensure it's above other elements
                             }}
-                            onClick={() => toggleView('car')}
+                            onClick={() => setNavigateToPage('/')}
                         >
-                            VEHICLE
+                            READY
+                            <span
+                                style={{
+                                    marginLeft: '10px',
+                                }}
+                                dangerouslySetInnerHTML={{
+                                    __html: feather.icons['play-circle'].toSvg({ width: 20, height: 20 }),
+                                }}
+                            />
                         </button>
-                        <button
-                            style={{
-                                padding: '20px 0',
-                                animation: 'pulse 1.5s infinite',
-                                textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)',
-                                borderRadius: '8px',
-                                cursor: 'pointer',
-                            }}
-                            onClick={() => toggleView('rocket')}
-                        >
-                            WEAPON
-                        </button>
-                        <button
-                            style={{
-                                padding: '20px 0',
-                                animation: 'pulse 1.5s infinite',
-                                textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)',
-                                borderRadius: '8px',
-                                cursor: 'pointer',
-                            }}
-                            onClick={() => toggleView('showroom')}
-                        >
-                            SHOWROOM
-                        </button>
-                    </div>
-                )}
+                    )}
+
+                    {/* Main Menu Buttons */}
+                    {view === 'menu' && (
+                        <div style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
+                            <button
+                                style={{
+                                    padding: '20px 0',
+                                    animation: 'pulse 1.5s infinite',
+                                    textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)',
+                                    borderRadius: '8px',
+                                    cursor: 'pointer',
+                                }}
+                                onClick={() => toggleView('car')}
+                            >
+                                VEHICLE
+                            </button>
+                            <button
+                                style={{
+                                    padding: '20px 0',
+                                    animation: 'pulse 1.5s infinite',
+                                    textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)',
+                                    borderRadius: '8px',
+                                    cursor: 'pointer',
+                                }}
+                                onClick={() => toggleView('rocket')}
+                            >
+                                WEAPON
+                            </button>
+                            <button
+                                style={{
+                                    padding: '20px 0',
+                                    animation: 'pulse 1.5s infinite',
+                                    textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)',
+                                    borderRadius: '8px',
+                                    cursor: 'pointer',
+                                }}
+                                onClick={() => toggleView('showroom')}
+                            >
+                                SHOWROOM
+                            </button>
+                        </div>
+                    )}
+                </div>
 
                 {/* Customize View */}
                 {view === 'customize' && (
