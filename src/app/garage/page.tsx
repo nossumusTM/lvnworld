@@ -1080,6 +1080,14 @@ export default function GaragePage() {
         // };  
 
         const loadCar = async (index: number) => {
+
+            // Update car attributes based on the index
+            if (index >= 0 && index < cars.length) {
+                setCurrentCarAttributes(cars[index].attributes); // Update the attributes state
+            } else {
+                setCurrentCarAttributes(kybertruck[0].attributes); // Default to kybertruck attributes
+            }
+
             carGroupRef.current.clear();
         
             showroomGroupRef.current.visible = false;
@@ -1152,7 +1160,7 @@ export default function GaragePage() {
                 cameraRef.current.position.set(0, -200, 5);
                 cameraRef.current.lookAt(carGroupRef.current.position);
             }
-        
+                    
             // addHeadlightEffect(carGroupRef.current);
         };        
 
@@ -1542,15 +1550,15 @@ export default function GaragePage() {
         }
     }, [isOrbitEnabled]);
 
-    const handleNextCar = () => {
-        setCurrentCarIndex((prevIndex) => (prevIndex + 1) % kybertruck.length);
-        setIsOrbitEnabled(false);
-    };
+    // const handleNextCar = () => {
+    //     setCurrentCarIndex((prevIndex) => (prevIndex + 1) % kybertruck.length);
+    //     setIsOrbitEnabled(false);
+    // };
 
-    const handlePreviousCar = () => {
-        setCurrentCarIndex((prevIndex) => (prevIndex - 1 + kybertruck.length) % kybertruck.length);
-        setIsOrbitEnabled(false);
-    };
+    // const handlePreviousCar = () => {
+    //     setCurrentCarIndex((prevIndex) => (prevIndex - 1 + kybertruck.length) % kybertruck.length);
+    //     setIsOrbitEnabled(false);
+    // };
 
     const handleCarClick = () => {
         setIsOrbitEnabled(true);
@@ -1934,7 +1942,7 @@ export default function GaragePage() {
                 <div className="coin-container">
                     <div
                         className="button-element"
-                        style={{ left: "-90px", backdropFilter: "blur(10px)"}} // Adjust positioning for the left button
+                        style={{ left: "-140px", backdropFilter: "blur(10px)"}} // Adjust positioning for the left button
                         onClick={() => {
                             if (carGroupRef.current && carGroupRef.current.children.length > 0) {
                                 const activeCar = carGroupRef.current.children[0]; // Assuming the first car is active
@@ -1960,7 +1968,7 @@ export default function GaragePage() {
                     <div className="coin-layer">{loadingAccount ? 'Loading...' : formatBalance(playerAccount)}</div>
                     <div
                         className="button-element"
-                        style={{ right: "-90px", backdropFilter: "blur(10px)" }} // Adjust positioning for the right button
+                        style={{ right: "-140px", backdropFilter: "blur(10px)" }} // Adjust positioning for the right button
                         onClick={toggleHeadlightEffect}
                     >
                         <div
