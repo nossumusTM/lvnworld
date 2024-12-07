@@ -490,7 +490,7 @@ export default function Home() {
                     </div>
                     </div>
                       <div id='garage' className='garage'>
-                        <button id='garage-button' onClick={handleGarageButtonClick}>KARAGE</button>
+                        <button id='garage-button' onClick={handleGarageButtonClick}>PORT GARAGE</button>
                         {/* <button id='garage-button'>GARAGE</button> */}
                       </div>
                     </>

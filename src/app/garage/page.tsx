@@ -66,17 +66,13 @@ export default function GaragePage() {
             name: 'Kybertruck',
             price: 378000,
             parts: {
-                accessories: '/models/car/default/empty.glb',
-                backlights: '/models/car/default/backLightsBrake.glb',
-                chassisinside: '/models/car/default/empty.glb',
-                engine: '/models/car/default/empty.glb',
-                headlights: '/models/car/default/headlights.glb',
-                saloon: '/models/car/default/empty.glb',
+                backlights: '/models/car/default/showroombacklights.glb',
+                headlights: '/models/car/default/showroomheadlights.glb',
                 chassisbottom: '/models/car/default/chassisbottom.glb',
                 chassis: '/models/car/default/chassisbody.glb',
                 spoiler: '/models/car/default/spoiler.glb',
                 window: '/models/car/default/window.glb',
-                wheels: '/models/car/default/wheels1.glb',
+                wheels: '/models/car/default/showroomwheels.glb',
                 tire: '/models/car/default/showroomtire.glb',
                 antena: '/models/car/default/antena.glb',
             },
@@ -87,21 +83,41 @@ export default function GaragePage() {
                 BRK: 95,
             },
         },
+        // {
+        //     name: 'Charger Power Bank',
+        //     price: 998000,
+        //     parts: {
+        //         accessories: '/models/charger/accessories1.glb',
+        //         backlights: '/models/charger/backlights1.glb',
+        //         chassisinside: '/models/charger/chassisinside.glb',
+        //         engine: '/models/charger/engine.glb',
+        //         headlights: '/models/charger/headlights1.glb',
+        //         saloon: '/models/charger/saloon.glb',
+        //         chassisbottom: '/models/charger/chassisbottom.glb',
+        //         chassis: '/models/charger/chassis.glb',
+        //         bumper: '/models/charger/empty.glb',
+        //         spoiler: '/models/charger/empty.glb',
+        //         window: '/models/charger/windows.glb',
+        //         wheels: '/models/charger/wheels.glb',
+        //         tire: '/models/charger/tire.glb',
+        //         antena: '/models/charger/empty.glb',
+        //     },
+        //     attributes: {
+        //         PWR: 55,
+        //         HP: 70,
+        //         SPD: 35,
+        //         BRK: 40,
+        //     },
+        // },
         {
             name: 'Charger Power Bank',
             price: 998000,
             parts: {
-                accessories: '/models/charger/accessories1.glb',
-                backlights: '/models/charger/backlights1.glb',
-                chassisinside: '/models/charger/chassisinside.glb',
-                engine: '/models/charger/engine.glb',
-                headlights: '/models/charger/headlights1.glb',
-                saloon: '/models/charger/saloon.glb',
-                chassisbottom: '/models/charger/chassisbottom.glb',
-                chassis: '/models/charger/chassis.glb',
-                bumper: '/models/charger/empty.glb',
-                spoiler: '/models/charger/empty.glb',
-                window: '/models/charger/windows.glb',
+                chassis: '/models/charger/showroomchassis.glb',
+                chassisbottom: '/models/charger/showroomchassisbottom.glb',
+                backlights: '/models/charger/showroombacklights.glb',
+                headlights: '/models/charger/showroomheadlights.glb',
+                window: '/models/charger/showroomwindow.glb',
                 wheels: '/models/charger/wheels.glb',
                 tire: '/models/charger/tire.glb',
                 antena: '/models/charger/empty.glb',
@@ -487,108 +503,6 @@ export default function GaragePage() {
         // Add more cars here later
     ];
 
-    // const toggleView = (selectedView: 'menu' | 'car' | 'rocket' | 'showroom' | 'customize') => {
-    //     console.log('Toggling view to:', selectedView);
-    
-    //     setView(selectedView); // Update the state
-    
-    //     if (selectedView === 'car') {
-
-    //         carGroupRef.current.traverse((child) => {
-    //             if (child instanceof THREE.Object3D) {
-    //                 child.visible = true; // Show all car parts
-    //             }
-    //         });
-    
-    //         rocketGroupRef.current.traverse((child) => {
-    //             if (child instanceof THREE.Object3D) {
-    //                 child.visible = false; // Hide the rocket
-    //             }
-    //         });
-
-    //         showroomGroupRef.current.traverse((child) => {
-    //             if (child instanceof THREE.Object3D) {
-    //                 child.visible = false; // Hide the rocket
-    //             }
-    //         });
-
-    //         setView('customize');
-
-    //     } else if (selectedView === 'rocket') {
-
-    //         setIsOrbitEnabled(true);
-
-    //         carGroupRef.current.traverse((child) => {
-    //             if (child instanceof THREE.Object3D) {
-    //                 child.visible = false; // Hide all car parts
-    //             }
-    //         });
-
-    //         rocketGroupRef.current.traverse((child) => {
-    //             console.log(`Setting rocket visibility to true for: ${child.name}`); // Debug log
-    //             if (child instanceof THREE.Object3D) {
-    //                 child.visible = true; // Show the rocket
-    //             }
-    //         });
-
-    //         showroomGroupRef.current.traverse((child) => {
-    //             if (child instanceof THREE.Object3D) {
-    //                 child.visible = false; // Hide the rocket
-    //             }
-    //         });
-    
-    //         setView('rocket');
-    //     } else if (selectedView === 'showroom') {
-    //         // Clear previous showroom content and load fresh showroom cars
-    //         console.log('Loading showroom cars...', showroomGroupRef.current );
-
-    //         setIsOrbitEnabled(true);
-    
-    //         carGroupRef.current.traverse((child) => {
-    //             if (child instanceof THREE.Object3D) {
-    //                 child.visible = false; // Hide all car parts
-    //             }
-    //         });
-    
-    //         rocketGroupRef.current.traverse((child) => {
-    //             if (child instanceof THREE.Object3D) {
-    //                 child.visible = false; // Hide the rocket
-    //             }
-    //         });
-
-    //         showroomGroupRef.current.traverse((child) => {
-    //             if (child instanceof THREE.Object3D) {
-    //                 child.visible = true; // Hide the rocket
-    //             }
-    //         });
-
-    //         // Load the showroom cars only if they haven't been loaded
-    //         if (!showroomLoaded.current) {
-    //             loadShowroomCar(cars).then(() => {
-    //                 showroomLoaded.current = true; // Mark as loaded
-    //                 console.log('Showroom cars loaded.');
-    //             });
-    //         }
-
-    //         // Ensure only the first car in the slider is displayed initially
-    //         if (showroomGroupRef.current.children.length > 0) {
-    //             const firstCarName = cars[0].name; // Get the name of the first car
-    //             showroomGroupRef.current.children.forEach((carGroup) => {
-    //                 if (carGroup instanceof THREE.Object3D) {
-    //                     carGroup.visible = carGroup.name === firstCarName;
-    //                 }
-    //             });
-    //         }
-    
-    //         console.log('Entering showroom view');
-    //         setView('showroom');
-    //     } else if (selectedView === 'menu') {
-    //         setView('menu');
-    //     }
-    
-    //     console.log('Rocket group visibility:', rocketGroupRef.current.children.map((c) => c.visible)); // Debug log
-    // };
-
     const toggleView = (selectedView: 'menu' | 'car' | 'rocket' | 'showroom' | 'customize') => {
         console.log('Toggling view to:', selectedView);
     
@@ -703,20 +617,6 @@ export default function GaragePage() {
         if (!account || isNaN(account)) return '0'; // Handle invalid account values
         return account.toLocaleString('en-US').replace(/,/g, ' '); // Replace commas with spaces
     };
-
-    // const kybertruck = [
-    //     { 
-    //         chassisbottom: '/models/car/default/chassisbottom.glb',
-    //         chassis: '/models/car/default/chassisbody.glb',
-    //         headlights: '/models/car/default/headlights.glb',
-    //         backlights: '/models/car/default/backLightsBrake.glb',
-    //         spoiler: '/models/car/default/spoiler.glb',
-    //         window: '/models/car/default/window.glb',
-    //         wheels: '/models/car/default/wheels1.glb', 
-    //         tire: '/models/car/default/tire.glb', 
-    //         antena: '/models/car/default/antena.glb',
-    //     },
-    // ];
 
     const kybertruck: Car[] = [
         {
@@ -1480,6 +1380,7 @@ export default function GaragePage() {
 
     useEffect(() => {
         const loadAssets = async () => {
+            // await loadStaticShowroom();
             // await loadCar(currentCarIndex); // Load the dynamically selected car
             await loadShowroomCar(cars);   // Load all cars in the showroom
             await loadRocket();
@@ -1489,6 +1390,37 @@ export default function GaragePage() {
 
         loadAssets();
     }, [currentCarIndex]);  
+
+    // const loadStaticShowroom = async () => {
+    //     const loader = new GLTFLoader();
+    
+    //     loader.load(
+    //         '/garage/background.glb',
+    //         (gltf) => {
+    //             const showroomModel = gltf.scene;
+    
+    //             // Position the showroom model
+    //             showroomModel.position.set(0, 0, 0);
+    //             showroomModel.rotation.set(0, 0, 0);
+    //             showroomModel.scale.set(1, 1, 1);
+    
+    //             // Add the model to the scene
+    //             scene.add(showroomModel);
+    
+    //             // Ensure it's static by not attaching OrbitControls
+    //             showroomModel.traverse((child) => {
+    //                 if (child instanceof THREE.Mesh) {
+    //                     child.castShadow = false;
+    //                     child.receiveShadow = true;
+    //                 }
+    //             });
+    //         },
+    //         undefined,
+    //         (error) => {
+    //             console.error('Error loading showroom GLTF:', error);
+    //         }
+    //     );
+    // };    
 
     const switchShowroomCar = (index: number) => {
         const selectedCar = cars[index]; // Get the car associated with the current slide
