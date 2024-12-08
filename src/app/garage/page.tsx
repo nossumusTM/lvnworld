@@ -68,7 +68,7 @@ export default function GaragePage() {
             parts: {
                 backlights: '/models/car/default/showroombacklights.glb',
                 headlights: '/models/car/default/showroomheadlights.glb',
-                chassisbottom: '/models/car/default/showroomchassisbottom1.glb',
+                chassisbottom: '/models/car/default/showroomchassisbottom2.glb',
                 chassis: '/models/car/default/chassisbody.glb',
                 spoiler: '/models/car/default/spoiler.glb',
                 window: '/models/car/default/window.glb',
@@ -120,7 +120,7 @@ export default function GaragePage() {
                 window: '/models/charger/showroomwindow.glb',
                 wheels: '/models/charger/wheels.glb',
                 tire: '/models/charger/tire.glb',
-                antena: '/models/charger/empty.glb',
+                antena: '/models/charger/showroomantena.glb',
             },
             attributes: {
                 PWR: 55,
@@ -188,6 +188,7 @@ export default function GaragePage() {
                 tire: '/models/wreckslinger/tire.glb',
                 wheel: '/models/wreckslinger/wheel.glb',
                 window: '/models/wreckslinger/showroomwindow.glb',
+                antena: '/models/wreckslinger/showroomantena.glb',
             },
             attributes: {
                 PWR: 110,
@@ -228,6 +229,7 @@ export default function GaragePage() {
                 rims: '/models/gangover/rims.glb',
                 tire: '/models/gangover/tire.glb',
                 windows: '/models/gangover/showroomwindows.glb',
+                antena: '/models/gangover/showroomantena.glb',
             },
             attributes: {
                 PWR: 110,
@@ -246,6 +248,7 @@ export default function GaragePage() {
                 headlights: '/models/mclaren/showroomheadlights.glb',
                 mirrors: '/models/mclaren/showroommirrors.glb',
                 wheels: '/models/mclaren/wheels.glb',
+                antena: '/models/mclaren/showroomantena.glb',
             },
             attributes: {
                 PWR: 110,
@@ -265,6 +268,7 @@ export default function GaragePage() {
                 tire: '/models/240gti/tire1.glb',
                 wheels: '/models/240gti/wheels1.glb',
                 windows: '/models/240gti/windows.glb',
+                antena: '/models/240gti/antena.glb',
             },
             attributes: {
                 PWR: 110,
@@ -355,6 +359,7 @@ export default function GaragePage() {
                 showroomtire: '/models/goodwing/showroomtire.glb',
                 showroomwheel: '/models/goodwing/showroomwheel.glb',
                 windows: '/models/goodwing/windows.glb',
+                antena: '/models/goodwing/antena.glb',
             },
             attributes: {
                 PWR: 100,
@@ -375,6 +380,7 @@ export default function GaragePage() {
                 rocket: '/models/howler/rocket.glb',
                 tire: '/models/howler/tire.glb',
                 wheels: '/models/howler/wheels.glb',
+                antena: '/models/howler/showroomantena.glb',
             },
             attributes: {
                 PWR: 150,
@@ -395,6 +401,7 @@ export default function GaragePage() {
                 backlights: '/models/rctruck/backlights.glb',
                 wheels: '/models/rctruck/truckwheels.glb',
                 tair: '/models/rctruck/trucktair.glb',
+                antena: '/models/rctruck/antena.glb',
             },
             attributes: {
                 PWR: 70,
@@ -435,6 +442,7 @@ export default function GaragePage() {
                 wheels: '/models/pushpushpush/wheels.glb',
                 windows: '/models/pushpushpush/window.glb',
                 turbo: '/models/pushpushpush/turbo.glb',
+                antena: '/models/pushpushpush/showroomantena.glb',
             },
             attributes: {
             PWR: 80,
@@ -455,6 +463,7 @@ export default function GaragePage() {
                 tire: '/models/impactus/showroomtire.glb',
                 windows: '/models/impactus/windows.glb',
                 roof: '/models/impactus/roof.glb',
+                antena: '/models/impactus/showroomantena.glb',
             },
             attributes: {
             PWR: 140,
@@ -475,6 +484,7 @@ export default function GaragePage() {
                 wheel: '/models/zimbow/wheel.glb',
                 tire: '/models/zimbow/tire.glb',
                 window: '/models/zimbow/window.glb',
+                antena: '/models/zimbow/showroomantena.glb',
             },
             attributes: {
             PWR: 110,
@@ -612,7 +622,7 @@ export default function GaragePage() {
                 engine: '/models/car/default/empty.glb',
                 headlights: '/models/car/default/headlights.glb',
                 saloon: '/models/car/default/empty.glb',
-                chassisbottom: '/models/car/default/showroomchassisbottom1.glb',
+                chassisbottom: '/models/car/default/showroomchassisbottom2.glb',
                 chassis: '/models/car/default/chassisbody.glb',
                 spoiler: '/models/car/default/spoiler.glb',
                 window: '/models/car/default/window.glb',
