@@ -8104,6 +8104,26 @@ export default class Physics
                 } else {
                     this.car.flightMode = false;
                 }
+
+                const localUp = new CANNON.Vec3(0, 0, 1);
+                const worldUp = new CANNON.Vec3();
+                this.car.chassis.body.vectorToWorldFrame(localUp, worldUp);
+
+                this.car.vehicle.wheelInfos.forEach((wheelInfo, index) => {
+                    if (worldUp.z < 0) {
+                        // Adjust for upside down
+                        wheelInfo.directionLocal.set(0, 0, 1); // Suspension points upward
+                    } else if (Math.abs(worldUp.x) > 0.5) {
+                        // Adjust for car on its side
+                        wheelInfo.directionLocal.set(0, -Math.sign(worldUp.x), 0); // Adjust direction to align with the side
+                    } else {
+                        // Normal upright
+                        wheelInfo.directionLocal.set(0, 0, -1); // Suspension points downward
+                    }
+
+                    // Apply the updated transform to the wheels
+                    this.car.vehicle.updateWheelTransform(index);
+                });
             });
 
             /**
