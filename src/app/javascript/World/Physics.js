@@ -8104,6 +8104,17 @@ export default class Physics
                 } else {
                     this.car.flightMode = false;
                 }
+
+                if (this.car.flightMode) {
+                    this.car.vehicle.wheelInfos.forEach((wheelInfo) => {
+                        wheelInfo.suspensionRestLength = 0; // Collapse suspension
+                    });
+                } else {
+                    // Restore suspension when back on the ground
+                    this.car.vehicle.wheelInfos.forEach((wheelInfo) => {
+                        wheelInfo.suspensionRestLength = this.car.options.wheelSuspensionRestLength;
+                    });
+                }
             });
 
             /**
