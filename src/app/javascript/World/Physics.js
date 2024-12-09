@@ -8105,16 +8105,19 @@ export default class Physics
                     this.car.flightMode = false;
                 }
 
-                if (this.car.flightMode) {
-                    this.car.vehicle.wheelInfos.forEach((wheelInfo) => {
-                        wheelInfo.suspensionRestLength = 0; // Collapse suspension
-                    });
-                } else {
-                    // Restore suspension when back on the ground
-                    this.car.vehicle.wheelInfos.forEach((wheelInfo) => {
-                        wheelInfo.suspensionRestLength = this.car.options.wheelSuspensionRestLength;
-                    });
-                }
+                const localUp = new CANNON.Vec3(0, 0, 1);
+                const worldUp = new CANNON.Vec3();
+                this.car.chassis.body.vectorToWorldFrame(localUp, worldUp);
+            
+                this.car.vehicle.wheelInfos.forEach((wheelInfo) => {
+                    if (worldUp.z < 0) {
+                        // Car is upside down, invert suspension direction
+                        wheelInfo.directionLocal.set(0, 0, 1);
+                    } else {
+                        // Car is upright, use normal suspension direction
+                        wheelInfo.directionLocal.set(0, 0, -1);
+                    }
+                });
             });
 
             /**
