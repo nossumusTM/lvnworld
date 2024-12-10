@@ -52,6 +52,11 @@ export default function Home() {
     'Amsterdam', 'Athens', 'Monaco', 'Venice', 'Peru',
   ];
 
+  // const worldIcons = predefinedWorldIds.map(
+  //   (worldId) => `/flags/${worldId.toLowerCase().replace(/\s+/g, '_')}.svg`
+  // );
+  
+
   const worldIcons = [
     '🇦🇿', '🇺🇸', '🇯🇵', '🇮🇹', '🇮🇱',
     '🇮🇳', '🇩🇪', '🇮🇹', '🇨🇳', '🇨🇳',
@@ -275,14 +280,31 @@ export default function Home() {
 
   }, [retryCount]);
 
-  const updateWorldList = (counts: Record<string, number>) => {
-    const worldList = document.getElementById('world-list');
-    if (worldList) {
-      worldList.innerHTML = ''; // Clear existing list items
+  let searchQuery = '';
 
-      predefinedWorldIds.forEach((worldId, index) => {
-        const listItem = document.createElement('li');
+const filterWorlds = (event: React.FormEvent<HTMLInputElement>) => {
+  const target = event.target as HTMLInputElement;
+  searchQuery = target.value.toLowerCase();
+  updateWorldList(currentCounts); // Reapply filtering based on the updated search query
+};
+
+let currentCounts: Record<string, number> = {}; // Define the shape of `counts`
+
+const updateWorldList = (counts: Record<string, number>) => {
+  currentCounts = counts; // Store the counts for reuse
+  const worldList = document.getElementById('world-list');
+
+  if (worldList) {
+    worldList.innerHTML = ''; // Clear existing list items
+
+    predefinedWorldIds
+      .filter((worldId) => worldId.toLowerCase().includes(searchQuery)) // Filter worlds by search query
+      .forEach((worldId) => {
+        const index = predefinedWorldIds.indexOf(worldId); // Get the index for flag lookup
         const playerCount = counts[worldId] || 0; // Default to 0 if no count available
+
+        // Create a list item for the world
+        const listItem = document.createElement('li');
 
         // Create a container div for player count, flag, and world ID
         const contentContainer = document.createElement('div');
@@ -295,63 +317,154 @@ export default function Home() {
 
         // Flag div
         const flagDiv = document.createElement('div');
-        flagDiv.textContent = worldIcons[index] || '🏳️'; // Default flag if none found
+        flagDiv.textContent = worldIcons[index] || '🏳️'; // Use corresponding flag or default
         flagDiv.classList.add('flag');
+
+        // Flag div
+        // const flagDiv = document.createElement('div');
+        // const flagImg = document.createElement('img');
+        // flagImg.src = `/flags/${worldId.toLowerCase().replace(/\s+/g, '_')}.svg`; // Dynamically set the SVG path
+        // flagImg.alt = `${worldId} flag`;
+        // flagImg.classList.add('flag-icon');
+        // flagDiv.appendChild(flagImg);
 
         // World ID div
         const worldIdDiv = document.createElement('div');
         worldIdDiv.textContent = worldId;
         worldIdDiv.classList.add('world-id');
 
-        // Append playerCountDiv, flagDiv, and worldIdDiv to the container
+        // Append components to the content container
         contentContainer.appendChild(playerCountDiv);
         contentContainer.appendChild(flagDiv);
         contentContainer.appendChild(worldIdDiv);
 
-        // Append the container to the list item
+        // Append the content container to the list item
         listItem.appendChild(contentContainer);
 
-        // Disable other worlds if one is already selected
+        // Apply classes based on selection status
         if (selectedWorldId && selectedWorldId !== worldId) {
           listItem.classList.add('disabled');
         }
 
-        // Highlight the selected world
         if (selectedWorldId === worldId) {
           listItem.classList.add('selected');
         }
 
-        // Allow selection only if no world is currently selected
-        listItem.onclick = () => {
-          if (!selectedWorldId) {
-              setSelectedWorldId(worldId);
-              setIsWorldSelected(true); // Mark as selected by user
-              setIsCanvasInitialized(false);
-              setApplication(false);
-              setTimeout(() => setApplication(true), 500);
+        // Add click event to list item
+        listItem.onclick = () => handleWorldSelection(worldId, listItem, worldList);
 
-              // Disable all other items visually and clear their onclick events
-              Array.from(worldList.children).forEach((item) => {
-                  item.classList.add('disabled');
-                  item.classList.remove('selected');
-                  (item as HTMLElement).onclick = null; // Prevent further clicks
-              });
-
-              // Apply 'selected' class to the clicked item
-              listItem.classList.remove('disabled');
-              listItem.classList.add('selected');
-
-              // Close WebSocket on world selection
-              if (wsRef.current) {
-                wsRef.current.close();
-                wsRef.current = null;
-              }
-          }
-      };
+        // Append the list item to the world list
         worldList.appendChild(listItem);
       });
+  }
+};
+
+const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldList: HTMLElement) => {
+  if (!selectedWorldId) {
+    setSelectedWorldId(worldId);
+    setIsWorldSelected(true); // Mark as selected by user
+    setIsCanvasInitialized(false);
+    setApplication(false);
+    setTimeout(() => setApplication(true), 500);
+
+    // Disable all other items visually and clear their onclick events
+    Array.from(worldList.children).forEach((item) => {
+      const element = item as HTMLElement;
+      element.classList.add('disabled');
+      element.classList.remove('selected');
+      element.onclick = null; // Prevent further clicks
+    });
+
+    // Apply 'selected' class to the clicked item
+    listItem.classList.remove('disabled');
+    listItem.classList.add('selected');
+
+    // Close WebSocket on world selection
+    if (wsRef.current) {
+      wsRef.current.close();
+      wsRef.current = null;
     }
-  };
+  }
+};
+
+
+  // const updateWorldList = (counts: Record<string, number>) => {
+  //   const worldList = document.getElementById('world-list');
+  //   if (worldList) {
+  //     worldList.innerHTML = ''; // Clear existing list items
+
+  //     predefinedWorldIds.forEach((worldId, index) => {
+  //       const listItem = document.createElement('li');
+  //       const playerCount = counts[worldId] || 0; // Default to 0 if no count available
+
+  //       // Create a container div for player count, flag, and world ID
+  //       const contentContainer = document.createElement('div');
+  //       contentContainer.classList.add('content-container');
+
+  //       // Player count div
+  //       const playerCountDiv = document.createElement('div');
+  //       playerCountDiv.textContent = `${playerCount}/20`;
+  //       playerCountDiv.classList.add('player-count');
+
+  //       // Flag div
+  //       const flagDiv = document.createElement('div');
+  //       flagDiv.textContent = worldIcons[index] || '🏳️'; // Default flag if none found
+  //       flagDiv.classList.add('flag');
+
+  //       // World ID div
+  //       const worldIdDiv = document.createElement('div');
+  //       worldIdDiv.textContent = worldId;
+  //       worldIdDiv.classList.add('world-id');
+
+  //       // Append playerCountDiv, flagDiv, and worldIdDiv to the container
+  //       contentContainer.appendChild(playerCountDiv);
+  //       contentContainer.appendChild(flagDiv);
+  //       contentContainer.appendChild(worldIdDiv);
+
+  //       // Append the container to the list item
+  //       listItem.appendChild(contentContainer);
+
+  //       // Disable other worlds if one is already selected
+  //       if (selectedWorldId && selectedWorldId !== worldId) {
+  //         listItem.classList.add('disabled');
+  //       }
+
+  //       // Highlight the selected world
+  //       if (selectedWorldId === worldId) {
+  //         listItem.classList.add('selected');
+  //       }
+
+  //       // Allow selection only if no world is currently selected
+  //       listItem.onclick = () => {
+  //         if (!selectedWorldId) {
+  //             setSelectedWorldId(worldId);
+  //             setIsWorldSelected(true); // Mark as selected by user
+  //             setIsCanvasInitialized(false);
+  //             setApplication(false);
+  //             setTimeout(() => setApplication(true), 500);
+
+  //             // Disable all other items visually and clear their onclick events
+  //             Array.from(worldList.children).forEach((item) => {
+  //                 item.classList.add('disabled');
+  //                 item.classList.remove('selected');
+  //                 (item as HTMLElement).onclick = null; // Prevent further clicks
+  //             });
+
+  //             // Apply 'selected' class to the clicked item
+  //             listItem.classList.remove('disabled');
+  //             listItem.classList.add('selected');
+
+  //             // Close WebSocket on world selection
+  //             if (wsRef.current) {
+  //               wsRef.current.close();
+  //               wsRef.current = null;
+  //             }
+  //         }
+  //     };
+  //       worldList.appendChild(listItem);
+  //     });
+  //   }
+  // };
 
     // Initialize the application only when the wallet connects
     useEffect(() => {
@@ -483,6 +596,12 @@ export default function Home() {
                 </h1>
             </div> */}
             <div id="world-layer">
+              <input 
+                type="text" 
+                id="search-bar" 
+                placeholder="Search worlds..." 
+                onInput={(event) => filterWorlds(event)} 
+              />
             
                     {/* <h2>Select a World</h2> */}
                     <div className="scroll-container">

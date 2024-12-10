@@ -689,6 +689,39 @@ opacity: 0;
   }
 }
 
+#search-bar {
+  width: 100%;
+  padding: 10px 15px;
+  font-size: 16px;
+  border: unset;
+  border-radius: 5px;
+  background-color: transparent;
+  color: #fff; /* White text */
+  outline: none;
+  backdrop-filter: blur(10px); /* Apply blur effect */
+  -webkit-backdrop-filter: blur(10px); /* For Safari */
+  transition: all 0.3s ease; /* Smooth transitions */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+#search-bar::placeholder {
+  color: rgba(255, 255, 255, 0.7); /* Lighter text for placeholder */
+  font-style: italic;
+}
+
+#search-bar:focus {
+  /* background-color: rgba(140, 255, 128, 0.3); Slightly less transparent on focus */
+}
+
+.flag-icon {
+  width: 24px;
+  height: 16px;
+  display: block;
+  border-radius: 2px; /* Optional: Round the edges for a polished look */
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.2); /* Optional: Add a slight shadow */
+}
+
 /* Container to hold both player count and world ID */
 .content-container {
   display: flex;
