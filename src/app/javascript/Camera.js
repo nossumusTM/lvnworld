@@ -319,6 +319,73 @@ export default class Camera
         })
     }
 
+    // setZoom() {
+    //     // Set up
+    //     this.zoom = {};
+    //     this.zoom.easing = 0.1;
+    //     this.zoom.minDistance = 7;
+    //     this.zoom.amplitude = 150;
+    //     this.zoom.value = this.config.cyberTruck ? 0.3 : 0.5;
+    //     this.zoom.targetValue = this.zoom.value;
+    //     this.zoom.distance = this.zoom.minDistance + this.zoom.amplitude * this.zoom.value;
+    
+    //     // Listen to mousewheel event
+    //     document.addEventListener('wheel', (_event) => {
+    //         this.zoom.targetValue += _event.deltaY * 0.001;
+    //         this.zoom.targetValue = Math.min(Math.max(this.zoom.targetValue, 0), 1);
+    //     }, { passive: true });
+    
+    //     // Touch zoom
+    //     this.zoom.touch = {};
+    //     this.zoom.touch.startDistance = 0;
+    //     this.zoom.touch.startValue = 0;
+    
+    //     this.renderer.domElement.addEventListener('touchstart', (_event) => {
+    //         if (_event.touches.length === 2) {
+    //             this.zoom.touch.startDistance = Math.hypot(
+    //                 _event.touches[0].clientX - _event.touches[1].clientX,
+    //                 _event.touches[0].clientX - _event.touches[1].clientX
+    //             );
+    //             this.zoom.touch.startValue = this.zoom.targetValue;
+    //         }
+    //     });
+    
+    //     this.renderer.domElement.addEventListener('touchmove', (_event) => {
+    //         if (_event.touches.length === 2) {
+    //             _event.preventDefault();
+    
+    //             const distance = Math.hypot(
+    //                 _event.touches[0].clientX - _event.touches[1].clientX,
+    //                 _event.touches[0].clientX - _event.touches[1].clientX
+    //             );
+    //             const ratio = distance / this.zoom.touch.startDistance;
+    
+    //             this.zoom.targetValue = this.zoom.touch.startValue - (ratio - 1);
+    //             this.zoom.targetValue = Math.min(Math.max(this.zoom.targetValue, 0), 1);
+    //         }
+    //     });
+    
+    //     // Time tick event for zoom and camera clipping plane adjustments
+    //     this.time.on('tick', () => {
+    //         // Ease zoom
+    //         this.zoom.value += (this.zoom.targetValue - this.zoom.value) * this.zoom.easing;
+    //         this.zoom.distance = this.zoom.minDistance + this.zoom.amplitude * this.zoom.value;
+    
+    //         // Update camera position and clipping planes based on zoom
+    //         this.instance.position.copy(this.targetEased).add(
+    //             this.angle.value.clone().normalize().multiplyScalar(this.zoom.distance)
+    //         );
+    
+    //         // Dynamically adjust the near and far clipping planes based on zoom
+    //         this.instance.near = Math.max(0.1, this.zoom.distance * 0.1); // Keep near clipping plane small, but prevent it from going too low
+    //         this.instance.far = Math.max(100, this.zoom.distance * 10);   // Adjust far plane based on zoom
+    //         this.instance.updateProjectionMatrix();
+    
+    //         // Look at the target
+    //         this.instance.lookAt(this.targetEased);
+    //     });
+    // }
+
     setZoom() {
         // Set up
         this.zoom = {};
@@ -330,10 +397,16 @@ export default class Camera
         this.zoom.distance = this.zoom.minDistance + this.zoom.amplitude * this.zoom.value;
     
         // Listen to mousewheel event
-        document.addEventListener('wheel', (_event) => {
-            this.zoom.targetValue += _event.deltaY * 0.001;
-            this.zoom.targetValue = Math.min(Math.max(this.zoom.targetValue, 0), 1);
-        }, { passive: true });
+        document.addEventListener(
+            'wheel',
+            (_event) => {
+                if (!this.isNewCameraActive) { // Prevent zoom in new camera mode
+                    this.zoom.targetValue += _event.deltaY * 0.001;
+                    this.zoom.targetValue = Math.min(Math.max(this.zoom.targetValue, 0), 1);
+                }
+            },
+            { passive: true }
+        );
     
         // Touch zoom
         this.zoom.touch = {};
@@ -341,7 +414,7 @@ export default class Camera
         this.zoom.touch.startValue = 0;
     
         this.renderer.domElement.addEventListener('touchstart', (_event) => {
-            if (_event.touches.length === 2) {
+            if (!this.isNewCameraActive && _event.touches.length === 2) { // Prevent zoom in new camera mode
                 this.zoom.touch.startDistance = Math.hypot(
                     _event.touches[0].clientX - _event.touches[1].clientX,
                     _event.touches[0].clientX - _event.touches[1].clientX
@@ -351,7 +424,7 @@ export default class Camera
         });
     
         this.renderer.domElement.addEventListener('touchmove', (_event) => {
-            if (_event.touches.length === 2) {
+            if (!this.isNewCameraActive && _event.touches.length === 2) { // Prevent zoom in new camera mode
                 _event.preventDefault();
     
                 const distance = Math.hypot(

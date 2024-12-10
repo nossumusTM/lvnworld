@@ -212,7 +212,7 @@ const Application = ({ playerId, selectedWorldId, token, carName }) => {
             renderer: this.renderer,
             debug: this.debug,
             config: this.config,
-            car: this.car
+            car: this.car,
         });
 
         this.scene.add(this.camera.container);
@@ -224,17 +224,25 @@ const Application = ({ playerId, selectedWorldId, token, carName }) => {
         this.time.on('tick', () => {
             if (this.world && this.world.car) {
                 const chassisObject = this.world.car.chassis.object;
-        
+
                 if (this.camera.isNewCameraActive) {
-                    // New camera logic
+                    // New camera logic with maximum zoom out
                     const forwardVector = new THREE.Vector3(1, 0, 0);
                     forwardVector.applyQuaternion(chassisObject.quaternion);
-        
-                    const cameraOffset = forwardVector.clone().multiplyScalar(-15);
-                    cameraOffset.z = 10;
-        
+
+                    // Adjust for maximum zoom out
+                    const maxZoomOutOffset = -15; // Set maximum zoom-out distance
+                    const cameraOffset = forwardVector.clone().multiplyScalar(maxZoomOutOffset);
+                    cameraOffset.z = 7; // Raise the camera higher for a broader view
+
                     this.camera.instance.position.copy(chassisObject.position).add(cameraOffset);
                     this.camera.instance.lookAt(chassisObject.position);
+
+                    // Ensure maximum zoom-out distance
+                    this.camera.zoom.targetValue = 1; // Maximum zoom-out value
+                    this.camera.zoom.value = 1; // Immediately apply maximum zoom-out value
+                    this.camera.zoom.distance =
+                        this.camera.zoom.minDistance + this.camera.zoom.amplitude * this.camera.zoom.value;
                 } else {
                     // Old camera logic
                     this.camera.target.x = chassisObject.position.x;

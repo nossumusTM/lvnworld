@@ -794,96 +794,194 @@ export default class Controls extends EventEmitter
          * Camera
          */
 
-        this.touch.camera = {}
+        this.touch.camera = {};
 
         // Element
+        this.touch.camera.$element = document.createElement('div');
+        this.touch.camera.$element.id = 'camera-view';
+        this.touch.camera.$element.style.userSelect = 'none';
+        this.touch.camera.$element.style.position = 'fixed';
+        this.touch.camera.$element.style.bottom = '175px';
+        this.touch.camera.$element.style.left = '10px';
+        this.touch.camera.$element.style.width = '95px';
+        this.touch.camera.$element.style.height = '70px';
+        this.touch.camera.$element.style.transition = 'opacity 0.3s 0.4s';
+        this.touch.camera.$element.style.willChange = 'opacity';
+        this.touch.camera.$element.style.opacity = '0';
 
-        this.touch.camera.$element = document.createElement('div')
-        this.touch.camera.$element.id = 'camera-view'
-        this.touch.camera.$element.style.userSelect = 'none'
-        this.touch.camera.$element.style.position = 'fixed'
-        this.touch.camera.$element.style.bottom = '175px'
-        this.touch.camera.$element.style.left = '10px'
-        this.touch.camera.$element.style.width = '95px'
-        this.touch.camera.$element.style.height = '70px'
-        this.touch.camera.$element.style.transition = 'opacity 0.3s 0.4s'
-        this.touch.camera.$element.style.willChange = 'opacity'
-        this.touch.camera.$element.style.opacity = '0'
+        this.touch.camera.$border = document.createElement('div');
+        this.touch.camera.$border.style.position = 'absolute';
+        this.touch.camera.$border.style.top = 'calc(50% - 30px)';
+        this.touch.camera.$border.style.left = 'calc(50% - 30px)';
+        this.touch.camera.$border.style.width = '60px';
+        this.touch.camera.$border.style.height = '60px';
+        this.touch.camera.$border.style.border = 'unset';
+        this.touch.camera.$border.style.background = 'rgba(0, 0, 0, 0.5)';
+        this.touch.camera.$border.style.borderRadius = '10px';
+        this.touch.camera.$border.style.boxSizing = 'border-box';
+        this.touch.camera.$border.style.opacity = '0.25';
+        this.touch.camera.$border.style.willChange = 'opacity';
+        this.touch.camera.$element.appendChild(this.touch.camera.$border);
 
-        this.touch.camera.$border = document.createElement('div')
-        this.touch.camera.$border.style.position = 'absolute'
-        this.touch.camera.$border.style.top = 'calc(50% - 30px)'
-        this.touch.camera.$border.style.left = 'calc(50% - 30px)'
-        this.touch.camera.$border.style.width = '60px'
-        this.touch.camera.$border.style.height = '60px'
-        this.touch.camera.$border.style.border = 'unset'
-        this.touch.camera.$border.style.background = 'rgba(0, 0, 0, 0.5)'
-        this.touch.camera.$border.style.borderRadius = '10px'
-        this.touch.camera.$border.style.boxSizing = 'border-box'
-        this.touch.camera.$border.style.opacity = '0.25'
-        this.touch.camera.$border.style.willChange = 'opacity'
-        this.touch.camera.$element.appendChild(this.touch.camera.$border)
-
-        this.touch.camera.$icon = document.createElement('div')
-        this.touch.camera.$icon.style.position = 'absolute'
-        this.touch.camera.$icon.style.top = 'calc(50% - 13px)'
-        this.touch.camera.$icon.style.left = 'calc(50% - 11px)'
-        this.touch.camera.$icon.style.width = '22px'
-        this.touch.camera.$icon.style.height = '26px'
-        this.touch.camera.$icon.style.backgroundImage = `url(${monitoring})`
-        this.touch.camera.$icon.style.backgroundSize = 'cover'
-        this.touch.camera.$element.appendChild(this.touch.camera.$icon)
+        this.touch.camera.$icon = document.createElement('div');
+        this.touch.camera.$icon.style.position = 'absolute';
+        this.touch.camera.$icon.style.top = 'calc(50% - 13px)';
+        this.touch.camera.$icon.style.left = 'calc(50% - 11px)';
+        this.touch.camera.$icon.style.width = '22px';
+        this.touch.camera.$icon.style.height = '26px';
+        this.touch.camera.$icon.style.backgroundImage = `url(${monitoring})`;
+        this.touch.camera.$icon.style.backgroundSize = 'cover';
+        this.touch.camera.$element.appendChild(this.touch.camera.$icon);
 
         // Append to body
-        document.body.appendChild(this.touch.camera.$element)
+        document.body.appendChild(this.touch.camera.$element);
 
         // Events
-        this.touch.camera.events = {}
-        this.touch.camera.touchIdentifier = null
+        this.touch.camera.events = {};
+        this.touch.camera.touchIdentifier = null;
 
         this.touch.camera.events.touchstart = (_event) => {
-            _event.preventDefault()
+            _event.preventDefault();
 
-            const touch = _event.changedTouches[0]
+            const touch = _event.changedTouches[0];
 
-            if(touch) {
-                this.touch.camera.touchIdentifier = touch.identifier
+            if (touch) {
+                this.touch.camera.touchIdentifier = touch.identifier;
 
-                // Cycle through camera types
-                this.cycleCameraType()
+                // Toggle the camera type
+                if (!this.camera.actionInProgress) {
+                    this.camera.actionInProgress = true; // Prevent multiple toggles
+                    this.camera.triggerCameraAction(() => {
+                        this.camera.actionInProgress = false; // Reset the flag
+                    });
+                }
 
-                // this.touch.camera.$element.style.opacity = '0.5'
+                // this.touch.camera.$element.style.opacity = '0.5';
 
-                document.addEventListener('touchend', this.touch.camera.events.touchend)
+                document.addEventListener('touchend', this.touch.camera.events.touchend);
             }
-        }
+        };
 
         this.touch.camera.events.touchend = (_event) => {
-            const touches = [..._event.changedTouches]
-            const touch = touches.find((_touch) => _touch.identifier === this.touch.camera.touchIdentifier)
+            const touches = [..._event.changedTouches];
+            const touch = touches.find((_touch) => _touch.identifier === this.touch.camera.touchIdentifier);
 
-            if(touch) {
-                // this.touch.camera.$element.style.opacity = '0.25'
+            if (touch) {
+                // this.touch.camera.$element.style.opacity = '0.25';
 
-                document.removeEventListener('touchend', this.touch.camera.events.touchend)
+                document.removeEventListener('touchend', this.touch.camera.events.touchend);
             }
-        }
+        };
 
-        this.touch.camera.$element.addEventListener('touchstart', this.touch.camera.events.touchstart)
+        this.touch.camera.$element.addEventListener('touchstart', this.touch.camera.events.touchstart);
 
-        // Function to cycle camera types
+        // Function to toggle camera types
         this.cycleCameraType = () => {
-
-            if (!this.camera) return
+            if (!this.camera) return;
 
             if (this.camera.type === 'perspective') {
-                this.camera.setOrthographic()
+                this.camera.setOrthographic();
             } else if (this.camera.type === 'orthographic') {
-                this.camera.setBirdsEye()
+                this.camera.setBirdsEye();
             } else {
-                this.camera.setPerspective()
+                this.camera.setPerspective();
             }
-        }
+        };
+
+        // /**
+        //  * Camera
+        //  */
+
+        // this.touch.camera = {}
+
+        // // Element
+
+        // this.touch.camera.$element = document.createElement('div')
+        // this.touch.camera.$element.id = 'camera-view'
+        // this.touch.camera.$element.style.userSelect = 'none'
+        // this.touch.camera.$element.style.position = 'fixed'
+        // this.touch.camera.$element.style.bottom = '175px'
+        // this.touch.camera.$element.style.left = '10px'
+        // this.touch.camera.$element.style.width = '95px'
+        // this.touch.camera.$element.style.height = '70px'
+        // this.touch.camera.$element.style.transition = 'opacity 0.3s 0.4s'
+        // this.touch.camera.$element.style.willChange = 'opacity'
+        // this.touch.camera.$element.style.opacity = '0'
+
+        // this.touch.camera.$border = document.createElement('div')
+        // this.touch.camera.$border.style.position = 'absolute'
+        // this.touch.camera.$border.style.top = 'calc(50% - 30px)'
+        // this.touch.camera.$border.style.left = 'calc(50% - 30px)'
+        // this.touch.camera.$border.style.width = '60px'
+        // this.touch.camera.$border.style.height = '60px'
+        // this.touch.camera.$border.style.border = 'unset'
+        // this.touch.camera.$border.style.background = 'rgba(0, 0, 0, 0.5)'
+        // this.touch.camera.$border.style.borderRadius = '10px'
+        // this.touch.camera.$border.style.boxSizing = 'border-box'
+        // this.touch.camera.$border.style.opacity = '0.25'
+        // this.touch.camera.$border.style.willChange = 'opacity'
+        // this.touch.camera.$element.appendChild(this.touch.camera.$border)
+
+        // this.touch.camera.$icon = document.createElement('div')
+        // this.touch.camera.$icon.style.position = 'absolute'
+        // this.touch.camera.$icon.style.top = 'calc(50% - 13px)'
+        // this.touch.camera.$icon.style.left = 'calc(50% - 11px)'
+        // this.touch.camera.$icon.style.width = '22px'
+        // this.touch.camera.$icon.style.height = '26px'
+        // this.touch.camera.$icon.style.backgroundImage = `url(${monitoring})`
+        // this.touch.camera.$icon.style.backgroundSize = 'cover'
+        // this.touch.camera.$element.appendChild(this.touch.camera.$icon)
+
+        // // Append to body
+        // document.body.appendChild(this.touch.camera.$element)
+
+        // // Events
+        // this.touch.camera.events = {}
+        // this.touch.camera.touchIdentifier = null
+
+        // this.touch.camera.events.touchstart = (_event) => {
+        //     _event.preventDefault()
+
+        //     const touch = _event.changedTouches[0]
+
+        //     if(touch) {
+        //         this.touch.camera.touchIdentifier = touch.identifier
+
+        //         // Cycle through camera types
+        //         this.cycleCameraType()
+
+        //         // this.touch.camera.$element.style.opacity = '0.5'
+
+        //         document.addEventListener('touchend', this.touch.camera.events.touchend)
+        //     }
+        // }
+
+        // this.touch.camera.events.touchend = (_event) => {
+        //     const touches = [..._event.changedTouches]
+        //     const touch = touches.find((_touch) => _touch.identifier === this.touch.camera.touchIdentifier)
+
+        //     if(touch) {
+        //         // this.touch.camera.$element.style.opacity = '0.25'
+
+        //         document.removeEventListener('touchend', this.touch.camera.events.touchend)
+        //     }
+        // }
+
+        // this.touch.camera.$element.addEventListener('touchstart', this.touch.camera.events.touchstart)
+
+        // // Function to cycle camera types
+        // this.cycleCameraType = () => {
+
+        //     if (!this.camera) return
+
+        //     if (this.camera.type === 'perspective') {
+        //         this.camera.setOrthographic()
+        //     } else if (this.camera.type === 'orthographic') {
+        //         this.camera.setBirdsEye()
+        //     } else {
+        //         this.camera.setPerspective()
+        //     }
+        // }
 
         /**
          * Previous
