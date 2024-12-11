@@ -385,64 +385,39 @@ export default class Controls extends EventEmitter
         this.touch.joystick.$limit.style.boxSizing = 'border-box'
         this.touch.joystick.$element.appendChild(this.touch.joystick.$limit)
 
-        // // Angle
-        // this.touch.joystick.angle = {}
-
-        // this.touch.joystick.angle.offset = Math.PI * 0.18
-
-        // this.touch.joystick.angle.center = {}
-        // this.touch.joystick.angle.center.x = 0
-        // this.touch.joystick.angle.center.y = 0
-
-        // this.touch.joystick.angle.current = {}
-        // this.touch.joystick.angle.current.x = 0
-        // this.touch.joystick.angle.current.y = 0
-
-        // this.touch.joystick.angle.originalValue = 0
-        // this.touch.joystick.angle.value = - Math.PI * 0.5
-
-        // // Direction Lock
-        // this.touch.joystick.directionLock = null; // Lock current direction ('left', 'right', 'up', 'down')
-        // this.touch.joystick.crossedCenter = false; // Tracks if joystick crossed the center
-
-        // // Resize
-        // this.touch.joystick.resize = () =>
-        // {
-        //     const boundings = this.touch.joystick.$element.getBoundingClientRect()
-
-        //     this.touch.joystick.angle.center.x = boundings.left + boundings.width * 0.5
-        //     this.touch.joystick.angle.center.y = boundings.top + boundings.height * 0.5
-        // }
-
-        // this.sizes.on('resize', this.touch.joystick.resize)
-        // this.touch.joystick.resize()
-
         // Angle
-        this.touch.joystick.angle = {};
+        this.touch.joystick.angle = {}
 
-        this.touch.joystick.angle.offset = Math.PI * 0.18;
+        this.touch.joystick.angle.offset = Math.PI * 0.18
 
-        this.touch.joystick.angle.center = { x: 0, y: 0 };
-        this.touch.joystick.angle.current = { x: 0, y: 0 };
-        this.touch.joystick.angle.originalValue = 0;
-        this.touch.joystick.angle.value = -Math.PI * 0.5;
+        this.touch.joystick.angle.center = {}
+        this.touch.joystick.angle.center.x = 0
+        this.touch.joystick.angle.center.y = 0
+
+        this.touch.joystick.angle.current = {}
+        this.touch.joystick.angle.current.x = 0
+        this.touch.joystick.angle.current.y = 0
+
+        this.touch.joystick.angle.originalValue = 0
+        this.touch.joystick.angle.value = - Math.PI * 0.5
 
         // Direction Lock
         this.touch.joystick.directionLock = null; // Lock current direction ('left', 'right', 'up', 'down')
         this.touch.joystick.crossedCenter = false; // Tracks if joystick crossed the center
 
         // Resize
-        this.touch.joystick.resize = () => {
-            const boundings = this.touch.joystick.$element.getBoundingClientRect();
+        this.touch.joystick.resize = () =>
+        {
+            const boundings = this.touch.joystick.$element.getBoundingClientRect()
 
-            this.touch.joystick.angle.center.x = boundings.left + boundings.width * 0.5;
-            this.touch.joystick.angle.center.y = boundings.top + boundings.height * 0.5;
-        };
+            this.touch.joystick.angle.center.x = boundings.left + boundings.width * 0.5
+            this.touch.joystick.angle.center.y = boundings.top + boundings.height * 0.5
+        }
 
-        this.sizes.on('resize', this.touch.joystick.resize);
-        this.touch.joystick.resize();
+        this.sizes.on('resize', this.touch.joystick.resize)
+        this.touch.joystick.resize()
 
-        // Time tick
+        // // Time tick
         // this.time.on('tick', () => {
         //     if (this.touch.joystick.active) {
         //         const deltaX = this.touch.joystick.angle.current.x - this.touch.joystick.angle.center.x;
@@ -498,19 +473,18 @@ export default class Controls extends EventEmitter
         //     }
         // });
 
-        // Time tick
-        // Direction Lock
+        // Direction Lock and State
         this.touch.joystick.directionLock = null; // Lock current direction ('left', 'right')
         this.touch.joystick.crossedCenter = false; // Tracks if joystick crossed the center
 
-        // Time tick
+        // Time tick for joystick logic
         this.time.on('tick', () => {
             if (this.touch.joystick.active) {
                 const deltaX = this.touch.joystick.angle.current.x - this.touch.joystick.angle.center.x;
                 const deltaY = this.touch.joystick.angle.current.y - this.touch.joystick.angle.center.y;
 
                 const distance = Math.hypot(deltaX, deltaY);
-                const maxRadius = 43; // Maximum joystick radius
+                const maxRadius = 43; // Maximum joystick radius (adjust based on your UI size)
 
                 // Clamp the distance within the joystick's radius
                 const clampedDistance = Math.min(distance, maxRadius);
@@ -519,48 +493,47 @@ export default class Controls extends EventEmitter
                 const normalizedX = deltaX / maxRadius;
                 const normalizedY = -deltaY / maxRadius; // Negative for traditional y-axis inversion in games
 
-                // Add a dead zone near the center to prevent noise
-                const deadZone = 0.1;
-                const adjustedX = Math.abs(normalizedX) > deadZone ? normalizedX : 0;
-                const adjustedY = Math.abs(normalizedY) > deadZone ? normalizedY : 0;
+                // Determine the current joystick direction (dominant axis)
+                const currentDirection =
+                    Math.abs(normalizedX) > Math.abs(normalizedY)
+                        ? (normalizedX > 0 ? 'right' : 'left')
+                        : (normalizedY > 0 ? 'up' : 'down');
 
-                // Determine the direction based on normalized input
-                const currentDirection = Math.abs(adjustedX) > Math.abs(adjustedY)
-                    ? (adjustedX > 0 ? 'right' : 'left')
-                    : null; // Only horizontal directions are relevant for steering
-
+                // Handle direction lock
                 if (!this.touch.joystick.crossedCenter) {
                     if (this.touch.joystick.directionLock === null) {
-                        // Lock the initial direction
+                        // Lock the initial direction based on dominant axis
                         this.touch.joystick.directionLock = currentDirection;
                     } else if (currentDirection !== this.touch.joystick.directionLock) {
-                        // Check if joystick crossed the center
-                        const crossed = clampedDistance < 0.3 * maxRadius; // Define the center threshold
-                        if (crossed) {
+                        // Check if joystick crossed the center threshold
+                        const crossedCenter = clampedDistance < 0.3 * maxRadius;
+                        if (crossedCenter) {
                             this.touch.joystick.crossedCenter = true; // Allow direction change
-                            this.touch.joystick.directionLock = currentDirection; // Update direction lock
                         }
-                    }
-                } else {
-                    // Reset crossed center if joystick moves far enough in the opposite direction
-                    const farEnough = clampedDistance > 0.6 * maxRadius; // Define the threshold for unlocking
-                    if (farEnough) {
-                        this.touch.joystick.crossedCenter = false; // Reset crossing flag
                     }
                 }
 
-                // Calculate the angle based on the adjusted input
-                this.touch.joystick.angle.value = Math.atan2(adjustedY, adjustedX);
+                if (this.touch.joystick.crossedCenter) {
+                    // Reset direction lock if joystick moves far enough in the opposite direction
+                    this.touch.joystick.directionLock = currentDirection;
+                    this.touch.joystick.crossedCenter = false; // Reset center crossing
+                }
+
+                // Update the joystick angle for rendering
+                this.touch.joystick.angle.value = Math.atan2(
+                    deltaY, // Y-axis (top to bottom)
+                    deltaX  // X-axis (left to right)
+                );
 
                 // Update the joystick cursor position within the circular constraint
-                const cursorX = (clampedDistance / maxRadius) * Math.cos(this.touch.joystick.angle.value) * maxRadius;
-                const cursorY = (clampedDistance / maxRadius) * Math.sin(this.touch.joystick.angle.value) * maxRadius;
+                const cursorX = clampedDistance * Math.cos(this.touch.joystick.angle.value);
+                const cursorY = clampedDistance * Math.sin(this.touch.joystick.angle.value);
                 this.touch.joystick.$cursor.style.transform = `translate(${cursorX}px, ${cursorY}px)`;
 
-                // Trigger joystick movement
+                // Trigger joystick movement with normalized values
                 this.trigger('joystickMove', {
-                    x: adjustedX,
-                    y: adjustedY,
+                    x: normalizedX,
+                    y: normalizedY,
                     direction: this.touch.joystick.directionLock,
                 });
             } else {
@@ -571,10 +544,10 @@ export default class Controls extends EventEmitter
         });
 
         // Events
-        // this.touch.joystick.events = {}
-        // this.touch.joystick.touchIdentifier = null
+        this.touch.joystick.events = {}
+        this.touch.joystick.touchIdentifier = null
 
-        // // touchstart event: Reset smooth transition
+        // touchstart event: Reset smooth transition
         // this.touch.joystick.events.touchstart = (_event) => {
         //     _event.preventDefault();
         
@@ -600,10 +573,7 @@ export default class Controls extends EventEmitter
         //     }
         // };
 
-        this.touch.joystick.events = {};
-        this.touch.joystick.touchIdentifier = null;
-
-        // touchstart event: Reset direction lock and center state
+        // touchstart event: Reset joystick state
         this.touch.joystick.events.touchstart = (_event) => {
             _event.preventDefault();
 
@@ -618,7 +588,7 @@ export default class Controls extends EventEmitter
 
                 this.touch.joystick.$limit.style.opacity = '0.5';
 
-                // Reset direction lock and center state
+                // Reset direction lock and center crossing state
                 this.touch.joystick.directionLock = null;
                 this.touch.joystick.crossedCenter = false;
 
@@ -676,8 +646,6 @@ export default class Controls extends EventEmitter
         //     }
         // };
 
-        // this.touch.joystick.$element.addEventListener('touchstart', this.touch.joystick.events.touchstart, { passive: false })
-
         // touchend event: Reset joystick state
         this.touch.joystick.events.touchend = (_event) => {
             const touches = [..._event.changedTouches];
@@ -695,8 +663,8 @@ export default class Controls extends EventEmitter
                 this.trigger('joystickEnd');
             }
         };
-        
-        this.touch.joystick.$element.addEventListener('touchstart', this.touch.joystick.events.touchstart, { passive: false });
+
+        this.touch.joystick.$element.addEventListener('touchstart', this.touch.joystick.events.touchstart, { passive: false })
 
         /**
          * Switch
