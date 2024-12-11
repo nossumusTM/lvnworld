@@ -482,66 +482,66 @@ export default class Controls extends EventEmitter
             if (this.touch.joystick.active) {
                 const deltaX = this.touch.joystick.angle.current.x - this.touch.joystick.angle.center.x;
                 const deltaY = this.touch.joystick.angle.current.y - this.touch.joystick.angle.center.y;
-
+        
                 const distance = Math.hypot(deltaX, deltaY);
-                const maxRadius = 43; // Maximum joystick radius (adjust based on your UI size)
-
+                const maxRadius = 43; // Maximum joystick radius
+        
                 // Clamp the distance within the joystick's radius
                 const clampedDistance = Math.min(distance, maxRadius);
-
+        
                 // Calculate the normalized input (range: [-1, 1])
                 const normalizedX = deltaX / maxRadius;
-                const normalizedY = -deltaY / maxRadius; // Negative for traditional y-axis inversion in games
-
-                // Determine the current joystick direction (dominant axis)
+                const normalizedY = -deltaY / maxRadius;
+        
+                // Determine the dominant steering direction
                 const currentDirection =
                     Math.abs(normalizedX) > Math.abs(normalizedY)
                         ? (normalizedX > 0 ? 'right' : 'left')
                         : (normalizedY > 0 ? 'up' : 'down');
-
+        
                 // Handle direction lock
                 if (!this.touch.joystick.crossedCenter) {
                     if (this.touch.joystick.directionLock === null) {
-                        // Lock the initial direction based on dominant axis
-                        this.touch.joystick.directionLock = currentDirection;
-                    } else if (currentDirection !== this.touch.joystick.directionLock) {
-                        // Check if joystick crossed the center threshold
-                        const crossedCenter = clampedDistance < 0.3 * maxRadius;
+                        // Lock the initial steering direction
+                        this.touch.joystick.directionLock = currentDirection === 'left' || currentDirection === 'right' ? currentDirection : this.touch.joystick.directionLock;
+                    } else if (currentDirection !== this.touch.joystick.directionLock && (currentDirection === 'left' || currentDirection === 'right')) {
+                        // Check if joystick crossed the center
+                        const crossedCenter = clampedDistance < 0.3 * maxRadius; // Define center threshold
                         if (crossedCenter) {
                             this.touch.joystick.crossedCenter = true; // Allow direction change
+                            this.touch.joystick.directionLock = currentDirection; // Update direction lock
                         }
                     }
                 }
-
+        
                 if (this.touch.joystick.crossedCenter) {
                     // Reset direction lock if joystick moves far enough in the opposite direction
-                    this.touch.joystick.directionLock = currentDirection;
-                    this.touch.joystick.crossedCenter = false; // Reset center crossing
+                    if (currentDirection === 'left' || currentDirection === 'right') {
+                        this.touch.joystick.directionLock = currentDirection;
+                        this.touch.joystick.crossedCenter = false;
+                    }
                 }
-
-                // Update the joystick angle for rendering
+        
+                // Calculate the angle for rendering
                 this.touch.joystick.angle.value = Math.atan2(
                     deltaY, // Y-axis (top to bottom)
                     deltaX  // X-axis (left to right)
                 );
-
+        
                 // Update the joystick cursor position within the circular constraint
                 const cursorX = clampedDistance * Math.cos(this.touch.joystick.angle.value);
                 const cursorY = clampedDistance * Math.sin(this.touch.joystick.angle.value);
                 this.touch.joystick.$cursor.style.transform = `translate(${cursorX}px, ${cursorY}px)`;
-
-                // Trigger joystick movement with normalized values
-                this.trigger('joystickMove', {
-                    x: normalizedX,
-                    y: normalizedY,
-                    direction: this.touch.joystick.directionLock,
-                });
+        
+                // Trigger joystick movement with normalized X value only for steering
+                const steeringValue = this.touch.joystick.directionLock === 'left' || this.touch.joystick.directionLock === 'right' ? normalizedX : 0;
+                this.trigger('joystickMove', { x: steeringValue, y: normalizedY });
             } else {
                 // Gradually reset the joystick to the center
                 this.touch.joystick.$cursor.style.transform = 'translate(0px, 0px)';
                 this.trigger('joystickMove', { x: 0, y: 0 });
             }
-        });
+        });        
 
         // Events
         this.touch.joystick.events = {}
