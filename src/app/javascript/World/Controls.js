@@ -413,220 +413,97 @@ export default class Controls extends EventEmitter
         this.sizes.on('resize', this.touch.joystick.resize)
         this.touch.joystick.resize()
 
-        // // Time tick
-        // this.time.on('tick', () =>
-        // {
-        //     // Joystick active
-        //     if(this.touch.joystick.active)
-        //     {
-        //         // Calculate joystick angle
-        //         this.touch.joystick.angle.originalValue = - Math.atan2(
-        //             this.touch.joystick.angle.current.y - this.touch.joystick.angle.center.y,
-        //             this.touch.joystick.angle.current.x - this.touch.joystick.angle.center.x
-        //         )
-        //         this.touch.joystick.angle.value = this.touch.joystick.angle.originalValue + this.touch.joystick.angle.offset
-
-        //         // Update joystick
-        //         const distance = Math.hypot(this.touch.joystick.angle.current.y - this.touch.joystick.angle.center.y, this.touch.joystick.angle.current.x - this.touch.joystick.angle.center.x)
-        //         let radius = distance
-        //         if(radius > 20)
-        //         {
-        //             radius = 20 + Math.log(distance - 20) * 5
-        //         }
-        //         if(radius > 43)
-        //         {
-        //             radius = 43
-        //         }
-        //         const cursorX = Math.sin(this.touch.joystick.angle.originalValue + Math.PI * 0.5) * radius
-        //         const cursorY = Math.cos(this.touch.joystick.angle.originalValue + Math.PI * 0.5) * radius
-        //         this.touch.joystick.$cursor.style.transform = `translateX(${cursorX}px) translateY(${cursorY}px)`
-        //     }
-        // })
-
-        this.touch.joystick.directionLock = null; // Lock initial steering direction
-        this.touch.joystick.crossedCenter = false; // Tracks if joystick crossed the center
-
         // Time tick
-        this.time.on('tick', () => {
-            if (this.touch.joystick.active) {
+        this.time.on('tick', () =>
+        {
+            // Joystick active
+            if(this.touch.joystick.active)
+            {
                 // Calculate joystick angle
-                const deltaX = this.touch.joystick.angle.current.x - this.touch.joystick.angle.center.x;
-                const deltaY = this.touch.joystick.angle.current.y - this.touch.joystick.angle.center.y;
+                this.touch.joystick.angle.originalValue = - Math.atan2(
+                    this.touch.joystick.angle.current.y - this.touch.joystick.angle.center.y,
+                    this.touch.joystick.angle.current.x - this.touch.joystick.angle.center.x
+                )
+                this.touch.joystick.angle.value = this.touch.joystick.angle.originalValue + this.touch.joystick.angle.offset
 
-                const distance = Math.hypot(deltaX, deltaY);
-                const maxRadius = 43; // Maximum joystick radius
-
-                // Clamp the distance within the joystick's radius
-                const clampedDistance = Math.min(distance, maxRadius);
-
-                // Calculate normalized input (range: [-1, 1])
-                const normalizedX = deltaX / maxRadius;
-                const normalizedY = -deltaY / maxRadius;
-
-                // Determine the steering direction
-                const currentDirection = normalizedX > 0 ? 'right' : 'left';
-
-                // Handle direction lock
-                if (!this.touch.joystick.crossedCenter) {
-                    if (this.touch.joystick.directionLock === null) {
-                        // Lock the initial direction
-                        this.touch.joystick.directionLock = currentDirection;
-                    } else if (currentDirection !== this.touch.joystick.directionLock) {
-                        // Check if joystick crossed the center
-                        const crossed = clampedDistance < 0.3 * maxRadius; // Center threshold
-                        if (crossed) {
-                            this.touch.joystick.crossedCenter = true; // Allow direction change
-                        }
-                    }
-                } else {
-                    // Reset direction lock if joystick moves far enough in the opposite direction
-                    if (currentDirection !== this.touch.joystick.directionLock) {
-                        this.touch.joystick.directionLock = currentDirection;
-                        this.touch.joystick.crossedCenter = false;
-                    }
+                // Update joystick
+                const distance = Math.hypot(this.touch.joystick.angle.current.y - this.touch.joystick.angle.center.y, this.touch.joystick.angle.current.x - this.touch.joystick.angle.center.x)
+                let radius = distance
+                if(radius > 20)
+                {
+                    radius = 20 + Math.log(distance - 20) * 5
                 }
-
-                // Apply the locked steering direction
-                const effectiveDirection =
-                    this.touch.joystick.directionLock === 'left' ? Math.min(normalizedX, 0) : Math.max(normalizedX, 0);
-
-                // Update the angle
-                this.touch.joystick.angle.value = Math.atan2(normalizedY, effectiveDirection);
-
-                // Update joystick cursor position
-                const cursorX = clampedDistance * Math.cos(this.touch.joystick.angle.value);
-                const cursorY = clampedDistance * Math.sin(this.touch.joystick.angle.value);
-                this.touch.joystick.$cursor.style.transform = `translate(${cursorX}px, ${cursorY}px)`;
-
-                // Trigger joystick movement with the effective direction
-                this.trigger('joystickMove', { x: effectiveDirection, y: normalizedY });
-            } else {
-                // Gradually reset the joystick to the center
-                this.touch.joystick.$cursor.style.transform = 'translate(0px, 0px)';
-                this.trigger('joystickMove', { x: 0, y: 0 });
+                if(radius > 43)
+                {
+                    radius = 43
+                }
+                const cursorX = Math.sin(this.touch.joystick.angle.originalValue + Math.PI * 0.5) * radius
+                const cursorY = Math.cos(this.touch.joystick.angle.originalValue + Math.PI * 0.5) * radius
+                this.touch.joystick.$cursor.style.transform = `translateX(${cursorX}px) translateY(${cursorY}px)`
             }
-        });
+        })
 
         // Events
         this.touch.joystick.events = {}
         this.touch.joystick.touchIdentifier = null
-        // this.touch.joystick.events.touchstart = (_event) =>
-        // {
-        //     _event.preventDefault()
+        this.touch.joystick.events.touchstart = (_event) =>
+        {
+            _event.preventDefault()
 
-        //     const touch = _event.changedTouches[0]
+            const touch = _event.changedTouches[0]
 
-        //     if(touch)
-        //     {
-        //         this.touch.joystick.active = true
+            if(touch)
+            {
+                this.touch.joystick.active = true
 
-        //         this.touch.joystick.touchIdentifier = touch.identifier
+                this.touch.joystick.touchIdentifier = touch.identifier
 
-        //         this.touch.joystick.angle.current.x = touch.clientX
-        //         this.touch.joystick.angle.current.y = touch.clientY
+                this.touch.joystick.angle.current.x = touch.clientX
+                this.touch.joystick.angle.current.y = touch.clientY
 
-        //         this.touch.joystick.$limit.style.opacity = '0.5'
+                this.touch.joystick.$limit.style.opacity = '0.5'
 
-        //         document.addEventListener('touchend', this.touch.joystick.events.touchend)
-        //         document.addEventListener('touchmove', this.touch.joystick.events.touchmove, { passive: false })
+                document.addEventListener('touchend', this.touch.joystick.events.touchend)
+                document.addEventListener('touchmove', this.touch.joystick.events.touchmove, { passive: false })
 
-        //         this.trigger('joystickStart')
-        //     }
-        // }
-
-        // touchstart event: Reset direction lock and initialize state
-        this.touch.joystick.events.touchstart = (_event) => {
-            _event.preventDefault();
-
-            const touch = _event.changedTouches[0];
-
-            if (touch) {
-                this.touch.joystick.active = true;
-                this.touch.joystick.touchIdentifier = touch.identifier;
-
-                this.touch.joystick.angle.current.x = touch.clientX;
-                this.touch.joystick.angle.current.y = touch.clientY;
-
-                this.touch.joystick.$limit.style.opacity = '0.5';
-
-                // Reset direction lock and center state
-                this.touch.joystick.directionLock = null;
-                this.touch.joystick.crossedCenter = false;
-
-                document.addEventListener('touchend', this.touch.joystick.events.touchend);
-                document.addEventListener('touchmove', this.touch.joystick.events.touchmove, { passive: false });
-
-                this.trigger('joystickStart');
+                this.trigger('joystickStart')
             }
-        };
+        }
 
-        // this.touch.joystick.events.touchmove = (_event) =>
-        // {
-        //     _event.preventDefault()
+        this.touch.joystick.events.touchmove = (_event) =>
+        {
+            _event.preventDefault()
 
-        //     const touches = [..._event.changedTouches]
-        //     const touch = touches.find((_touch) => _touch.identifier === this.touch.joystick.touchIdentifier)
+            const touches = [..._event.changedTouches]
+            const touch = touches.find((_touch) => _touch.identifier === this.touch.joystick.touchIdentifier)
 
-        //     if(touch)
-        //     {
-        //         this.touch.joystick.angle.current.x = touch.clientX
-        //         this.touch.joystick.angle.current.y = touch.clientY
+            if(touch)
+            {
+                this.touch.joystick.angle.current.x = touch.clientX
+                this.touch.joystick.angle.current.y = touch.clientY
 
-        //         this.trigger('joystickMove')
-        //     }
-        // }
-
-        // this.touch.joystick.events.touchend = (_event) =>
-        // {
-        //     const touches = [..._event.changedTouches]
-        //     const touch = touches.find((_touch) => _touch.identifier === this.touch.joystick.touchIdentifier)
-
-        //     if(touch)
-        //     {
-        //         this.touch.joystick.active = false
-
-        //         this.touch.joystick.$limit.style.opacity = '0.25'
-
-        //         this.touch.joystick.$cursor.style.transform = 'translateX(0px) translateY(0px)'
-
-        //         document.removeEventListener('touchend', this.touch.joystick.events.touchend)
-
-        //         this.trigger('joystickEnd')
-        //     }
-        // }
-
-        // touchmove event
-        this.touch.joystick.events.touchmove = (_event) => {
-            _event.preventDefault();
-
-            const touches = [..._event.changedTouches];
-            const touch = touches.find((_touch) => _touch.identifier === this.touch.joystick.touchIdentifier);
-
-            if (touch) {
-                this.touch.joystick.angle.current.x = touch.clientX;
-                this.touch.joystick.angle.current.y = touch.clientY;
-
-                this.trigger('joystickMove');
+                this.trigger('joystickMove')
             }
-        };
+        }
 
-        // touchend event: Smooth reset
-        this.touch.joystick.events.touchend = (_event) => {
-            const touches = [..._event.changedTouches];
-            const touch = touches.find((_touch) => _touch.identifier === this.touch.joystick.touchIdentifier);
+        this.touch.joystick.events.touchend = (_event) =>
+        {
+            const touches = [..._event.changedTouches]
+            const touch = touches.find((_touch) => _touch.identifier === this.touch.joystick.touchIdentifier)
 
-            if (touch) {
-                this.touch.joystick.active = false;
+            if(touch)
+            {
+                this.touch.joystick.active = false
 
-                this.touch.joystick.$limit.style.opacity = '0.25';
-                this.touch.joystick.$cursor.style.transform = 'translate(0px, 0px)';
+                this.touch.joystick.$limit.style.opacity = '0.25'
 
-                document.removeEventListener('touchend', this.touch.joystick.events.touchend);
-                document.removeEventListener('touchmove', this.touch.joystick.events.touchmove);
+                this.touch.joystick.$cursor.style.transform = 'translateX(0px) translateY(0px)'
 
-                this.trigger('joystickEnd');
+                document.removeEventListener('touchend', this.touch.joystick.events.touchend)
+
+                this.trigger('joystickEnd')
             }
-        };
+        }
 
         this.touch.joystick.$element.addEventListener('touchstart', this.touch.joystick.events.touchstart, { passive: false })
 
