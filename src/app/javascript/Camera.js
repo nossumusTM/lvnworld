@@ -25,6 +25,7 @@ export default class Camera
 
         this.type = 'perspective'
         this.isNewCameraActive = false;
+        this.actionInProgress = false;
 
         // Debug
         if(this.debug)
