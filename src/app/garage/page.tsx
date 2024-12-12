@@ -1008,11 +1008,11 @@ export default function GaragePage() {
             setIsCarLoading(true); // Start loading animation
 
             // Update car attributes based on the index
-            if (index >= 0 && index < cars.length) {
-                setCurrentCarAttributes(cars[index].attributes); // Update the attributes state
-            } else {
-                setCurrentCarAttributes(kybertruck[0].attributes); // Default to kybertruck attributes
-            }
+            // if (index >= 0 && index < cars.length) {
+            //     setCurrentCarAttributes(cars[index].attributes); // Update the attributes state
+            // } else {
+            //     setCurrentCarAttributes(kybertruck[0].attributes); // Default to kybertruck attributes
+            // }
 
             carGroupRef.current.clear();
         
