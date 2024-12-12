@@ -205,69 +205,6 @@ const Application = ({ playerId, selectedWorldId, token, carName }) => {
     // /**
     //  * Set camera
     //  */
-    // setCamera() {
-    //     this.camera = new Camera({
-    //         time: this.time,
-    //         sizes: this.sizes,
-    //         renderer: this.renderer,
-    //         debug: this.debug,
-    //         config: this.config,
-    //         car: this.car
-    //     });
-
-    //     this.scene.add(this.camera.container);
-
-    //     // Set the initial camera mode
-    //     this.camera.isNewCameraActive = false; // Start with the old version
-    //     this.camera.actionInProgress = false; // Track if a camera action is in progress
-
-    //     this.time.on('tick', () => {
-    //         if (this.world && this.world.car) {
-    //             const chassisObject = this.world.car.chassis.object;
-        
-    //             if (this.camera.isNewCameraActive) {
-    //                 // New camera logic with maximum zoom out
-    //                 const forwardVector = new THREE.Vector3(1, 0, 0);
-    //                 forwardVector.applyQuaternion(chassisObject.quaternion);
-
-    //                 // Adjust for maximum zoom out
-    //                 const maxZoomOutOffset = -30; // Adjust this value for the desired zoom-out distance
-    //                 const cameraOffset = forwardVector.clone().multiplyScalar(maxZoomOutOffset);
-    //                 cameraOffset.z = 10; // Raise the camera higher for a broader view
-
-    //                 this.camera.instance.position.copy(chassisObject.position).add(cameraOffset);
-    //                 this.camera.instance.lookAt(chassisObject.position);
-
-    //                 // Ensure maximum zoom-out distance
-    //                 this.camera.zoom.targetValue = 1; // Maximum zoom-out value
-    //                 this.camera.zoom.value = 1; // Immediately apply maximum zoom-out value
-    //                 this.camera.zoom.distance = this.camera.zoom.minDistance + this.camera.zoom.amplitude * this.camera.zoom.value;
-    //             } else {
-    //                 // Old camera logic
-    //                 this.camera.target.x = chassisObject.position.x;
-    //                 this.camera.target.y = chassisObject.position.y;
-    //                 this.camera.target.z = chassisObject.position.z;
-    //                 this.camera.instance.lookAt(chassisObject.position);
-    //             }
-    //         }
-    //     });
-
-    //     // Key event listener for camera toggle
-    //     document.addEventListener('keydown', (e) => {
-    //         if ((e.key === 'Y' || e.key === 'y') && !this.camera.actionInProgress) {
-    //             this.camera.actionInProgress = true; // Mark the action as in progress
-
-    //             // Toggle the camera and reset the flag after the switch
-    //             this.camera.triggerCameraAction(() => {
-    //                 this.camera.actionInProgress = false; // Reset the flag
-    //             });
-    //         }
-    //     });
-    // }
-
-    /**
-     * Set camera
-     */
     setCamera() {
         this.camera = new Camera({
             time: this.time,
@@ -292,31 +229,29 @@ const Application = ({ playerId, selectedWorldId, token, carName }) => {
         this.time.on('tick', () => {
             if (this.world && this.world.car) {
                 const chassisObject = this.world.car.chassis.object;
-
+        
                 if (this.camera.isNewCameraActive) {
-                    // New camera logic
-                    const forwardVector = new THREE.Vector3(1, 0, 0); // Forward in local space
+                    // New camera logic with maximum zoom out
+                    const forwardVector = new THREE.Vector3(1, 0, 0);
                     forwardVector.applyQuaternion(chassisObject.quaternion);
 
-                    // Calculate a position close to the car for a better perspective
-                    const distance = 30; // Distance behind the car
-
-                    // Calculate a position close to the car for a better perspective
-                    const cameraOffset = forwardVector.clone().multiplyScalar(-distance); // Position behind the car
-                    cameraOffset.z = 10; // Raise the camera for a better view
+                    // Adjust for maximum zoom out
+                    const maxZoomOutOffset = -30; // Adjust this value for the desired zoom-out distance
+                    const cameraOffset = forwardVector.clone().multiplyScalar(maxZoomOutOffset);
+                    cameraOffset.z = 10; // Raise the camera higher for a broader view
 
                     this.camera.instance.position.copy(chassisObject.position).add(cameraOffset);
                     this.camera.instance.lookAt(chassisObject.position);
 
-                    // Apply zoom settings
-                    this.camera.zoom.value = 1;
+                    // Ensure maximum zoom-out distance
+                    this.camera.zoom.targetValue = 1; // Maximum zoom-out value
+                    this.camera.zoom.value = 1; // Immediately apply maximum zoom-out value
                     this.camera.zoom.distance = this.camera.zoom.minDistance + this.camera.zoom.amplitude * this.camera.zoom.value;
                 } else {
                     // Old camera logic
-                    const offset = new THREE.Vector3(0, 5, -10); // Position behind and above the car
-                    const carPosition = chassisObject.position.clone().add(offset);
-
-                    this.camera.instance.position.lerp(carPosition, 0.1); // Smooth movement
+                    this.camera.target.x = chassisObject.position.x;
+                    this.camera.target.y = chassisObject.position.y;
+                    this.camera.target.z = chassisObject.position.z;
                     this.camera.instance.lookAt(chassisObject.position);
                 }
             }
@@ -334,6 +269,77 @@ const Application = ({ playerId, selectedWorldId, token, carName }) => {
             }
         });
     }
+
+    /**
+     * Set camera
+     */
+    // setCamera() {
+    //     this.camera = new Camera({
+    //         time: this.time,
+    //         sizes: this.sizes,
+    //         renderer: this.renderer,
+    //         debug: this.debug,
+    //         config: this.config,
+    //         car: this.car
+    //     });
+
+    //     this.scene.add(this.camera.container);
+
+    //     // Set the initial camera mode
+    //     this.camera.isNewCameraActive = false; // Start with the old version
+    //     this.camera.actionInProgress = false; // Track if a camera action is in progress
+
+    //     // Adjust camera clipping planes for proper rendering
+    //     this.camera.instance.near = 0.1;
+    //     this.camera.instance.far = 1000;
+    //     this.camera.instance.updateProjectionMatrix();
+
+    //     this.time.on('tick', () => {
+    //         if (this.world && this.world.car) {
+    //             const chassisObject = this.world.car.chassis.object;
+
+    //             if (this.camera.isNewCameraActive) {
+    //                 // New camera logic
+    //                 const forwardVector = new THREE.Vector3(1, 0, 0); // Forward in local space
+    //                 forwardVector.applyQuaternion(chassisObject.quaternion);
+
+    //                 // Calculate a position close to the car for a better perspective
+    //                 const distance = 30; // Distance behind the car
+
+    //                 // Calculate a position close to the car for a better perspective
+    //                 const cameraOffset = forwardVector.clone().multiplyScalar(-distance); // Position behind the car
+    //                 cameraOffset.z = 10; // Raise the camera for a better view
+
+    //                 this.camera.instance.position.copy(chassisObject.position).add(cameraOffset);
+    //                 this.camera.instance.lookAt(chassisObject.position);
+
+    //                 // Apply zoom settings
+    //                 this.camera.zoom.targetValue = 1;
+    //                 this.camera.zoom.value = 1;
+    //                 this.camera.zoom.distance = this.camera.zoom.minDistance + this.camera.zoom.amplitude * this.camera.zoom.value;
+    //             } else {
+    //                 // Old camera logic
+    //                 const offset = new THREE.Vector3(0, 5, -10); // Position behind and above the car
+    //                 const carPosition = chassisObject.position.clone().add(offset);
+
+    //                 this.camera.instance.position.lerp(carPosition, 0.1); // Smooth movement
+    //                 this.camera.instance.lookAt(chassisObject.position);
+    //             }
+    //         }
+    //     });
+
+    //     // Key event listener for camera toggle
+    //     document.addEventListener('keydown', (e) => {
+    //         if ((e.key === 'Y' || e.key === 'y') && !this.camera.actionInProgress) {
+    //             this.camera.actionInProgress = true; // Mark the action as in progress
+
+    //             // Toggle the camera and reset the flag after the switch
+    //             this.camera.triggerCameraAction(() => {
+    //                 this.camera.actionInProgress = false; // Reset the flag
+    //             });
+    //         }
+    //     });
+    // }
 
     setPasses()
     {

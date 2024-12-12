@@ -71,13 +71,13 @@ export default class Physics
                 wheelMaxSuspensionTravel: 0.3,
                 wheelCustomSlidingRotationalSpeed: - 30,
                 wheelMass: 5,
-                controlsSteeringSpeed: 0.005 * 3,
+                controlsSteeringSpeed: 0.0005 * 3,
                 controlsSteeringMax: Math.PI * 0.17,
                 controlsSteeringQuad: false,
                 controlsAcceleratinMaxSpeed: 0.055 * 3 / 17,
-                controlsAcceleratinMaxSpeedBoost: 0.17 * 3 / 17,
+                controlsAcceleratinMaxSpeedBoost: 0.17 * 4 / 17, // 0.17 * 3 / 17
                 controlsAcceleratingSpeed: 2 * 4 * 2,
-                controlsAcceleratingSpeedBoost: 7 * 4 * 2,
+                controlsAcceleratingSpeedBoost: 7 * 4 * 4, // 7 * 4 * 2
                 controlsAcceleratingQuad: true,
                 controlsBrakeStrength: 0.45 * 9
             },
