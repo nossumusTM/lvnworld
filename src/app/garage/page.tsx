@@ -644,13 +644,21 @@ export default function GaragePage() {
         video.src = '/images/videos/video.mp4'; // Replace with the actual path to your video file
         video.loop = true;
         video.muted = true;
+        video.playsInline = true;
         video.play();
 
         // Prevent video interaction
         video.controls = false; // Disable video controls
         video.style.display = 'none'; // Hide the video element
-        video.addEventListener('contextmenu', (event) => event.preventDefault()); // Prevent right-click menu
-        video.addEventListener('dragstart', (event) => event.preventDefault()); // Prevent drag behavior
+
+        // Prevent unwanted interactions
+        const preventDefaultHandler = (event: Event): void => event.preventDefault();
+        ['click', 'contextmenu', 'mousedown', 'mouseup', 'touchstart', 'touchend', 'dragstart'].forEach((event) =>
+            video.addEventListener(event, preventDefaultHandler)
+        );
+
+        // Additionally, prevent right-click menu on the video element
+        video.addEventListener('contextmenu', (event: MouseEvent) => event.preventDefault());
 
         const videoTexture = new THREE.VideoTexture(video);
         videoTexture.minFilter = THREE.LinearFilter;
