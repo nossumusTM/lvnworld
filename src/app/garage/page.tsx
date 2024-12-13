@@ -20,6 +20,7 @@ import gsap from 'gsap';
 
 export default function GaragePage() {
     const router = useRouter();
+    const [isLoading, setIsLoading] = useState(true);
     const [navigateToPage, setNavigateToPage] = useState<string | null>(null);
     const searchParams = useSearchParams();
     const playerId = searchParams.get('playerId');

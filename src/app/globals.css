@@ -502,12 +502,44 @@ opacity: 0;
   border-bottom: 20px solid transparent;
 } */
 
+.garage {
+  display: flex;
+  justify-content: center; /* Center the buttons horizontally */
+  align-items: center; /* Center the buttons vertically */
+  gap: 20px; /* Add a 20px gap between buttons */
+}
+
 #garage-button {
   position: fixed;
-  top: 50%;
-  right: 0;
+  bottom: 10%;
   font-size: 15px;
-  /* width: 22%; */
+  margin-right: 10%;
+  background-color: rgba(255, 255, 255, 0.01);
+  padding: 0 20px 0 20px;
+  z-index: 100;
+  display: block;
+  text-align: center;
+  font-family: 'Orbitron', sans-serif;
+  backdrop-filter: blur(5px);
+  box-shadow: 0px 0px 10px rgb(0, 0, 0, 0.2);
+  box-sizing: border-box;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  text-shadow: '2px 2px 4px rgba(0, 0, 0, 0.9)';
+}
+
+#garage-button:hover,
+#chatbox-button:hover {
+  background-color: #8CFF80;
+  color: #000;
+  transition: background-color 0.2s ease;
+}
+
+#chatbox-button {
+  position: fixed;
+  bottom: 10%;
+  margin-left: 10%;
+  font-size: 15px;
   background-color: rgba(255, 255, 255, 0.01);
   padding: 0 20px 0 20px;
   /* border-radius: 10px; */
@@ -516,18 +548,11 @@ opacity: 0;
   text-align: center;
   font-family: 'Orbitron', sans-serif;
   backdrop-filter: blur(5px);
-  /* box-shadow: 0px 0px 5px rgba(24, 255, 0, 0.5); */
-  /* box-shadow: 0px 0px 10px rgb(0, 0, 0, 0.5); */
+  box-shadow: 0px 0px 10px rgb(0, 0, 0, 0.2);
   box-sizing: border-box;
   border-top: 10px solid transparent;
   border-bottom: 10px solid transparent;
-  rotate: 90deg;
-}
-
-#garage-button:hover {
-  background-color: #8CFF80;
-  color: #000;
-  transition: background-color 0.2s ease;
+  text-shadow: '2px 2px 4px rgba(0, 0, 0, 0.9)';
 }
 
 @media (max-width: 767px) {
@@ -799,7 +824,7 @@ opacity: 0;
 }
 
 .loading-layer {
-  background-image: url('/images/mobile/worldmap.png'); 
+  background-image: url('/images/mobile/worldmap1.png'); 
   background-size: cover;
   background-position: center;
   position: absolute;
@@ -814,7 +839,7 @@ opacity: 0;
   color: #fff;
   font-size: 24px;
   font-family: 'Orbitron, sans-serif';
-  opacity: 0.2;
+  opacity: 0.5;
   overflow: hidden;
 }
 
@@ -1859,4 +1884,30 @@ opacity: 0;
 
 .container .btn:hover a::before {
   transform: skewX(45deg) translate(200px);
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #000;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(255, 255, 255, 0.3);
+  border-top: 5px solid #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+      transform: rotate(0deg);
+  }
+  100% {
+      transform: rotate(360deg);
+  }
 }

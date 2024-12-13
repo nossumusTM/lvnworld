@@ -610,7 +610,7 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
                     </div>
                       <div id='garage' className='garage'>
                         <button id='garage-button' onClick={handleGarageButtonClick}>SHOWROOM</button>
-                        {/* <button id='garage-button'>GARAGE</button> */}
+                        <button id='chatbox-button' onClick={handleGarageButtonClick}>CHATBOX</button>
                       </div>
                     </>
                         )}
@@ -630,7 +630,7 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
       {/* Pulsing "Select World" message */}
       {isConnected && !selectedWorldId && (
               <div className="pulsing-message">
-                <h2>Select Server</h2>
+                <h2 style={{textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)'}}>Select Server</h2>
               </div>
             )}
 
