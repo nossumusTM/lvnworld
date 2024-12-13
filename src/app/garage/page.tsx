@@ -668,19 +668,14 @@ export default function GaragePage() {
         videoTexture.format = THREE.RGBAFormat;
 
         // Calculate dimensions for 1920x1080
-        const targetWidth = 1920 / 4.14; // Adjust the divisor based on the desired scaling
-        const targetHeight = 1080 / 3.55; // Adjust the divisor based on the desired scaling
+        const targetWidth = 1920 / 4.24; // Adjust the divisor based on the desired scaling
+        const targetHeight = 1080 / 3.85; // Adjust the divisor based on the desired scaling
 
         const videoMaterial = new THREE.MeshBasicMaterial({ map: videoTexture });
         const videoPlaneGeometry = new THREE.PlaneGeometry(targetWidth, targetHeight);
         const videoPlane = new THREE.Mesh(videoPlaneGeometry, videoMaterial);
         // Positioning: Adjust based on the 1920x1080 reference
-        videoPlane.position.set(-172, -145, 0); // Offset values are also calculated relative to 1920x1080
-
-        // const videoMaterial = new THREE.MeshBasicMaterial({ map: videoTexture });
-        // const videoPlaneGeometry = new THREE.PlaneGeometry(window.innerWidth / 0.9, window.innerHeight / 3.2);
-        // const videoPlane = new THREE.Mesh(videoPlaneGeometry, videoMaterial);
-        // videoPlane.position.set(-170, -144, 0); // Position the video plane behind other objects
+        videoPlane.position.set(-171, -154, 0); // Offset values are also calculated relative to 1920x1080
         backgroundScene.add(videoPlane);
 
         // const textureLoader = new THREE.TextureLoader();
@@ -738,14 +733,6 @@ export default function GaragePage() {
                             }
 
                             if (child.name === 'shadeTransparent') {
-                                const rndMatcap = 'shadeMetal'
-                                child.material = new THREE.MeshMatcapMaterial({
-                                    matcap: matcapTextures.current[rndMatcap],
-                                });
-                                console.log('Applied random matcap to chassis:', rndMatcap);
-                            }
-
-                            if (child.name === 'decorationpart' || child.name === 'decorationpart1') {
                                 const rndMatcap = 'shadeMetal'
                                 child.material = new THREE.MeshMatcapMaterial({
                                     matcap: matcapTextures.current[rndMatcap],
