@@ -318,6 +318,9 @@ const Application = ({ playerId, selectedWorldId, token, carName }) => {
                     const carPosition = chassisObject.position.clone().add(offset);
 
                     this.camera.instance.position.lerp(carPosition, 0.1); // Smooth movement
+                    this.camera.target.x = chassisObject.position.x;
+                    this.camera.target.y = chassisObject.position.y;
+                    this.camera.target.z = chassisObject.position.z;
                     this.camera.instance.lookAt(chassisObject.position);
                 }
             }
