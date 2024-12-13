@@ -1,7 +1,6 @@
 import * as THREE from 'three'
 import CANNON from 'cannon'
-// import { sparkTexture } from './SparkTexture.js'
-// import { fireTexture } from './FireTexture.js'
+
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js'
 
 export default class Car
@@ -26,8 +25,6 @@ export default class Car
         this.worldId = _options.worldId
         this.ws = _options.ws
         this.carName = _options.carName
-
-        console.log("CLASS carName", this.carName);
 
         // Set up
         this.container = new THREE.Object3D()
