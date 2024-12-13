@@ -1437,7 +1437,7 @@ export default function GaragePage() {
             return;
         }
 
-        setCurrentCarAttributes(selectedCar.attributes);
+        // setCurrentCarAttributes(selectedCar.attributes);
     
         const outDuration = 0.7; // Duration for the outgoing animation in seconds
         const inDuration = 0.4; // Duration for the incoming animation in seconds
@@ -2319,7 +2319,7 @@ export default function GaragePage() {
                         transform: 'translateX(-50%)',
                         padding: '30px',
                         paddingTop: '70px',
-                        backdropFilter: 'blur(5px)',
+                        // backdropFilter: 'blur(5px)',
                         borderRadius: '0px',
                         color: '#fff',
                         textAlign: 'center',
