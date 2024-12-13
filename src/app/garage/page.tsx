@@ -641,8 +641,10 @@ export default function GaragePage() {
 
         // Load the video and apply it as a texture
         const video = document.createElement('video');
-        video.src = '/images/videos/video.mp4'; // Replace with the actual path to your video file
+        video.src = '/images/videos/video.mp4';
+        video.crossOrigin = 'anonymous';
         video.loop = true;
+        video.autoplay = true;
         video.muted = true;
         video.playsInline = true;
         video.play();
@@ -703,7 +705,7 @@ export default function GaragePage() {
         const loadBackground = async () => {
             const loader = new GLTFLoader();
             loader.load(
-                '/garage/background2.glb',
+                '/garage/background3.glb',
                 (gltf) => {
                     const backgroundMesh = gltf.scene;
                     backgroundMesh.position.set(0, 0, 0);
@@ -866,7 +868,7 @@ export default function GaragePage() {
             window.removeEventListener('click', handleMouseClick);
             renderer.dispose();
             video.pause();
-            video.src = '';
+            // video.src = '';
         };
     }, [currentCarIndex]);
 
@@ -1987,7 +1989,7 @@ export default function GaragePage() {
                         style={{
                             left: "-100px",
                             backdropFilter: "blur(10px)",
-                            backgroundColor: isNitroActive ? "#8CFF80" : "transparent", // Dynamically set background color
+                            backgroundColor: isNitroActive ? "rgba(0, 0, 0, 0.5)" : "transparent", // Dynamically set background color
                             transition: "background-color 0.3s ease", // Smooth transition for background color
                         }}
                         onClick={handleNitroToggle} // Call the toggle function
@@ -2012,7 +2014,7 @@ export default function GaragePage() {
                         style={{
                             right: "-100px",
                             backdropFilter: "blur(10px)",
-                            backgroundColor: isButtonActive ? "#8CFF80" : "transparent", // Dynamically set background color
+                            backgroundColor: isButtonActive ? "rgba(0, 0, 0, 0.5)" : "transparent", // Dynamically set background color
                             transition: "background-color 0.3s ease", // Smooth transition for background color
                         }}
                         onClick={handleBlinkToggle}
