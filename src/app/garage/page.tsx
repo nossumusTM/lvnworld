@@ -2,7 +2,6 @@
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import * as THREE from 'three';
-import Head from 'next/head';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader';
@@ -334,45 +333,6 @@ export default function GaragePage() {
         }
         // Add more cars here later
     ];
-
-    useEffect(() => {
-        const preventRotation = () => {
-            const landscapeStyles = `
-                @media screen and (orientation: landscape) {
-                    body {
-                        display: none !important;
-                    }
-                }
-            `;
-
-            const styleSheet = document.createElement('style');
-            styleSheet.type = 'text/css';
-            styleSheet.innerHTML = landscapeStyles;
-            document.head.appendChild(styleSheet);
-        };
-
-        preventRotation();
-    }, []);
-
-    useEffect(() => {
-        const updateViewport = () => {
-            const viewportMetaTag = document.querySelector('meta[name="viewport"]');
-            if (viewportMetaTag) {
-                viewportMetaTag.setAttribute(
-                    'content',
-                    'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover, orientation=portrait'
-                );
-            } else {
-                const metaTag = document.createElement('meta');
-                metaTag.name = 'viewport';
-                metaTag.content =
-                    'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover, orientation=portrait';
-                document.head.appendChild(metaTag);
-            }
-        };
-
-        updateViewport();
-    }, []);
 
     const toggleView = (selectedView: 'menu' | 'car' | 'rocket' | 'showroom' | 'customize') => {
         console.log('Toggling view to:', selectedView);

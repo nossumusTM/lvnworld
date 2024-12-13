@@ -60,23 +60,11 @@ export default class Car1
         this.setTransformControls()
     }
 
-    async createSparkEffect() {
-        let base64Texture = "";
-        
-        // Fetch the base64 string from kybernitro.txt
-        try {
-            const response = await fetch('/images/texture/sparktexture.txt'); // Update the path accordingly
-            if (!response.ok) {
-                throw new Error(`Failed to fetch kybernitro.txt: ${response.statusText}`);
-            }
-            base64Texture = await response.text(); // Get the text content of the file
-        } catch (error) {
-            console.error('Error fetching kybernitro.txt:', error);
-            return; // Exit the function if fetching fails
-        }   
-
+    createSparkEffect() {
+        const sparkTexture = '/images/texture/spark.png';
+    
         const img = new Image();
-        img.src = base64Texture;
+        img.src = sparkTexture;
         img.crossOrigin = "anonymous"; // Handle CORS
     
         img.onload = () => {
@@ -155,23 +143,11 @@ export default class Car1
         };
     }
 
-    async createCrashEffect(position, quaternion, chassis) {
-        let base64Texture = "";
-        
-        // Fetch the base64 string from kybernitro.txt
-        try {
-            const response = await fetch('/images/texture/crashtexture.txt'); // Update the path accordingly
-            if (!response.ok) {
-                throw new Error(`Failed to fetch kybernitro.txt: ${response.statusText}`);
-            }
-            base64Texture = await response.text(); // Get the text content of the file
-        } catch (error) {
-            console.error('Error fetching kybernitro.txt:', error);
-            return; // Exit the function if fetching fails
-        }   
+    createCrashEffect(position, quaternion, chassis) {
+        const crashTexture = '/images/texture/crash.png';
     
         const img = new Image();
-        img.src = base64Texture;
+        img.src = crashTexture;
         img.crossOrigin = "anonymous"; // Handle CORS
 
         img.onload = () => {
@@ -287,23 +263,11 @@ export default class Car1
         }
     }
 
-    async createFireEffect(position, quaternion) {
-        let base64Texture = "";
-
-        // Fetch the base64 string from kybernitro.txt
-        try {
-            const response = await fetch('/images/texture/firetexture.txt'); // Update the path accordingly
-            if (!response.ok) {
-                throw new Error(`Failed to fetch kybernitro.txt: ${response.statusText}`);
-            }
-            base64Texture = await response.text(); // Get the text content of the file
-        } catch (error) {
-            console.error('Error fetching kybernitro.txt:', error);
-            return; // Exit the function if fetching fails
-        }
+    createFireEffect(position, quaternion) {
+        const fireTexture = '/images/texture/fire.png';
     
         const img = new Image();
-        img.src = base64Texture;
+        img.src = fireTexture;
         img.crossOrigin = "anonymous"; // Handle CORS
 
         img.onload = () => {
@@ -438,23 +402,11 @@ export default class Car1
         };
     }
 
-    async createSirenEffect() {
-        let base64Texture = "";
-        
-        // Fetch the base64 string from kybernitro.txt
-        try {
-            const response = await fetch('/images/texture/sirentexture.txt'); // Update the path accordingly
-            if (!response.ok) {
-                throw new Error(`Failed to fetch kybernitro.txt: ${response.statusText}`);
-            }
-            base64Texture = await response.text(); // Get the text content of the file
-        } catch (error) {
-            console.error('Error fetching kybernitro.txt:', error);
-            return; // Exit the function if fetching fails
-        }
+    createSirenEffect() {
+        const sirenTexture = '/images/texture/siren.png';
     
         const img = new Image();
-        img.src = base64Texture;
+        img.src = sirenTexture;
         img.crossOrigin = "anonymous";
 
         img.onload = () => {
@@ -556,23 +508,11 @@ export default class Car1
         };
     }
 
-    async createNitroEffect(position, quaternion, carChassis) {
-        let base64Texture = ""; // Declare the variable
-    
-        // Fetch the base64 string from kybernitro.txt
-        try {
-            const response = await fetch('/images/texture/kybernitro.txt'); // Update the path accordingly
-            if (!response.ok) {
-                throw new Error(`Failed to fetch kybernitro.txt: ${response.statusText}`);
-            }
-            base64Texture = await response.text(); // Get the text content of the file
-        } catch (error) {
-            console.error('Error fetching kybernitro.txt:', error);
-            return; // Exit the function if fetching fails
-        }
+    createNitroEffect(position, quaternion, carChassis) {
+        const nitroTexture = '/images/texture/nitro.png';
     
         const img = new Image();
-        img.src = base64Texture;
+        img.src = nitroTexture;
         img.crossOrigin = "anonymous"; // Handle CORS
 
         img.onload = () => {
