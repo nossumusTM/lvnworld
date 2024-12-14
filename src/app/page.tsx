@@ -596,7 +596,7 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
               <input 
                 type="text" 
                 id="search-bar" 
-                placeholder="Search for worlds..." 
+                placeholder="Search destination..." 
                 onInput={(event) => filterWorlds(event)} 
               />
             
@@ -627,7 +627,7 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
       {/* Pulsing "Select World" message */}
       {isConnected && !selectedWorldId && (
               <div className="pulsing-message">
-                <h2 style={{textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)'}}>Select Server</h2>
+                <h2 style={{textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)'}}>Select Destination</h2>
               </div>
             )}
 

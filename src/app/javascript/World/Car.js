@@ -941,7 +941,12 @@ export default class Car
     
             default:
                 // Fallback to default car models if carName doesn't match
-                this.models.chassis = this.resources.items.carDefaultChassis;
+                this.models.chassis = this.resources.items.carDefaultChassis; // Main chassis
+                this.models.bottom = this.resources.items.carDefaultChassisBottom; // Bottom part
+                this.models.window = this.resources.items.carDefaultWindow; // Window
+                this.models.spoiler = this.resources.items.carDefaultSpoiler; // Spoiler
+        
+                // Additional parts
                 this.models.antena = this.resources.items.carDefaultAntena;
                 this.models.headLights = this.resources.items.carDefaultHeadlights;
                 this.models.backLightsBrake = this.resources.items.carDefaultBackLightsBrake;
@@ -952,95 +957,191 @@ export default class Car
         }
     }
 
-    setMovement()
-    {
-        this.movement = {}
-        this.movement.speed = new THREE.Vector3()
-        this.movement.localSpeed = new THREE.Vector3()
-        this.movement.acceleration = new THREE.Vector3()
-        this.movement.localAcceleration = new THREE.Vector3()
-        this.movement.lastScreech = 0
+    // setMovement()
+    // {
+    //     this.movement = {}
+    //     this.movement.speed = new THREE.Vector3()
+    //     this.movement.localSpeed = new THREE.Vector3()
+    //     this.movement.acceleration = new THREE.Vector3()
+    //     this.movement.localAcceleration = new THREE.Vector3()
+    //     this.movement.lastScreech = 0
 
-        // Time tick
-        this.time.on('tick', () =>
-        {
-            // Movement
-            const movementSpeed = new THREE.Vector3()
-            movementSpeed.copy(this.chassis.object.position).sub(this.chassis.oldPosition)
-            // movementSpeed.multiplyScalar(1 / this.time.delta * 17)
-            const deltaScale = this.time.delta > 0 ? this.time.delta : 16.67; // Fallback to a default value if delta is zero
-            movementSpeed.multiplyScalar(1 / deltaScale * 17);
-            this.movement.acceleration = movementSpeed.clone().sub(this.movement.speed)
-            this.movement.speed.copy(movementSpeed)
+    //     // Time tick
+    //     this.time.on('tick', () =>
+    //     {
+    //         // Movement
+    //         const movementSpeed = new THREE.Vector3()
+    //         movementSpeed.copy(this.chassis.object.position).sub(this.chassis.oldPosition)
+    //         // movementSpeed.multiplyScalar(1 / this.time.delta * 17)
+    //         const deltaScale = this.time.delta > 0 ? this.time.delta : 16.67; // Fallback to a default value if delta is zero
+    //         movementSpeed.multiplyScalar(1 / deltaScale * 17);
+    //         this.movement.acceleration = movementSpeed.clone().sub(this.movement.speed)
+    //         this.movement.speed.copy(movementSpeed)
 
-            this.movement.localSpeed = this.movement.speed.clone().applyAxisAngle(new THREE.Vector3(0, 0, 1), - this.chassis.object.rotation.z)
-            this.movement.localAcceleration = this.movement.acceleration.clone().applyAxisAngle(new THREE.Vector3(0, 0, 1), - this.chassis.object.rotation.z)
+    //         this.movement.localSpeed = this.movement.speed.clone().applyAxisAngle(new THREE.Vector3(0, 0, 1), - this.chassis.object.rotation.z)
+    //         this.movement.localAcceleration = this.movement.acceleration.clone().applyAxisAngle(new THREE.Vector3(0, 0, 1), - this.chassis.object.rotation.z)
 
-            // Calculate speed
-            const speed = this.movement.speed.length() * 300; // Actual speed of the car
-            const maxSpeed = 200; // Maximum speed (adjust based on your game)
-            const speedPercentage = Math.min(speed / maxSpeed, 1); // Normalize speed to range [0, 1]
+    //         // Calculate speed
+    //         const speed = this.movement.speed.length() * 300; // Actual speed of the car
+    //         const maxSpeed = 200; // Maximum speed (adjust based on your game)
+    //         const speedPercentage = Math.min(speed / maxSpeed, 1); // Normalize speed to range [0, 1]
 
-            // Update speedometer needle
-            const needle = document.getElementById('needle');
-            const speedValue = document.getElementById('speed-value');
-            if (needle && speedValue) {
-                const rotation = speedPercentage * 180 - 100; // Convert speed to needle rotation (0 to 180 degrees)
-                needle.style.transform = `rotate(${rotation}deg)`;
-                speedValue.textContent = Math.round(speed); // Display actual speed value
-            }
+    //         // Update speedometer needle
+    //         const needle = document.getElementById('needle');
+    //         const speedValue = document.getElementById('speed-value');
+    //         if (needle && speedValue) {
+    //             const rotation = speedPercentage * 180 - 100; // Convert speed to needle rotation (0 to 180 degrees)
+    //             needle.style.transform = `rotate(${rotation}deg)`;
+    //             speedValue.textContent = Math.round(speed); // Display actual speed value
+    //         }
             
-            // Sound
-            this.sounds.engine.speed = this.movement.localSpeed.x
-            this.sounds.engine.acceleration = this.controls.actions.up ? (this.controls.actions.boost ? 1 : 0.5) : 0
+    //         // Sound
+    //         this.sounds.engine.speed = this.movement.localSpeed.x
+    //         this.sounds.engine.acceleration = this.controls.actions.up ? (this.controls.actions.boost ? 1 : 0.5) : 0
 
-            // if (this.controls.actions.boost) {
-            //     // Trigger the nitro effect when accelerating
-            //     this.createNitroEffect(this.chassis.object.position, this.chassis.object.quaternion);
-            // }
+    //         // if (this.controls.actions.boost) {
+    //         //     // Trigger the nitro effect when accelerating
+    //         //     this.createNitroEffect(this.chassis.object.position, this.chassis.object.quaternion);
+    //         // }
 
-            // Check if siren is active and not on cooldown, and within max execution limit
-            if (this.controls.actions.siren && !this.sirenCooldown && this.sirenEffectCount < this.maxSirenExecutions) {
-                // Trigger the siren effect
-                this.createSirenEffect();
+    //         // Check if siren is active and not on cooldown, and within max execution limit
+    //         if (this.controls.actions.siren && !this.sirenCooldown && this.sirenEffectCount < this.maxSirenExecutions) {
+    //             // Trigger the siren effect
+    //             this.createSirenEffect();
                 
-                // Increment siren effect count
-                this.sirenEffectCount += 1;
+    //             // Increment siren effect count
+    //             this.sirenEffectCount += 1;
                 
-                // Set siren on cooldown to prevent immediate re-triggering
-                this.sirenCooldown = true;
+    //             // Set siren on cooldown to prevent immediate re-triggering
+    //             this.sirenCooldown = true;
 
-                // Set a timeout to reset the siren count and cooldown after the duration
-                setTimeout(() => {
-                    this.sirenEffectCount = 0;  // Reset siren effect count after cooldown
-                    this.sirenCooldown = false; // Cooldown ends after the specified duration
-                }, this.sirenCooldownDuration);
-            }
+    //             // Set a timeout to reset the siren count and cooldown after the duration
+    //             setTimeout(() => {
+    //                 this.sirenEffectCount = 0;  // Reset siren effect count after cooldown
+    //                 this.sirenCooldown = false; // Cooldown ends after the specified duration
+    //             }, this.sirenCooldownDuration);
+    //         }
 
-            // Check if boost is active and not on cooldown
-            if (this.controls.actions.boost && !this.boostCooldown && this.nitroEffectCount < this.maxNitroExecutions) {
-                // Trigger the nitro effect when accelerating
-                this.createNitroEffect(this.chassis.object.position, this.chassis.object.quaternion, this.chassis.object);
-                // this.createCrashEffect(this.chassis.object.position, this.chassis.object.quaternion, this.chassis.object)
-                // Increment nitro effect count
-                this.nitroEffectCount += 1;
+    //         // Check if boost is active and not on cooldown
+    //         if (this.controls.actions.boost && !this.boostCooldown && this.nitroEffectCount < this.maxNitroExecutions) {
+    //             // Trigger the nitro effect when accelerating
+    //             this.createNitroEffect(this.chassis.object.position, this.chassis.object.quaternion, this.chassis.object);
+    //             // this.createCrashEffect(this.chassis.object.position, this.chassis.object.quaternion, this.chassis.object)
+    //             // Increment nitro effect count
+    //             this.nitroEffectCount += 1;
                 
-                // Set boost on cooldown to prevent re-triggering
-                this.boostCooldown = true;
+    //             // Set boost on cooldown to prevent re-triggering
+    //             this.boostCooldown = true;
 
-                // Cooldown to disable boost for 4 seconds after the nitro effect
-                setTimeout(() => {
-                    this.nitroEffectCount = 0;  // Reset nitro effect count after cooldown
-                    this.boostCooldown = false; // Cooldown ends after 4 seconds
-                }, this.cooldownDuration);
+    //             // Cooldown to disable boost for 4 seconds after the nitro effect
+    //             setTimeout(() => {
+    //                 this.nitroEffectCount = 0;  // Reset nitro effect count after cooldown
+    //                 this.boostCooldown = false; // Cooldown ends after 4 seconds
+    //             }, this.cooldownDuration);
+    //         }
+    //         if(this.movement.localAcceleration.x > 0.03 && this.time.elapsed - this.movement.lastScreech > 5000)
+    //         {
+    //             this.movement.lastScreech = this.time.elapsed
+    //             this.sounds.play('screech')
+    //         }
+    //     })
+    // }
+
+    setMovement() {
+        this.movement = {};
+        this.movement.speed = new THREE.Vector3();
+        this.movement.localSpeed = new THREE.Vector3();
+        this.movement.acceleration = new THREE.Vector3();
+        this.movement.localAcceleration = new THREE.Vector3();
+        this.movement.lastScreech = 0;
+    
+        this.time.on('tick', () => {
+            const movementSpeed = new THREE.Vector3();
+            movementSpeed.copy(this.chassis.object.position).sub(this.chassis.oldPosition);
+    
+            const deltaScale = this.time.delta > 0 ? this.time.delta : 16.67; // Default delta
+            movementSpeed.multiplyScalar(1 / deltaScale * 17);
+    
+            this.movement.acceleration = movementSpeed.clone().sub(this.movement.speed);
+            this.movement.speed.copy(movementSpeed);
+    
+            this.movement.localSpeed = this.movement.speed.clone().applyAxisAngle(
+                new THREE.Vector3(0, 0, 1),
+                -this.chassis.object.rotation.z
+            );
+            this.movement.localAcceleration = this.movement.acceleration.clone().applyAxisAngle(
+                new THREE.Vector3(0, 0, 1),
+                -this.chassis.object.rotation.z
+            );
+    
+            // Update speedometer
+            this.updateSpeedometer();
+    
+            // Handle nitro effect
+            this.handleNitroEffect();
+    
+            // Handle siren effect
+            this.handleSirenEffect();
+    
+            // Handle screech sound
+            if (this.movement.localAcceleration.x > 0.03 && this.time.elapsed - this.movement.lastScreech > 5000) {
+                this.movement.lastScreech = this.time.elapsed;
+                this.sounds.play('screech');
             }
-            if(this.movement.localAcceleration.x > 0.03 && this.time.elapsed - this.movement.lastScreech > 5000)
-            {
-                this.movement.lastScreech = this.time.elapsed
-                this.sounds.play('screech')
-            }
-        })
+        });
     }
+
+    updateSpeedometer() {
+        const speed = this.movement.speed.length() * 300; // Actual speed of the car
+        const maxSpeed = 200; // Maximum speed (adjust based on your game)
+        const speedPercentage = Math.min(speed / maxSpeed, 1); // Normalize speed to range [0, 1]
+    
+        const needle = document.getElementById('needle');
+        const speedValue = document.getElementById('speed-value');
+        if (needle && speedValue) {
+            const rotation = speedPercentage * 180 - 100; // Convert speed to needle rotation (0 to 180 degrees)
+            needle.style.transform = `rotate(${rotation}deg)`;
+            speedValue.textContent = Math.round(speed); // Display actual speed value
+        }
+    }
+
+    handleNitroEffect() {
+        if (this.controls.actions.boost && !this.boostCooldown && this.nitroEffectCount < this.maxNitroExecutions) {
+            // Trigger the nitro effect when accelerating
+            this.createNitroEffect(this.chassis.object.position, this.chassis.object.quaternion, this.chassis.object);
+    
+            // Increment nitro effect count
+            this.nitroEffectCount += 1;
+    
+            // Set boost on cooldown to prevent re-triggering
+            this.boostCooldown = true;
+    
+            // Cooldown to disable boost for 4 seconds after the nitro effect
+            setTimeout(() => {
+                this.nitroEffectCount = 0; // Reset nitro effect count after cooldown
+                this.boostCooldown = false; // Cooldown ends after 4 seconds
+            }, this.cooldownDuration);
+        }
+    }
+
+    handleSirenEffect() {
+        if (this.controls.actions.siren && !this.sirenCooldown && this.sirenEffectCount < this.maxSirenExecutions) {
+            // Trigger the siren effect
+            this.createSirenEffect();
+    
+            // Increment siren effect count
+            this.sirenEffectCount += 1;
+    
+            // Set siren on cooldown to prevent immediate re-triggering
+            this.sirenCooldown = true;
+    
+            // Cooldown to reset siren after a set duration
+            setTimeout(() => {
+                this.sirenEffectCount = 0;  // Reset siren effect count after cooldown
+                this.sirenCooldown = false; // Cooldown ends after the specified duration
+            }, this.sirenCooldownDuration);
+        }
+    }    
 
     // setChassis() {
     //     this.chassis = {};
@@ -1081,35 +1182,83 @@ export default class Car
     //     });
     // }
     
+    // setChassis() {
+    //     this.chassis = {};
+    //     this.chassis.offset = new THREE.Vector3(0, 0, -0.28);
+    
+    //     // Debugging the model and mesh conversion
+    //     if (!this.models.chassis) {
+    //         console.error("Chassis model is undefined. Check if the model was loaded correctly.");
+    //         return;
+    //     }
+    
+    //     this.chassis.object = this.objects.getConvertedMesh(this.models.chassis.scene.children);
+    
+    //     if (!this.chassis.object) {
+    //         console.error("Failed to convert chassis model to mesh.");
+    //         return;
+    //     }
+    
+    //     this.chassis.object.position.copy(this.physics.car.chassis.body.position);
+    //     this.chassis.oldPosition = this.chassis.object.position.clone();
+    //     this.container.add(this.chassis.object);
+    
+    //     this.shadows.add(this.chassis.object, { sizeX: 3, sizeY: 2, offsetZ: 0.2 });
+    
+    //     // Time tick
+    //     this.time.on('tick', () => {
+    //         // Save old position for movement calculation
+    //         this.chassis.oldPosition = this.chassis.object.position.clone();
+    
+    //         // Ensure `transformControls` exists before accessing
+    //         if (this.transformControls && !this.transformControls.enabled) {
+    //             this.chassis.object.position
+    //                 .copy(this.physics.car.chassis.body.position)
+    //                 .add(this.chassis.offset);
+    //             this.chassis.object.quaternion.copy(this.physics.car.chassis.body.quaternion);
+    //         }
+    
+    //         // Update position
+    //         this.position.copy(this.chassis.object.position);
+    //     });
+    // }    
+
     setChassis() {
         this.chassis = {};
         this.chassis.offset = new THREE.Vector3(0, 0, -0.28);
     
-        // Debugging the model and mesh conversion
-        if (!this.models.chassis) {
-            console.error("Chassis model is undefined. Check if the model was loaded correctly.");
+        // Load main chassis
+        if (this.models.chassis) {
+            this.chassis.main = this.objects.getConvertedMesh(this.models.chassis.scene.children);
+            this.container.add(this.chassis.main);
+        } else {
+            console.error("Chassis model is undefined.");
             return;
         }
     
-        this.chassis.object = this.objects.getConvertedMesh(this.models.chassis.scene.children);
-    
-        if (!this.chassis.object) {
-            console.error("Failed to convert chassis model to mesh.");
-            return;
+        // Attach subcomponents
+        const subParts = ["bottom", "spoiler", "window"];
+        for (const part of subParts) {
+            if (this.models[part]) {
+                this.chassis[part] = this.objects.getConvertedMesh(this.models[part].scene.children);
+                this.chassis.main.add(this.chassis[part]); // Attach to main chassis
+            } else {
+                console.warn(`${part} model is undefined.`);
+            }
         }
     
+        // Initialize object reference
+        this.chassis.object = this.chassis.main; // Keep compatibility with existing logic
         this.chassis.object.position.copy(this.physics.car.chassis.body.position);
         this.chassis.oldPosition = this.chassis.object.position.clone();
-        this.container.add(this.chassis.object);
     
-        this.shadows.add(this.chassis.object, { sizeX: 3, sizeY: 2, offsetZ: 0.2 });
+        // Shadows
+        this.shadows.add(this.chassis.main, { sizeX: 3, sizeY: 2, offsetZ: 0.2 });
     
-        // Time tick
+        // Time tick for updates
         this.time.on('tick', () => {
-            // Save old position for movement calculation
             this.chassis.oldPosition = this.chassis.object.position.clone();
     
-            // Ensure `transformControls` exists before accessing
             if (this.transformControls && !this.transformControls.enabled) {
                 this.chassis.object.position
                     .copy(this.physics.car.chassis.body.position)
@@ -1117,7 +1266,6 @@ export default class Car
                 this.chassis.object.quaternion.copy(this.physics.car.chassis.body.quaternion);
             }
     
-            // Update position
             this.position.copy(this.chassis.object.position);
         });
     }    

@@ -121,7 +121,10 @@ const crossroadsStaticBaseSource = '/models/crossroads/static/base.glb'
 const crossroadsStaticCollisionSource = '/models/crossroads/static/collision.glb'
 
 // Car default
-const carDefaultChassisSource = '/models/car/default/chassis.glb'
+const carDefaultChassisSource = '/models/car/default/chassismain.glb'
+const carDefaultChassisBottomSource = '/models/car/default/chassisbottommain.glb'
+const carDefaultWindowSource = '/models/car/default/mainwindow.glb'
+const carDefaultSpoilerSource = '/models/car/default/mainspoiler.glb'
 const carDefaultWheelSource = '/models/car/default/cyberwheel.glb'
 const carDefaultHeadlightsSource = '/models/car/default/headlights.glb'
 const carDefaultBackLightsBrakeSource = '/models/car/default/backLightsBrake.glb'
@@ -452,6 +455,9 @@ export default class Resources extends EventEmitter
 
             // Car default
             { name: 'carDefaultChassis', source: carDefaultChassisSource },
+            { name: 'carDefaultChassisBottom', source: carDefaultChassisBottomSource },
+            { name: 'carDefaultWindow', source: carDefaultWindowSource },
+            { name: 'carDefaultSpoiler', source: carDefaultSpoilerSource },
             { name: 'carDefaultWheel', source: carDefaultWheelSource },
             { name: 'carDefaultHeadlights', source: carDefaultHeadlightsSource },
             { name: 'carDefaultBackLightsBrake', source: carDefaultBackLightsBrakeSource },

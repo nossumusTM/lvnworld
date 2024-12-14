@@ -8598,7 +8598,7 @@ export default class Physics
                 const thrustStrength = 500;
 
                 // Lift the car up along the Z-axis when boost is activated
-                this.car.chassis.body.position.z += 0.1;  // Adjust the value to control the rate of ascent
+                this.car.chassis.body.position.z += 0.2;  // Adjust the value to control the rate of ascent
 
                 // if (this.controls.actions.up) {
                 //     this.car.chassis.body.angularVelocity.x += rotationSpeed;
