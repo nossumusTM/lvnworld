@@ -2003,13 +2003,14 @@ opacity: 0;
     border-top: 10px solid transparent;
     border-bottom: 10px solid transparent;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    animation: waveBorder 7s infinite ease-in-out;
   }
   
   .user-count-display {
     font-size: 14px;
     color: #18FF00;
     font-family: 'Orbitron', sans-serif;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
+    /* text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9); */
   }
   
   .stream-label {
@@ -2041,31 +2042,31 @@ opacity: 0;
   border-top: 10px solid transparent;
   border-bottom: 10px solid transparent;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-  animation: waveBorder 10s infinite ease-in-out;
+  animation: waveBorder 7s infinite ease-in-out;
 }
 
 .user-count-display {
   font-size: 14px;
   color: #18FF00;
   font-family: 'Orbitron', sans-serif;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
+  /* text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9); */
 }
 
 @keyframes waveBorder {
   0%, 100% {
-    box-shadow: 0px 0px 5px #fff, 0px 0px 4px #fff;
+    box-shadow: 0px 0px 4px #18FF00, 0px 0px 4px #18FF00;
     transform: skew(0deg, 0deg);
   }
   25% {
-    box-shadow: 0px 0px 3px #fff, 0px 0px 3px #18FF00;
-    transform: skew(1deg, 0.5deg);
+    box-shadow: 0px 0px 3px #18FF00, 0px 0px 1.5px #18FF00;
+    transform: skew(0.5deg, -0.5deg);
   }
   50% {
-    box-shadow: 0px 0px 4px #fff, 0px 0px 4px #fff;
-    transform: skew(-0.5deg, -1deg);
+    box-shadow: 0px 0px 4px #18FF00, 0px 0px 2px #18FF00;
+    transform: skew(-0.5deg, 0.5deg);
   }
   75% {
-    box-shadow: 0px 0px 3px #fff, 0px 0px 3px #fff;
+    box-shadow: 0px 0px 3px #18FF00, 0px 0px 1.5px #18FF00;
     transform: skew(0deg, 0deg);
   }
 }
