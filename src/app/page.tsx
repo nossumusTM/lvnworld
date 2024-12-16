@@ -551,7 +551,7 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
 
   return (
     //<main className="min-h-screen px-8 py-0 pb-12 flex-1 flex flex-col items-center" style={{ backgroundColor: '#fff', fontFamily: "'Orbitron', sans-serif" }}>
-    <main className="overflow-hidden flex flex-col items-center" style={{ backgroundColor: '#0213f7', fontFamily: "'Orbitron', sans-serif" }}>
+    <main className="overflow-hidden flex flex-col items-center" style={{ backgroundColor: '#000', fontFamily: "'Orbitron', sans-serif" }}>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 
       {/* Show the connectWalletDiv initially */}
@@ -601,14 +601,17 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
           </div>
 
           <div id="w3m-layer" className='w3m-layer overflow-hidden flex-container'>
-          <div id="signalBars" className="signal-bars">
+          {/* <div id="signalBars" className="signal-bars">
               <div className="bar bar-1"></div>
               <div className="bar bar-2"></div>
               <div className="bar bar-3"></div>
               <div className="bar bar-4"></div>
-            </div>
+            </div> */}
             <w3m-button />
-            <span id='userCountDisplay' className="user-count-display">0</span>
+            <div className="user-count-wrapper">
+                {/* <span id="streamLabel" className="stream-label">STREAM</span> */}
+                <span id="userCountDisplay" className="user-count-display">0</span>
+            </div>
             
             </div>
             {/* Show pulsing message while setting up WebSocket */}

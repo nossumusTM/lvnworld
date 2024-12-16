@@ -69,15 +69,15 @@ export default function GaragePage() {
             name: 'Kybertruck',
             price: 378000,
             parts: {
-                backlights: '/models/car/default/showroombacklights.glb',
-                headlights: '/models/car/default/showroomheadlights.glb',
-                chassisbottom: '/models/car/default/showroomchassisbottom3.glb',
-                chassis: '/models/car/default/chassisbody2.glb',
-                spoiler: '/models/car/default/spoiler.glb',
-                window: '/models/car/default/window.glb',
-                wheels: '/models/car/default/showroomwheels1.glb',
-                tire: '/models/car/default/showroomtire1.glb',
-                antena: '/models/car/default/antena.glb',
+                backlights: '/models/car/default/showroom/showroombacklights.glb',
+                headlights: '/models/car/default/showroom/showroomheadlights.glb',
+                chassisbottom: '/models/car/default/showroom/showroomchassisbottom3.glb',
+                chassis: '/models/car/default/showroom/chassisbody2.glb',
+                spoiler: '/models/car/default/showroom/spoiler.glb',
+                window: '/models/car/default/showroom/window.glb',
+                wheels: '/models/car/default/showroom/showroomwheels1.glb',
+                tire: '/models/car/default/showroom/showroomtire1.glb',
+                antena: '/models/car/default/showroom/antena.glb',
             },
             attributes: {
                 PWR: 55,
@@ -90,14 +90,14 @@ export default function GaragePage() {
             name: 'Charger Power Bank',
             price: 998000,
             parts: {
-                chassis: '/models/charger/showroomchassis.glb',
-                chassisbottom: '/models/charger/showroomchassisbottom.glb',
-                backlights: '/models/charger/showroombacklights.glb',
-                headlights: '/models/charger/showroomheadlights.glb',
-                window: '/models/charger/showroomwindow.glb',
-                wheels: '/models/charger/wheels.glb',
-                tire: '/models/charger/tire.glb',
-                antena: '/models/charger/showroomantena.glb',
+                chassis: '/models/charger/showroom/showroomchassis.glb',
+                chassisbottom: '/models/charger/showroom/showroomchassisbottom.glb',
+                backlights: '/models/charger/showroom/showroombacklights.glb',
+                headlights: '/models/charger/showroom/showroomheadlights.glb',
+                window: '/models/charger/showroom/showroomwindow.glb',
+                wheels: '/models/charger/showroom/wheels.glb',
+                tire: '/models/charger/showroom/tire.glb',
+                antena: '/models/charger/showroom/showroomantena.glb',
             },
             attributes: {
                 PWR: 55,
@@ -110,14 +110,14 @@ export default function GaragePage() {
             name: 'Wreckslinger',
             price: 7500000,
             parts: {
-                backlights: '/models/wreckslinger/showroombacklights.glb',
-                chassis: '/models/wreckslinger/showroomchassis.glb',
-                chassisbottom: '/models/wreckslinger/showroomchassisbottom.glb',
-                headlights: '/models/wreckslinger/showroomheadlights.glb',
-                tire: '/models/wreckslinger/tire.glb',
-                wheel: '/models/wreckslinger/wheel.glb',
-                window: '/models/wreckslinger/showroomwindow.glb',
-                antena: '/models/wreckslinger/showroomantena.glb',
+                backlights: '/models/wreckslinger/showroom/showroombacklights.glb',
+                chassis: '/models/wreckslinger/showroom/showroomchassis.glb',
+                chassisbottom: '/models/wreckslinger/showroom/showroomchassisbottom.glb',
+                headlights: '/models/wreckslinger/showroom/showroomheadlights.glb',
+                tire: '/models/wreckslinger/showroom/tire.glb',
+                wheels: '/models/wreckslinger/showroom/wheel.glb',
+                window: '/models/wreckslinger/showroom/showroomwindow.glb',
+                antena: '/models/wreckslinger/showroom/showroomantena.glb',
             },
             attributes: {
                 PWR: 110,
@@ -130,14 +130,14 @@ export default function GaragePage() {
             name: 'Gangover',
             price: 7500000,
             parts: {
-                backlights: '/models/gangover/showroombacklights.glb',
-                chassis: '/models/gangover/showroomchassis.glb',
-                chassisbottom: '/models/gangover/showroomchassisbottom.glb',
-                headlights: '/models/gangover/showroomheadlights.glb',
-                rims: '/models/gangover/rims.glb',
-                tire: '/models/gangover/tire.glb',
-                windows: '/models/gangover/showroomwindows.glb',
-                antena: '/models/gangover/showroomantena.glb',
+                backlights: '/models/gangover/showroom/showroombacklights.glb',
+                chassis: '/models/gangover/showroom/showroomchassis.glb',
+                chassisbottom: '/models/gangover/showroom/showroomchassisbottom.glb',
+                headlights: '/models/gangover/showroom/showroomheadlights.glb',
+                wheels: '/models/gangover/showroom/rims.glb',
+                tire: '/models/gangover/showroom/tire.glb',
+                windows: '/models/gangover/showroom/showroomwindows.glb',
+                antena: '/models/gangover/showroom/showroomantena.glb',
             },
             attributes: {
                 PWR: 110,
@@ -150,13 +150,13 @@ export default function GaragePage() {
             name: 'McLaren',
             price: 7500000,
             parts: {
-                backlights: '/models/mclaren/showroombacklights.glb',
-                chassis: '/models/mclaren/showroomchassis.glb',
-                chassisbottom: '/models/mclaren/showroomchassisbottom.glb',
-                headlights: '/models/mclaren/showroomheadlights.glb',
-                mirrors: '/models/mclaren/showroommirrors.glb',
-                wheels: '/models/mclaren/wheels.glb',
-                antena: '/models/mclaren/showroomantena.glb',
+                backlights: '/models/mclaren/showroom/showroombacklights.glb',
+                chassis: '/models/mclaren/showroom/showroomchassis.glb',
+                chassisbottom: '/models/mclaren/showroom/showroomchassisbottom.glb',
+                headlights: '/models/mclaren/showroom/showroomheadlights.glb',
+                mirrors: '/models/mclaren/showroom/showroommirrors.glb',
+                wheels: '/models/mclaren/showroom/wheels.glb',
+                antena: '/models/mclaren/showroom/showroomantena.glb',
             },
             attributes: {
                 PWR: 110,
@@ -169,14 +169,14 @@ export default function GaragePage() {
             name: '240 GTI',
             price: 7500000,
             parts: {
-                chassis: '/models/240gti/chassis.glb',
-                chassisbottom: '/models/240gti/chassisbottom.glb',
-                headlights: '/models/240gti/showroomheadlights.glb',
-                backlights: '/models/240gti/showroombacklights.glb',
-                tire: '/models/240gti/tire1.glb',
-                wheels: '/models/240gti/wheels1.glb',
-                windows: '/models/240gti/windows.glb',
-                antena: '/models/240gti/antena.glb',
+                chassis: '/models/240gti/showroom/chassis.glb',
+                chassisbottom: '/models/240gti/showroom/chassisbottom.glb',
+                headlights: '/models/240gti/showroom/showroomheadlights.glb',
+                backlights: '/models/240gti/showroom/showroombacklights.glb',
+                tire: '/models/240gti/showroom/tire1.glb',
+                wheels: '/models/240gti/showroom/wheels1.glb',
+                windows: '/models/240gti/showroom/windows.glb',
+                antena: '/models/240gti/showroom/antena.glb',
             },
             attributes: {
                 PWR: 110,
@@ -211,15 +211,15 @@ export default function GaragePage() {
             name: 'Goodwing',
             price: 378000,
             parts: {
-                backlights: '/models/goodwing/backlights.glb',
-                chassisbottom: '/models/goodwing/chassisbottom.glb',
-                chassis: '/models/goodwing/chassisobject.glb',
-                foglights: '/models/goodwing/foglights.glb',
-                headlights: '/models/goodwing/showroomheadlights.glb',
-                showroomtire: '/models/goodwing/showroomtire.glb',
-                showroomwheel: '/models/goodwing/showroomwheel.glb',
-                windows: '/models/goodwing/windows.glb',
-                antena: '/models/goodwing/antena.glb',
+                backlights: '/models/goodwing/showroom/backlights.glb',
+                chassisbottom: '/models/goodwing/showroom/chassisbottom.glb',
+                chassis: '/models/goodwing/showroom/chassisobject.glb',
+                foglights: '/models/goodwing/showroom/foglights.glb',
+                headlights: '/models/goodwing/showroom/showroomheadlights.glb',
+                tire: '/models/goodwing/showroom/showroomtire.glb',
+                wheels: '/models/goodwing/showroom/showroomwheel.glb',
+                windows: '/models/goodwing/showroom/windows.glb',
+                antena: '/models/goodwing/showroom/antena.glb',
             },
             attributes: {
                 PWR: 100,
@@ -232,15 +232,14 @@ export default function GaragePage() {
             name: 'Howler Packard',
             price: 378000,
             parts: {
-                backlights: '/models/howler/backlights1.glb',
-                bumper: '/models/howler/bumper.glb',
-                chassis: '/models/howler/chassis.glb',
-                chassisbottom: '/models/howler/chassisbottom.glb',
-                headlights: '/models/howler/headlights.glb',
-                rocket: '/models/howler/rocket.glb',
-                tire: '/models/howler/tire.glb',
-                wheels: '/models/howler/wheels.glb',
-                antena: '/models/howler/showroomantena.glb',
+                backlights: '/models/howler/showroom/backlights1.glb',
+                chassis: '/models/howler/showroom/chassis.glb',
+                chassisbottom: '/models/howler/showroom/chassisbottom1.glb',
+                headlights: '/models/howler/showroom/headlights.glb',
+                rocket: '/models/howler/showroom/rocket.glb',
+                tire: '/models/howler/showroom/tire.glb',
+                wheels: '/models/howler/showroom/wheels.glb',
+                antena: '/models/howler/showroom/showroomantena.glb',
             },
             attributes: {
                 PWR: 150,
@@ -253,15 +252,14 @@ export default function GaragePage() {
             name: 'RC TraxShark',
             price: 4800000,
             parts: {
-                // tire: '/models/rctruck/tire.glb',
-                chassisbottom: '/models/rctruck/chassisbottom.glb',
-                chassis: '/models/rctruck/chassis.glb',
-                window: '/models/rctruck/window.glb',
-                headlights: '/models/rctruck/headlights.glb',
-                backlights: '/models/rctruck/backlights.glb',
-                wheels: '/models/rctruck/truckwheels.glb',
-                tair: '/models/rctruck/trucktair.glb',
-                antena: '/models/rctruck/antena.glb',
+                chassisbottom: '/models/rctruck/showroom/chassisbottom.glb',
+                chassis: '/models/rctruck/showroom/chassis.glb',
+                window: '/models/rctruck/showroom/window.glb',
+                headlights: '/models/rctruck/showroom/headlights.glb',
+                backlights: '/models/rctruck/showroom/backlights.glb',
+                wheels: '/models/rctruck/showroom/truckwheels.glb',
+                tire: '/models/rctruck/showroom/trucktair.glb',
+                antena: '/models/rctruck/showroom/antena.glb',
             },
             attributes: {
                 PWR: 70,
@@ -274,15 +272,14 @@ export default function GaragePage() {
             name: 'Pusher Crowd',
             price: 7500000,
             parts: {
-                backlights: '/models/pushpushpush/backlights.glb',
-                chassis: '/models/pushpushpush/chassis1.glb',
-                chassisbottom: '/models/pushpushpush/chassisbottom.glb',
-                headlights: '/models/pushpushpush/headlights.glb',
-                tire: '/models/pushpushpush/showroomtire.glb',
-                wheels: '/models/pushpushpush/showroomwheels.glb',
-                windows: '/models/pushpushpush/window.glb',
-                turbo: '/models/pushpushpush/turbo.glb',
-                antena: '/models/pushpushpush/showroomantena.glb',
+                backlights: '/models/pushpushpush/showroom/backlights.glb',
+                chassis: '/models/pushpushpush/showroom/chassis1.glb',
+                chassisbottom: '/models/pushpushpush/showroom/chassisbottom1.glb',
+                headlights: '/models/pushpushpush/showroom/headlights.glb',
+                tire: '/models/pushpushpush/showroom/showroomtire.glb',
+                wheels: '/models/pushpushpush/showroom/showroomwheels.glb',
+                windows: '/models/pushpushpush/showroom/window.glb',
+                antena: '/models/pushpushpush/showroom/showroomantena.glb',
             },
             attributes: {
             PWR: 80,
@@ -295,15 +292,15 @@ export default function GaragePage() {
             name: 'Impactus',
             price: 7500000,
             parts: {
-                backlights: '/models/impactus/backlights.glb',
-                chassis: '/models/impactus/chassis1.glb',
-                brake: '/models/impactus/brake.glb',
-                headlights: '/models/impactus/headlights2.glb',
-                rims: '/models/impactus/showroomwheel.glb',
-                tire: '/models/impactus/showroomtire.glb',
-                windows: '/models/impactus/windows.glb',
-                roof: '/models/impactus/roof.glb',
-                antena: '/models/impactus/showroomantena.glb',
+                backlights: '/models/impactus/showroom/backlights.glb',
+                chassis: '/models/impactus/showroom/chassis1.glb',
+                brake: '/models/impactus/showroom/brake.glb',
+                headlights: '/models/impactus/showroom/headlights2.glb',
+                wheels: '/models/impactus/showroom/showroomwheel.glb',
+                tire: '/models/impactus/showroom/showroomtire.glb',
+                windows: '/models/impactus/showroom/windows.glb',
+                roof: '/models/impactus/showroom/roof.glb',
+                antena: '/models/impactus/showroom/showroomantena.glb',
             },
             attributes: {
             PWR: 140,
@@ -316,15 +313,15 @@ export default function GaragePage() {
             name: 'Crushinator',
             price: 7500000,
             parts: {
-                backlights: '/models/zimbow/backlights.glb',
-                chassis: '/models/zimbow/showroomchassis.glb',
-                chassisbottom: '/models/zimbow/chassisbottom.glb',
-                chassisstructure: '/models/zimbow/chassisstructure.glb',
-                headlights: '/models/zimbow/headlights.glb',
-                wheel: '/models/zimbow/wheel.glb',
-                tire: '/models/zimbow/tire.glb',
-                window: '/models/zimbow/window.glb',
-                antena: '/models/zimbow/showroomantena.glb',
+                backlights: '/models/zimbow/showroom/backlights.glb',
+                chassis: '/models/zimbow/showroom/showroomchassis.glb',
+                chassisbottom: '/models/zimbow/showroom/chassisbottom.glb',
+                chassisstructure: '/models/zimbow/showroom/chassisstructure.glb',
+                headlights: '/models/zimbow/showroom/headlights.glb',
+                wheels: '/models/zimbow/showroom/wheel.glb',
+                tire: '/models/zimbow/showroom/tire.glb',
+                window: '/models/zimbow/showroom/window.glb',
+                antena: '/models/zimbow/showroom/showroomantena.glb',
             },
             attributes: {
             PWR: 110,
@@ -1398,6 +1395,9 @@ export default function GaragePage() {
             const selectedIndex = cars.indexOf(selectedCar);
             setIsCarLoading(true); // Set loading state to true before loading parts
             setCurrentCarIndex(selectedIndex);
+
+            // Save the selected car name to localStorage
+            localStorage.setItem("selectedCarName", carName);
     
             // Dynamically generate icon paths based on the selected car
             const excludedParts = ['headlights', 'backlights', 'tire', 'antena'];
@@ -1461,6 +1461,7 @@ export default function GaragePage() {
             router.push(navigateToPage); // Perform navigation
             setNavigateToPage(null); // Reset navigation state
             localStorage.removeItem("matcaps");
+            localStorage.removeItem("selectedCarName");
         }
 
     }, [navigateToPage, router]);
@@ -1728,6 +1729,9 @@ export default function GaragePage() {
             if (message.type === 'selectedCar') {
                 const selectedCar = message.selectedCar || 'kybertruck'; // Default to kybertruck
                 setSelectedCar(selectedCar);
+
+                // Save carName to localStorage
+                localStorage.setItem("selectedCarName", selectedCar);
 
                 // Retrieve matcaps and store them
                 const receivedMatcaps = message.matcaps || {};
