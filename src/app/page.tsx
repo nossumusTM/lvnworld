@@ -58,35 +58,150 @@ export default function Home() {
     'Amsterdam', 'Athens', 'Monaco', 'Venice', 'Peru',
   ];
 
+  // Mapping cities to their corresponding countries
+  const cityToFlagMapping: Record<string, string> = {
+    'Baku': 'az.svg',
+    'New York': 'us.svg',
+    'Tokyo': 'jp.svg',
+    'Rome': 'it.svg',
+    'Tel Aviv': 'il.svg',
+    'New Delhi': 'in.svg',
+    'Munich': 'de.svg',
+    'Florence': 'it.svg',
+    'Beijing': 'cn.svg',
+    'Hong Kong': 'cn.svg',
+    'Seoul': 'kr.svg',
+    'Los Angeles': 'us.svg',
+    'Paris': 'fr.svg',
+    'Las Vegas': 'us.svg',
+    'Istanbul': 'tr.svg',
+    'Reykjavik': 'is.svg',
+    'Doha': 'qa.svg',
+    'Moscow': 'ru.svg',
+    'Singapore': 'sg.svg',
+    'Jakarta': 'id.svg',
+    'Mexico': 'mx.svg',
+    'Madrid': 'es.svg',
+    'Prague': 'cz.svg',
+    'Oslo': 'no.svg',
+    'Buenos Aires': 'ar.svg',
+    'Budapest': 'hu.svg',
+    'Rio': 'br.svg',
+    'Copenhagen': 'dk.svg',
+    'London': 'gb.svg',
+    'Dubai': 'ae.svg',
+    'Sydney': 'au.svg',
+    'Accra': 'gh.svg',
+    'Helsinki': 'fi.svg',
+    'Dublin': 'ie.svg',
+    'Lisbon': 'pt.svg',
+    'Zurich': 'ch.svg',
+    'Bogota': 'co.svg',
+    'Melbourne': 'au.svg',
+    'Nairobi': 'ke.svg',
+    'Stockholm': 'se.svg',
+    'Vienna': 'at.svg',
+    'Brussels': 'be.svg',
+    'San Francisco': 'us.svg',
+    'Geneva': 'ch.svg',
+    'Cannes': 'fr.svg',
+    'Berlin': 'de.svg',
+    'Havana': 'cu.svg',
+    'Montreal': 'ca.svg',
+    'Antananarivo': 'mg.svg',
+    'Cape Town': 'za.svg',
+    'Boston': 'us.svg',
+    'Milan': 'it.svg',
+    'Bangkok': 'th.svg',
+    'Mumbai': 'in.svg',
+    'Barcelona': 'es.svg',
+    'Amsterdam': 'nl.svg',
+    'Athens': 'gr.svg',
+    'Monaco': 'mc.svg',
+    'Venice': 'it.svg',
+    'Peru': 'pe.svg',
+  };
+
+  const worldIcons = predefinedWorldIds.map(
+    (worldId) => {
+      // Check if the worldId exists in the mapping, if not use a default icon (e.g., 'default.svg')
+      const flag = cityToFlagMapping[worldId] || 'zz.svg';
+      return `/flags/${flag.toLowerCase().replace(/\s+/g, '_')}`;
+    }
+  );
+
   const worldLocations: Record<string, { lat: number; lng: number }> = {
-    Baku: { lat: 40.4093, lng: 49.8671 },
-    Tokyo: { lat: 35.6764, lng: 139.6500 },
-    amsterdam: { lat: 52.3676, lng: 4.9041 },
-    newyork: { lat: 40.7128, lng: -74.0060 },
-    tokyo: { lat: 35.6895, lng: 139.6917 },
-    london: { lat: 51.5074, lng: -0.1278 },
-    sydney: { lat: -33.8688, lng: 151.2093 },
+    "Baku": { lat: 40.4093, lng: 49.8671 },
+    "New York": { lat: 40.7128, lng: -74.0060 },
+    "Tokyo": { lat: 35.6764, lng: 139.6500 },
+    "Rome": { lat: 41.8967, lng: 12.4822 },
+    "Tel Aviv": { lat: 32.0853, lng: 34.7818 },
+    "New Delhi": { lat: 28.6139, lng: 77.2088 },
+    "Munich": { lat: 48.1351, lng: 11.5820 },
+    "Florence": { lat: 43.7700, lng: 11.2577 },
+    "Beijing": { lat: 39.9042, lng: 116.4074 },
+    "Hong Kong": { lat: 22.3193, lng: 114.1694 },
+    "Reykjavik": { lat: 64.1470, lng: 21.9408 },
+    "Doha": { lat: 25.2854, lng: 51.5310 },
+    "Moscow": { lat: 55.755, lng: 37.6173 },
+    "Singapore": { lat: 1.3521, lng: 103.8198 },
+    "Jakarta": { lat: 6.1944, lng: 106.8229 },
+    "Mexico": { lat: 23.6345, lng: 102.5528 },
+    "Madrid": { lat: 40.4167, lng: 3.7033 },
+    "Prague": { lat: 50.0755, lng: 14.4378 },
+    "Oslo": { lat: 59.9139, lng: 10.7522 },
+    "Buenos Aires": { lat: 34.6037, lng: 58.3816 },
+    "Budapest": { lat: 47.4979, lng: 19.0402 },
+    "Rio": { lat: 22.9068, lng: 43.1729 },
+    "Copenhagen": { lat: 55.6761, lng: 12.5683 },
+    "London": { lat: 51.5072, lng: 0.1276 },
+    "Dubai": { lat: 25.2048, lng: 55.2708 },
+    "Sydney": { lat: 33.8688, lng: 151.2093 },
+    "Accra": { lat: 5.5593, lng: 0.1974 },
+    "Hellsinki": { lat: 60.1699, lng: 24.9384 },
+    "Dublin": { lat: 53.3498, lng: 6.2603 },
+    "Lisbon": { lat: 38.7223, lng: 9.1393 },
+    "Zurich": { lat: 47.3769, lng: 8.5417 },
+    "Bogota": { lat: 4.7110, lng: 74.0721 },
+    "Melbourne": { lat: 37.8136, lng: 144.9631 },
+    "Nairobi": { lat: 1.2921, lng: 36.8219 },
+    "Stockholm": { lat: 59.3327, lng: 18.0656 },
+    "Vienna": { lat: 48.2081, lng: 16.3713 },
+    "Brussels": { lat: 50.8260, lng: 4.3802 },
+    "San Francisco": { lat: 37.7749, lng: 122.4194 },
+    "Geneva": { lat: 46.2044, lng: 6.1432 },
+    "Cannes": { lat: 43.5539, lng: 7.0170 },
+    "Berlin": { lat: 52.5200, lng: 13.4050 },
+    "Havana": { lat: 23.1339, lng: 82.3586 },
+    "Montreal": { lat: 45.5019, lng: 73.5674 },
+    "Antananarivo": { lat: 18.9185, lng: 47.5211 },
+    "Cape Town": { lat: 33.9221, lng: 18.4231 },
+    "Boston": { lat: 42.3601, lng: 71.0589 },
+    "Milan": { lat: 45.4685, lng: 9.1824 },
+    "Bangkok": { lat: 13.7563, lng: 100.5018 },
+    "Mumbai": { lat: 19.0760, lng: 72.8777 },
+    "Barcelona": { lat: 41.3874, lng: 2.1686 },
+    "Amsterdam": { lat: 52.3676, lng: 4.9041 },
+    "Athens": { lat: 37.9838, lng: 23.7275 },
+    "Monaco": { lat: 43.7384, lng: 7.4246 },
+    "Venice": { lat: 45.4404, lng: 12.3160 },
+    "Peru": { lat: 9.1900, lng: 75.0152 },
 };
 
-  // const worldIcons = predefinedWorldIds.map(
-  //   (worldId) => `/flags/${worldId.toLowerCase().replace(/\s+/g, '_')}.svg`
-  // );
-  
-
-  const worldIcons = [
-    '🇦🇿', '🇺🇸', '🇯🇵', '🇮🇹', '🇮🇱',
-    '🇮🇳', '🇩🇪', '🇮🇹', '🇨🇳', '🇨🇳',
-    '🇰🇷', '🇺🇸', '🇫🇷', '🇺🇸', '🇹🇷',
-    '🇮🇸', '🇶🇦', '🇷🇺', '🇸🇬', '🇮🇩',
-    '🇲🇽', '🇪🇸', '🇨🇿', '🇳🇴', '🇦🇷',
-    '🇭🇺', '🇧🇷', '🇩🇰', '🇬🇧', '🇦🇪',
-    '🇦🇺', '🇬🇭', '🇫🇮', '🇮🇪', '🇵🇹',
-    '🇨🇭', '🇨🇴', '🇦🇺', '🇰🇪', '🇸🇪',
-    '🇦🇹', '🇧🇪', '🇺🇸', '🇨🇭', '🇫🇷',
-    '🇩🇪', '🇨🇺', '🇨🇦', '🇲🇬', '🇿🇦',
-    '🇺🇸', '🇮🇹', '🇹🇭', '🇮🇳', '🇪🇸',
-    '🇳🇱', '🇬🇷', '🇲🇨', '🇮🇹', '🇵🇪',
-  ];
+  // const worldIcons = [
+  //   '🇦🇿', '🇺🇸', '🇯🇵', '🇮🇹', '🇮🇱',
+  //   '🇮🇳', '🇩🇪', '🇮🇹', '🇨🇳', '🇨🇳',
+  //   '🇰🇷', '🇺🇸', '🇫🇷', '🇺🇸', '🇹🇷',
+  //   '🇮🇸', '🇶🇦', '🇷🇺', '🇸🇬', '🇮🇩',
+  //   '🇲🇽', '🇪🇸', '🇨🇿', '🇳🇴', '🇦🇷',
+  //   '🇭🇺', '🇧🇷', '🇩🇰', '🇬🇧', '🇦🇪',
+  //   '🇦🇺', '🇬🇭', '🇫🇮', '🇮🇪', '🇵🇹',
+  //   '🇨🇭', '🇨🇴', '🇦🇺', '🇰🇪', '🇸🇪',
+  //   '🇦🇹', '🇧🇪', '🇺🇸', '🇨🇭', '🇫🇷',
+  //   '🇩🇪', '🇨🇺', '🇨🇦', '🇲🇬', '🇿🇦',
+  //   '🇺🇸', '🇮🇹', '🇹🇭', '🇮🇳', '🇪🇸',
+  //   '🇳🇱', '🇬🇷', '🇲🇨', '🇮🇹', '🇵🇪',
+  // ];
 
   // Function to get token from the server
   const getToken = async (playerId: string) => {
@@ -376,17 +491,21 @@ const updateWorldList = (counts: Record<string, number>) => {
         playerCountDiv.classList.add('player-count');
 
         // Flag div
-        const flagDiv = document.createElement('div');
-        flagDiv.textContent = worldIcons[index] || '🏳️'; // Use corresponding flag or default
-        flagDiv.classList.add('flag');
+        // const flagDiv = document.createElement('div');
+        // flagDiv.textContent = worldIcons[index] || '🏳️'; // Use corresponding flag or default
+        // flagDiv.classList.add('flag');
 
         // Flag div
-        // const flagDiv = document.createElement('div');
-        // const flagImg = document.createElement('img');
-        // flagImg.src = `/flags/${worldId.toLowerCase().replace(/\s+/g, '_')}.svg`; // Dynamically set the SVG path
-        // flagImg.alt = `${worldId} flag`;
-        // flagImg.classList.add('flag-icon');
-        // flagDiv.appendChild(flagImg);
+        const flagDiv = document.createElement('div');
+        const flagImg = document.createElement('img');
+
+        // Use cityToFlagMapping to get the correct flag
+        const flagFile = cityToFlagMapping[worldId] || 'zz.svg'; // Fallback to default.svg if not found
+        flagImg.src = `/flags/${flagFile.toLowerCase().replace(/\s+/g, '_')}`; // Dynamically set the SVG path
+        flagImg.alt = `${worldId} flag`;
+        flagImg.classList.add('flag-icon');
+
+        flagDiv.appendChild(flagImg);
 
         // World ID div
         const worldIdDiv = document.createElement('div');
