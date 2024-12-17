@@ -5,7 +5,7 @@ import React from 'react';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAccount } from 'wagmi';
-import { initGlobe, addSignalEffect } from './globe'; // Adjust path as necessary
+import { initGlobe, addSignalEffect, removeSignalEffect } from './globe'; // Adjust path as necessary
 
 // Dynamically import the Application component and disable SSR
 const Application = dynamic(() => import('./javascript/Application'), {
@@ -39,6 +39,9 @@ export default function Home() {
   const router = useRouter();
   const maxRetries = 5;  // Limit retries to avoid infinite reconnect loop
   const retryDelay = 2000; // Delay between retries (ms)
+
+  const worldPlayerCounts = new Map<string, number>(); // To track player counts per worldId
+  const activeSignals = new Map<string, THREE.Object3D>(); // To track active signals
 
   const predefinedWorldIds = [
     'Baku', 'New York', 'Tokyo', 'Rome', 'Tel Aviv',
@@ -279,23 +282,28 @@ export default function Home() {
               console.log("Updating world list with counts:", message.counts);
               updateWorldList(message.counts);
 
-              // Iterate through world counts to add signals
               Object.entries(message.counts).forEach(([worldId, count]) => {
-                const playerCount = count as number; // Explicitly cast count to number
-
-                // Check if playerCount > 0 before adding a signal
-                if (playerCount > 0) {
-                    const location = worldLocations[worldId as keyof typeof worldLocations];
+                const location = worldLocations[worldId as keyof typeof worldLocations];
+                const previousCount = worldPlayerCounts.get(worldId) || 0; // Get previous count or default to 0
+                const newCount = typeof count === 'number' ? count : 0;
+            
+                // Update the count in the map
+                worldPlayerCounts.set(worldId, newCount);
+            
+                // Add signal if count > 0 and signal doesn't already exist
+                if (newCount > 0 && previousCount === 0) {
                     if (location) {
                         console.log(`Adding signal for ${worldId} at ${location.lat}, ${location.lng}`);
                         addSignalEffect(worldId, location);
-                    } else {
-                        console.warn(`Location not found for ${worldId}.`);
                     }
-                } else {
-                    console.log(`No players in ${worldId}, skipping signal.`);
                 }
-              });
+            
+                // Remove signal if count becomes 0
+                if (newCount === 0 && previousCount > 0) {
+                    console.log(`Removing signal for ${worldId}, no players remaining.`);
+                    removeSignalEffect(worldId);
+                }
+            });            
 
               hasReceivedWorldCounts = true;
 

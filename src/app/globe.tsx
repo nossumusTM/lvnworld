@@ -4,6 +4,8 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 let scene: THREE.Scene | null = null;
 
 const worldSignals: Record<string, THREE.Mesh> = {}; // Store active signals by worldId
+const worldPlayerCounts = new Map<string, number>(); // To track player counts per worldId
+const activeSignals = new Map<string, THREE.Object3D>(); // Map to store active signals by worldId
 
 export function initGlobe(containerId: string): void {
     const container = document.getElementById(containerId);
@@ -152,6 +154,15 @@ export function addSignalEffect(worldId: string, location: { lat: number; lng: n
         return;
     }
 
+    // If signal already exists for this worldId, remove it first
+    if (activeSignals.has(worldId)) {
+        const existingSignal = activeSignals.get(worldId);
+        if (existingSignal) {
+            scene.remove(existingSignal);
+            activeSignals.delete(worldId);
+        }
+    }
+
     // Convert latitude/longitude to globe (x, y, z) coordinates
     const { x, y, z } = latLngToVector3(location.lat, location.lng, 5);
 
@@ -193,6 +204,7 @@ export function addSignalEffect(worldId: string, location: { lat: number; lng: n
     const globeMesh = scene.getObjectByName('globeMesh') as THREE.Mesh; // Find globeMesh
     if (globeMesh) {
         globeMesh.add(frame); // Attach the frame to the globe
+        activeSignals.set(worldId, frame); // Store the signal in the map
     } else {
         console.error('Globe mesh not found in the scene.');
         return;
@@ -225,14 +237,16 @@ function latLngToVector3(lat: number, lng: number, radius: number): { x: number;
     };
 }
 
-// Helper function: Convert lat/lng to globe position
-function convertLatLngToPosition(lat: number, lng: number, radius: number): THREE.Vector3 {
-    const phi = (90 - lat) * (Math.PI / 180); // Convert latitude to phi
-    const theta = (lng + 180) * (Math.PI / 180); // Convert longitude to theta
-
-    const x = -(radius * Math.sin(phi) * Math.cos(theta));
-    const z = radius * Math.sin(phi) * Math.sin(theta);
-    const y = radius * Math.cos(phi);
-
-    return new THREE.Vector3(x, y, z);
+export function removeSignalEffect(worldId: string) {
+    if (activeSignals.has(worldId)) {
+        const signal = activeSignals.get(worldId);
+        if (signal) {
+            const globeMesh = scene?.getObjectByName('globeMesh') as THREE.Mesh;
+            if (globeMesh) {
+                globeMesh.remove(signal); // Remove the signal
+                activeSignals.delete(worldId); // Remove reference from map
+                console.log(`Signal removed for ${worldId}`);
+            }
+        }
+    }
 }
