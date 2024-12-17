@@ -281,16 +281,21 @@ export default function Home() {
 
               // Iterate through world counts to add signals
               Object.entries(message.counts).forEach(([worldId, count]) => {
-                console.log('Processing worldId:', worldId, 'Count:', count);
-            
-                const location = worldLocations[worldId as keyof typeof worldLocations];
-                if (location) {
-                    console.log(`Adding signal for ${worldId} at ${location.lat}, ${location.lng}`);
-                    addSignalEffect(worldId, location);
+                const playerCount = count as number; // Explicitly cast count to number
+
+                // Check if playerCount > 0 before adding a signal
+                if (playerCount > 0) {
+                    const location = worldLocations[worldId as keyof typeof worldLocations];
+                    if (location) {
+                        console.log(`Adding signal for ${worldId} at ${location.lat}, ${location.lng}`);
+                        addSignalEffect(worldId, location);
+                    } else {
+                        console.warn(`Location not found for ${worldId}.`);
+                    }
                 } else {
-                    console.warn(`World location not found for worldId: ${worldId}`);
+                    console.log(`No players in ${worldId}, skipping signal.`);
                 }
-            });
+              });
 
               hasReceivedWorldCounts = true;
 

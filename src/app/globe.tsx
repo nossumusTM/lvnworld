@@ -34,18 +34,29 @@ export function initGlobe(containerId: string): void {
         scene.add(directionalLight);
     }
 
-    // Load Textures
+    // Determine texture based on current time (AM or PM)
     const textureLoader = new THREE.TextureLoader();
-    const earthTexture = textureLoader.load('//unpkg.com/three-globe/example/img/earth-blue-marble.jpg');
-    const bumpTexture = textureLoader.load('//unpkg.com/three-globe/example/img/earth-topology.png');
+    const currentTime = new Date();
+    const hours = currentTime.getHours();
+
+    const dayTextureUrl = '//unpkg.com/three-globe/example/img/earth-blue-marble.jpg';
+    const nightTextureUrl = '//unpkg.com/three-globe/example/img/earth-night.jpg';
+    const bumpTextureUrl = '//unpkg.com/three-globe/example/img/earth-topology.png';
+
+    const isAM = hours < 12;
+    const earthTexture = textureLoader.load(isAM ? dayTextureUrl : nightTextureUrl);
+    console.log(`Loading ${isAM ? 'day' : 'night'} texture based on time: ${hours} hours`);
+
+    const bumpTexture = textureLoader.load(bumpTextureUrl);
 
     // Create Globe
-    const globeGeometry = new THREE.SphereGeometry(5, 64, 64); // Radius: 5, Segments: 64
+    const globeGeometry = new THREE.SphereGeometry(5, 64, 64);
     const globeMaterial = new THREE.MeshStandardMaterial({
         map: earthTexture,
         bumpMap: bumpTexture,
-        bumpScale: 0.05, // Adds surface depth
+        bumpScale: 0.5,
     });
+
     const globeMesh = new THREE.Mesh(globeGeometry, globeMaterial);
     globeMesh.name = 'globeMesh'; // Add a name for easy access
     globeMesh.rotation.y = Math.PI; // Initial rotation
@@ -134,7 +145,7 @@ export function initGlobe(containerId: string): void {
 // }
 
 export function addSignalEffect(worldId: string, location: { lat: number; lng: number }) {
-    console.log(`addSignalFrame called for ${worldId}:`, location);
+    console.log(`addSignalEffect called for ${worldId}:`, location);
 
     if (!scene) {
         console.error('Scene is not initialized');
@@ -152,7 +163,7 @@ export function addSignalEffect(worldId: string, location: { lat: number; lng: n
         // Top-Left Bracket
         new THREE.Vector3(-size, size, 0), new THREE.Vector3(-offset, size, 0),
         new THREE.Vector3(-size, size, 0), new THREE.Vector3(-size, offset, 0),
-        
+
         // Top-Right Bracket
         new THREE.Vector3(size, size, 0), new THREE.Vector3(offset, size, 0),
         new THREE.Vector3(size, size, 0), new THREE.Vector3(size, offset, 0),
@@ -170,7 +181,7 @@ export function addSignalEffect(worldId: string, location: { lat: number; lng: n
     const frameMaterial = new THREE.LineBasicMaterial({
         color: 0x18FF00, // Neon green color
         transparent: true,
-        opacity: 0.8,
+        opacity: 1,
     });
     const frame = new THREE.LineSegments(frameGeometry, frameMaterial);
 
@@ -178,34 +189,31 @@ export function addSignalEffect(worldId: string, location: { lat: number; lng: n
     frame.position.set(x, y, z);
     frame.lookAt(new THREE.Vector3(0, 0, 0)); // Align to face the globe's center
 
-    scene.add(frame);
+    // Attach the frame to the globeMesh so it rotates with the globe
+    const globeMesh = scene.getObjectByName('globeMesh') as THREE.Mesh; // Find globeMesh
+    if (globeMesh) {
+        globeMesh.add(frame); // Attach the frame to the globe
+    } else {
+        console.error('Globe mesh not found in the scene.');
+        return;
+    }
 
-    // Optional Pulsating Animation: Smooth scaling effect (no removal)
-    let scale = 1;
+    // Pulsating Animation: Smooth scaling effect
+    let scale = 0.5;
     let scaleDirection = 1;
-    // function animateFrame() {
-    //     if (scaleDirection === 1 && frame.scale.x >= 1.1) scaleDirection = -1; // Shrink
-    //     if (scaleDirection === -1 && frame.scale.x <= 1.0) scaleDirection = 1; // Grow
-
-    //     const scaleFactor = scaleDirection === 1 ? 0.001 : -0.001; // Smooth scaling
-    //     frame.scale.x += scaleFactor;
-    //     frame.scale.y += scaleFactor;
-
-    //     requestAnimationFrame(animateFrame);
-    // }
 
     function animateSignal() {
-                scale += scaleDirection * 0.01; // Scale increment/decrement
-                if (scale >= 1.5) scaleDirection = -1; // Reverse at max scale
-                if (scale <= 1) scaleDirection = 1; // Reverse at min scale
-        
-                frame.scale.set(scale, scale, scale);
-                requestAnimationFrame(animateSignal); // Continue animation
-            }
+        scale += scaleDirection * 0.01; // Scale increment/decrement
+        if (scale >= 1.5) scaleDirection = -1; // Reverse at max scale
+        if (scale <= 1) scaleDirection = 1; // Reverse at min scale
+
+        frame.scale.set(scale, scale, scale); // Apply scaling
+        requestAnimationFrame(animateSignal); // Continue animation
+    }
     animateSignal();
 }
 
-
+// Utility Function: Convert Latitude/Longitude to 3D Coordinates
 function latLngToVector3(lat: number, lng: number, radius: number): { x: number; y: number; z: number } {
     const phi = (90 - lat) * (Math.PI / 180); // Convert latitude to spherical coordinates
     const theta = (lng + 180) * (Math.PI / 180); // Convert longitude
