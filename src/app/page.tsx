@@ -92,7 +92,7 @@ export default function Home() {
     'Dubai': 'ae.svg',
     'Sydney': 'au.svg',
     'Accra': 'gh.svg',
-    'Helsinki': 'fi.svg',
+    'Hellsinki': 'fi.svg',
     'Dublin': 'ie.svg',
     'Lisbon': 'pt.svg',
     'Zurich': 'ch.svg',
@@ -768,7 +768,6 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
         <div id="loading-container">
           
           <div id="loading-layer" className="loading-layer overflow-hidden">
-            {/* <h3 style={{paddingLeft: '12px', fontSize: '50px', fontFamily: 'Orbitron, sans-serif'}}>6,363,000–12,663,000 km</h3> */}
           </div>
 
           <div id="w3m-layer" className='w3m-layer flex-container'>
@@ -778,7 +777,7 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
               <div className="bar bar-3"></div>
               <div className="bar bar-4"></div>
             </div> */}
-            <w3m-button />
+            <button className='my-wallet'> <w3m-button /> </button>
             <div className="user-count-wrapper">
                 {/* <span id="streamLabel" className="stream-label">STREAM</span> */}
                 <span id="userCountDisplay" className="user-count-display">0</span>

@@ -5,7 +5,7 @@ import { headers } from 'next/headers';
 import ContextProvider from "../../context";
 
 export const metadata: Metadata = {
-  title: 'Krashbox│▌▌│▌▌ ▌ │▌ ▌ ▌│▌ ▌│▌▌ ▌ ',
+  title: 'Krashbox│▌▌│▌▌ ▌ │▌ ▌ ▌│▌',
   description: 'Powered by Nossumus Foundation.'
 };
 

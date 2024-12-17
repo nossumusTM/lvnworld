@@ -464,7 +464,7 @@ opacity: 0;
   position: fixed;
   top: 12%;
   left: 30px;
-  width: 21%;
+  width: 28%;
   /* background-color: rgba(255, 255, 255, 0.01); */
   padding: 0 20px 0 20px;
   /* border-radius: 20px; */
@@ -789,8 +789,10 @@ opacity: 0;
 
 .flag-icon {
   width: 24px;
-  height: 16px;
+  height: 24px;
   display: block;
+  rotate: 315deg;
+  margin-right: 10px;
   border-radius: 2px; /* Optional: Round the edges for a polished look */
   box-shadow: 0 0 2px rgba(0, 0, 0, 0.2); /* Optional: Add a slight shadow */
 }
@@ -880,7 +882,7 @@ opacity: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 10;
+  z-index: 1;
   /* display: flex; */
   justify-content: center;
   align-items: center;
@@ -896,8 +898,8 @@ opacity: 0;
   top: 10px;
   left: 10px;
   padding: 20px;
-  width: 100%;
-  height: 100%;
+  width: auto;
+  height: auto;
   z-index: 10;
   justify-content: center;
   align-items: center;
@@ -1993,17 +1995,17 @@ opacity: 0;
     align-items: center;
     justify-content: center;
     width: 100px!important;
-    top: -4px!important;
-    left: 0px!important;
+    top: 5px!important;
+    left: 2px!important;
     margin-top: -5px;
     border-radius: 0px!important;
     height: 50px!important;
-    backdrop-filter: blur(5px);
+    backdrop-filter: unset !important;
     background: transparent;
     border: 1px solid transparent;
     /* Set border animation with conic gradient */
     border-image: conic-gradient(from var(--angle), var(--c2), var(--c1) 0.1turn, var(--c1) 0.15turn, var(--c2) 0.25turn) 1;
-
+    
     /* Animation applied to the border */
     animation: rotateGradient 7s linear infinite;
   }
@@ -2074,7 +2076,7 @@ opacity: 0;
   justify-content: center;
   width: 80px;
   top: 4px;
-  left: 360px;
+  left: 10px;
   margin-top: -5px;
   border-radius: 10px;
   height: 40px;
@@ -2084,7 +2086,7 @@ opacity: 0;
   border: 1px solid transparent;
   /* Set border animation with conic gradient */
   border-image: conic-gradient(from var(--angle), var(--c2), var(--c1) 0.1turn, var(--c1) 0.15turn, var(--c2) 0.25turn) 1;
-
+  z-index: 100;
   /* Animation applied to the border */
   animation: rotateGradient 7s linear infinite;
 }
@@ -2122,6 +2124,33 @@ opacity: 0;
   background-color: #FFF; /* Green for signal bars */
   opacity: 0.5;
   transition: opacity 0.3s;
+}
+
+.my-wallet {
+    background-color: unset;
+}
+
+@media (max-width: 767px) {
+  .my-wallet {
+    position: static; /* Use static positioning to follow flexbox layout */
+    font-size: 15px;
+    background-color: rgba(255, 255, 255, 0.01);
+    padding: 10px;
+    border-radius: 30px;
+    margin-left: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+    z-index: 100;
+    text-align: center;
+    font-family: 'Orbitron', sans-serif;
+    box-sizing: border-box;
+    rotate: 0deg; /* No rotation needed on mobile */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    animation: rotateGradient 7s linear infinite;
+}
 }
 
 .bar-1 {
