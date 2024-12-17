@@ -639,7 +639,7 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
             {/* <h3 style={{paddingLeft: '12px', fontSize: '50px', fontFamily: 'Orbitron, sans-serif'}}>6,363,000–12,663,000 km</h3> */}
           </div>
 
-          <div id="w3m-layer" className='w3m-layer overflow-hidden flex-container'>
+          <div id="w3m-layer" className='w3m-layer flex-container'>
           {/* <div id="signalBars" className="signal-bars">
               <div className="bar bar-1"></div>
               <div className="bar bar-2"></div>
