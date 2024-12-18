@@ -21,6 +21,7 @@ body {
   padding: 0;
   height: 100%; /* Ensure the body takes full height */
   overflow: hidden; /* Prevent scrolling */
+  font-family: 'Orbitron', sans-serif;
 }
 
 @layer utilities {
@@ -2075,7 +2076,7 @@ opacity: 0;
   align-items: center;
   justify-content: center;
   width: 80px;
-  top: 4px;
+  top: 5px;
   left: 10px;
   margin-top: -5px;
   border-radius: 10px;
