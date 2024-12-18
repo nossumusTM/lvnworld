@@ -697,7 +697,7 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
     }, [isConnected, address, hasAppInitialized]);
 
     // Flag to check WS connection
-    if (!isWebSocketReady) {
+    if (!isWebSocketReady && showLoadingLayer) {
       return (
         <div className="pulsing-message">
             <h2 style={{textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)'}}>Loading...</h2>

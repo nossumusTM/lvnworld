@@ -2233,6 +2233,11 @@ opacity: 0;
   height: 25px;
 }
 
+.loadingLayer {
+  width: 100vw;
+  height: 100vh;
+}
+
 .showroomBackToMenu {
   top: 0px;
   /* padding: 10px; */

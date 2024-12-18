@@ -47,6 +47,7 @@ export default function GaragePage() {
     const [isButtonActive, setIsButtonActive] = useState(false); // State for button activity
     const [isNitroActive, setIsNitroActive] = useState(false); // State for button activity
     const [isCarLoading, setIsCarLoading] = useState(false); // State for button activity
+
     const showroomLoaded = useRef(false);
 
     const cameraRef = useRef<THREE.PerspectiveCamera | null>(null); // Reference for camera
@@ -608,7 +609,7 @@ export default function GaragePage() {
 
     useEffect(() => {
         if (!canvasRef.current) return;
-    
+
         // Initialize the scene
         scene = new THREE.Scene();
         // scene.background = new THREE.Color('#0213f7'); // Updated background color
@@ -848,6 +849,8 @@ export default function GaragePage() {
             }
         };
         window.addEventListener('click', handleMouseClick);
+        
+
 
         return () => {
             window.removeEventListener('resize', handleResize);
@@ -856,6 +859,7 @@ export default function GaragePage() {
             video.pause();
             // video.src = '';
         };
+
     }, [currentCarIndex]);
 
     const applyMatcap = (part: THREE.Object3D, matcapName: string) => {
@@ -876,7 +880,6 @@ export default function GaragePage() {
         const loadCar = async (index: number, matcaps: Record<string, string>) => {
 
             console.log("LOAD CAR MATCAPS", matcaps)
-
             setIsCarLoading(true); // Start loading animation
 
             // Update car attributes based on the index
@@ -1214,7 +1217,6 @@ export default function GaragePage() {
         
             // Add the showroom group to the scene
             scene.add(showroomGroupRef.current);
-            
         };        
         
         const loadRocket = async () => {
@@ -1260,13 +1262,17 @@ export default function GaragePage() {
             // await loadStaticShowroom();
             // await loadCar(currentCarIndex); // Load the dynamically selected car
             // await loadBackground();
+
             await loadShowroomCar(cars);   // Load all cars in the showroom
             await loadRocket();
             showroomLoaded.current = true;
+            setIsLoading(false);
+
             // switchShowroomCar(1);
         };
 
         loadAssets();
+
     }, [currentCarIndex]);  
 
     const switchShowroomCar = (index: number) => {
@@ -1764,17 +1770,17 @@ export default function GaragePage() {
     // Initialize WebSocket when component mounts
     useEffect(() => {
         initializeWebSocket();
-
         // return () => {
         //     // Clean up WebSocket connection
         //     if (wsRef.current) {
         //         wsRef.current.close();
         //     }
         // };
+
     }, [initializeWebSocket]);
 
-    // Flag to check WS connection
-    if (!isWebSocketReady) {
+     // Flag to check WS connection
+     if (isLoading) {
         return (
           <div className="pulsing-message">
               <h2 style={{textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)'}}>Loading...</h2>
@@ -1782,22 +1788,19 @@ export default function GaragePage() {
         );
       }
 
+    // Flag to check WS connection
+    // if (!isWebSocketReady) {
+    //     return (
+    //       <div className="pulsing-message">
+    //           <h2 style={{textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)'}}>Loading...</h2>
+    //         </div>
+    //     );
+    //   }
+
     return (
         <div style={{ position: 'relative', width: '100%', height: '100%' }}>
             <canvas ref={canvasRef} style={{ width: '100%', height: '100%' }} />
-
-            {/* <div style={{ position: 'absolute', bottom: '15%', left: '10%', transform: 'translateY(-50%)' }}>
-                <button onClick={handlePreviousCar}>←</button>
-            </div>
-            <div style={{ position: 'absolute', bottom: '15%', right: '10%', transform: 'translateY(-50%)' }}>
-                <button onClick={handleNextCar}>→</button>
-            </div> */}
-            {/* <div className="coin-element">
-                <div className="coin-container">
-                    <div className="coin-icon" style={{ fontSize: "25px", animation: "rotateClockwise 6s linear infinite" }}>❖</div>
-                    <div className="coin-layer">{playerAccount}</div>
-                </div>          
-            </div> */}
+            
             <div className="coin-element">
                 <div className="coin-container">
                     <div

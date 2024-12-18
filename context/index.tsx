@@ -35,8 +35,8 @@ const modal = createAppKit({
     themeMode: 'dark',
     themeVariables: {
         '--w3m-font-family': 'Orbitron, sans-serif',
-        '--w3m-accent': '#E4E0E1',
-        '--w3m-color-mix': 'transparent',
+        '--w3m-accent': '00FF000',
+        // '--w3m-color-mix': '00FF000',
         '--w3m-border-radius-master': '10px'
     }
 })
