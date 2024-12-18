@@ -568,8 +568,13 @@ export default class
                     const message = JSON.parse(event.data);
 
                     if (message.type === 'playerCount') {
-                        // Update the player count display
-                        document.getElementById('playerCountDisplay').innerText = `${message.count}`;
+                        // Safely access the element and update its text content
+                        const playerCountElement = document.getElementById('playerCountDisplay');
+                        if (playerCountElement) {
+                            playerCountElement.innerText = `${message.count}`;
+                        } else {
+                            console.warn('playerCountDisplay element not found');
+                        }
                     }
         
                     switch (message.type) {

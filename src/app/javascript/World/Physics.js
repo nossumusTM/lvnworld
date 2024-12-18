@@ -8507,23 +8507,33 @@ export default class Physics
             if (this.car.flightMode && this.controls.actions.brake) {
                 // Exit flight mode
                 this.car.flightMode = false;
-            
+
                 // Reset angular velocity to stop spinning or rotating in flight
-                this.car.chassis.body.angularVelocity.set(0, 0, 0);
-            
-                // Optionally, you can also reset any angular damping or other flight-specific physics
-                this.car.chassis.body.angularDamping = 0.1; // Adjust if necessary for normal driving
-            
+                this.car.chassis.body.angularVelocity.set(0, 0, 0);  // Stop rotation completely
+
+                // Optionally, reset any angular damping or other flight-specific physics
+                this.car.chassis.body.angularDamping = 0.1;  // Adjust if necessary for normal driving
+
                 // Ensure the car's behavior returns to normal ground driving without altering the current position or orientation
-                // Suspension and wheel behaviors are re-enabled automatically by exiting flight mode
                 for (const wheelIndex in this.car.wheels.bodies) {
                     const wheelBody = this.car.wheels.bodies[wheelIndex];
-                    wheelBody.type = CANNON.Body.DYNAMIC; // Make sure the wheels return to dynamic mode
+                    wheelBody.type = CANNON.Body.DYNAMIC;  // Make sure the wheels return to dynamic mode
                 }
-            
+
                 // Apply slight downward force to ensure the car sticks to the ground after flight
-                const downwardForce = new CANNON.Vec3(0, -10, 0); // Adjust if necessary
+                const downwardForce = new CANNON.Vec3(0, 0, 0);  // Adjust if necessary
                 this.car.chassis.body.applyForce(downwardForce, this.car.chassis.body.position);
+
+                // Lock the car’s orientation to prevent unwanted rotation (keep the car upright)
+                // Set quaternion to identity (no rotation), ensuring the car is grounded and upright
+                const groundedQuaternion = new CANNON.Quaternion(this.car.chassis.body.quaternion.x, this.car.chassis.body.quaternion.y, this.car.chassis.body.quaternion.z, 1); // This quaternion represents no rotation (identity)
+                this.car.chassis.body.quaternion.copy(groundedQuaternion);  // Lock the car's orientation
+
+                // Apply small forces or torque if necessary to ensure stability (if required)
+                const correctionTorque = new CANNON.Vec3(0, 0, 0);  // No torque needed, just lock the body orientation
+                if (typeof this.car.chassis.body.applyTorque === 'function') {
+                    this.car.chassis.body.applyTorque(correctionTorque);  // This could still help if slight stabilization is needed
+                }
             }
 
             // Handle flight mode with boost controls

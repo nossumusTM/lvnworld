@@ -443,7 +443,7 @@ export default function Home() {
 
     wsRef.current.onclose = () => {
       console.log('WebSocket closed');
-      // setIsWebSocketReady(false);
+      setIsWebSocketReady(false);
       // if (retryCount < maxRetries) {
       //     setTimeout(() => {
       //         setRetryCount((prev) => prev + 1);
@@ -549,10 +549,13 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
     setApplication(false);
     setTimeout(() => setApplication(true), 500);
 
-    if (wsRef.current) {
-      wsRef.current.close();
-      wsRef.current = null;
-    }
+    
+    // setTimeout(() => {
+    //         if (wsRef.current) {
+    //           wsRef.current.close();
+    //           wsRef.current = null;
+    //         }
+    //       }, 60000);
 
     // Disable all other items visually and clear their onclick events
     Array.from(worldList.children).forEach((item) => {
@@ -691,17 +694,26 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
         }, 500);
 
       }
-    }, [isConnected, address, hasAppInitialized, initializeWebSocket]);
+    }, [isConnected, address, hasAppInitialized]);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
+    if (!isWebSocketReady) {
+      return (
+        <div style={{zIndex: '1000'}}>
+          <h2 className='pulsing-message'>ACCESS GRANTED</h2>
+          {/* {showLoadingLayer && <div>Loading Globe...</div>} */}
+        </div>
+      );
+    }
 
-    return () => {
-      clearInterval(interval);
-    };
-  }, []); // Initialize once on mount
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setCurrentTime(new Date());
+  //   }, 1000);
+
+  //   return () => {
+  //     clearInterval(interval);
+  //   };
+  // }, []); // Initialize once on mount
 
   // useEffect(() => {
   //   if (selectedWorldId && wsRef.current) {

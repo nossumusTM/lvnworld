@@ -136,7 +136,7 @@ const carDefaultAntenaSource = '/models/car/default/antena.glb'
 const chargerAccessoriesSource = '/models/charger/accessories.glb'
 const chargerBacklightsSource = '/models/charger/backlights.glb'
 const chargerBacklightsReverseSource = '/models/charger/backlightsReverse.glb'
-const chargerChassisSource = '/models/charger/topcar1.glb'
+const chargerChassisSource = '/models/charger/showroom/showroomchassis.glb'
 const chargerChassisBottomSource = '/models/charger/chassisbottom.glb'
 const chargerChassisInsideSource = '/models/charger/chassisinside.glb'
 const chargerEngineSource = '/models/charger/engine.glb'
@@ -146,6 +146,15 @@ const chargerWheelsSource = '/models/charger/wheel.glb'
 const chargerWindowsSource = '/models/charger/windows.glb'
 const chargerHeadlightsSource = '/models/charger/headlights.glb'
 const chargerAntenaSource = '/models/charger/antena.glb'
+
+const chargetDefaultChassis = '/models/charger/default/chassis.glb'
+const chargetDefaultChassisBottom = '/models/charger/default/chassisbottom.glb'
+const chargetDefaultWindow = '/models/charger/default/window.glb'
+const chargetDefaultAntena = '/models/charger/default/antena.glb'
+const chargetDefaultBacklights = '/models/charger/default/backlights.glb'
+const chargetDefaultBacklightsReverse = '/models/charger/default/backlightsReverse.glb'
+const chargetDefaultHeadlights = '/models/charger/default/headlights.glb'
+
 
 // Wreckslinger
 const wreckslingerChassisSource = '/models/wreckslinger/auto.glb'
@@ -479,6 +488,14 @@ export default class Resources extends EventEmitter
             { name: 'chargerWindows', source: chargerWindowsSource },
             { name: 'chargerHeadlights', source: chargerHeadlightsSource },
             { name: 'chargerAntena', source: chargerAntenaSource },
+
+            { name: 'chargerDefaultChassis', source: chargetDefaultChassis },
+            { name: 'chargerDefaultChassisBottom', source: chargetDefaultChassisBottom },
+            { name: 'chargerDefaultWindow', source: chargetDefaultWindow },
+            { name: 'chargerDefaultHeadlights', source: chargetDefaultHeadlights },
+            { name: 'chargerDefaultBacklights', source: chargetDefaultBacklights },
+            { name: 'chargerDefaultBacklightsReverse', source: chargetDefaultBacklightsReverse },
+            { name: 'chargerDefaultAntena', source: chargetDefaultAntena },
 
             // Wreckslinger
             { name: 'wreckslingerChassis', source: wreckslingerChassisSource },
