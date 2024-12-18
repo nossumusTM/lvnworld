@@ -443,7 +443,7 @@ export default function Home() {
 
     wsRef.current.onclose = () => {
       console.log('WebSocket closed');
-      setIsWebSocketReady(false);
+      // setIsWebSocketReady(false);
       // if (retryCount < maxRetries) {
       //     setTimeout(() => {
       //         setRetryCount((prev) => prev + 1);
@@ -696,12 +696,12 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
       }
     }, [isConnected, address, hasAppInitialized]);
 
+    // Flag to check WS connection
     if (!isWebSocketReady) {
       return (
-        <div style={{zIndex: '1000'}}>
-          <h2 className='pulsing-message'>ACCESS GRANTED</h2>
-          {/* {showLoadingLayer && <div>Loading Globe...</div>} */}
-        </div>
+        <div className="pulsing-message">
+            <h2 style={{textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)'}}>Loading...</h2>
+          </div>
       );
     }
 
@@ -735,10 +735,12 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
   const handleGarageButtonClick = () => {
       if (playerId) {
         router.push(`/garage?playerId=${encodeURIComponent(playerId)}`);
-        if (wsRef.current) {
-          wsRef.current.close();
-          wsRef.current = null;
-        }
+          
+        // Clean up WebSocket connection
+          if (wsRef.current) {
+              wsRef.current.close();
+          }
+
     } else {
         console.error('Player ID is missing');
     }

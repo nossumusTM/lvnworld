@@ -1460,10 +1460,10 @@ export default function GaragePage() {
             sendSelectedCarToServer();
             router.push(navigateToPage); // Perform navigation
             setNavigateToPage(null); // Reset navigation state
-            if (wsRef.current) {
-                wsRef.current.close();
-                wsRef.current = null;
-              }
+            // if (wsRef.current) {
+            //     wsRef.current.close();
+            //     wsRef.current = null;
+            //   }
             localStorage.removeItem("matcaps");
             localStorage.removeItem("selectedCarName");
         }
@@ -1765,13 +1765,22 @@ export default function GaragePage() {
     useEffect(() => {
         initializeWebSocket();
 
-        return () => {
-            // Clean up WebSocket connection
-            if (wsRef.current) {
-                wsRef.current.close();
-            }
-        };
+        // return () => {
+        //     // Clean up WebSocket connection
+        //     if (wsRef.current) {
+        //         wsRef.current.close();
+        //     }
+        // };
     }, [initializeWebSocket]);
+
+    // Flag to check WS connection
+    if (!isWebSocketReady) {
+        return (
+          <div className="pulsing-message">
+              <h2 style={{textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)'}}>Loading...</h2>
+            </div>
+        );
+      }
 
     return (
         <div style={{ position: 'relative', width: '100%', height: '100%' }}>
@@ -2112,22 +2121,13 @@ export default function GaragePage() {
                     </button>
                 )}
 
-                {/* {view === 'showroom' && (
-                    <button
-                        style={{
-                            padding: '230px 0',
-                            animation: 'pulse 1.5s infinite',
-                            textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)',
-                            color: '#fff',
-                            borderRadius: '8px',
-                            cursor: 'pointer',
-                            zIndex: '10000',
-                            }}
-                            onClick={() => toggleView('menu')}
+                {view === 'showroom' && (
+                    <div className='showroomBackToMenu'
+                            onClick={() => toggleView('car')}
                             >
                                 BACK TO MENU
-                            </button>
-                                )} */}
+                            </div>
+                )}
             </div>
 
             {view === 'showroom' && (
