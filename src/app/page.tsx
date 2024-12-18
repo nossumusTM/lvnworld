@@ -823,7 +823,7 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
                     </div>
                       <div id='garage' className='garage'>
                         <button id='garage-button' onClick={handleGarageButtonClick}>SHOWROOM</button>
-                        <button id='chatbox-button' onClick={handleGarageButtonClick}>MESSENGER</button>
+                        <button id='chatbox-button'>MESSENGER</button>
                       </div>
                     </>
                         )}
