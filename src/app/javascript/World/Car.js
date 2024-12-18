@@ -941,27 +941,29 @@ export default class Car
                 break;
     
                 default:
-                    // Fallback to default car models if carName doesn't match
-                    this.models.chassis = this.resources.items.carDefaultChassis; // Main chassis
-                
-                    // Ensure the chassis model is defined and log its children
-                    if (this.models.chassis && this.models.chassis.scene) {
-                        console.log(`Chassis model children for ${carName}:`);
-                        this.models.chassis.scene.traverse((child) => {
-                            if (child instanceof THREE.Mesh) {
-                                console.log(`Original Child Name: ${child.name}`);
-                
-                                // Rename child.name to match the retrieved matcap key
-                                if (matcaps.chassis) {
-                                    const matcapName = matcaps.chassis;
-                                    const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1);
-                                    child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
-                                    console.log(`Updated Child Name: ${child.name}`);
+                    if (!this.models.chassis) {
+                        // Fallback to default car models if carName doesn't match
+                        this.models.chassis = this.resources.items.carDefaultChassis; // Main chassis
+                    
+                        // Ensure the chassis model is defined and log its children
+                        if (this.models.chassis && this.models.chassis.scene) {
+                            console.log(`Chassis model children for ${carName}:`);
+                            this.models.chassis.scene.traverse((child) => {
+                                if (child instanceof THREE.Mesh) {
+                                    console.log(`Original Child Name: ${child.name}`);
+                    
+                                    // Rename child.name to match the retrieved matcap key
+                                    if (matcaps.chassis) {
+                                        const matcapName = matcaps.chassis;
+                                        const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1);
+                                        child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
+                                        console.log(`Updated Child Name: ${child.name}`);
+                                    }
                                 }
-                            }
-                        });
-                    } else {
-                        console.warn('Chassis model is not defined or missing scene');
+                            });
+                        } else {
+                            console.warn('Chassis model is not defined or missing scene');
+                        }
                     }
                 
                     this.models.bottom = this.resources.items.carDefaultChassisBottom; // Bottom part
