@@ -639,15 +639,43 @@ export default function GaragePage() {
         backgroundScene.add(backgroundDirectionalLight);
         backgroundScene.background = new THREE.Color('#000'); // Updated background color
 
+        // Create an AbortController to manage fetch cancellation
+        const controller = new AbortController();
+        const signal = controller.signal;
+
         // Load the video and apply it as a texture
         const video = document.createElement('video');
-        video.src = '/images/videos/video.mp4';
         video.crossOrigin = 'anonymous';
         video.loop = true;
         video.autoplay = true;
         video.muted = true;
         video.playsInline = true;
-        video.play();
+
+        
+         // Fetch the video source
+         fetch('/images/videos/video.mp4', { signal })
+         .then(response => {
+             if (!response.ok) {
+             throw new Error('Failed to fetch video');
+             }
+             return response.blob(); // Get the video as a Blob
+         })
+         .then(blob => {
+             const videoURL = URL.createObjectURL(blob); // Create a URL for the video blob
+             video.src = videoURL; // Set the video source
+ 
+             // Wait for the video to be ready and then play
+             video.oncanplaythrough = () => {
+             video.play(); // Play the video once it's ready
+             };
+         })
+         .catch(error => {
+             if (error.name === 'AbortError') {
+             console.log('Video fetch aborted');
+             } else {
+             console.error('Error fetching video:', error);
+             }
+         }); 
 
         // Prevent video interaction
         video.controls = false; // Disable video controls

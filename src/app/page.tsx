@@ -308,12 +308,6 @@ export default function Home() {
 
     wsRef.current.onmessage = (event) => {
 
-      // Check if the message should be ignored
-      // if (hasReceivedWorldCounts) {
-      //     console.log("World counts already received, ignoring further messages.");
-      //     return;
-      // }
-
       let message;
         try {
             // Parse the message from the WebSocket event
@@ -357,10 +351,11 @@ export default function Home() {
 
       // User count
       if (message.type === 'playerCount') {
+        console.log('Received playerCount message:', message); // Debug log
         // Update the player count display
         const playerCountElement = document.getElementById('userCountDisplay');
         if (playerCountElement) {
-          playerCountElement.innerText = `${message.count}`;
+          playerCountElement.innerHTML = `${message.count}`;
         }
 
         // Update the signal bars
