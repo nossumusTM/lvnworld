@@ -1793,15 +1793,19 @@ export default function GaragePage() {
     }, [initializeWebSocket]);
 
     return (
-        <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+        <div >
             {isLoading && (
-                <div className="loadingLayer">
-                <h2 style={{textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)'}}>Initializing...</h2>
-              </div>
+            <div className="spinner-box">
+                <div className="blue-orbit leo"></div>
+                <div className="green-orbit leo"></div>
+                <div className="red-orbit leo"></div>
+                <div className="white-orbit w1 leo"></div>
+                <div className="white-orbit w2 leo"></div>
+                <div className="white-orbit w3 leo"></div>
+            </div>
             )}
+
             <canvas ref={canvasRef} style={{ width: '100%', height: '100%' }} />
-            
-            
             
             <div className="coin-element">
                 <div className="coin-container">

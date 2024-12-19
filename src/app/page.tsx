@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useAccount } from 'wagmi';
 import { useWebSocket } from './context/WebSocketContext';
 import { initGlobe, addSignalEffect, removeSignalEffect } from './globe'; // Adjust path as necessary
+import { FaRedo } from 'react-icons/fa';
 
 // Dynamically import the Application component and disable SSR
 const Application = dynamic(() => import('./javascript/Application'), {
@@ -45,6 +46,10 @@ export default function Home() {
 
   const worldPlayerCounts = new Map<string, number>(); // To track player counts per worldId
   const activeSignals = new Map<string, THREE.Object3D>(); // To track active signals
+
+  const handleReload = () => {
+    window.location.reload(); // Reload the page
+  };
 
   const predefinedWorldIds = [
     'Baku', 'New York', 'Tokyo', 'Rome', 'Tel Aviv',
@@ -694,14 +699,21 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
         }, 500);
 
       }
+
+      
     }, [isConnected, address, hasAppInitialized]);
 
     // Flag to check WS connection
     if (!isWebSocketReady && showLoadingLayer) {
       return (
-        <div className="pulsing-message">
-            <h2 style={{textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)'}}>Loading...</h2>
-          </div>
+        <div className="spinner-box">
+        <div className="blue-orbit leo"></div>
+        <div className="green-orbit leo"></div>
+        <div className="red-orbit leo"></div>
+        <div className="white-orbit w1 leo"></div>
+        <div className="white-orbit w2 leo"></div>
+        <div className="white-orbit w3 leo"></div>
+      </div>
       );
     }
 
@@ -823,12 +835,37 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
                 </h1>
             </div> */}
             <div id="world-layer">
-              <input 
+              {/* <input 
                 type="text" 
                 id="search-bar" 
                 placeholder="Search destination..." 
                 onInput={(event) => filterWorlds(event)} 
-              />
+              /> */}
+               <div style={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
+                <input
+                  style={{animation: "pulse 1.5s infinite"}}
+                  type="text"
+                  id="search-bar"
+                  placeholder="Search destination..."
+                  onInput={(event) => filterWorlds(event)}
+                />
+                <button
+                  onClick={() => window.location.reload()} // Reload the page
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    width: '50px',
+                    height: '50px',
+                    background: 'none',
+                    cursor: 'pointer',
+                    paddingRight: '5px'
+                  }}
+                >
+                  {/* Use the FaRedo icon from react-icons */}
+                  <FaRedo size={15} style={{ color: '#fff' }} />
+                </button>
+              </div>
             
                     {/* <h2>Select a World</h2> */}
                     <div className="scroll-container">
