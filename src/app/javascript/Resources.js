@@ -200,12 +200,14 @@ const gtiWheelsSource = '/models/240gti/default/wheels.glb'
 const gtiAntenaSource = '/models/240gti/default/antena.glb'
 
 // Howler Packard
-const howlerChassisSource = '/models/howler/auto.glb'
-const howlerBacklightsSource = '/models/howler/backlights2.glb'
-const howlerBacklightsReverseSource = '/models/howler/backlightsReverse1.glb'
-const howlerHeadlightsSource = '/models/howler/headlights1.glb'
-const howlerWheelsSource = '/models/howler/wheel.glb'
-const howlerAntenaSource = '/models/howler/antena.glb'
+const howlerChassisSource = '/models/howler/default/chassis.glb'
+const howlerChassisBottomSource = '/models/howler/default/chassisbottom.glb'
+const howlerBacklightsSource = '/models/howler/default/backlights.glb'
+const howlerBacklightsReverseSource = '/models/howler/default/backlightsReverse.glb'
+const howlerHeadlightsSource = '/models/howler/default/headlights.glb'
+const howlerHeadlightsPartSource = '/models/howler/default/headlightsPart.glb'
+const howlerWheelsSource = '/models/howler/default/wheel.glb'
+const howlerAntenaSource = '/models/howler/default/antena.glb'
 
 // RC TraxShark
 const rcTruckChassisSource = '/models/rctruck/auto1.glb'
@@ -551,8 +553,10 @@ export default class Resources extends EventEmitter
 
             // Howler Packard
             { name: 'howlerChassis', source: howlerChassisSource },
+            { name: 'howlerChassisBottom', source: howlerChassisBottomSource },
             { name: 'howlerBacklights', source: howlerBacklightsSource },
             { name: 'howlerHeadlights', source: howlerHeadlightsSource },
+            { name: 'howlerHeadlightsPart', source: howlerHeadlightsPartSource },
             { name: 'howlerBacklightsReverse', source: howlerBacklightsReverseSource },
             { name: 'howlerWheels', source: howlerWheelsSource },
             { name: 'howlerAntena', source: howlerAntenaSource },
