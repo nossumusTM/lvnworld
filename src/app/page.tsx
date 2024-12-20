@@ -149,6 +149,11 @@ export default function Home() {
     "Florence": { lat: 43.7700, lng: 11.2577 },
     "Beijing": { lat: 39.9042, lng: 116.4074 },
     "Hong Kong": { lat: 22.3193, lng: 114.1694 },
+    "Seoul": { lat: 37.5503, lng: 126.9971 },
+    "Los Angeles": { lat: 34.0549, lng: 118.2426 },
+    "Paris": { lat: 48.8575, lng: 2.3514 },
+    "Las Vegas": { lat: 36.1716, lng: 115.1391 },
+    "Istanbul": { lat: 41.0082, lng: 28.9784 },
     "Reykjavik": { lat: 64.1470, lng: 21.9408 },
     "Doha": { lat: 25.2854, lng: 51.5310 },
     "Moscow": { lat: 55.755, lng: 37.6173 },
@@ -258,14 +263,6 @@ export default function Home() {
 
     const token = localStorage.getItem('token');
     const serverAddress = `wss://krashbox.glitch.me?token=${token}`;
-
-    // Retry logic for WebSocket connection if it closes unexpectedly
-    let retryCount = 0;
-    const maxRetries = 3;
-    const retryDelay = 1000;
-
-    const connectWebSocket = () => {
-
     wsRef.current = new WebSocket(serverAddress);
 
     wsRef.current.onopen = () => {
@@ -427,21 +424,8 @@ export default function Home() {
      wsRef.current.onclose = () => {
       console.log('WebSocket closed');
       // setIsWebSocketReady(false);
-
-      if (retryCount < maxRetries) {
-        console.log(`Attempting reconnect... (Retry #${retryCount + 1})`);
-        setTimeout(() => {
-          retryCount++;
-          connectWebSocket();  // Retry the connection
-        }, retryDelay * 2); // Use increasing delay for retries
-      } else {
-        console.warn('Max retries reached. WebSocket not reconnected.');
-      }
     };
-}
-
     // localStorage.removeItem('token');
-    connectWebSocket();
   }, []);
 
   let searchQuery = '';
@@ -560,6 +544,10 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
   
       if (isConnected && address && !hasAppInitialized) {
         setPlayerId(address);
+
+        // Only initialize WebSocket once after wallet connects and app initializes
+        initializeWebSocket(address);
+
         // localStorage.setItem('playerId', address);
         console.log('Wallet connected:', address);
         // localStorage.removeItem('playerId');
@@ -570,8 +558,7 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
         // Set a flag to ensure the Application only initializes once
         setHasAppInitialized(true);
   
-        // Only initialize WebSocket once after wallet connects and app initializes
-        initializeWebSocket(address);
+        
   
         // Fetch the token for the connected player
         getToken(address);
@@ -597,7 +584,7 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
     }, [isConnected, address, hasAppInitialized]);
 
     // Flag to check WS connection
-    if (!isWebSocketReady) {
+    if (!isWebSocketReady && showLoadingLayer) {
       return (
         <div className="pulse">
       </div>
