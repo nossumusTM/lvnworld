@@ -424,9 +424,9 @@ export default function Home() {
       console.error('WebSocket error:', error);
     };
 
-    wsRef.current.onclose = () => {
+     wsRef.current.onclose = () => {
       console.log('WebSocket closed');
-      setIsWebSocketReady(false);
+      // setIsWebSocketReady(false);
 
       if (retryCount < maxRetries) {
         console.log(`Attempting reconnect... (Retry #${retryCount + 1})`);
@@ -438,7 +438,7 @@ export default function Home() {
         console.warn('Max retries reached. WebSocket not reconnected.');
       }
     };
-  }
+}
 
     // localStorage.removeItem('token');
     connectWebSocket();
