@@ -1341,60 +1341,455 @@ export default class Car
 
             case 'RC TraxShark':
                 this.models.chassis = this.resources.items.rcTruckChassis;
-                this.models.wheel = this.resources.items.rcTruckWheels;
+                // Ensure the chassis model is defined and log its children
+                if (this.models.chassis && this.models.chassis.scene) {
+                    console.log(`Chassis model children for ${carName}:`);
+                    this.models.chassis.scene.traverse((child) => {
+                        if (child instanceof THREE.Mesh) {
+                            console.log(`Original Child Name: ${child.name}`);
+            
+                            // Rename child.name to match the retrieved matcap key
+                            if (matcaps.chassis) {
+                                const matcapName = matcaps.chassis;
+                                const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1);
+                                child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
+                                console.log(`Updated Child Name: ${child.name}`);
+                            }
+                        }
+                    });
+                } else {
+                    console.warn('Chassis model is not defined or missing scene');
+                }
+
+                this.models.bottom = this.resources.items.rcTruckChassisBottom; // Bottom part
+                    if (this.models.bottom && this.models.bottom.scene) {
+                        console.log(`Bottom model children for ${carName}:`);
+                        this.models.bottom.scene.traverse((child) => {
+                            if (child instanceof THREE.Mesh) {
+                                console.log(`Original Child Name: ${child.name}`);
+                
+                                // Rename child.name to match the retrieved matcap key
+                                if (matcaps.chassisbottom) {
+                                    const matcapName = matcaps.chassisbottom;
+                                    const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1); // Capitalize the first letter
+                                    child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
+                                    console.log(`Updated Child Name: ${child.name}`);
+                                }
+                            }
+                        });
+                    } else {
+                        console.warn('Bottom model is not defined or missing scene');
+                    }
+
+                    this.models.window = this.resources.items.rcTruckWindow; // Window
+                    if (this.models.window && this.models.window.scene) {
+                        console.log(`Window model children for ${carName}:`);
+                        this.models.window.scene.traverse((child) => {
+                            if (child instanceof THREE.Mesh) {
+                                console.log(`Original Child Name: ${child.name}`);
+                
+                                // Rename child.name to match the retrieved matcap key
+                                if (matcaps.window) {
+                                    const matcapName = matcaps.window;
+                                    const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1);
+                                    child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
+                                    console.log(`Updated Child Name: ${child.name}`);
+                                }
+                            }
+                        });
+                    } else {
+                        console.warn('Window model is not defined or missing scene');
+                    }
+                
                 this.models.antena = this.resources.items.rcTruckAntena;
                 this.models.headLights = this.resources.items.rcTruckHeadlights;
                 this.models.backLightsBrake = this.resources.items.rcTruckBacklights;
                 this.models.backLightsReverse = this.resources.items.rcTruckBacklightsReverse;
                 this.models.backLightsBattery = this.resources.items.carDefaultBackLightsBattery;
+
+                this.models.wheel = this.resources.items.rcTruckWheels;
+                if (this.models.wheel && this.models.wheel.scene) {
+                    console.log(`Wheel model children for ${carName}:`);
+                    this.models.wheel.scene.traverse((child) => {
+                        if (child instanceof THREE.Mesh) {
+                            console.log(`Original Child Name: ${child.name}`);
+                            
+                            // Check if the child name matches 'wheels' and matcaps.wheels is available
+                            if (child.name.toLowerCase().includes('wheels') && matcaps.wheels) {
+                                const matcapName = matcaps.wheels;
+                                const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1);
+                                child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
+                                console.log(`Updated Child Name: ${child.name}`);
+                            }
+                        }
+                    });
+                } else {
+                    console.warn('Wheel model is not defined or missing scene');
+                }
             
                 console.log("RC TraxShark")
                 break;
 
             case 'Pusher Crowd':
                 this.models.chassis = this.resources.items.pusherCrowdChassis;
-                this.models.wheel = this.resources.items.pusherCrowdWheels;
+                // Ensure the chassis model is defined and log its children
+                if (this.models.chassis && this.models.chassis.scene) {
+                    console.log(`Chassis model children for ${carName}:`);
+                    this.models.chassis.scene.traverse((child) => {
+                        if (child instanceof THREE.Mesh) {
+                            console.log(`Original Child Name: ${child.name}`);
+            
+                            // Rename child.name to match the retrieved matcap key
+                            if (matcaps.chassis) {
+                                const matcapName = matcaps.chassis;
+                                const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1);
+                                child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
+                                console.log(`Updated Child Name: ${child.name}`);
+                            }
+                        }
+                    });
+                } else {
+                    console.warn('Chassis model is not defined or missing scene');
+                }
+
+                this.models.bottom = this.resources.items.pusherCrowdChassisBottom; // Bottom part
+                    if (this.models.bottom && this.models.bottom.scene) {
+                        console.log(`Bottom model children for ${carName}:`);
+                        this.models.bottom.scene.traverse((child) => {
+                            if (child instanceof THREE.Mesh) {
+                                console.log(`Original Child Name: ${child.name}`);
+                
+                                // Rename child.name to match the retrieved matcap key
+                                if (matcaps.chassisbottom) {
+                                    const matcapName = matcaps.chassisbottom;
+                                    const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1); // Capitalize the first letter
+                                    child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
+                                    console.log(`Updated Child Name: ${child.name}`);
+                                }
+                            }
+                        });
+                    } else {
+                        console.warn('Bottom model is not defined or missing scene');
+                    }
+
+                    this.models.window = this.resources.items.pusherCrowdWindow; // Window
+                    if (this.models.window && this.models.window.scene) {
+                        console.log(`Window model children for ${carName}:`);
+                        this.models.window.scene.traverse((child) => {
+                            if (child instanceof THREE.Mesh) {
+                                console.log(`Original Child Name: ${child.name}`);
+                
+                                // Rename child.name to match the retrieved matcap key
+                                if (matcaps.window) {
+                                    const matcapName = matcaps.window;
+                                    const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1);
+                                    child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
+                                    console.log(`Updated Child Name: ${child.name}`);
+                                }
+                            }
+                        });
+                    } else {
+                        console.warn('Window model is not defined or missing scene');
+                    }
+
                 this.models.antena = this.resources.items.pusherCrowdAntena;
                 this.models.headLights = this.resources.items.pusherCrowdHeadlights;
                 this.models.backLightsBrake = this.resources.items.pusherCrowdBacklights;
                 this.models.backLightsReverse = this.resources.items.pusherCrowdBacklightsReverse;
                 this.models.backLightsBattery = this.resources.items.carDefaultBackLightsBattery;
+
+                this.models.wheel = this.resources.items.pusherCrowdWheels;
+                if (this.models.wheel && this.models.wheel.scene) {
+                    console.log(`Wheel model children for ${carName}:`);
+                    this.models.wheel.scene.traverse((child) => {
+                        if (child instanceof THREE.Mesh) {
+                            console.log(`Original Child Name: ${child.name}`);
+                            
+                            // Check if the child name matches 'wheels' and matcaps.wheels is available
+                            if (child.name.toLowerCase().includes('wheels') && matcaps.wheels) {
+                                const matcapName = matcaps.wheels;
+                                const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1);
+                                child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
+                                console.log(`Updated Child Name: ${child.name}`);
+                            }
+                        }
+                    });
+                } else {
+                    console.warn('Wheel model is not defined or missing scene');
+                }
                 
                 console.log("Pusher Crowd")
                 break;
 
             case 'Impactus':
                 this.models.chassis = this.resources.items.impactusChassis;
-                this.models.wheel = this.resources.items.impactusWheels;
+                // Ensure the chassis model is defined and log its children
+                if (this.models.chassis && this.models.chassis.scene) {
+                    console.log(`Chassis model children for ${carName}:`);
+                    this.models.chassis.scene.traverse((child) => {
+                        if (child instanceof THREE.Mesh) {
+                            console.log(`Original Child Name: ${child.name}`);
+            
+                            // Rename child.name to match the retrieved matcap key
+                            if (matcaps.chassis) {
+                                const matcapName = matcaps.chassis;
+                                const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1);
+                                child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
+                                console.log(`Updated Child Name: ${child.name}`);
+                            }
+                        }
+                    });
+                } else {
+                    console.warn('Chassis model is not defined or missing scene');
+                }
+
+                this.models.bottom = this.resources.items.impactusChassisBottom; // Bottom part
+                    if (this.models.bottom && this.models.bottom.scene) {
+                        console.log(`Bottom model children for ${carName}:`);
+                        this.models.bottom.scene.traverse((child) => {
+                            if (child instanceof THREE.Mesh) {
+                                console.log(`Original Child Name: ${child.name}`);
+                
+                                // Rename child.name to match the retrieved matcap key
+                                if (matcaps.chassisbottom) {
+                                    const matcapName = matcaps.chassisbottom;
+                                    const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1); // Capitalize the first letter
+                                    child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
+                                    console.log(`Updated Child Name: ${child.name}`);
+                                }
+                            }
+                        });
+                    } else {
+                        console.warn('Bottom model is not defined or missing scene');
+                    }
+
+                    this.models.window = this.resources.items.impactusWindow; // Window
+                    if (this.models.window && this.models.window.scene) {
+                        console.log(`Window model children for ${carName}:`);
+                        this.models.window.scene.traverse((child) => {
+                            if (child instanceof THREE.Mesh) {
+                                console.log(`Original Child Name: ${child.name}`);
+                
+                                // Rename child.name to match the retrieved matcap key
+                                if (matcaps.window) {
+                                    const matcapName = matcaps.window;
+                                    const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1);
+                                    child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
+                                    console.log(`Updated Child Name: ${child.name}`);
+                                }
+                            }
+                        });
+                    } else {
+                        console.warn('Window model is not defined or missing scene');
+                    }
+
                 this.models.antena = this.resources.items.impactusAntena;
                 this.models.headLights = this.resources.items.impactusHeadlights;
                 this.models.backLightsBrake = this.resources.items.impactusBacklights;
                 this.models.backLightsReverse = this.resources.items.impactusBacklightsReverse;
                 this.models.backLightsBattery = this.resources.items.carDefaultBackLightsBattery;
+
+                this.models.wheel = this.resources.items.impactusWheels;
+                if (this.models.wheel && this.models.wheel.scene) {
+                    console.log(`Wheel model children for ${carName}:`);
+                    this.models.wheel.scene.traverse((child) => {
+                        if (child instanceof THREE.Mesh) {
+                            console.log(`Original Child Name: ${child.name}`);
+                            
+                            // Check if the child name matches 'wheels' and matcaps.wheels is available
+                            if (child.name.toLowerCase().includes('wheels') && matcaps.wheels) {
+                                const matcapName = matcaps.wheels;
+                                const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1);
+                                child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
+                                console.log(`Updated Child Name: ${child.name}`);
+                            }
+                        }
+                    });
+                } else {
+                    console.warn('Wheel model is not defined or missing scene');
+                }
                     
                 console.log("Impactus")
                 break;
 
             case 'Crushinator':
                 this.models.chassis = this.resources.items.zimbowChassis;
-                this.models.wheel = this.resources.items.zimbowWheels;
+                // Ensure the chassis model is defined and log its children
+                if (this.models.chassis && this.models.chassis.scene) {
+                    console.log(`Chassis model children for ${carName}:`);
+                    this.models.chassis.scene.traverse((child) => {
+                        if (child instanceof THREE.Mesh) {
+                            console.log(`Original Child Name: ${child.name}`);
+            
+                            // Rename child.name to match the retrieved matcap key
+                            if (matcaps.chassis) {
+                                const matcapName = matcaps.chassis;
+                                const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1);
+                                child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
+                                console.log(`Updated Child Name: ${child.name}`);
+                            }
+                        }
+                    });
+                } else {
+                    console.warn('Chassis model is not defined or missing scene');
+                }
+
+                this.models.bottom = this.resources.items.zimbowChassisBottom; // Bottom part
+                    if (this.models.bottom && this.models.bottom.scene) {
+                        console.log(`Bottom model children for ${carName}:`);
+                        this.models.bottom.scene.traverse((child) => {
+                            if (child instanceof THREE.Mesh) {
+                                console.log(`Original Child Name: ${child.name}`);
+                
+                                // Rename child.name to match the retrieved matcap key
+                                if (matcaps.chassisbottom) {
+                                    const matcapName = matcaps.chassisbottom;
+                                    const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1); // Capitalize the first letter
+                                    child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
+                                    console.log(`Updated Child Name: ${child.name}`);
+                                }
+                            }
+                        });
+                    } else {
+                        console.warn('Bottom model is not defined or missing scene');
+                    }
+
+                    this.models.window = this.resources.items.zimbowWindow; // Window
+                    if (this.models.window && this.models.window.scene) {
+                        console.log(`Window model children for ${carName}:`);
+                        this.models.window.scene.traverse((child) => {
+                            if (child instanceof THREE.Mesh) {
+                                console.log(`Original Child Name: ${child.name}`);
+                
+                                // Rename child.name to match the retrieved matcap key
+                                if (matcaps.window) {
+                                    const matcapName = matcaps.window;
+                                    const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1);
+                                    child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
+                                    console.log(`Updated Child Name: ${child.name}`);
+                                }
+                            }
+                        });
+                    } else {
+                        console.warn('Window model is not defined or missing scene');
+                    }
+
                 this.models.antena = this.resources.items.zimbowAntena;
                 this.models.headLights = this.resources.items.zimbowHeadlights;
                 this.models.backLightsBrake = this.resources.items.zimbowBacklights;
                 this.models.backLightsReverse = this.resources.items.zimbowBacklightsReverse;
                 this.models.backLightsBattery = this.resources.items.carDefaultBackLightsBattery;
+
+                this.models.wheel = this.resources.items.zimbowWheels;
+                if (this.models.wheel && this.models.wheel.scene) {
+                    console.log(`Wheel model children for ${carName}:`);
+                    this.models.wheel.scene.traverse((child) => {
+                        if (child instanceof THREE.Mesh) {
+                            console.log(`Original Child Name: ${child.name}`);
+                            
+                            // Check if the child name matches 'wheels' and matcaps.wheels is available
+                            if (child.name.toLowerCase().includes('wheels') && matcaps.wheels) {
+                                const matcapName = matcaps.wheels;
+                                const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1);
+                                child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
+                                console.log(`Updated Child Name: ${child.name}`);
+                            }
+                        }
+                    });
+                } else {
+                    console.warn('Wheel model is not defined or missing scene');
+                }
                         
                 console.log("Impactus")
                 break;
 
             case 'Goodwing':
                 this.models.chassis = this.resources.items.goodwingChassis;
-                this.models.wheel = this.resources.items.goodwingWheels;
+                // Ensure the chassis model is defined and log its children
+                if (this.models.chassis && this.models.chassis.scene) {
+                    console.log(`Chassis model children for ${carName}:`);
+                    this.models.chassis.scene.traverse((child) => {
+                        if (child instanceof THREE.Mesh) {
+                            console.log(`Original Child Name: ${child.name}`);
+            
+                            // Rename child.name to match the retrieved matcap key
+                            if (matcaps.chassis) {
+                                const matcapName = matcaps.chassis;
+                                const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1);
+                                child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
+                                console.log(`Updated Child Name: ${child.name}`);
+                            }
+                        }
+                    });
+                } else {
+                    console.warn('Chassis model is not defined or missing scene');
+                }
+
+                this.models.bottom = this.resources.items.goodwingChassisBottom; // Bottom part
+                    if (this.models.bottom && this.models.bottom.scene) {
+                        console.log(`Bottom model children for ${carName}:`);
+                        this.models.bottom.scene.traverse((child) => {
+                            if (child instanceof THREE.Mesh) {
+                                console.log(`Original Child Name: ${child.name}`);
+                
+                                // Rename child.name to match the retrieved matcap key
+                                if (matcaps.chassisbottom) {
+                                    const matcapName = matcaps.chassisbottom;
+                                    const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1); // Capitalize the first letter
+                                    child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
+                                    console.log(`Updated Child Name: ${child.name}`);
+                                }
+                            }
+                        });
+                    } else {
+                        console.warn('Bottom model is not defined or missing scene');
+                    }
+
+                    this.models.window = this.resources.items.goodwingWindow; // Window
+                    if (this.models.window && this.models.window.scene) {
+                        console.log(`Window model children for ${carName}:`);
+                        this.models.window.scene.traverse((child) => {
+                            if (child instanceof THREE.Mesh) {
+                                console.log(`Original Child Name: ${child.name}`);
+                
+                                // Rename child.name to match the retrieved matcap key
+                                if (matcaps.window) {
+                                    const matcapName = matcaps.window;
+                                    const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1);
+                                    child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
+                                    console.log(`Updated Child Name: ${child.name}`);
+                                }
+                            }
+                        });
+                    } else {
+                        console.warn('Window model is not defined or missing scene');
+                    }
+
                 this.models.antena = this.resources.items.goodwingAntena;
                 this.models.headLights = this.resources.items.goodwingHeadlights;
                 this.models.backLightsBrake = this.resources.items.goodwingBacklights;
                 this.models.backLightsReverse = this.resources.items.goodwingBacklightsReverse;
                 this.models.backLightsBattery = this.resources.items.carDefaultBackLightsBattery;
+
+                this.models.wheel = this.resources.items.goodwingWheels;
+                if (this.models.wheel && this.models.wheel.scene) {
+                    console.log(`Wheel model children for ${carName}:`);
+                    this.models.wheel.scene.traverse((child) => {
+                        if (child instanceof THREE.Mesh) {
+                            console.log(`Original Child Name: ${child.name}`);
+                            
+                            // Check if the child name matches 'wheels' and matcaps.wheels is available
+                            if (child.name.toLowerCase().includes('wheels') && matcaps.wheels) {
+                                const matcapName = matcaps.wheels;
+                                const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1);
+                                child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
+                                console.log(`Updated Child Name: ${child.name}`);
+                            }
+                        }
+                    });
+                } else {
+                    console.warn('Wheel model is not defined or missing scene');
+                }
                             
                 console.log("Goodwing")
                 break;

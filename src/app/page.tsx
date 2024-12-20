@@ -196,21 +196,6 @@ export default function Home() {
     "Peru": { lat: 9.1900, lng: 75.0152 },
 };
 
-  // const worldIcons = [
-  //   '🇦🇿', '🇺🇸', '🇯🇵', '🇮🇹', '🇮🇱',
-  //   '🇮🇳', '🇩🇪', '🇮🇹', '🇨🇳', '🇨🇳',
-  //   '🇰🇷', '🇺🇸', '🇫🇷', '🇺🇸', '🇹🇷',
-  //   '🇮🇸', '🇶🇦', '🇷🇺', '🇸🇬', '🇮🇩',
-  //   '🇲🇽', '🇪🇸', '🇨🇿', '🇳🇴', '🇦🇷',
-  //   '🇭🇺', '🇧🇷', '🇩🇰', '🇬🇧', '🇦🇪',
-  //   '🇦🇺', '🇬🇭', '🇫🇮', '🇮🇪', '🇵🇹',
-  //   '🇨🇭', '🇨🇴', '🇦🇺', '🇰🇪', '🇸🇪',
-  //   '🇦🇹', '🇧🇪', '🇺🇸', '🇨🇭', '🇫🇷',
-  //   '🇩🇪', '🇨🇺', '🇨🇦', '🇲🇬', '🇿🇦',
-  //   '🇺🇸', '🇮🇹', '🇹🇭', '🇮🇳', '🇪🇸',
-  //   '🇳🇱', '🇬🇷', '🇲🇨', '🇮🇹', '🇵🇪',
-  // ];
-
   // Function to get token from the server
   const getToken = async (playerId: string) => {
     try {
@@ -230,16 +215,6 @@ export default function Home() {
       localStorage.setItem('token', token); // Store token in localStorage
       setToken(token); // Set token in state
 
-      // const storedCarName = localStorage.getItem('selectedCar');
-      // console.log(`Selected car "${localStorage}"`);
-
-    //   if (storedCarName) {
-    //     setCarName(storedCarName);
-    //     // Optionally delete carName after loading
-    //     // localStorage.removeItem('selectedCar');
-    //     console.log(`Car name "${storedCarName}" loaded and removed from localStorage.`);
-    // }
-      // console.log("SELECTED CAR NAME", carName);
       console.log('Token received and stored:', token);
     } catch (error) {
       console.error('Error fetching token:', error);
@@ -247,26 +222,26 @@ export default function Home() {
   };
 
   // Handle disconnection and refresh the page
-  useEffect(() => {
-    if (!isConnected && hasAppInitialized) {
+  // useEffect(() => {
+  //   if (!isConnected && hasAppInitialized) {
 
-      const userDisplay = document.getElementById('userDisplay');
-      const batteryStatus = document.getElementById('battery-status');
-      const scoreElement = document.getElementById('score-status');
-      const coinMarket = document.getElementById('coin-market');
-      const inviteButton = document.getElementById('invite-button');
-      const tradeButton = document.getElementById('trade-button');
-      const partyElement = document.getElementById('party-info');
+  //     const userDisplay = document.getElementById('userDisplay');
+  //     const batteryStatus = document.getElementById('battery-status');
+  //     const scoreElement = document.getElementById('score-status');
+  //     const coinMarket = document.getElementById('coin-market');
+  //     const inviteButton = document.getElementById('invite-button');
+  //     const tradeButton = document.getElementById('trade-button');
+  //     const partyElement = document.getElementById('party-info');
 
-      if (userDisplay) {
-        userDisplay.style.display = 'none';
-      }
+  //     if (userDisplay) {
+  //       userDisplay.style.display = 'none';
+  //     }
 
-      console.log('Wallet disconnected, refreshing the page...');
-      // window.location.reload(); // Refresh the page when the user disconnects
-      window.location.href = 'https://krashbox.world'
-    }
-  }, [isConnected, hasAppInitialized]);
+  //     console.log('Wallet disconnected, refreshing the page...');
+  //     // window.location.reload(); // Refresh the page when the user disconnects
+  //     window.location.href = 'https://krashbox.world'
+  //   }
+  // }, [isConnected, hasAppInitialized]);
 
   const initializeWebSocket = useCallback((playerId: string) => {
 
@@ -283,6 +258,14 @@ export default function Home() {
 
     const token = localStorage.getItem('token');
     const serverAddress = `wss://krashbox.glitch.me?token=${token}`;
+
+    // Retry logic for WebSocket connection if it closes unexpectedly
+    let retryCount = 0;
+    const maxRetries = 3;
+    const retryDelay = 1000;
+
+    const connectWebSocket = () => {
+
     wsRef.current = new WebSocket(serverAddress);
 
     wsRef.current.onopen = () => {
@@ -443,20 +426,23 @@ export default function Home() {
 
     wsRef.current.onclose = () => {
       console.log('WebSocket closed');
-      // setIsWebSocketReady(false);
-      // if (retryCount < maxRetries) {
-      //     setTimeout(() => {
-      //         setRetryCount((prev) => prev + 1);
-      //         initializeWebSocket();  // Retry connection
-      //     }, retryDelay * 2);
-      // } else {
-      //     console.warn('Max retries reached. WebSocket not reconnected.');
-      // }
-  };
+      setIsWebSocketReady(false);
+
+      if (retryCount < maxRetries) {
+        console.log(`Attempting reconnect... (Retry #${retryCount + 1})`);
+        setTimeout(() => {
+          retryCount++;
+          connectWebSocket();  // Retry the connection
+        }, retryDelay * 2); // Use increasing delay for retries
+      } else {
+        console.warn('Max retries reached. WebSocket not reconnected.');
+      }
+    };
+  }
 
     // localStorage.removeItem('token');
-
-  }, [retryCount]);
+    connectWebSocket();
+  }, []);
 
   let searchQuery = '';
 
@@ -553,13 +539,6 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
       wsRef.current.close();
       wsRef.current = null;
     }
-    
-    // setTimeout(() => {
-    //     if (wsRef.current) {
-    //       wsRef.current.close();
-    //       wsRef.current = null;
-    //   }
-    // }, 600);
 
     // Disable all other items visually and clear their onclick events
     Array.from(worldList.children).forEach((item) => {
@@ -572,93 +551,8 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
     // Apply 'selected' class to the clicked item
     listItem.classList.remove('disabled');
     listItem.classList.add('selected');
-
-    // Close WebSocket on world selection
-    if (wsRef.current) {
-      // wsRef.current.close();
-      // wsRef.current = null;
-    }
   }
 };
-
-
-  // const updateWorldList = (counts: Record<string, number>) => {
-  //   const worldList = document.getElementById('world-list');
-  //   if (worldList) {
-  //     worldList.innerHTML = ''; // Clear existing list items
-
-  //     predefinedWorldIds.forEach((worldId, index) => {
-  //       const listItem = document.createElement('li');
-  //       const playerCount = counts[worldId] || 0; // Default to 0 if no count available
-
-  //       // Create a container div for player count, flag, and world ID
-  //       const contentContainer = document.createElement('div');
-  //       contentContainer.classList.add('content-container');
-
-  //       // Player count div
-  //       const playerCountDiv = document.createElement('div');
-  //       playerCountDiv.textContent = `${playerCount}/20`;
-  //       playerCountDiv.classList.add('player-count');
-
-  //       // Flag div
-  //       const flagDiv = document.createElement('div');
-  //       flagDiv.textContent = worldIcons[index] || '🏳️'; // Default flag if none found
-  //       flagDiv.classList.add('flag');
-
-  //       // World ID div
-  //       const worldIdDiv = document.createElement('div');
-  //       worldIdDiv.textContent = worldId;
-  //       worldIdDiv.classList.add('world-id');
-
-  //       // Append playerCountDiv, flagDiv, and worldIdDiv to the container
-  //       contentContainer.appendChild(playerCountDiv);
-  //       contentContainer.appendChild(flagDiv);
-  //       contentContainer.appendChild(worldIdDiv);
-
-  //       // Append the container to the list item
-  //       listItem.appendChild(contentContainer);
-
-  //       // Disable other worlds if one is already selected
-  //       if (selectedWorldId && selectedWorldId !== worldId) {
-  //         listItem.classList.add('disabled');
-  //       }
-
-  //       // Highlight the selected world
-  //       if (selectedWorldId === worldId) {
-  //         listItem.classList.add('selected');
-  //       }
-
-  //       // Allow selection only if no world is currently selected
-  //       listItem.onclick = () => {
-  //         if (!selectedWorldId) {
-  //             setSelectedWorldId(worldId);
-  //             setIsWorldSelected(true); // Mark as selected by user
-  //             setIsCanvasInitialized(false);
-  //             setApplication(false);
-  //             setTimeout(() => setApplication(true), 500);
-
-  //             // Disable all other items visually and clear their onclick events
-  //             Array.from(worldList.children).forEach((item) => {
-  //                 item.classList.add('disabled');
-  //                 item.classList.remove('selected');
-  //                 (item as HTMLElement).onclick = null; // Prevent further clicks
-  //             });
-
-  //             // Apply 'selected' class to the clicked item
-  //             listItem.classList.remove('disabled');
-  //             listItem.classList.add('selected');
-
-  //             // Close WebSocket on world selection
-  //             if (wsRef.current) {
-  //               wsRef.current.close();
-  //               wsRef.current = null;
-  //             }
-  //         }
-  //     };
-  //       worldList.appendChild(listItem);
-  //     });
-  //   }
-  // };
 
     // Initialize the application only when the wallet connects
     useEffect(() => {
@@ -703,7 +597,7 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
     }, [isConnected, address, hasAppInitialized]);
 
     // Flag to check WS connection
-    if (!isWebSocketReady && showLoadingLayer) {
+    if (!isWebSocketReady) {
       return (
         <div className="pulse">
       </div>

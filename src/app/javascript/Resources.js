@@ -155,7 +155,6 @@ const chargetDefaultBacklights = '/models/charger/default/backlights.glb'
 const chargetDefaultBacklightsReverse = '/models/charger/default/backlightsReverse.glb'
 const chargetDefaultHeadlights = '/models/charger/default/headlights.glb'
 
-
 // Wreckslinger
 const wreckslingerDefaultChassisSource = '/models/wreckslinger/default/chassis.glb'
 const wreckslingerDefaultChassisBottomSource = '/models/wreckslinger/default/chassisbottom.glb'
@@ -167,14 +166,13 @@ const wreckslingerDefaultAntenaSource = '/models/wreckslinger/default/antena.glb
 const wreckslingerDefaultWheelsSource = '/models/wreckslinger/default/wheels.glb'
 
 // Gangover
-const gangoverDefaultHeadlightsPartSource = '/models/gangover/default/headlightsPart.glb'
-
 const gangoverDefaultChassisSource = '/models/gangover/default/chassis.glb'
 const gangoverDefaultChassisBottomSource = '/models/gangover/default/chassisbottom.glb'
 const gangoverDefaultAntenaSource = '/models/gangover/default/antena.glb'
 const gangoverDefaultBacklightsSource = '/models/gangover/default/backlights.glb'
 const gangoverDefaultBacklightsReverseSource = '/models/gangover/default/backlightsReverse.glb'
 const gangoverDefaultHeadlightsSource = '/models/gangover/default/headlights.glb'
+const gangoverDefaultHeadlightsPartSource = '/models/gangover/default/headlightsPart.glb'
 const gangoverDefaultWindowsSource = '/models/gangover/default/windows.glb'
 const gangoverDefaultWheelsSource = '/models/gangover/default/wheels.glb'
 
@@ -188,7 +186,6 @@ const mclarenDefaultHeadlightsSource = '/models/mclaren/default/headlights.glb'
 const mclarenDefaultWindowsSource = '/models/mclaren/default/windows.glb'
 const mclarenDefaultWheelsSource = '/models/mclaren/default/wheel.glb'
 
-
 // 240 GTI
 const gtiChassisSource = '/models/240gti/default/chassis.glb'
 const gtiChassisBottomSource = '/models/240gti/default/chassisbottom.glb'
@@ -198,6 +195,16 @@ const gtiBacklightsReverseSource = '/models/240gti/default/backlightsReverse.glb
 const gtiHeadlightsSource = '/models/240gti/default/headlights.glb'
 const gtiWheelsSource = '/models/240gti/default/wheels.glb'
 const gtiAntenaSource = '/models/240gti/default/antena.glb'
+
+// Goodwing
+const goodwingChassisSource = '/models/goodwing/default/chassis.glb'
+const goodwingChassisBottomSource = '/models/goodwing/default/chassisbottom.glb'
+const goodwingWindowSource = '/models/goodwing/default/windows.glb'
+const goodwingBacklightsSource = '/models/goodwing/default/backlights.glb'
+const goodwingHeadlightsSource = '/models/goodwing/default/headlights.glb'
+const goodwingBacklightsReverseSource = '/models/goodwing/default/backlightsReverse.glb'
+const goodwingWheelsSource = '/models/goodwing/default/wheel.glb'
+const goodwingAntenaSource = '/models/goodwing/default/antena.glb'
 
 // Howler Packard
 const howlerChassisSource = '/models/howler/default/chassis.glb'
@@ -210,44 +217,44 @@ const howlerWheelsSource = '/models/howler/default/wheel.glb'
 const howlerAntenaSource = '/models/howler/default/antena.glb'
 
 // RC TraxShark
-const rcTruckChassisSource = '/models/rctruck/auto1.glb'
-const rcTruckBacklightsSource = '/models/rctruck/backlights1.glb'
-const rcTruckHeadlightsSource = '/models/rctruck/headlights1.glb'
-const rcTruckBacklightsReverseSource = '/models/rctruck/backlightsReverse.glb'
-const rcTruckWheelsSource = '/models/rctruck/wheel1.glb'
-const rcTruckAntenaSource = '/models/rctruck/antena.glb'
+const rcTruckChassisSource = '/models/rctruck/default/chassis.glb'
+const rcTruckChassisBottomSource = '/models/rctruck/default/chassisbottom.glb'
+const rcTruckWindowSource = '/models/rctruck/default/window.glb'
+const rcTruckBacklightsSource = '/models/rctruck/default/backlights.glb'
+const rcTruckHeadlightsSource = '/models/rctruck/default/headlights.glb'
+const rcTruckBacklightsReverseSource = '/models/rctruck/default/backlightsReverse.glb'
+const rcTruckWheelsSource = '/models/rctruck/default/wheel.glb'
+const rcTruckAntenaSource = '/models/rctruck/default/antena.glb'
 
 // Pusher Crowd
-const pusherCrowdChassisSource = '/models/pushpushpush/auto.glb'
-const pusherCrowdBacklightsSource = '/models/pushpushpush/backlights2.glb'
-const pusherCrowdHeadlightsSource = '/models/pushpushpush/headlights2.glb'
-const pusherCrowdBacklightsReverseSource = '/models/pushpushpush/backlightsReverse.glb'
-const pusherCrowdWheelsSource = '/models/pushpushpush/showroomwheel.glb'
-const pusherCrowdAntenaSource = '/models/pushpushpush/antena.glb'
+const pusherCrowdChassisSource = '/models/pushpushpush/default/chassis.glb'
+const pusherCrowdChassisBottomSource = '/models/pushpushpush/default/chassisbottom.glb'
+const pusherCrowdWindowSource = '/models/pushpushpush/default/window.glb'
+const pusherCrowdBacklightsSource = '/models/pushpushpush/default/backlights.glb'
+const pusherCrowdHeadlightsSource = '/models/pushpushpush/default/headlights.glb'
+const pusherCrowdBacklightsReverseSource = '/models/pushpushpush/default/backlightsReverse.glb'
+const pusherCrowdWheelsSource = '/models/pushpushpush/default/wheel.glb'
+const pusherCrowdAntenaSource = '/models/pushpushpush/default/antena.glb'
 
 // Impactus
-const impactusChassisSource = '/models/impactus/auto.glb'
-const impactusBacklightsSource = '/models/impactus/backlights1.glb'
-const impactusHeadlightsSource = '/models/impactus/headlights1.glb'
-const impactusBacklightsReverseSource = '/models/impactus/backlightsReverse.glb'
-const impactusWheelsSource = '/models/impactus/wheel1.glb'
-const impactusAntenaSource = '/models/impactus/antena.glb'
+const impactusChassisSource = '/models/impactus/default/chassis.glb'
+const impactusChassisBottomSource = '/models/impactus/default/chassisbottom.glb'
+const impactusWindowSource = '/models/impactus/default/windows.glb'
+const impactusBacklightsSource = '/models/impactus/default/backlights.glb'
+const impactusHeadlightsSource = '/models/impactus/default/headlights.glb'
+const impactusBacklightsReverseSource = '/models/impactus/default/backlightsReverse.glb'
+const impactusWheelsSource = '/models/impactus/default/wheel.glb'
+const impactusAntenaSource = '/models/impactus/default/antena.glb'
 
 // Crushinator
-const zimbowChassisSource = '/models/zimbow/auto.glb'
-const zimbowBacklightsSource = '/models/zimbow/backlights1.glb'
-const zimbowHeadlightsSource = '/models/zimbow/headlights1.glb'
-const zimbowBacklightsReverseSource = '/models/zimbow/backlightsReverse.glb'
-const zimbowWheelsSource = '/models/zimbow/wheels.glb'
-const zimbowAntenaSource = '/models/zimbow/antena.glb'
-
-// Goodwing
-const goodwingChassisSource = '/models/goodwing/auto.glb'
-const goodwingBacklightsSource = '/models/goodwing/backlights1.glb'
-const goodwingHeadlightsSource = '/models/goodwing/headlights1.glb'
-const goodwingBacklightsReverseSource = '/models/goodwing/backlightsReverse.glb'
-const goodwingWheelsSource = '/models/goodwing/wheel.glb'
-const goodwingAntenaSource = '/models/goodwing/antena.glb'
+const zimbowChassisSource = '/models/zimbow/default/chassis.glb'
+const zimbowChassisBottomSource = '/models/zimbow/default/chassisbottom.glb'
+const zimbowWindowSource = '/models/zimbow/default/window.glb'
+const zimbowBacklightsSource = '/models/zimbow/default/backlights.glb'
+const zimbowHeadlightsSource = '/models/zimbow/default/headlights.glb'
+const zimbowBacklightsReverseSource = '/models/zimbow/default/backlightsReverse.glb'
+const zimbowWheelsSource = '/models/zimbow/default/wheels.glb'
+const zimbowAntenaSource = '/models/zimbow/default/antena.glb'
 
 // Car default 1
 const car1DefaultChassisSource = '/models/car1/default/chassis.glb'
@@ -563,6 +570,8 @@ export default class Resources extends EventEmitter
 
             // RC TraxShark
             { name: 'rcTruckChassis', source: rcTruckChassisSource },
+            { name: 'rcTruckChassisBottom', source: rcTruckChassisBottomSource },
+            { name: 'rcTruckWindow', source: rcTruckWindowSource },
             { name: 'rcTruckBacklights', source: rcTruckBacklightsSource },
             { name: 'rcTruckHeadlights', source: rcTruckHeadlightsSource },
             { name: 'rcTruckBacklightsReverse', source: rcTruckBacklightsReverseSource },
@@ -571,6 +580,8 @@ export default class Resources extends EventEmitter
 
             // Pusher Crowd
             { name: 'pusherCrowdChassis', source: pusherCrowdChassisSource },
+            { name: 'pusherCrowdChassisBottom', source: pusherCrowdChassisBottomSource },
+            { name: 'pusherCrowdWindow', source: pusherCrowdWindowSource },
             { name: 'pusherCrowdBacklights', source: pusherCrowdBacklightsSource },
             { name: 'pusherCrowdHeadlights', source: pusherCrowdHeadlightsSource },
             { name: 'pusherCrowdBacklightsReverse', source: pusherCrowdBacklightsReverseSource },
@@ -579,6 +590,8 @@ export default class Resources extends EventEmitter
 
             // Impactus
             { name: 'impactusChassis', source: impactusChassisSource },
+            { name: 'impactusChassisBottom', source: impactusChassisBottomSource },
+            { name: 'impactusWindow', source: impactusWindowSource },
             { name: 'impactusBacklights', source: impactusBacklightsSource },
             { name: 'impactusHeadlights', source: impactusHeadlightsSource },
             { name: 'impactusBacklightsReverse', source: impactusBacklightsReverseSource },
@@ -587,6 +600,8 @@ export default class Resources extends EventEmitter
 
             // Crushinator
             { name: 'zimbowChassis', source: zimbowChassisSource },
+            { name: 'zimbowChassisBottom', source: zimbowChassisBottomSource },
+            { name: 'zimbowWindow', source: zimbowWindowSource },
             { name: 'zimbowBacklights', source: zimbowBacklightsSource },
             { name: 'zimbowHeadlights', source: zimbowHeadlightsSource },
             { name: 'zimbowBacklightsReverse', source: zimbowBacklightsReverseSource },
@@ -595,6 +610,8 @@ export default class Resources extends EventEmitter
 
             // Goodwing
             { name: 'goodwingChassis', source: goodwingChassisSource },
+            { name: 'goodwingChassisBottom', source: goodwingChassisBottomSource },
+            { name: 'goodwingWindow', source: goodwingWindowSource },
             { name: 'goodwingBacklights', source: goodwingBacklightsSource },
             { name: 'goodwingHeadlights', source: goodwingHeadlightsSource },
             { name: 'goodwingBacklightsReverse', source: goodwingBacklightsReverseSource },
