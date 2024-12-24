@@ -14,10 +14,6 @@ declare module 'three/examples/jsm/loaders/GLTFLoader' {
     }
 }
 
-interface Window {
-    ethereum?: any; // Declare ethereum property on the window object
-  }
-
 declare global {
     interface Window {
         currentBlinkingState: boolean;

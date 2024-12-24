@@ -40,8 +40,8 @@ const modal = createAppKit({
     }
 })
 
-function ContextProvider({ children }: { children: ReactNode; }) {
-    const initialState = cookieToInitialState(wagmiAdapter.wagmiConfig as Config)
+function ContextProvider({ children, cookies }: { children: ReactNode; cookies: string | null }) {
+    const initialState = cookieToInitialState(wagmiAdapter.wagmiConfig as Config, cookies)
 
     return (
         <WagmiProvider config={wagmiAdapter.wagmiConfig as Config} initialState={initialState}>
