@@ -352,7 +352,7 @@ export default class
             }, 2000);
         }
 
-        // this.setAds();
+        this.setAds();
         this.setCityTour();
         this.setMaterials();
         this.setShadows();
@@ -525,58 +525,73 @@ export default class
     
         // Plane dimensions
         const planeWidth = 1190; // Covers the world size
-        const planeHeight = 50;   // Adjust as needed
+        const planeHeight = 50;  // Adjust as needed
     
         // Create the plane geometry
         const planeGeometry = new THREE.PlaneGeometry(planeWidth, planeHeight);
     
-        // Create a material using the video texture
-        const planeMaterial = new THREE.MeshBasicMaterial({
+        // Create and position the planes
+        const planes = [];
+    
+        // Top and Bottom Panels
+        const topBottomMaterial = new THREE.MeshBasicMaterial({
             map: videoTexture,
             side: THREE.DoubleSide,
             toneMapped: false,
         });
     
-        // Create and position the planes
-        const planes = [];
-    
         // Bottom border
-        const bottomPlane = new THREE.Mesh(planeGeometry, planeMaterial);
-        bottomPlane.position.set(0, -595, 20.7); // Adjust to match the bottom border
-        bottomPlane.rotation.x = -Math.PI / 2;
+        const bottomPlane = new THREE.Mesh(planeGeometry, topBottomMaterial);
+        bottomPlane.position.set(0, -595, 20); // Adjust to match the bottom border
+        bottomPlane.rotation.x = Math.PI / 2;
+        bottomPlane.rotation.y = Math.PI;
         planes.push(bottomPlane);
     
         // Top border
-        const topPlane = new THREE.Mesh(planeGeometry, planeMaterial);
-        topPlane.position.set(0, 595, 20.7); // Adjust to match the top border
+        const topPlane = new THREE.Mesh(planeGeometry, topBottomMaterial);
+        topPlane.position.set(0, 595, 20); // Adjust to match the top border
         topPlane.rotation.x = Math.PI / 2; // Rotate to face the correct direction
         planes.push(topPlane);
     
+        // Left and Right Panels
+        const sidePlaneGeometry = new THREE.PlaneGeometry(planeHeight, planeWidth); // Swap dimensions for vertical alignment
+    
+        // Material for the left and right panels
+        const sideMaterial = new THREE.MeshBasicMaterial({
+            map: videoTexture,
+            side: THREE.DoubleSide,
+            toneMapped: false,
+        });
+    
         // Left border
-        const leftPlane = new THREE.Mesh(planeGeometry, planeMaterial);
-        leftPlane.geometry = new THREE.PlaneGeometry(planeHeight, planeWidth); // Adjust dimensions
-        leftPlane.rotation.y = Math.PI / 2; // Rotate to align with the left border
-        leftPlane.position.set(-595, 0, 20.7); // Adjust to match the left border
+        const leftPlane = new THREE.Mesh(sidePlaneGeometry, sideMaterial.clone());
+        leftPlane.material.map = videoTexture.clone(); // Clone the texture for independent transformation
+        leftPlane.material.map.center.set(0.5, 0.5); // Set the pivot point for rotation
+        leftPlane.material.map.rotation = Math.PI / 2; // Rotate the texture to align correctly
+        leftPlane.position.set(-595, 0, 20); // Adjust to match the left border
+        leftPlane.rotation.y = Math.PI / 2; // Align the plane geometry
         planes.push(leftPlane);
     
         // Right border
-        const rightPlane = new THREE.Mesh(planeGeometry, planeMaterial);
-        rightPlane.geometry = new THREE.PlaneGeometry(planeHeight, planeWidth); // Adjust dimensions
-        rightPlane.rotation.y = -Math.PI / 2; // Rotate to align with the right border
-        rightPlane.position.set(595, 0, 20.7); // Adjust to match the right border
+        const rightPlane = new THREE.Mesh(sidePlaneGeometry, sideMaterial.clone());
+        rightPlane.material.map = videoTexture.clone(); // Clone the texture for independent transformation
+        rightPlane.material.map.center.set(0.5, 0.5); // Set the pivot point for rotation
+        rightPlane.material.map.rotation = -Math.PI / 2; // Rotate the texture to align correctly
+        rightPlane.position.set(595, 0, 20); // Adjust to match the right border
+        rightPlane.rotation.y = -Math.PI / 2; // Align the plane geometry
         planes.push(rightPlane);
     
         // Add planes to the scene
         planes.forEach(plane => this.container.add(plane));
     
-        // Ensure the video texture updates on each frame
+        // Ensure the video textures update on each frame
         this.time.on('tick', () => {
             if (videoTexture && video.readyState >= video.HAVE_CURRENT_DATA) {
                 videoTexture.needsUpdate = true;
             }
         });
-    }    
-    
+    }
+
         requestPlayerScore(playerId) {
             if (this.ws && this.ws.readyState === WebSocket.OPEN) {
                 const getScoreMessage = {
