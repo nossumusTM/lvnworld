@@ -37,7 +37,7 @@ import Controls from './Controls.js'
 import Controls1 from './Controls1.js'
 import Sounds from './Sounds.js'
 const videoAdsSource = 'images/videos/video.mp4';
-const videoAdSource = 'images/videos/adv.mp4';
+const videoAdSource = 'images/videos/kyberscrolling.mp4';
 import feather from 'feather-icons'
 import LazyLoad from 'react-lazy-load';
 
@@ -352,8 +352,8 @@ export default class
             }, 2000);
         }
 
-        this.setAds();
-        this.addAdvertisementPlane();
+        // this.setAds();
+        this.setCityTour();
         this.setMaterials();
         this.setShadows();
         this.setZones();
@@ -502,7 +502,7 @@ export default class
     //     });
     // }
 
-    addAdvertisementPlane() {
+    setCityTour() {
         // Create a video element
         const video = document.createElement('video');
         video.src = videoAdSource; // Replace with your video source
@@ -524,8 +524,8 @@ export default class
         videoTexture.format = THREE.RGBFormat;
     
         // Plane dimensions
-        const planeWidth = 1200; // Covers the world size
-        const planeHeight = 5;   // Adjust as needed
+        const planeWidth = 1190; // Covers the world size
+        const planeHeight = 50;   // Adjust as needed
     
         // Create the plane geometry
         const planeGeometry = new THREE.PlaneGeometry(planeWidth, planeHeight);
@@ -542,13 +542,13 @@ export default class
     
         // Bottom border
         const bottomPlane = new THREE.Mesh(planeGeometry, planeMaterial);
-        bottomPlane.position.set(0, -595, 3); // Adjust to match the bottom border
+        bottomPlane.position.set(0, -595, 20.7); // Adjust to match the bottom border
         bottomPlane.rotation.x = -Math.PI / 2;
         planes.push(bottomPlane);
     
         // Top border
         const topPlane = new THREE.Mesh(planeGeometry, planeMaterial);
-        topPlane.position.set(0, 595, 3); // Adjust to match the top border
+        topPlane.position.set(0, 595, 20.7); // Adjust to match the top border
         topPlane.rotation.x = Math.PI / 2; // Rotate to face the correct direction
         planes.push(topPlane);
     
@@ -556,14 +556,14 @@ export default class
         const leftPlane = new THREE.Mesh(planeGeometry, planeMaterial);
         leftPlane.geometry = new THREE.PlaneGeometry(planeHeight, planeWidth); // Adjust dimensions
         leftPlane.rotation.y = Math.PI / 2; // Rotate to align with the left border
-        leftPlane.position.set(-595, 0, 3); // Adjust to match the left border
+        leftPlane.position.set(-595, 0, 20.7); // Adjust to match the left border
         planes.push(leftPlane);
     
         // Right border
         const rightPlane = new THREE.Mesh(planeGeometry, planeMaterial);
         rightPlane.geometry = new THREE.PlaneGeometry(planeHeight, planeWidth); // Adjust dimensions
         rightPlane.rotation.y = -Math.PI / 2; // Rotate to align with the right border
-        rightPlane.position.set(595, 0, 3); // Adjust to match the right border
+        rightPlane.position.set(595, 0, 20.7); // Adjust to match the right border
         planes.push(rightPlane);
     
         // Add planes to the scene
