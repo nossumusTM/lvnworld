@@ -542,14 +542,14 @@ export default class
     
         // Bottom border
         const bottomPlane = new THREE.Mesh(planeGeometry, topBottomMaterial);
-        bottomPlane.position.set(0, -595, 19); // Adjust to match the bottom border
+        bottomPlane.position.set(0, -595, 10); // Adjust to match the bottom border
         bottomPlane.rotation.x = Math.PI / 2;
         bottomPlane.rotation.y = Math.PI;
         planes.push(bottomPlane);
     
         // Top border
         const topPlane = new THREE.Mesh(planeGeometry, topBottomMaterial);
-        topPlane.position.set(0, 595, 19); // Adjust to match the top border
+        topPlane.position.set(0, 595, 10); // Adjust to match the top border
         topPlane.rotation.x = Math.PI / 2; // Rotate to face the correct direction
         planes.push(topPlane);
     
@@ -568,7 +568,7 @@ export default class
         leftPlane.material.map = videoTexture.clone(); // Clone the texture for independent transformation
         leftPlane.material.map.center.set(0.5, 0.5); // Set the pivot point for rotation
         leftPlane.material.map.rotation = Math.PI / 2; // Rotate the texture to align correctly
-        leftPlane.position.set(-595, 0, 19); // Adjust to match the left border
+        leftPlane.position.set(-595, 0, 10); // Adjust to match the left border
         leftPlane.rotation.y = Math.PI / 2; // Align the plane geometry
         planes.push(leftPlane);
     
@@ -577,7 +577,7 @@ export default class
         rightPlane.material.map = videoTexture.clone(); // Clone the texture for independent transformation
         rightPlane.material.map.center.set(0.5, 0.5); // Set the pivot point for rotation
         rightPlane.material.map.rotation = -Math.PI / 2; // Rotate the texture to align correctly
-        rightPlane.position.set(595, 0, 19); // Adjust to match the right border
+        rightPlane.position.set(595, 0, 10); // Adjust to match the right border
         rightPlane.rotation.y = -Math.PI / 2; // Align the plane geometry
         planes.push(rightPlane);
     

@@ -28,7 +28,6 @@ export default class IntroSection
         this.setInstructions()
         this.setRamps()
         this.setOtherInstructions()
-        // this.setTitles()
 
         /*
         * Parabola questions 
@@ -47,6 +46,9 @@ export default class IntroSection
         this.setGreenLink10()
         this.setGreenLink11()
         this.setGreenLink12()
+        this.setGreenLink13()
+        this.setGreenLink14()
+        this.setGreenLink15()
     }
 
     setStatic()
@@ -171,8 +173,8 @@ export default class IntroSection
     {
         // Set up
         this.links = {}
-        this.links.x = -94.2226
-        this.links.y = -55.9176
+        this.links.x = -0.005631
+        this.links.y = 389.212
         this.links.halfExtents = {}
         this.links.halfExtents.x = 2
         this.links.halfExtents.y = 2
@@ -269,8 +271,8 @@ export default class IntroSection
     {
         // Set up
         this.links = {}
-        this.links.x = -144.883
-        this.links.y = 144.95
+        this.links.x = 126.488
+        this.links.y = 309.852
         this.links.halfExtents = {}
         this.links.halfExtents.x = 2
         this.links.halfExtents.y = 2
@@ -367,8 +369,8 @@ export default class IntroSection
     {
         // Set up
         this.links = {}
-        this.links.x = -340.75
-        this.links.y = 295.72
+        this.links.x = 307.808
+        this.links.y = 129.377
         this.links.halfExtents = {}
         this.links.halfExtents.x = 2
         this.links.halfExtents.y = 2
@@ -465,8 +467,8 @@ export default class IntroSection
     {
         // Set up
         this.links = {}
-        this.links.x = -200.898
-        this.links.y = -299.148
+        this.links.x = 388.352
+        this.links.y = -0.049735
         this.links.halfExtents = {}
         this.links.halfExtents.x = 2
         this.links.halfExtents.y = 2
@@ -563,8 +565,8 @@ export default class IntroSection
     {
         // Set up
         this.links = {}
-        this.links.x = -327.822
-        this.links.y = -148.294
+        this.links.x = 307.808
+        this.links.y = -123.482
         this.links.halfExtents = {}
         this.links.halfExtents.x = 2
         this.links.halfExtents.y = 2
@@ -661,8 +663,8 @@ export default class IntroSection
     {
         // Set up
         this.links = {}
-        this.links.x = 100.108
-        this.links.y = 300.301
+        this.links.x = 126.642
+        this.links.y = -305.854
         this.links.halfExtents = {}
         this.links.halfExtents.x = 2
         this.links.halfExtents.y = 2
@@ -759,8 +761,8 @@ export default class IntroSection
     {
         // Set up
         this.links = {}
-        this.links.x = 324.947
-        this.links.y = -101.947
+        this.links.x = 0.08085
+        this.links.y = -389.371
         this.links.halfExtents = {}
         this.links.halfExtents.x = 2
         this.links.halfExtents.y = 2
@@ -857,8 +859,8 @@ export default class IntroSection
     {
         // Set up
         this.links = {}
-        this.links.x = 100.015
-        this.links.y = -200.02
+        this.links.x = -126.218
+        this.links.y = -305.854
         this.links.halfExtents = {}
         this.links.halfExtents.x = 2
         this.links.halfExtents.y = 2
@@ -955,8 +957,8 @@ export default class IntroSection
     {
         // Set up
         this.links = {}
-        this.links.x = 301.298
-        this.links.y = -339.778
+        this.links.x = -312.958
+        this.links.y = -123.746
         this.links.halfExtents = {}
         this.links.halfExtents.x = 2
         this.links.halfExtents.y = 2
@@ -1053,8 +1055,8 @@ export default class IntroSection
     {
         // Set up
         this.links = {}
-        this.links.x = 122.912
-        this.links.y = -40.1736
+        this.links.x = -312.958
+        this.links.y = 129.114
         this.links.halfExtents = {}
         this.links.halfExtents.x = 2
         this.links.halfExtents.y = 2
@@ -1151,8 +1153,8 @@ export default class IntroSection
     {
         // Set up
         this.links = {}
-        this.links.x = -114.879
-        this.links.y = 344.947
+        this.links.x = -312.958
+        this.links.y = 129.114
         this.links.halfExtents = {}
         this.links.halfExtents.x = 2
         this.links.halfExtents.y = 2
@@ -1249,8 +1251,8 @@ export default class IntroSection
     {
         // Set up
         this.links = {}
-        this.links.x = 345.18
-        this.links.y = 314.685
+        this.links.x = -126.371
+        this.links.y = 309.852
         this.links.halfExtents = {}
         this.links.halfExtents.x = 2
         this.links.halfExtents.y = 2
@@ -1347,8 +1349,302 @@ export default class IntroSection
     {
         // Set up
         this.links = {}
-        this.links.x = 42.8906
-        this.links.y = 91.5661
+        this.links.x = -274.622
+        this.links.y = 274.589
+        this.links.halfExtents = {}
+        this.links.halfExtents.x = 2
+        this.links.halfExtents.y = 2
+        this.links.distanceBetween = 2.4
+        this.links.labelWidth = this.links.halfExtents.x * 2 + 1
+        this.links.labelGeometry = new THREE.PlaneGeometry(this.links.labelWidth, this.links.labelWidth * 0.25, 1, 1)
+        this.links.labelOffset = -0.6
+        this.links.items = []
+
+        this.links.container = new THREE.Object3D()
+        this.links.container.matrixAutoUpdate = false
+        this.container.add(this.links.container)
+
+        // Options
+        this.links.options = [
+            {
+                question: 'TO PROCEED, COMBINE THE INITIAL PAIR OF NUMBERS:',
+                labelTexture: this.resources.items.informationContactTwitterLabelTexture // Ensure labelTexture is provided
+            }
+        ]
+
+        // Create each link
+        let i = 0
+        for(const _option of this.links.options)
+        {
+            // Set up
+            const item = {}
+            item.x = this.x + this.links.x + this.links.distanceBetween * i
+            item.y = this.y + this.links.y
+            item.question = _option.question
+
+            // Create area
+            item.area = this.areas.add({
+                position: new THREE.Vector2(item.x, item.y),
+                halfExtents: new THREE.Vector2(this.links.halfExtents.x, this.links.halfExtents.y)
+            })
+            item.area.on('interact', () => {
+
+                this.createPopup(item.question, (answer) => {
+                    if (answer === 'yes' || answer === 'true') {
+                        // Create a green pixel
+                        const greenPixelGeometry = new THREE.PlaneGeometry(1, 1);
+                        const greenPixelMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+                        const greenPixelMesh = new THREE.Mesh(greenPixelGeometry, greenPixelMaterial);
+                        greenPixelMesh.position.set(item.x, item.y, 0.05);
+            
+                        item.greenPixel = {};
+                        item.greenPixel.container = new THREE.Object3D();
+                        item.greenPixel.container.add(greenPixelMesh);
+                        this.container.add(item.greenPixel.container);
+            
+                        return true;
+                    } else {
+                        // Create a red pixel
+                        const redPixelGeometry = new THREE.PlaneGeometry(1, 1);
+                        const redPixelMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+                        const redPixelMesh = new THREE.Mesh(redPixelGeometry, redPixelMaterial);
+                        redPixelMesh.position.set(item.x, item.y, 0.05);
+            
+                        item.redPixel = {};
+                        item.redPixel.container = new THREE.Object3D();
+                        item.redPixel.container.add(redPixelMesh);
+                        this.container.add(item.redPixel.container);
+            
+                        return false;
+                    }
+                });
+            });            
+
+            // Ensure labelTexture is defined
+            if (_option.labelTexture) {
+                // Texture
+                item.texture = _option.labelTexture
+                item.texture.magFilter = THREE.NearestFilter
+                item.texture.minFilter = THREE.LinearFilter
+
+                // Create label
+                item.labelMesh = new THREE.Mesh(this.links.labelGeometry, new THREE.MeshBasicMaterial({ wireframe: false, color: 0xFF5733, alphaMap: _option.labelTexture, depthTest: true, depthWrite: false, transparent: true }))
+                item.labelMesh.position.x = item.x + this.links.labelWidth * 0.5 - this.links.halfExtents.x
+                item.labelMesh.position.y = item.y + this.links.labelOffset
+                item.labelMesh.matrixAutoUpdate = false
+                item.labelMesh.updateMatrix()
+                this.links.container.add(item.labelMesh)
+            }
+
+            // Save
+            this.links.items.push(item)
+
+            i++
+        }
+    }
+
+    setGreenLink13()
+    {
+        // Set up
+        this.links = {}
+        this.links.x = 275.21
+        this.links.y = 275.218
+        this.links.halfExtents = {}
+        this.links.halfExtents.x = 2
+        this.links.halfExtents.y = 2
+        this.links.distanceBetween = 2.4
+        this.links.labelWidth = this.links.halfExtents.x * 2 + 1
+        this.links.labelGeometry = new THREE.PlaneGeometry(this.links.labelWidth, this.links.labelWidth * 0.25, 1, 1)
+        this.links.labelOffset = -0.6
+        this.links.items = []
+
+        this.links.container = new THREE.Object3D()
+        this.links.container.matrixAutoUpdate = false
+        this.container.add(this.links.container)
+
+        // Options
+        this.links.options = [
+            {
+                question: 'TO PROCEED, COMBINE THE INITIAL PAIR OF NUMBERS:',
+                labelTexture: this.resources.items.informationContactTwitterLabelTexture // Ensure labelTexture is provided
+            }
+        ]
+
+        // Create each link
+        let i = 0
+        for(const _option of this.links.options)
+        {
+            // Set up
+            const item = {}
+            item.x = this.x + this.links.x + this.links.distanceBetween * i
+            item.y = this.y + this.links.y
+            item.question = _option.question
+
+            // Create area
+            item.area = this.areas.add({
+                position: new THREE.Vector2(item.x, item.y),
+                halfExtents: new THREE.Vector2(this.links.halfExtents.x, this.links.halfExtents.y)
+            })
+            item.area.on('interact', () => {
+
+                this.createPopup(item.question, (answer) => {
+                    if (answer === 'yes' || answer === 'true') {
+                        // Create a green pixel
+                        const greenPixelGeometry = new THREE.PlaneGeometry(1, 1);
+                        const greenPixelMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+                        const greenPixelMesh = new THREE.Mesh(greenPixelGeometry, greenPixelMaterial);
+                        greenPixelMesh.position.set(item.x, item.y, 0.05);
+            
+                        item.greenPixel = {};
+                        item.greenPixel.container = new THREE.Object3D();
+                        item.greenPixel.container.add(greenPixelMesh);
+                        this.container.add(item.greenPixel.container);
+            
+                        return true;
+                    } else {
+                        // Create a red pixel
+                        const redPixelGeometry = new THREE.PlaneGeometry(1, 1);
+                        const redPixelMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+                        const redPixelMesh = new THREE.Mesh(redPixelGeometry, redPixelMaterial);
+                        redPixelMesh.position.set(item.x, item.y, 0.05);
+            
+                        item.redPixel = {};
+                        item.redPixel.container = new THREE.Object3D();
+                        item.redPixel.container.add(redPixelMesh);
+                        this.container.add(item.redPixel.container);
+            
+                        return false;
+                    }
+                });
+            });            
+
+            // Ensure labelTexture is defined
+            if (_option.labelTexture) {
+                // Texture
+                item.texture = _option.labelTexture
+                item.texture.magFilter = THREE.NearestFilter
+                item.texture.minFilter = THREE.LinearFilter
+
+                // Create label
+                item.labelMesh = new THREE.Mesh(this.links.labelGeometry, new THREE.MeshBasicMaterial({ wireframe: false, color: 0xFF5733, alphaMap: _option.labelTexture, depthTest: true, depthWrite: false, transparent: true }))
+                item.labelMesh.position.x = item.x + this.links.labelWidth * 0.5 - this.links.halfExtents.x
+                item.labelMesh.position.y = item.y + this.links.labelOffset
+                item.labelMesh.matrixAutoUpdate = false
+                item.labelMesh.updateMatrix()
+                this.links.container.add(item.labelMesh)
+            }
+
+            // Save
+            this.links.items.push(item)
+
+            i++
+        }
+    }
+
+    setGreenLink14()
+    {
+        // Set up
+        this.links = {}
+        this.links.x = 274.571
+        this.links.y = -274.641
+        this.links.halfExtents = {}
+        this.links.halfExtents.x = 2
+        this.links.halfExtents.y = 2
+        this.links.distanceBetween = 2.4
+        this.links.labelWidth = this.links.halfExtents.x * 2 + 1
+        this.links.labelGeometry = new THREE.PlaneGeometry(this.links.labelWidth, this.links.labelWidth * 0.25, 1, 1)
+        this.links.labelOffset = -0.6
+        this.links.items = []
+
+        this.links.container = new THREE.Object3D()
+        this.links.container.matrixAutoUpdate = false
+        this.container.add(this.links.container)
+
+        // Options
+        this.links.options = [
+            {
+                question: 'TO PROCEED, COMBINE THE INITIAL PAIR OF NUMBERS:',
+                labelTexture: this.resources.items.informationContactTwitterLabelTexture // Ensure labelTexture is provided
+            }
+        ]
+
+        // Create each link
+        let i = 0
+        for(const _option of this.links.options)
+        {
+            // Set up
+            const item = {}
+            item.x = this.x + this.links.x + this.links.distanceBetween * i
+            item.y = this.y + this.links.y
+            item.question = _option.question
+
+            // Create area
+            item.area = this.areas.add({
+                position: new THREE.Vector2(item.x, item.y),
+                halfExtents: new THREE.Vector2(this.links.halfExtents.x, this.links.halfExtents.y)
+            })
+            item.area.on('interact', () => {
+
+                this.createPopup(item.question, (answer) => {
+                    if (answer === 'yes' || answer === 'true') {
+                        // Create a green pixel
+                        const greenPixelGeometry = new THREE.PlaneGeometry(1, 1);
+                        const greenPixelMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+                        const greenPixelMesh = new THREE.Mesh(greenPixelGeometry, greenPixelMaterial);
+                        greenPixelMesh.position.set(item.x, item.y, 0.05);
+            
+                        item.greenPixel = {};
+                        item.greenPixel.container = new THREE.Object3D();
+                        item.greenPixel.container.add(greenPixelMesh);
+                        this.container.add(item.greenPixel.container);
+            
+                        return true;
+                    } else {
+                        // Create a red pixel
+                        const redPixelGeometry = new THREE.PlaneGeometry(1, 1);
+                        const redPixelMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+                        const redPixelMesh = new THREE.Mesh(redPixelGeometry, redPixelMaterial);
+                        redPixelMesh.position.set(item.x, item.y, 0.05);
+            
+                        item.redPixel = {};
+                        item.redPixel.container = new THREE.Object3D();
+                        item.redPixel.container.add(redPixelMesh);
+                        this.container.add(item.redPixel.container);
+            
+                        return false;
+                    }
+                });
+            });            
+
+            // Ensure labelTexture is defined
+            if (_option.labelTexture) {
+                // Texture
+                item.texture = _option.labelTexture
+                item.texture.magFilter = THREE.NearestFilter
+                item.texture.minFilter = THREE.LinearFilter
+
+                // Create label
+                item.labelMesh = new THREE.Mesh(this.links.labelGeometry, new THREE.MeshBasicMaterial({ wireframe: false, color: 0xFF5733, alphaMap: _option.labelTexture, depthTest: true, depthWrite: false, transparent: true }))
+                item.labelMesh.position.x = item.x + this.links.labelWidth * 0.5 - this.links.halfExtents.x
+                item.labelMesh.position.y = item.y + this.links.labelOffset
+                item.labelMesh.matrixAutoUpdate = false
+                item.labelMesh.updateMatrix()
+                this.links.container.add(item.labelMesh)
+            }
+
+            // Save
+            this.links.items.push(item)
+
+            i++
+        }
+    }
+
+    setGreenLink15()
+    {
+        // Set up
+        this.links = {}
+        this.links.x = -275.27
+        this.links.y = -275.384
         this.links.halfExtents = {}
         this.links.halfExtents.x = 2
         this.links.halfExtents.y = 2
@@ -1623,18 +1919,18 @@ export default class IntroSection
         });
 
         // Add Double Ramp
-        const doubleRampBaseScene = this.resources.items.introDoubleRampBase.scene; // Ensure this is the correct scene
-        const doubleRampCollisionScene = this.resources.items.introDoubleRampCollision.scene; // Ensure this is the correct collision scene
+        // const doubleRampBaseScene = this.resources.items.introDoubleRampBase.scene; // Ensure this is the correct scene
+        // const doubleRampCollisionScene = this.resources.items.introDoubleRampCollision.scene; // Ensure this is the correct collision scene
 
-        this.instructions.doubleramp = this.objects.add({
-            base: doubleRampBaseScene, // Replace with your ramp base model
-            collision: doubleRampCollisionScene, // Replace with your ramp collision model
-            offset: new THREE.Vector3(0, 0, 0), // Set the desired position
-            rotation: new THREE.Euler(0, 0, 0), // Set the desired rotation
-            duplicated: false,
-            mass: 0, // Static object, no mass
-            soundName: 'brick'
-        });
+        // this.instructions.doubleramp = this.objects.add({
+        //     base: doubleRampBaseScene, // Replace with your ramp base model
+        //     collision: doubleRampCollisionScene, // Replace with your ramp collision model
+        //     offset: new THREE.Vector3(0, 0, 0), // Set the desired position
+        //     rotation: new THREE.Euler(0, 0, 0), // Set the desired rotation
+        //     duplicated: false,
+        //     mass: 0, // Static object, no mass
+        //     soundName: 'brick'
+        // });
 
         // Add Hands
         const handsBaseScene = this.resources.items.introHandsBase.scene; // Ensure this is the correct scene

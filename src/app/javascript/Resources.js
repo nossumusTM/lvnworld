@@ -51,8 +51,8 @@ const matcapVioletOrangeSource = '/models/matcaps/violetorange.png'
 const matcapIndigoSource = '/models/matcaps/indigo.png'
 
 // Clock
-const clockHourBaseSource = '/models/clock/hourHand.glb'
-const clockMinuteBaseSource = '/models/clock/minutesHand.glb'
+const clockHourBaseSource = '/models/clock/hourHand1.glb'
+const clockMinuteBaseSource = '/models/clock/minutesHand1.glb'
 const clockSecondBaseSource = 'models/clock/secondsHand.glb'
 
 // Coin
