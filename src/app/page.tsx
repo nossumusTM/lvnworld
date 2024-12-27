@@ -222,7 +222,7 @@ export default function Home() {
       localStorage.setItem('token', token); // Store token in localStorage
       setToken(token); // Set token in state
 
-      console.log('Token received and stored:', token);
+      // console.log('Token received and stored:', token);
     } catch (error) {
       console.error('Error fetching token:', error);
     }
@@ -259,7 +259,7 @@ export default function Home() {
 
     if (wsRef.current) {
       // Avoid reinitializing if already connected
-      console.log("WebSocket already initialized");
+      // console.log("WebSocket already initialized");
       return;
     }
 
@@ -280,7 +280,7 @@ export default function Home() {
       setRetryCount(0);
 
       if (playerId) {
-          console.log('Requesting selected car for playerId:', playerId);
+          // console.log('Requesting selected car for playerId:', playerId);
           wsRef.current?.send(
               JSON.stringify({
                   type: 'getSelectedCar',
@@ -307,26 +307,26 @@ export default function Home() {
         }
     
         // Debug log to check the full message structure
-        console.log("Received message:", message);
+        // console.log("Received message:", message);
     
         // Check if the 'counts' property exists
         if (!message.hasOwnProperty('counts')) {
-            console.log("No 'counts' property found in message.");
+            // console.log("No 'counts' property found in message.");
         } else {
-            console.log("Counts found:", message.counts);
+            // console.log("Counts found:", message.counts);
         }
 
         // Handle `selectedCar` message
         if (message.type === 'selectedCar') {
-          console.log('SelectedCar message received:', message); // Log full message
+          // console.log('SelectedCar message received:', message); // Log full message
           if (message.selectedCar) {
               setCarName(message.selectedCar);
-              console.log('Selected car set to:', message.selectedCar);
+              // console.log('Selected car set to:', message.selectedCar);
       
               if (message.matcaps) {
-                  console.log('Matcaps before setting state:', message.matcaps); // Log matcaps
+                  // console.log('Matcaps before setting state:', message.matcaps); // Log matcaps
                   setMatcaps(message.matcaps);
-                  console.log('Matcaps state updated to:', message.matcaps);
+                  // console.log('Matcaps state updated to:', message.matcaps);
               } else {
                   console.warn('No matcaps data received. Defaulting to empty object.');
                   setMatcaps({});
@@ -347,13 +347,13 @@ export default function Home() {
       if (message.type === 'worldCounts') {
           // Validate counts property
           if (!message.hasOwnProperty('counts') || typeof message.counts !== 'object' || message.counts === null) {
-              console.log("Invalid counts in worldCounts message:", message.counts);
+              // console.log("Invalid counts in worldCounts message:", message.counts);
               return;
           }
   
           // Only update the world list if no world has been selected
           if (!selectedWorldId) {
-              console.log("Updating world list with counts:", message.counts);
+              // console.log("Updating world list with counts:", message.counts);
               updateWorldList(message.counts);
 
               Object.entries(message.counts).forEach(([worldId, count]) => {
@@ -367,14 +367,14 @@ export default function Home() {
                 // Add signal if count > 0 and signal doesn't already exist
                 if (newCount > 0 && previousCount === 0) {
                     if (location) {
-                        console.log(`Adding signal for ${worldId} at ${location.lat}, ${location.lng}`);
+                        // console.log(`Adding signal for ${worldId} at ${location.lat}, ${location.lng}`);
                         addSignalEffect(worldId, location);
                     }
                 }
             
                 // Remove signal if count becomes 0
                 if (newCount === 0 && previousCount > 0) {
-                    console.log(`Removing signal for ${worldId}, no players remaining.`);
+                    // console.log(`Removing signal for ${worldId}, no players remaining.`);
                     removeSignalEffect(worldId);
                 }
             });            
@@ -382,13 +382,13 @@ export default function Home() {
               hasReceivedWorldCounts = true;
 
           } else {
-              console.log("World has already been selected, not updating list.");
+              // console.log("World has already been selected, not updating list.");
           }
   
           // Log the received world counts
-          console.log("Received world counts:", message.counts);
+          // console.log("Received world counts:", message.counts);
       } else {
-          console.log("Received message of an unexpected type:", message.type);
+          // console.log("Received message of an unexpected type:", message.type);
       }
   };
   
@@ -540,7 +540,7 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
 
       // If the wallet is disconnected, trigger page reload
       if (isDisconnected) {
-        console.log('Wallet disconnected. Reloading the page...');
+        // console.log('Wallet disconnected. Reloading the page...');
         window.location.reload();
       }
 
@@ -565,7 +565,7 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
           const interval = setInterval(() => {
             const container = document.getElementById('loading-layer');
             if (container) {
-              console.log('Initializing Globe...');
+              // console.log('Initializing Globe...');
               initGlobe('loading-layer');
               clearInterval(interval); // Stop retrying
             } else if (retryCount >= 5) {

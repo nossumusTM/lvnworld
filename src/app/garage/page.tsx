@@ -1862,7 +1862,7 @@ export default function GaragePage() {
                     {/* <div className="coin-layer">{loadingAccount ? 'Loading...' : formatBalance(playerAccount)}</div> */}
                     <div className="coin-layer-wrapper">
                         <h2 className="account-title">ACCOUNT FUNDS</h2>
-                        <div className="coin-layer">{loadingAccount ? '...' : formatBalance(playerAccount)}</div>
+                        <div className="coin-layer">{loadingAccount ? '...' : formatBalance(playerAccount)} ₭</div>
                     </div>
 
                     <div
