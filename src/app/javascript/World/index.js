@@ -337,10 +337,8 @@ export default class
     hideTargetPlayerId() {
         const targetElement = document.getElementById('target-player-id');
         if (targetElement) {
-            // targetElement.style.display = 'none';
             // targetElement.innerText = '⫷⫸'
-            targetElement.innerText = '⯐'
-            // targetElement.innerHTML = `${feather.icons['crosshair'].toSvg({ width: 15, height: 15 })}`;
+            targetElement.innerText = 'TARGET'
         }
     }
 

@@ -29,6 +29,7 @@ export default class Controls extends EventEmitter
         this.setActions()
         this.setKeyboard()
         this.setSounds()
+
     }
 
     setSounds()
@@ -510,6 +511,46 @@ export default class Controls extends EventEmitter
         }
 
         this.touch.joystick.$element.addEventListener('touchstart', this.touch.joystick.events.touchstart, { passive: false })
+
+        // Function to move the joystick to the right
+        function moveJoystickRight() {
+            const joystick = this.touch.joystick.$element;
+
+            if (joystick) {
+                // Reset left position
+                joystick.style.left = '';
+
+                // Set right position
+                joystick.style.right = '10px';  // Adjust this value based on your requirements
+
+                console.log("Joystick moved to the right.");
+            } else {
+                console.error('Joystick element not found.');
+            }
+        }
+
+        // Add event listener for the "Right" button
+        document.getElementById('move-joystick-right').addEventListener('click', moveJoystickRight.bind(this));
+
+        // Function to move the joystick to the right
+        function moveJoystickLeft() {
+            const joystick = this.touch.joystick.$element;
+
+            if (joystick) {
+                // Reset left position
+                joystick.style.right = '';
+
+                // Set right position
+                joystick.style.left = '10px';  // Adjust this value based on your requirements
+
+                console.log("Joystick moved to the left.");
+            } else {
+                console.error('Joystick element not found.');
+            }
+        }
+
+        // Add event listener for the "Right" button
+        document.getElementById('move-joystick-left').addEventListener('click', moveJoystickLeft.bind(this));
 
         /**
          * Switch
