@@ -306,9 +306,9 @@ export default class Controls extends EventEmitter
         // Display none if horizontal
         const targetPlayerId = document.getElementById('target-player-id');
         const inviteButton = document.getElementById('invite-button');
-        const settingsButton = document.getElementById('settings-container');
-        // const toggleContact = document.getElementById('toggle-contact-list');
         const contacts = document.getElementById('friend-invite-button');
+        const contactList = document.getElementById('toggle-contact-list');
+        const settings = document.getElementById('toggle-settings');
         const touchRadio = document.getElementById('touch-radio');
         const touchMute = document.getElementById('touch-mute');
         const touchSlider = document.getElementById('touch-slider');
@@ -318,9 +318,9 @@ export default class Controls extends EventEmitter
 
         targetPlayerId.style.display = this.isVerticalDisplay() ? 'unset' : 'none';
         inviteButton.style.display = this.isVerticalDisplay() ? 'none' : 'none';
-        // toggleContact.style.display = this.isVerticalDisplay() ? 'none' : 'none';
         contacts.style.display = this.isVerticalDisplay() ? 'none' : 'none';
-        // settingsButton.style.display = this.isVerticalDisplay() ? 'none' : 'none';
+        contactList.style.display = this.isVerticalDisplay() ? 'none' : 'none';
+        settings.style.display = this.isVerticalDisplay() ? 'none' : 'none';
         touchRadio.style.display = this.isVerticalDisplay() ? 'none' : 'none';
         touchMute.style.display = this.isVerticalDisplay() ? 'none' : 'none';
         touchSlider.style.display = this.isVerticalDisplay() ? 'none' : 'none';
@@ -523,8 +523,9 @@ export default class Controls extends EventEmitter
         const targetPlayerId = document.getElementById('target-player-id');
         const inviteButton = document.getElementById('invite-button');
         const addContact = document.getElementById('friend-invite-button');
+        const contactList = document.getElementById('toggle-contact-list');
+        const settings = document.getElementById('toggle-settings');
         const touchRadio = document.getElementById('touch-radio');
-        const touchContacts = document.getElementById('toggle-contact-list ');
         const touchMute = document.getElementById('touch-mute');
         const touchSlider = document.getElementById('touch-slider');
         const touchPrevious = document.getElementById('touch-previous');
@@ -550,6 +551,8 @@ export default class Controls extends EventEmitter
                 touchSlider.style.display = 'block';
                 touchPrevious.style.display = 'block';
                 touchNext.style.display = 'block';
+                contactList.style.display = 'flex';
+                settings.style.display = 'flex';
 
                 // if (touchContacts) {
                 //     touchContacts.style.display = 'flex';
@@ -575,6 +578,8 @@ export default class Controls extends EventEmitter
                 touchSlider.style.display = 'none';
                 touchPrevious.style.display = 'none';
                 touchNext.style.display = 'none';
+                contactList.style.display = 'none';
+                settings.style.display = 'none';
                 // touchContacts.style.display = 'none';
                 if (partyInfo) {
                     partyInfo.style.display = 'none';

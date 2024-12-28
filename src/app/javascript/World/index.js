@@ -2788,7 +2788,7 @@ export default class
     // Function to update battery status in HTML
     updateScoreStatus(score) {
         const scoreElement= document.getElementById('coin-market');
-        scoreElement.textContent = `❖ ${score}`;
+        scoreElement.textContent = `₭ ${score}`;
     }
 
     async signIn(playerId, token) {

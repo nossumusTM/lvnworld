@@ -706,7 +706,8 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
       {isConnected && (
         <div className="grid bg-transparent overflow-hidden shadow-sm">
           <div className="flex justify-center items-center p-4">
-            <div id="userDisplay" onClick={handleUserDisplayClick} className="cursor-pointer z-50"></div>
+            {/* <div id="userDisplay" onClick={handleUserDisplayClick} className="cursor-pointer z-50"></div> */}
+            <div id="userDisplay" className="cursor-pointer z-50"></div>
             <div id="playerCountDisplay"></div>
 
             {/* Battery Status */}
