@@ -721,6 +721,7 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
                 <button id="toggle-contact-list" className='toggle-contact-list'></button>
                 <div id="contact-list">
                   <h1 style={{textAlign: 'center', paddingBottom: '10px'}}>CONNECTED LINKS</h1>
+                  <button id='toggle-contact' className='toggle-contact'></button>
                 </div>
             </div>
 
@@ -729,6 +730,7 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
                 <button id="toggle-settings" className="toggle-settings"></button>
                 <div id="settings-window" className='display: block;'>
                   <h1 style={{textAlign: 'center', paddingBottom: '10px'}}>CONTROLLER</h1>
+                  <button id='toggle-settings-window' className='toggle-settings-window'></button>
                 </div>
             </div>
 

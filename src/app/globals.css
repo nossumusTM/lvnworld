@@ -400,6 +400,17 @@ opacity: 0;
     margin: 10px;
   }
 
+  #toggle-contact {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background-color: transparent;
+    color: rgb(255, 87, 51);
+    border: none;
+    padding: 10px 5px;
+    cursor: pointer;
+  }
+
   #settings-window {
     background-color: rgba(0, 0, 0, 0.3);
     position: absolute;
@@ -423,6 +434,17 @@ opacity: 0;
     left: 50%;
     transform: translate(-50%, -50%);
     display: none;
+  }
+
+  #toggle-settings-window {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background-color: transparent;
+    color: rgb(255, 87, 51);
+    border: none;
+    padding: 10px 5px;
+    cursor: pointer;
   }
 
 @media (max-width: 767px) {

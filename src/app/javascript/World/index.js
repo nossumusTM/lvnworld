@@ -338,7 +338,8 @@ export default class
         const targetElement = document.getElementById('target-player-id');
         if (targetElement) {
             // targetElement.style.display = 'none';
-            targetElement.innerText = '⫷⫸'
+            // targetElement.innerText = '⫷⫸'
+            targetElement.innerText = '⯐'
             // targetElement.innerHTML = `${feather.icons['crosshair'].toSvg({ width: 15, height: 15 })}`;
         }
     }
@@ -2247,8 +2248,20 @@ export default class
 
                 // Add event listener to existing button (no need to create it dynamically)
                 // document.getElementById('toggle-chat-button').addEventListener('click', toggleChatVisibility);
+
+                // Create the toggle chat visibility button inside the chat box
+                const toggleList = document.getElementById('toggle-contact')
+                toggleList.innerHTML = `${feather.icons['x'].toSvg({ width: 15, height: 15 })}`;
+
                 document.getElementById('toggle-contact-list').addEventListener('click', this.toggleFriendList);
+                toggleList.addEventListener('click', this.toggleFriendList);
+
+                // Create the toggle chat visibility button inside the chat box
+                const toggleSettingsWindow = document.getElementById('toggle-settings-window')
+                toggleSettingsWindow.innerHTML = `${feather.icons['x'].toSvg({ width: 15, height: 15 })}`;
+
                 document.getElementById('toggle-settings').addEventListener('click', this.toggleSettings);
+                toggleSettingsWindow.addEventListener('click', this.toggleSettings);
             
                 // Event listener for sending a message
                 document.getElementById('send-message-button').addEventListener('click', () => {
