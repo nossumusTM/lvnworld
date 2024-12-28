@@ -720,14 +720,14 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
             <div id="contact-list-container">
                 <button id="toggle-contact-list" className='toggle-contact-list'></button>
                 <div id="contact-list">
-                  <h1 style={{textAlign: 'center', paddingBottom: '10px'}}>CONNECTION LIST</h1>
+                  <h1 style={{textAlign: 'center', paddingBottom: '10px'}}>CONNECTED LINKS</h1>
                 </div>
             </div>
 
             {/*Controller Settings */}
             <div id="settings-container">
                 <button id="toggle-settings" className="toggle-settings"></button>
-                <div id="settings-window">
+                <div id="settings-window" className='display: block;'>
                   <h1 style={{textAlign: 'center', paddingBottom: '10px'}}>CONTROLLER</h1>
                 </div>
             </div>

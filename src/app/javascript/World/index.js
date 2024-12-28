@@ -1948,7 +1948,7 @@ export default class
                 console.log('Settings container found. Toggling visibility.');
 
                 // Toggle settings container visibility
-                if (settingsContainer) {
+                if (settingsContainer && settingsContainer.style.display === 'flex') {
                     settingsContainer.style.display = 'none';
                     console.log("Toggling settings container")
                 } else {
