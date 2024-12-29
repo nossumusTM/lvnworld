@@ -389,7 +389,7 @@ export default class
             worldId: this.worldId,
             bullets: this.bullets,
             battery: this.battery,
-            score: this.score,
+            // score: this.score,
             ws: this.ws,
             carName: this.carName,
             matcaps: this.matcaps
@@ -613,11 +613,13 @@ export default class
                 // friendListContainer.innerHTML = '';
 
                 // Add each friend to the friend list container
-                friendList.forEach(friendId => {
-                    const friendElement = document.createElement('div');
-                    friendElement.textContent = `${friendId}`;
-                    friendListContainer.appendChild(friendElement);
-                });
+                if (friendList.forEach === 'function') {
+                    friendList.forEach(friendId => {
+                        const friendElement = document.createElement('div');
+                        friendElement.textContent = `${friendId}`;
+                        friendListContainer.appendChild(friendElement);
+                    });
+                }
             }
         }
 
@@ -777,7 +779,7 @@ export default class
                             if (car) {
                                 car.battery = message.battery;
                                 car.createSparkEffect();
-                                this.updateScoreStatus(message.score);
+                                // this.updateScoreStatus(message.score);
                                 console.log("Updating bullet collision score info", message.score)
 
                             
@@ -2492,7 +2494,7 @@ export default class
                         this.checkCoinCollision(playerCar, coinPosition, () => {
                             // Collision logic, e.g., increase score or collect the coin
                             playerCar.score += 10; // Example action for collision
-                            this.updateScoreStatus(playerCar.score);
+                            // this.updateScoreStatus(playerCar.score);
                             // Reset coin visibility or position after pickup
                             this.currentCoin = null; // Remove the coin locally
                             this.coinActive = false;
@@ -2880,19 +2882,9 @@ export default class
     }
 
     // Function to update battery status in HTML
-    // updateScoreStatus(score) {
-    //     const scoreElement= document.getElementById('coin-market');
-    //     if (score !== 'undefined') {
-    //         scoreElement.textContent = `₭ ${score}`;
-    //     }
-    // }
-
-    // Function to update score status in HTML
     updateScoreStatus(score) {
-        const scoreElement = document.getElementById('coin-market');
-        
-        // Ensure the score is a valid number and not undefined
-        if (score !== undefined && score !== null && !isNaN(score)) {
+        const scoreElement= document.getElementById('coin-market');
+        if (score !== undefined && score !== null ) {
             scoreElement.textContent = `₭ ${score}`;
         }
     }
