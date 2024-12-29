@@ -2894,9 +2894,6 @@ export default class
         // Ensure the score is a valid number and not undefined
         if (score !== undefined && score !== null && !isNaN(score)) {
             scoreElement.textContent = `₭ ${score}`;
-        } else {
-            // Optional: Display a default or error message if score is invalid
-            scoreElement.textContent = '₭ 0'; // Or another fallback value
         }
     }
 
