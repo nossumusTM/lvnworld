@@ -33,7 +33,7 @@ export default class Car
 
         this.bullets = [];
         this.battery = 100;
-        // this.score = _options.score;
+        this.score = _options.score;
         this.lastHitBy = null;
 
         this.boostCooldown = false;
