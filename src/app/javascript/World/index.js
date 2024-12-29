@@ -2099,7 +2099,7 @@ export default class
                         console.log(`Sending friendship invite from ${playerId} to ${targetPlayerId}`);
                         sendFriendInvite(targetPlayerId, playerId);
                     } else {
-                        this.showPopup(`No target player found for connection invite.`);
+                        this.showPopup(`"No target player found for the connection invite."`);
                         // console.error('No target player found for friendship invite.');
                     }
                 });
@@ -2203,7 +2203,7 @@ export default class
                     } else {
                         console.error('No target player found for invite.');
                         // Show the popup with a custom message
-                        this.showPopup('No target player found for invite!');
+                        this.showPopup('"No target player found for the party invite."');
                     }
                 });
 
@@ -2880,9 +2880,24 @@ export default class
     }
 
     // Function to update battery status in HTML
+    // updateScoreStatus(score) {
+    //     const scoreElement= document.getElementById('coin-market');
+    //     if (score !== 'undefined') {
+    //         scoreElement.textContent = `₭ ${score}`;
+    //     }
+    // }
+
+    // Function to update score status in HTML
     updateScoreStatus(score) {
-        const scoreElement= document.getElementById('coin-market');
-        scoreElement.textContent = `₭ ${score}`;
+        const scoreElement = document.getElementById('coin-market');
+        
+        // Ensure the score is a valid number and not undefined
+        if (score !== undefined && score !== null && !isNaN(score)) {
+            scoreElement.textContent = `₭ ${score}`;
+        } else {
+            // Optional: Display a default or error message if score is invalid
+            scoreElement.textContent = '₭ 0'; // Or another fallback value
+        }
     }
 
     async signIn(playerId, token) {

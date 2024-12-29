@@ -2783,7 +2783,7 @@ opacity: 0;
   background-color: rgba(0, 0, 0, 0.3);
   position: absolute;
   margin: 0;
-  padding: 20px;
+  /* padding: 20px; */
   bottom: 0;
   right: 0;
   width: 400px;
@@ -2804,6 +2804,8 @@ opacity: 0;
 .popup-content {
   flex-grow: 1;
   display: flex;
+  width: 400px;
+  height: 400px;
   flex-direction: column;
   justify-content: center;
   align-items: center;
