@@ -95,6 +95,7 @@ export default class
         this.setAreas()
         this.setStartingScreen()
     }
+    
 
     /**
      * Clock
@@ -389,7 +390,7 @@ export default class
             worldId: this.worldId,
             bullets: this.bullets,
             battery: this.battery,
-            score: this.score,
+            // score: this.score,
             ws: this.ws,
             carName: this.carName,
             matcaps: this.matcaps
@@ -670,12 +671,6 @@ export default class
                     this.populateFriendList(message.friends);
                     console.log("Friends", message.friends)
                 }
-
-                if (message.type === 'playerScore') {
-                    // Update the score based on the server's response
-                    this.cars[message.playerId].score = message.score;
-                    this.updateScoreStatus(message.score); // Display the updated score
-                }
     
                 switch (message.type) {
                     case 'stateUpdate':
@@ -702,21 +697,21 @@ export default class
                             // For example, you might want to retry joining with a different worldId or notify the user
                             break;
 
-                    // case 'playerScore':
-                    //         // Update the player's score upon retrieval from the server
-                    //         if (message.playerId === this.playerId) {
-                    //             if (!this.cars[message.playerId]) {
-                    //                 this.cars[message.playerId] = {}; // Initialize if not present
-                    //             }
-                    //                 this.cars[message.playerId].score = message.score;
-                    //                 this.updateScoreStatus(this.cars[message.playerId].score); // Display updated score
-                    //             if(this.cars[message.playerId.score] !== 0) {
-                    //                 // dropAirdrop(this.cars[message.playerId]);
-                    //             } else {
-                    //                 console.log("Player score is 0")
-                    //             }
-                    //         }
-                    //         break;
+                    case 'playerScore':
+                            // Update the player's score upon retrieval from the server
+                            if (message.playerId === this.playerId) {
+                                if (!this.cars[message.playerId]) {
+                                    this.cars[message.playerId] = {}; // Initialize if not present
+                                }
+                                    this.cars[message.playerId].score = message.score;
+                                    this.updateScoreStatus(this.cars[message.playerId].score); // Display updated score
+                                if(this.cars[message.playerId.score] !== 0) {
+                                    // dropAirdrop(this.cars[message.playerId]);
+                                } else {
+                                    console.log("Player score is 0")
+                                }
+                            }
+                            break;
 
                     case 'inviteFriendship':
                             console.log(`Received friendship invite from ${message.friendRequestId}`);
@@ -1009,14 +1004,7 @@ export default class
                     // Clear physics non-collidable pairs if necessary
                     if (this.physics) {
                         this.physics.nonCollidablePlayers.clear();
-                    }      
-                    
-                    const playerCar = this.car; // Ensure the car object exists
-                    if (playerCar && playerCar.score !== undefined) {
-                        updateDataScore(playerCar.score);  // Update score when the session ends
-                    } else {
-                        console.error('Player car or score is undefined');
-                    }
+                    }         
                     
                     // Redirect to the home or wallet connection page
                     if (typeof window !== 'undefined') {
@@ -2124,7 +2112,6 @@ export default class
                     this.createFriendListToggle();
                 });     
                 
-                // Joystick customization container
                 const draggableButtons = document.querySelectorAll('.draggable');
                 const dropSlots = document.querySelectorAll('.drop-slot');
                 const resetButton = document.getElementById('reset-button');
@@ -2521,12 +2508,6 @@ export default class
 
                     this.updateBatteryStatus(playerCar.battery);
                     this.updateScoreStatus(playerCar.score);
-
-                    // Update local score after a coin pickup or some other gameplay event
-                    if (playerCar.score !== this.prevScore) {
-                        this.prevScore = playerCar.score;  // Store previous score to avoid redundant updates
-                        this.updateLocalScore(playerCar.score);  // Update score UI immediately
-                    }
         
                     if (ws.readyState === WebSocket.OPEN) {
                         ws.send(JSON.stringify(updateData));
@@ -2906,29 +2887,6 @@ export default class
         const scoreElement= document.getElementById('coin-market');
         if (score !== undefined && score !== null ) {
             scoreElement.textContent = `₭ ${score}`;
-        }
-    }
-
-    // Function to update the score locally (client-side UI)
-    updateLocalScore(score) {
-        const scoreElement = document.getElementById('coin-market');
-        if (score !== undefined && score !== null) {
-            scoreElement.textContent = `₭ ${score}`;
-        }
-    }
-
-    // Function to update the score with the server (sync with server-side)
-    updateDataScore(score) {
-        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-            const updateScoreMessage = {
-                type: 'updateScore',
-                playerId: this.playerId,
-                score: score
-            };
-            console.log(`Updating score for player ${this.playerId} to ${score}`);
-            this.ws.send(JSON.stringify(updateScoreMessage));
-        } else {
-            console.error('WebSocket connection is not open. Cannot update score');
         }
     }
 
