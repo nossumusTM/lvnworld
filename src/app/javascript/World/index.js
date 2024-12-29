@@ -96,8 +96,6 @@ export default class
         this.setStartingScreen()
     }
 
-    
-
     /**
      * Clock
      */
@@ -391,14 +389,13 @@ export default class
             worldId: this.worldId,
             bullets: this.bullets,
             battery: this.battery,
-            // score: this.score,
+            score: this.score,
             ws: this.ws,
             carName: this.carName,
             matcaps: this.matcaps
         });
         this.container.add(this.car.container);
         this.updateBatteryStatus(this.car.battery);
-        // this.updateScoreStatus(this.car.score);
         console.log("This car car name", this.car.carName)
       }
 
@@ -615,13 +612,13 @@ export default class
                 // friendListContainer.innerHTML = '';
 
                 // Add each friend to the friend list container
-                if (friendList.forEach === 'function') {
+                // if (friendList.forEach === 'function') {
                     friendList.forEach(friendId => {
                         const friendElement = document.createElement('div');
                         friendElement.textContent = `${friendId}`;
                         friendListContainer.appendChild(friendElement);
                     });
-                }
+                // }
             }
         }
 
@@ -986,6 +983,13 @@ export default class
                         // console.error('Unknown message type:', message.type);
                 }
             };
+
+            // Use this function to ensure the score is updated before closing the WebSocket connection
+            window.addEventListener("beforeunload", () => {
+                // Send the final score when the player is leaving or reloading the page
+                const finalScore = this.car.score; // Get the player's score from the car object
+                this.updateDataScore(finalScore); // Send the final score to the server
+            });
     
             ws.onclose = () => {
                 console.log('Disconnected from WebSocket server');
@@ -2888,6 +2892,21 @@ export default class
         const scoreElement= document.getElementById('coin-market');
         if (score !== undefined && score !== null ) {
             scoreElement.textContent = `₭ ${score}`;
+        }
+    }
+
+    // Function to update the score with the server (sync with server-side)
+    updateDataScore(score) {
+        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+            const updateScoreMessage = {
+                type: 'updateScore',
+                playerId: this.playerId,
+                score: score
+            };
+            console.log(`Updating score for player ${this.playerId} to ${score}`);
+            this.ws.send(JSON.stringify(updateScoreMessage));
+        } else {
+            console.error('WebSocket connection is not open. Cannot update score');
         }
     }
 
