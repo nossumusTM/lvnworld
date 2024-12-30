@@ -837,6 +837,7 @@ export default class Controls extends EventEmitter
         const addContact = document.getElementById('friend-invite-button');
         const contactList = document.getElementById('toggle-contact-list');
         const settings = document.getElementById('toggle-settings');
+        const party = document.getElementById('toggle-party-list');
         const touchRadio = document.getElementById('touch-radio');
         const touchMute = document.getElementById('touch-mute');
         const touchSlider = document.getElementById('touch-slider');
@@ -865,6 +866,9 @@ export default class Controls extends EventEmitter
                 touchNext.style.display = 'block';
                 contactList.style.display = 'flex';
                 settings.style.display = 'flex';
+                if (party) {
+                    party.style.display = 'flex';
+                }
 
                 // if (touchContacts) {
                 //     touchContacts.style.display = 'flex';
@@ -872,8 +876,8 @@ export default class Controls extends EventEmitter
                 //     touchContacts.style.display = 'none'
                 // }
 
-                if (partyInfo) {
-                    partyInfo.style.display = 'block';
+                if (party) {
+                    party.style.display = 'flex';
                 }
 
             } else {
@@ -893,8 +897,8 @@ export default class Controls extends EventEmitter
                 contactList.style.display = 'none';
                 settings.style.display = 'none';
                 // touchContacts.style.display = 'none';
-                if (partyInfo) {
-                    partyInfo.style.display = 'none';
+                if (party) {
+                    party.style.display = 'none';
                 }
 
             }

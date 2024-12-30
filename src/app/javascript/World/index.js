@@ -1915,6 +1915,7 @@ export default class
                 color: white;
                 text-align: center;
                 margin: 5px;
+                padding-left: 10px;
             `;
             partyElement.appendChild(timeElement);
         
@@ -1956,6 +1957,7 @@ export default class
                 cursor: pointer;
                 display: flex;
                 align-items: center;
+                padding-left: 10px;
             `;
             toggleCallButton.addEventListener('click', this.toggleChatVisibility);
             partyElement.appendChild(toggleCallButton);
@@ -1967,6 +1969,7 @@ export default class
                 memberDiv.style.paddingTop = '10px';
                 memberDiv.innerText = `➤ ${this.formatPlayerId(memberId)}`;
                 memberDiv.style.color = 'white';
+                memberDiv.style.paddingLeft = "5px";
                 partyElement.appendChild(memberDiv);
             });
         
@@ -1974,7 +1977,7 @@ export default class
             const leaveButton = document.createElement('button');
             leaveButton.innerHTML = `LEAVE PARTY`;
             leaveButton.style.cssText = `
-                margin: 20px;
+                margin: 20px 0 10px 10px;
                 padding: 5px 10px;
                 font-family: 'Orbitron', sans-serif;
                 font-size: 12px;
@@ -1990,28 +1993,8 @@ export default class
         
             // Add PARTY button
             let partyToggleButton = document.getElementById('toggle-party-list');
-            if (!partyToggleButton) {
-                partyToggleButton = document.createElement('button');
-                partyToggleButton.id = 'toggle-party-list';
                 partyToggleButton.innerText = 'PARTY';
-                // partyToggleButton.style.cssText = `
-                //     position: absolute;
-                //     top: 181px;
-                //     left: 100px;
-                //     width: 72px;
-                //     height: 10px;
-                //     text-align: center;
-                //     font-family: 'Orbitron', sans-serif;
-                //     font-weight: 600;
-                //     font-size: 8px;
-                //     background: rgba(0, 0, 0, 0.5);
-                //     color: white;
-                //     padding: 10px 10px;
-                //     border-radius: 5px;
-                //     z-index: 10;
-                //     backdrop-filter: blur(10px);
-                //     cursor: pointer;
-                // `;
+               
                 partyToggleButton.addEventListener('click', () => {
                     if (partyElement.style.display === 'flex') {
                         partyElement.style.display = 'none';
@@ -2020,7 +2003,7 @@ export default class
                     }
                 });
                 document.body.appendChild(partyToggleButton);
-            }
+            
 
             // Ensure the PARTY toggle button is visible
             if (partyToggleButton.style.display === 'none') {

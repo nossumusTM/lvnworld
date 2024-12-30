@@ -783,6 +783,7 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
             <div id="score-status" className="player-score"></div>
 
             {/* Party Chat */}
+            <button id="toggle-party-list"></button>
             <div id="party-chat-container" className="chat-box" style={{ display: 'none' }}>
               <div id="party-chat-box" className="chat-box-body"></div>
               <div className="chat-box-footer">
