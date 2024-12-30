@@ -889,7 +889,20 @@ export default class
                         this.hideChatContainer();
                         this.updateToggleButtonVisibility(this.inParty);
 
-                        document.getElementById('party-info').style.display = 'none';
+                        // document.getElementById('party-info').style.display = 'none';
+
+                        // Hide and clear the party-info container
+                        const partyInfoElement = document.getElementById('party-info');
+                        if (partyInfoElement) {
+                            partyInfoElement.style.display = 'none'; // Hide the party-info UI
+                            partyInfoElement.innerHTML = ''; // Clear its content
+                        }
+
+                        // Hide the PARTY toggle button
+                        const partyToggleButton = document.getElementById('toggle-party-list');
+                        if (partyToggleButton) {
+                            partyToggleButton.style.display = 'none';
+                        }
 
                         // Additional clear logic
                         if (this.otherPlayers) {
@@ -918,7 +931,7 @@ export default class
                         this.hideChatContainer();
                         this.updateToggleButtonVisibility(this.inParty);
 
-                        const partyInfoElement = document.getElementById('party-info');
+                        // const partyInfoElement = document.getElementById('party-info');
                             if (partyInfoElement) {
                                 partyInfoElement.style.display = 'none';
                             }
@@ -1583,165 +1596,322 @@ export default class
         }
                 
         // Update party UI
-        updatePartyUI(inviterId, members, physics, ws) {
-            let partyElement = document.getElementById('party-info');              
+        // updatePartyUI(inviterId, members, physics, ws) {
+        //     let partyElement = document.getElementById('party-info');              
 
-                if (!partyElement) {
-                    partyElement = document.createElement('div');
-                    partyElement.id = 'party-info';
+        //         if (!partyElement) {
+        //             partyElement = document.createElement('div');
+        //             partyElement.id = 'party-info';
                         
-                    const updateStylesForOrientation = (orientation) => {
-                        if (orientation === 'portrait') {
-                            partyElement.style.top = '180px';
-                            partyElement.style.left = '235px';
-                            partyElement.style.width = '35%';
-                            partyElement.style.fontSize = '13px';
-                            partyElement.style.textAlign = 'left';
-                            partyElement.style.borderRadius = '5px';
-                            partyElement.style.display = 'block';
-                            partyElement.style.fontFamily = 'Orbitron, sans-serif';
-                            partyElement.style.backgroundColor = 'rgba(0, 0, 0, 0.2)';
-                        } else if (orientation === 'landscape') {
-                            partyElement.style.display = 'none';
-                            partyElement.style.top = '15px';
-                            partyElement.style.left = '345px';
-                            partyElement.style.width = '15%';
-                        }
-                    };
+        //             const updateStylesForOrientation = (orientation) => {
+        //                 if (orientation === 'portrait') {
+        //                     partyElement.style.top = '180px';
+        //                     partyElement.style.left = '235px';
+        //                     partyElement.style.width = '35%';
+        //                     partyElement.style.fontSize = '13px';
+        //                     partyElement.style.textAlign = 'left';
+        //                     partyElement.style.borderRadius = '5px';
+        //                     partyElement.style.display = 'block';
+        //                     partyElement.style.fontFamily = 'Orbitron, sans-serif';
+        //                     partyElement.style.backgroundColor = 'rgba(0, 0, 0, 0.2)';
+        //                 } else if (orientation === 'landscape') {
+        //                     partyElement.style.display = 'none';
+        //                     partyElement.style.top = '15px';
+        //                     partyElement.style.left = '345px';
+        //                     partyElement.style.width = '15%';
+        //                 }
+        //             };
                     
-                    // Check initial orientation
-                    let portrait = window.matchMedia("(orientation: portrait)");
-                    updateStylesForOrientation(portrait.matches ? 'portrait' : 'landscape');
+        //             // Check initial orientation
+        //             let portrait = window.matchMedia("(orientation: portrait)");
+        //             updateStylesForOrientation(portrait.matches ? 'portrait' : 'landscape');
                     
-                    // Listen for orientation changes
-                    portrait.addEventListener("change", (e) => {
-                        if (e.matches) {
-                            updateStylesForOrientation('portrait');
-                        } else {
-                            updateStylesForOrientation('landscape');
-                        }
-                    });
+        //             // Listen for orientation changes
+        //             portrait.addEventListener("change", (e) => {
+        //                 if (e.matches) {
+        //                     updateStylesForOrientation('portrait');
+        //                 } else {
+        //                     updateStylesForOrientation('landscape');
+        //                 }
+        //             });
                     
-                    // Alternatively, using screen.orientation (if supported)
-                    if (screen.orientation) {
-                        screen.orientation.addEventListener("change", (e) => {
-                            updateStylesForOrientation(screen.orientation.type.includes('portrait') ? 'portrait' : 'landscape');
-                        });
-                    }
+        //             // Alternatively, using screen.orientation (if supported)
+        //             if (screen.orientation) {
+        //                 screen.orientation.addEventListener("change", (e) => {
+        //                     updateStylesForOrientation(screen.orientation.type.includes('portrait') ? 'portrait' : 'landscape');
+        //                 });
+        //             }
                     
-                    // Set the common styles for the partyElement
-                    partyElement.style.position = 'absolute';
-                    partyElement.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-                    partyElement.style.color = 'white';
-                    partyElement.style.padding = '10px';
-                    partyElement.style.zIndex = '1000';
-                    partyElement.style.backdropFilter = 'blur(10px)';
-                    partyElement.style.fontFamily = 'Orbitron, sans-serif';
-                    partyElement.style.borderRadius = '5px';
+        //             // Set the common styles for the partyElement
+        //             partyElement.style.position = 'absolute';
+        //             partyElement.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+        //             partyElement.style.color = 'white';
+        //             partyElement.style.padding = '10px';
+        //             partyElement.style.zIndex = '1000';
+        //             partyElement.style.backdropFilter = 'blur(10px)';
+        //             partyElement.style.fontFamily = 'Orbitron, sans-serif';
+        //             partyElement.style.borderRadius = '5px';
                     
-                    const leaveButton = document.createElement('button');
-                    leaveButton.id = 'ordinaryButton';
-                    leaveButton.onclick = () => this.leaveParty(this.cars[this.playerId], ws); // Pass playerCar
-                    partyElement.appendChild(leaveButton);
+        //             const leaveButton = document.createElement('button');
+        //             leaveButton.id = 'ordinaryButton';
+        //             leaveButton.onclick = () => this.leaveParty(this.cars[this.playerId], ws); // Pass playerCar
+        //             partyElement.appendChild(leaveButton);
                     
-                    document.body.appendChild(partyElement);
-                }
+        //             document.body.appendChild(partyElement);
+        //         }
                     
-                    // Ensure the party UI is visible
-                    partyElement.style.display = 'block';
+        //             // Ensure the party UI is visible
+        //             partyElement.style.display = 'block';
 
-                    // Clear previous content except for the leave button
-                    partyElement.innerHTML = '';
+        //             // Clear previous content except for the leave button
+        //             partyElement.innerHTML = '';
 
-                    // Create the leave button
-                    const leaveButton = document.createElement('button');
-                    leaveButton.innerHTML = `${feather.icons['log-out'].toSvg({ width: 15, height: 15 })}`;
-                    leaveButton.style.display = 'flex';
-                    leaveButton.style.rotate = '180deg';
-                    leaveButton.style.marginBottom = '5px';
-                    leaveButton.style.paddingLeft = '5px';
-                    leaveButton.style.color = 'rgb(255, 87, 51)';
-                    leaveButton.style.background = 'unset';
-                    leaveButton.style.border = 'none';
-                    leaveButton.style.fontSize = '10px';
-                    leaveButton.style.fontWeight = 'bold';
-                    leaveButton.style.fontFamily = 'Orbitron, sans-serif';
-                    leaveButton.onclick = () => this.leaveParty(this.cars[this.playerId], ws); // Pass playerCar
-                    partyElement.appendChild(leaveButton);
+        //             // Create the leave button
+        //             const leaveButton = document.createElement('button');
+        //             leaveButton.innerHTML = `${feather.icons['log-out'].toSvg({ width: 15, height: 15 })}`;
+        //             leaveButton.style.display = 'flex';
+        //             leaveButton.style.rotate = '180deg';
+        //             leaveButton.style.marginBottom = '5px';
+        //             leaveButton.style.paddingLeft = '5px';
+        //             leaveButton.style.color = 'rgb(255, 87, 51)';
+        //             leaveButton.style.background = 'unset';
+        //             leaveButton.style.border = 'none';
+        //             leaveButton.style.fontSize = '10px';
+        //             leaveButton.style.fontWeight = 'bold';
+        //             leaveButton.style.fontFamily = 'Orbitron, sans-serif';
+        //             leaveButton.onclick = () => this.leaveParty(this.cars[this.playerId], ws); // Pass playerCar
+        //             partyElement.appendChild(leaveButton);
 
-                    // Conditionally attach it to the switch button
-                    // const switchContainer = document.getElementById('switch-container');
-                    // if (switchContainer) {
-                    //     switchContainer.appendChild(partyElement);  // Append to the switch-container
-                    // }
+        //             // Conditionally attach it to the switch button
+        //             // const switchContainer = document.getElementById('switch-container');
+        //             // if (switchContainer) {
+        //             //     switchContainer.appendChild(partyElement);  // Append to the switch-container
+        //             // }
 
-                function formatPlayerId(id) {
-                    const firstPart = id.substring(0, 4);
-                    const lastPart = id.substring(id.length - 4);
-                    return `${firstPart}...${lastPart}`;
-                }
+        //         function formatPlayerId(id) {
+        //             const firstPart = id.substring(0, 4);
+        //             const lastPart = id.substring(id.length - 4);
+        //             return `${firstPart}...${lastPart}`;
+        //         }
 
-                // Create time display element
-                const timeElement = document.createElement('div');
-                timeElement.id = 'party-time-display';
-                timeElement.style.position = 'absolute';
-                timeElement.style.top = '8px';
-                timeElement.style.left = '50%';
-                timeElement.style.transform = 'translateX(-50%)';
-                timeElement.style.fontSize = '14px';
-                timeElement.style.padding = '3px';
-                timeElement.style.fontWeight = 'bold';
-                timeElement.style.marginLeft = '3px';
-                timeElement.style.fontSize = '10px';
-                partyElement.appendChild(timeElement);
+        //         // Create time display element
+        //         const timeElement = document.createElement('div');
+        //         timeElement.id = 'party-time-display';
+        //         timeElement.style.position = 'absolute';
+        //         timeElement.style.top = '8px';
+        //         timeElement.style.left = '50%';
+        //         timeElement.style.transform = 'translateX(-50%)';
+        //         timeElement.style.fontSize = '14px';
+        //         timeElement.style.padding = '3px';
+        //         timeElement.style.fontWeight = 'bold';
+        //         timeElement.style.marginLeft = '3px';
+        //         timeElement.style.fontSize = '10px';
+        //         partyElement.appendChild(timeElement);
 
-                // Update time every second
-                setInterval(() => {
-                    const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    timeElement.innerText = currentTime;
-                }, 1000);
+        //         // Update time every second
+        //         setInterval(() => {
+        //             const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        //             timeElement.innerText = currentTime;
+        //         }, 1000);
 
-                // Add inviter info
-                // const inviterInfo = document.createElement('div');
-                // inviterInfo.innerText = `♔ ${formatPlayerId(inviterId)}`;
-                // partyElement.appendChild(inviterInfo);
+        //         // Add inviter info
+        //         // const inviterInfo = document.createElement('div');
+        //         // inviterInfo.innerText = `♔ ${formatPlayerId(inviterId)}`;
+        //         // partyElement.appendChild(inviterInfo);
 
-                // Add the toggle chat button if it doesn't already exist
-                const toggleButton = document.createElement('button');
-                toggleButton.id = 'toggle-chat-button';
-                toggleButton.innerHTML = `${feather.icons['mail'].toSvg({ width: 15, height: 15 })}`;  // Chat icon
-                toggleButton.style.color = '#FF5733';
-                toggleButton.style.background = 'unset';
-                toggleButton.style.border = 'none';
-                toggleButton.style.marginLeft = '35%';
-                toggleButton.style.top = '0';
-                toggleButton.style.cursor = 'pointer';
-                partyElement.appendChild(toggleButton);
+        //         // Add the toggle chat button if it doesn't already exist
+        //         const toggleButton = document.createElement('button');
+        //         toggleButton.id = 'toggle-chat-button';
+        //         toggleButton.innerHTML = `${feather.icons['mail'].toSvg({ width: 15, height: 15 })}`;  // Chat icon
+        //         toggleButton.style.color = '#FF5733';
+        //         toggleButton.style.background = 'unset';
+        //         toggleButton.style.border = 'none';
+        //         toggleButton.style.marginLeft = '35%';
+        //         toggleButton.style.top = '0';
+        //         toggleButton.style.cursor = 'pointer';
+        //         partyElement.appendChild(toggleButton);
 
-                // Add event listener for toggling the chat visibility
-                toggleButton.addEventListener('click', this.toggleChatVisibility);
+        //         // Add event listener for toggling the chat visibility
+        //         toggleButton.addEventListener('click', this.toggleChatVisibility);
 
-                // Add member info
-                members.forEach(memberId => {
-                    const memberInfo = document.createElement('div');
-                    memberInfo.id = `member-${memberId}`;
-                    memberInfo.style.marginTop = '5px';
-                    memberInfo.innerText = `➤ ${this.formatPlayerId(memberId)}`;
-                    partyElement.appendChild(memberInfo);
-                });
+        //         // Add member info
+        //         members.forEach(memberId => {
+        //             const memberInfo = document.createElement('div');
+        //             memberInfo.id = `member-${memberId}`;
+        //             memberInfo.style.marginTop = '5px';
+        //             memberInfo.innerText = `➤ ${this.formatPlayerId(memberId)}`;
+        //             partyElement.appendChild(memberInfo);
+        //         });
 
-                // Pass the updated members to the physics engine
-                if (physics) {
-                    // Update non-collidable pairs only if there are remaining members
-                    if (members.length > 1) {
-                        physics.updateNonCollidablePlayers(members);
-                    } else {
-                        physics.nonCollidablePlayers.clear(); // Clear all non-collidable pairs if the party is disbanded
-                    }
-                } else {
-                    console.error('Physics engine is not defined.');
-                }  
+        //         // Pass the updated members to the physics engine
+        //         if (physics) {
+        //             // Update non-collidable pairs only if there are remaining members
+        //             if (members.length > 1) {
+        //                 physics.updateNonCollidablePlayers(members);
+        //             } else {
+        //                 physics.nonCollidablePlayers.clear(); // Clear all non-collidable pairs if the party is disbanded
+        //             }
+        //         } else {
+        //             console.error('Physics engine is not defined.');
+        //         }  
+        //     }
+
+        updatePartyUI(inviterId, members, physics, ws) {
+            let partyElement = document.getElementById('party-info');
+            if (!partyElement) {
+                // Create the party-info container
+                partyElement = document.createElement('div');
+                partyElement.id = 'party-info';
+                partyElement.style.cssText = `
+                    position: absolute;
+                    bottom: 0;
+                    right: 0;
+                    width: 400px;
+                    height: 400px;
+                    max-height: calc(100% - 40px);
+                    margin: 0;
+                    padding: 20px;
+                    display: none;
+                    flex-direction: column;
+                    background-color: rgba(0, 0, 0, 0.3);
+                    border-radius: 10px;
+                    box-shadow: 0 5px 8px rgba(0, 0, 0, 0.3);
+                    overflow: hidden;
+                    z-index: 10000;
+                    backdrop-filter: blur(5px);
+                    transition: all 0.5s ease-in-out;
+                `;
+                document.body.appendChild(partyElement);
             }
+        
+            // Clear previous content
+            partyElement.innerHTML = '';
+        
+            // Add live clock at the top
+            const timeElement = document.createElement('div');
+            timeElement.id = 'party-time-display';
+            timeElement.style.cssText = `
+                font-size: 12px;
+                font-weight: bold;
+                margin-bottom: 10px;
+                color: white;
+                text-align: center;
+                margin: 5px;
+            `;
+            partyElement.appendChild(timeElement);
+        
+            // Update the clock every second
+            setInterval(() => {
+                const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                timeElement.innerText = `TIME: ${currentTime}`;
+            }, 1000);
+        
+            // Add a toggle chat button
+            const toggleChatButton = document.createElement('button');
+            toggleChatButton.id = 'toggle-chat-button';
+            toggleChatButton.innerHTML = `${feather.icons['mail'].toSvg({ width: 20, height: 20 })}`;
+            toggleChatButton.style.cssText = `
+                margin: 14px;
+                font-family: 'Orbitron', sans-serif;
+                font-size: 10px;
+                color: #FF5733;
+                background: unset;
+                border: none;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+            `;
+            toggleChatButton.addEventListener('click', this.toggleChatVisibility);
+            partyElement.appendChild(toggleChatButton);
+
+            // Add a toggle call button
+            const toggleCallButton = document.createElement('button');
+            toggleCallButton.id = 'toggle-call-button';
+            toggleCallButton.innerHTML = `${feather.icons['mic'].toSvg({ width: 20, height: 20 })}`;
+            toggleCallButton.style.cssText = `
+                margin: 14px;
+                font-family: 'Orbitron', sans-serif;
+                font-size: 10px;
+                color: #FF5733;
+                background: unset;
+                border: none;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+            `;
+            toggleCallButton.addEventListener('click', this.toggleChatVisibility);
+            partyElement.appendChild(toggleCallButton);
+        
+            // Populate party info
+            members.forEach((memberId) => {
+                const memberDiv = document.createElement('div');
+                memberDiv.id = `member-${memberId}`;
+                memberDiv.style.paddingTop = '10px';
+                memberDiv.style.margin = '10px';
+                memberDiv.innerText = `➤ ${this.formatPlayerId(memberId)}`;
+                memberDiv.style.color = 'white';
+                partyElement.appendChild(memberDiv);
+            });
+        
+            // Add Leave Party button
+            const leaveButton = document.createElement('button');
+            leaveButton.innerHTML = `LEAVE PARTY`;
+            leaveButton.style.cssText = `
+                margin-top: 10px;
+                padding: 5px 10px;
+                font-family: 'Orbitron', sans-serif;
+                font-size: 12px;
+                font-weight: bold;
+                color: rgb(255, 87, 51);
+                background: unset;
+                border: 1px solid rgb(255, 87, 51);
+                border-radius: 5px;
+                cursor: pointer;
+            `;
+            leaveButton.onclick = () => this.leaveParty(this.cars[this.playerId], ws);
+            partyElement.appendChild(leaveButton);
+        
+            // Add PARTY button
+            let partyToggleButton = document.getElementById('toggle-party-list');
+            if (!partyToggleButton) {
+                partyToggleButton = document.createElement('button');
+                partyToggleButton.id = 'toggle-party-list';
+                partyToggleButton.innerText = 'PARTY';
+                partyToggleButton.style.cssText = `
+                    position: absolute;
+                    top: 181px;
+                    left: 100px;
+                    width: 72px;
+                    height: 10px;
+                    text-align: center;
+                    font-family: 'Orbitron', sans-serif;
+                    font-weight: 600;
+                    font-size: 8px;
+                    background: rgba(0, 0, 0, 0.5);
+                    color: white;
+                    padding: 10px 10px;
+                    border-radius: 5px;
+                    z-index: 10;
+                    backdrop-filter: blur(10px);
+                    cursor: pointer;
+                `;
+                partyToggleButton.addEventListener('click', () => {
+                    if (partyElement.style.display === 'flex') {
+                        partyElement.style.display = 'none';
+                    } else {
+                        partyElement.style.display = 'flex';
+                    }
+                });
+                document.body.appendChild(partyToggleButton);
+            }
+
+            // Ensure the PARTY toggle button is visible
+            if (partyToggleButton.style.display === 'none') {
+                partyToggleButton.style.display = 'block';
+            }
+
+        }
+        
 
             formatPlayerId(id) {
                 const firstPart = id.substring(0, 4);

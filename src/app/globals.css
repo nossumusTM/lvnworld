@@ -249,6 +249,54 @@ opacity: 0;
   }
 } */
 
+#party-info {
+  background-color: rgba(0, 0, 0, 0.3);
+  position: absolute;
+  margin: 0;
+  padding: 20px;
+  bottom: 0;
+  right: 0;
+  width: 400px;
+  height: 400px;
+  max-height: calc(100% - 40px);
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  box-shadow: 0 5px 8px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  z-index: 10000;
+  backdrop-filter: blur(5px);
+  transition: all 0.5s ease-in-out;
+}
+
+#toggle-party-list {
+  position: absolute;
+  border: unset;
+  width: 72px;
+  height: 10px;
+  text-align: center;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 600;
+  font-size: 8px;
+  top: 181px;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  left: 100px;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 10px 10px;
+  border-radius: 5px;
+  z-index: 10;
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+}
+
+#toggle-party-list:hover {
+  background-color: #7DFF61;
+  color: #000;
+}
+
 #invite-button {
   position: absolute;
   border: unset;
@@ -635,6 +683,29 @@ opacity: 0;
     z-index: 10;
     backdrop-filter: blur(10px);
     opacity: 0;
+  }
+
+  #toggle-party-list {
+    position: absolute;
+    border: unset;
+    width: 72px;
+    height: 10px;
+    text-align: center;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 600;
+    font-size: 8px;
+    top: 237px;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    left: 306px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 10px 10px;
+    border-radius: 5px;
+    z-index: 10;
+    backdrop-filter: blur(10px);
+    cursor: pointer;
   }
 
   #contact-list {
@@ -1805,7 +1876,23 @@ opacity: 0;
 #toggle-chat-button {
   display: flex;
   top: 0;
-  right: 0;
+  right: 85px;
+  justify-content: end;
+  position: absolute;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.5);
+  color: #FF5733;
+  border: 0px solid #fff;
+  padding-top: 10px;
+  padding-right: 10px;
+  border-radius: 5px;
+  font-size: 20px;
+}
+
+#toggle-call-button {
+  display: flex;
+  top: 0;
+  left: 100px;
   justify-content: end;
   position: absolute;
   z-index: 1000;
