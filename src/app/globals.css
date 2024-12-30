@@ -694,7 +694,7 @@ opacity: 0;
     font-family: 'Orbitron', sans-serif;
     font-weight: 600;
     font-size: 8px;
-    top: 237px;
+    top: 242px;
     align-items: center;
     justify-content: center;
     display: flex;
@@ -716,7 +716,7 @@ opacity: 0;
     bottom: 0;
     right: 0;
     width: 100vw;
-    height: 350px;
+    height: 400px;
     max-height: calc(100% - 40px);
     display: flex;
     flex-direction: column;
@@ -1876,7 +1876,7 @@ opacity: 0;
 #toggle-chat-button {
   display: flex;
   top: 0;
-  right: 85px;
+  right: 40px;
   justify-content: end;
   position: absolute;
   z-index: 1000;
@@ -1892,7 +1892,7 @@ opacity: 0;
 #toggle-call-button {
   display: flex;
   top: 0;
-  left: 100px;
+  left: 50px;
   justify-content: end;
   position: absolute;
   z-index: 1000;
@@ -1961,7 +1961,7 @@ opacity: 0;
   .chat-box {
     width: 300px!important;
     height: 300px!important;
-    background: rgba(0, 40, 255, 0.7)!important;
+    background: rgba(0, 0, 0, 0.3);
   }
 }
 

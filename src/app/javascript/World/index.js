@@ -1421,69 +1421,178 @@ export default class
             }
         }
 
+        // showFriendListPrompt(friendRequestId, targetPlayerId, ws) {
+        //     let inviteElement = document.getElementById('friend-invite-prompt');
+        //     if (!inviteElement) {
+        //         inviteElement = document.createElement('div');
+        //         inviteElement.id = 'friend-invite-prompt';
+        //         inviteElement.style = `
+        //             position: absolute;
+        //             top: 50%;
+        //             left: 50%;
+        //             transform: translate(-50%, -50%);
+        //             background-color: rgba(0, 0, 0, 0.5);
+        //             color: white;
+        //             padding: 10px;
+        //             border-radius: 10px;
+        //             z-index: 1000;
+        //             display: flex;
+        //             align-items: center;
+        //             flex-direction: column;
+        //             width: 250px;
+        //         `;
+        
+        //         const messageElement = document.createElement('div');
+        //         messageElement.id = 'friend-invite-message';
+        //         messageElement.style.fontFamily = 'Orbitron, sans-serif';
+        //         inviteElement.appendChild(messageElement);
+        
+        //         const buttonContainer = document.createElement('div');
+        //         buttonContainer.style = `
+        //             display: flex;
+        //             justify-content: space-between;
+        //             width: 100%;
+        //         `;
+        
+        //         const acceptButton = document.createElement('button');
+        //         acceptButton.innerHTML = '✅ Accept';
+        //         acceptButton.style = `
+        //             margin-right: 10px;
+        //             background-color: #8CFF80;
+        //             color: #000;
+        //             flex: 1;
+        //             font-family: Orbitron, sans-serif;
+        //         `;
+        //         acceptButton.onclick = () => this.respondToFriendshipInvite('yes', friendRequestId, targetPlayerId, ws);
+        //         buttonContainer.appendChild(acceptButton);
+        
+        //         const denyButton = document.createElement('button');
+        //         denyButton.innerHTML = '❌ Deny';
+        //         denyButton.style = `
+        //             background-color: #FF5733;
+        //             flex: 1;
+        //             font-family: Orbitron, sans-serif;
+        //         `;
+        //         denyButton.onclick = () => this.respondToFriendshipInvite('no', friendRequestId, targetPlayerId, ws);
+        //         buttonContainer.appendChild(denyButton);
+        
+        //         inviteElement.appendChild(buttonContainer);
+        //         document.body.appendChild(inviteElement);
+        
+        //         setTimeout(() => this.hideInvitePrompt(inviteElement), 20000); // Auto-hide after 20 seconds
+        //     }
+        
+        //     const messageElement = document.getElementById('friend-invite-message');
+        //     messageElement.innerText = `${friendRequestId.slice(0, 6)} wants to add you as a friend. Accept?`;
+        // }        
+
         showFriendListPrompt(friendRequestId, targetPlayerId, ws) {
             let inviteElement = document.getElementById('friend-invite-prompt');
             if (!inviteElement) {
+                // Create the prompt container
                 inviteElement = document.createElement('div');
                 inviteElement.id = 'friend-invite-prompt';
-                inviteElement.style = `
-                    position: absolute;
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);
-                    background-color: rgba(0, 0, 0, 0.5);
-                    color: white;
-                    padding: 10px;
-                    border-radius: 10px;
-                    z-index: 1000;
-                    display: flex;
-                    align-items: center;
-                    flex-direction: column;
-                    width: 250px;
-                `;
+                inviteElement.style.position = 'absolute';
+                inviteElement.style.top = '50%';
+                inviteElement.style.left = '50%';
+                inviteElement.style.transform = 'translate(-50%, -50%)';
+                inviteElement.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                inviteElement.style.color = 'white';
+                inviteElement.style.padding = '10px';
+                inviteElement.style.borderRadius = '10px';
+                inviteElement.style.zIndex = '1000';
+                inviteElement.style.backdropFilter = 'blur(5px)';
+                inviteElement.style.display = 'flex';
+                inviteElement.style.alignItems = 'center';
+                inviteElement.style.flexDirection = 'column';
+                inviteElement.style.width = '250px';
         
+                // Progress bar container
+                const progressBarContainer = document.createElement('div');
+                progressBarContainer.style.width = '100%';
+                progressBarContainer.style.height = '10px';
+                progressBarContainer.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+                progressBarContainer.style.borderRadius = '5px';
+                progressBarContainer.style.overflow = 'hidden';
+                progressBarContainer.style.marginBottom = '10px';
+        
+                // Progress bar
+                const progressBar = document.createElement('div');
+                progressBar.style.width = '100%';
+                progressBar.style.height = '100%';
+                progressBar.style.backgroundColor = '#8CFF80';
+                progressBarContainer.appendChild(progressBar);
+        
+                inviteElement.appendChild(progressBarContainer);
+        
+                // Message element
                 const messageElement = document.createElement('div');
                 messageElement.id = 'friend-invite-message';
                 messageElement.style.fontFamily = 'Orbitron, sans-serif';
                 inviteElement.appendChild(messageElement);
         
+                // Button container
                 const buttonContainer = document.createElement('div');
-                buttonContainer.style = `
-                    display: flex;
-                    justify-content: space-between;
-                    width: 100%;
-                `;
+                buttonContainer.style.display = 'flex';
+                buttonContainer.style.justifyContent = 'space-between';
+                buttonContainer.style.width = '100%';
         
+                // Accept button
                 const acceptButton = document.createElement('button');
-                acceptButton.innerHTML = '✅ Accept';
-                acceptButton.style = `
-                    margin-right: 10px;
-                    background-color: #8CFF80;
-                    color: #000;
-                    flex: 1;
-                    font-family: Orbitron, sans-serif;
-                `;
+                acceptButton.innerHTML = `${feather.icons['check-square'].toSvg({ width: 15, height: 15 })} ACCEPT`;
+                acceptButton.id = 'ordinaryButton';
+                acceptButton.style.marginRight = '10px';
+                acceptButton.style.whiteSpace = 'pre';
+                acceptButton.style.display = 'flex';
+                acceptButton.style.justifyContent = 'center';
+                acceptButton.style.backgroundColor = '#8CFF80';
+                acceptButton.style.color = '#000';
+                acceptButton.style.flex = '1';
+                acceptButton.style.fontFamily = 'Orbitron, sans-serif';
                 acceptButton.onclick = () => this.respondToFriendshipInvite('yes', friendRequestId, targetPlayerId, ws);
                 buttonContainer.appendChild(acceptButton);
+                feather.replace();
         
+                // Deny button
                 const denyButton = document.createElement('button');
-                denyButton.innerHTML = '❌ Deny';
-                denyButton.style = `
-                    background-color: #FF5733;
-                    flex: 1;
-                    font-family: Orbitron, sans-serif;
-                `;
+                denyButton.innerHTML = `${feather.icons['x-square'].toSvg({ width: 15, height: 15 })} DENY`;
+                denyButton.id = 'ordinaryButton';
+                denyButton.style.whiteSpace = 'pre';
+                denyButton.style.backgroundColor = '#FF5733';
+                denyButton.style.display = 'flex';
+                denyButton.style.fontFamily = 'Orbitron, sans-serif';
+                denyButton.style.justifyContent = 'center';
+                denyButton.style.flex = '1';
                 denyButton.onclick = () => this.respondToFriendshipInvite('no', friendRequestId, targetPlayerId, ws);
                 buttonContainer.appendChild(denyButton);
         
                 inviteElement.appendChild(buttonContainer);
                 document.body.appendChild(inviteElement);
         
-                setTimeout(() => this.hideInvitePrompt(inviteElement), 20000); // Auto-hide after 20 seconds
+                // Start the progress bar animation (decrease width over 20 seconds)
+                setTimeout(() => {
+                    progressBar.style.transition = 'width 20s linear'; // Smooth transition for 20 seconds
+                    progressBar.style.width = '0%'; // Decrease the width to 0%
+                }, 100); // Small delay to trigger the transition
+        
+                // Auto-remove after 20 seconds
+                let timeLeft = 20;
+                const countdownInterval = setInterval(() => {
+                    timeLeft -= 1;
+                    if (timeLeft <= 0) {
+                        clearInterval(countdownInterval);
+                        this.hideInvitePrompt(inviteElement); // Automatically hide the invite prompt after timeout
+                    }
+                }, 1000);
             }
         
             const messageElement = document.getElementById('friend-invite-message');
             messageElement.innerText = `${friendRequestId.slice(0, 6)} wants to add you as a friend. Accept?`;
+            messageElement.style.textAlign = 'left';
+            messageElement.style.marginLeft = '10px';
+            inviteElement.style.display = 'flex';
+            inviteElement.style.opacity = '1';
+            inviteElement.style.fontSize = '12px';
         }        
 
         respondToFriendshipInvite(response, friendRequestId, playerId, ws) {
@@ -1780,6 +1889,7 @@ export default class
                     z-index: 10000;
                     backdrop-filter: blur(5px);
                     transition: all 0.5s ease-in-out;
+                    align-items: center;
                 `;
                 document.body.appendChild(partyElement);
             }
@@ -1847,7 +1957,6 @@ export default class
                 const memberDiv = document.createElement('div');
                 memberDiv.id = `member-${memberId}`;
                 memberDiv.style.paddingTop = '10px';
-                memberDiv.style.margin = '10px';
                 memberDiv.innerText = `➤ ${this.formatPlayerId(memberId)}`;
                 memberDiv.style.color = 'white';
                 partyElement.appendChild(memberDiv);
@@ -1857,7 +1966,7 @@ export default class
             const leaveButton = document.createElement('button');
             leaveButton.innerHTML = `LEAVE PARTY`;
             leaveButton.style.cssText = `
-                margin-top: 10px;
+                margin: 20px;
                 padding: 5px 10px;
                 font-family: 'Orbitron', sans-serif;
                 font-size: 12px;
@@ -1877,24 +1986,24 @@ export default class
                 partyToggleButton = document.createElement('button');
                 partyToggleButton.id = 'toggle-party-list';
                 partyToggleButton.innerText = 'PARTY';
-                partyToggleButton.style.cssText = `
-                    position: absolute;
-                    top: 181px;
-                    left: 100px;
-                    width: 72px;
-                    height: 10px;
-                    text-align: center;
-                    font-family: 'Orbitron', sans-serif;
-                    font-weight: 600;
-                    font-size: 8px;
-                    background: rgba(0, 0, 0, 0.5);
-                    color: white;
-                    padding: 10px 10px;
-                    border-radius: 5px;
-                    z-index: 10;
-                    backdrop-filter: blur(10px);
-                    cursor: pointer;
-                `;
+                // partyToggleButton.style.cssText = `
+                //     position: absolute;
+                //     top: 181px;
+                //     left: 100px;
+                //     width: 72px;
+                //     height: 10px;
+                //     text-align: center;
+                //     font-family: 'Orbitron', sans-serif;
+                //     font-weight: 600;
+                //     font-size: 8px;
+                //     background: rgba(0, 0, 0, 0.5);
+                //     color: white;
+                //     padding: 10px 10px;
+                //     border-radius: 5px;
+                //     z-index: 10;
+                //     backdrop-filter: blur(10px);
+                //     cursor: pointer;
+                // `;
                 partyToggleButton.addEventListener('click', () => {
                     if (partyElement.style.display === 'flex') {
                         partyElement.style.display = 'none';
