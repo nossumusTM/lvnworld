@@ -624,6 +624,8 @@ export default class
 
         setupWebSocketHandlers(ws) {
 
+            const partyInfoElement = document.getElementById('party-info');
+
             ws.onopen = () => {
 
                 // Clear old party state in case the player was previously in a party
@@ -894,7 +896,6 @@ export default class
                         // document.getElementById('party-info').style.display = 'none';
 
                         // Hide and clear the party-info container
-                        const partyInfoElement = document.getElementById('party-info');
                         if (partyInfoElement) {
                             partyInfoElement.style.display = 'none'; // Hide the party-info UI
                             partyInfoElement.innerHTML = ''; // Clear its content
@@ -904,6 +905,8 @@ export default class
                         const partyToggleButton = document.getElementById('toggle-party-list');
                         if (partyToggleButton) {
                             partyToggleButton.style.display = 'none';
+                        } else {
+                            partyToggleButton.style.display = 'flex';
                         }
 
                         // Additional clear logic
@@ -936,7 +939,10 @@ export default class
                         // const partyInfoElement = document.getElementById('party-info');
                             if (partyInfoElement) {
                                 partyInfoElement.style.display = 'none';
+                            } else {
+                                console.warn('Party element is not ready.')
                             }
+                            
                             if (this.physics) {
                             this.physics.nonCollidablePlayers.clear(); // Clear all non-collidable pairs
                             console.log("Party disbanded")

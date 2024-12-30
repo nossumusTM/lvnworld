@@ -434,18 +434,23 @@ opacity: 0;
     display: none;
   }
 
-  #contact-list div:last-child {
+  #contact-list div {
     display: flex;
-    border-bottom: none;
+    /* border-bottom: 1px solid rgba(0, 255, 16, 0.5); Add a border for all except last-child */
     font-size: 10px;
     border-radius: 5px;
     padding: 20px;
+    margin-top: 10px;
     justify-content: center;
     box-shadow: 0px 0px 1px rgba(0, 255, 16, 0.5);
   }
 
-  #contact-list div:last-child:before {
-    margin: 10px;
+  #contact-list div:last-child {
+      border-bottom: none; /* Remove border for the last child */
+  }
+
+  #contact-list div:before {
+      margin: 10px;
   }
 
   #toggle-contact {
