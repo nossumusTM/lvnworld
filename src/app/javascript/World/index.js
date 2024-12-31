@@ -367,6 +367,7 @@ export default class
         this.createMiniMap();
         this.setReveal();
         this.setClock();
+        this.partyToggle();
     }
 
     setCar(carName, matcaps) {
@@ -622,9 +623,43 @@ export default class
             }
         }
 
-        setupWebSocketHandlers(ws) {
-
+        clearPartyState() {
+            this.inParty = false;
+            this.isPartyLeader = false;
+            this.partyMembers = [];
+            this.clearChatContainer();
+            this.hideChatContainer();
+            this.updateToggleButtonVisibility(this.inParty);
+        
             const partyInfoElement = document.getElementById('party-info');
+            if (partyInfoElement) {
+                partyInfoElement.innerHTML = '';
+                // partyInfoElement.style.display = 'none'; // Hide the party-info UI
+            }
+        
+            // const partyToggleButton = document.getElementById('toggle-party-list');
+            // if (partyToggleButton) {
+            //     partyToggleButton.style.display = 'none'; // Hide the PARTY toggle button
+            // }
+        
+            // Additional clear logic for other players
+            if (this.otherPlayers) {
+                Object.keys(this.otherPlayers).forEach(playerId => {
+                    if (this.partyMembers.includes(playerId)) {
+                        delete this.otherPlayers[playerId];
+                    }
+                });
+            }
+        
+            // Clear physics non-collidable pairs
+            if (this.physics) {
+                this.physics.nonCollidablePlayers.clear();
+            }
+        
+            console.log('Party state cleared');
+        }
+
+        setupWebSocketHandlers(ws) {
 
             ws.onopen = () => {
 
@@ -722,7 +757,7 @@ export default class
                             if (message.response === 'yes') {
                                 console.log(`${message.playerId} accepted friendship invite from ${message.friendRequestId}`);
                                 this.showPopup(`You are now connected with ${message.friendRequestId.slice(0, 6)}`);
-                                this.updateFriendListUI();
+                                this.updateFriendListUI(friendList);
                             } else {
                                 console.log(`${message.playerId} denied friendship invite from ${message.friendRequestId}`);
                                 this.showPopup(`Connection invite denied.`);
@@ -838,6 +873,7 @@ export default class
                         const partyInfo = document.getElementById('party-info');
                         if (partyInfo) {
                             partyInfo.style.opacity = 1;
+                            partyInfo.style.display = 'flex';
                         }
                         
                         // Ensure no duplicate players are added
@@ -886,43 +922,9 @@ export default class
                     //     break;
 
                     case 'partyDisbanded':
-                        this.inParty = false;
-                        this.isPartyLeader = false;
-                        this.partyMembers = [];
-                        this.clearChatContainer();
-                        this.hideChatContainer();
-                        this.updateToggleButtonVisibility(this.inParty);
-
-                        // document.getElementById('party-info').style.display = 'none';
-
-                        // Hide and clear the party-info container
-                        if (partyInfoElement) {
-                            partyInfoElement.style.display = 'none'; // Hide the party-info UI
-                            partyInfoElement.innerHTML = ''; // Clear its content
-                        }
-
-                        // Hide the PARTY toggle button
-                        const partyToggleButton = document.getElementById('toggle-party-list');
-                        if (partyToggleButton) {
-                            partyToggleButton.style.display = 'none';
-                        } else {
-                            partyToggleButton.style.display = 'flex';
-                        }
-
-                        // Additional clear logic
-                        if (this.otherPlayers) {
-                            Object.keys(this.otherPlayers).forEach(playerId => {
-                                if (this.partyMembers.includes(playerId)) {
-                                    delete this.otherPlayers[playerId];
-                                }
-                            });
-                        }
-
-                        if (this.physics) {
-                            this.physics.nonCollidablePlayers.clear(); // Clear all non-collidable pairs
-                            console.log("Party disbanded")
-                        }
-                    break;
+                        this.clearPartyState();
+                        console.log("Party disbanded");
+                        break;
 
                     case 'partyTwoLeft':
                         alert("Only two players are left in the party.");
@@ -936,12 +938,12 @@ export default class
                         this.hideChatContainer();
                         this.updateToggleButtonVisibility(this.inParty);
 
-                        // const partyInfoElement = document.getElementById('party-info');
-                            if (partyInfoElement) {
-                                partyInfoElement.style.display = 'none';
-                            } else {
-                                console.warn('Party element is not ready.')
-                            }
+                        // const partyInfoRemoved = document.getElementById('party-info');
+                            // if (partyInfoRemoved) {
+                            //     partyInfoRemoved.style.display = 'none';
+                            // } else {
+                            //     console.warn('Party element is not ready.')
+                            // }
                             
                             if (this.physics) {
                             this.physics.nonCollidablePlayers.clear(); // Clear all non-collidable pairs
@@ -1014,29 +1016,17 @@ export default class
     
             ws.onclose = () => {
                 console.log('Disconnected from WebSocket server');
-                
-                    // Clear party state on disconnect
-                    this.inParty = false;
-                    this.partyMembers = [];
-                    this.clearChatContainer();
-                    this.hideChatContainer();
-                    this.updateToggleButtonVisibility(this.inParty);
+    
+                if (this.inParty) {
+                    console.log('Player was in a party. Clearing party state.');
+                    this.clearPartyState();
+                }
 
-                    const partyInfoElement = document.getElementById('party-info');
-                    if (partyInfoElement) {
-                        partyInfoElement.style.display = 'none';
-                    }
-                
-                    // Clear physics non-collidable pairs if necessary
-                    if (this.physics) {
-                        this.physics.nonCollidablePlayers.clear();
-                    }         
-                    
-                    // Redirect to the home or wallet connection page
-                    if (typeof window !== 'undefined') {
-                        // window.location.href = 'https://krashbox.world';
-                        window.location.href = 'localhost:3000';
-                    }
+                // Redirect to the home or wallet connection page
+                if (typeof window !== 'undefined') {
+                    // window.location.href = 'https://krashbox.world';
+                    window.location.href = 'localhost:3000';
+                }
             };
         }
 
@@ -1693,11 +1683,30 @@ export default class
         // }     
         
         // Function to update the friend list UI
+        // updateFriendListUI(friendList) {
+        //     const friendListContainer = document.getElementById('friend-list');
+        //     if (friendListContainer) {
+        //         friendListContainer.innerHTML = ''; // Clear existing list
+                
+        //         if (friendList.length === 0) {
+        //             const noFriendsElement = document.createElement('div');
+        //             noFriendsElement.textContent = 'No friends added yet.';
+        //             friendListContainer.appendChild(noFriendsElement);
+        //         } else {
+        //             friendList.forEach(friendId => {
+        //                 const friendElement = document.createElement('div');
+        //                 friendElement.textContent = `Friend ID: ${friendId}`;
+        //                 friendListContainer.appendChild(friendElement);
+        //             });
+        //         }
+        //     }
+        // }
+
         updateFriendListUI(friendList) {
             const friendListContainer = document.getElementById('friend-list');
             if (friendListContainer) {
                 friendListContainer.innerHTML = ''; // Clear existing list
-                
+        
                 if (friendList.length === 0) {
                     const noFriendsElement = document.createElement('div');
                     noFriendsElement.textContent = 'No friends added yet.';
@@ -1706,11 +1715,18 @@ export default class
                     friendList.forEach(friendId => {
                         const friendElement = document.createElement('div');
                         friendElement.textContent = `Friend ID: ${friendId}`;
+                        friendElement.style.cssText = `
+                            padding: 10px;
+                            margin: 5px;
+                            background-color: rgba(0, 0, 0, 0.1);
+                            border-radius: 5px;
+                            color: white;
+                        `;
                         friendListContainer.appendChild(friendElement);
                     });
                 }
             }
-        }
+        }        
                 
         // Update party UI
         // updatePartyUI(inviterId, members, physics, ws) {
@@ -1888,7 +1904,7 @@ export default class
                     max-height: calc(100% - 40px);
                     margin: 0;
                     padding: 20px;
-                    display: none;
+                    display: flex;
                     flex-direction: column;
                     background-color: rgba(0, 0, 0, 0.3);
                     border-radius: 10px;
@@ -1992,30 +2008,82 @@ export default class
             partyElement.appendChild(leaveButton);
         
             // Add PARTY button
-            let partyToggleButton = document.getElementById('toggle-party-list');
-                partyToggleButton.innerText = 'PARTY';
+            // let partyToggleButton = document.getElementById('toggle-party-list');
+            //     partyToggleButton.innerText = 'PARTY';
                
-                partyToggleButton.addEventListener('click', () => {
-                    if (partyElement.style.display === 'flex') {
-                        partyElement.style.display = 'none';
-                    } else {
-                        partyElement.style.display = 'flex';
-                    }
-                });
-                document.body.appendChild(partyToggleButton);
+            //     // Add event listener for toggling the party info display
+            //     partyToggleButton.addEventListener('click', () => {
+                    
+            //         console.log(`Before toggle: partyElement.style.display = '${partyElement.style.display}'`);
+
+            //         if (partyElement.style.display === 'flex') {
+            //             partyElement.style.display = 'none';
+            //             console.log("Toggling party element to display none");
+            //         } else {
+            //             partyElement.style.display = 'flex';
+            //             console.log("Toggling party element to display flex");
+            //         }
+
+            //         console.log(`After toggle: partyElement.style.display = '${partyElement.style.display}'`);
+            //     });
+
+            //     document.body.appendChild(partyToggleButton);
+
+            // // Ensure the PARTY toggle button is visible
+            // if (partyToggleButton.style.display === 'none') {
+            //     partyToggleButton.style.display = 'flex';
+            // }
+
+            // if (partyToggleButton) {
+            //     partyToggleButton.style.opacity = '1';
+            // }
+
+            // Pass the updated members to the physics engine
+            if (physics) {
+                // Update non-collidable pairs only if there are remaining members
+                if (members.length > 1) {
+                    physics.updateNonCollidablePlayers(members);
+                } else {
+                    physics.nonCollidablePlayers.clear(); // Clear all non-collidable pairs if the party is disbanded
+                }
+            } else {
+                console.error('Physics engine is not defined.');
+                    }  
+            }
+
+            partyToggle = () => {
+                let partyToggleButton = document.getElementById('toggle-party-list');
+                partyToggleButton.innerText = 'PARTY';
             
-
-            // Ensure the PARTY toggle button is visible
-            if (partyToggleButton.style.display === 'none') {
-                partyToggleButton.style.display = 'block';
-            }
-
-            if (partyToggleButton) {
+                if (!partyToggleButton) {
+                    // Create the button if it doesn't exist
+                    partyToggleButton = document.createElement('button');
+                    partyToggleButton.id = 'toggle-party-list';
+                    partyToggleButton.innerText = 'PARTY';
+                    partyToggleButton.style.cssText = `
+                        position: absolute;
+                        bottom: 10px;
+                        right: 10px;
+                        padding: 5px 10px;
+                        font-family: 'Orbitron', sans-serif;
+                        font-size: 12px;
+                        font-weight: bold;
+                        color: rgb(255, 255, 255);
+                        background-color: rgba(0, 0, 0, 0.5);
+                        border: 1px solid rgb(255, 255, 255);
+                        border-radius: 5px;
+                        cursor: pointer;
+                    `;
+                    document.body.appendChild(partyToggleButton);
+                }
+            
+                // Add event listener to toggle party list
+                partyToggleButton.onclick = this.togglePartyList;
+            
+                // Ensure button is visible
+                partyToggleButton.style.display = 'flex';
                 partyToggleButton.style.opacity = '1';
-            }
-
-        }
-        
+            };
 
             formatPlayerId(id) {
                 const firstPart = id.substring(0, 4);
@@ -2114,7 +2182,8 @@ export default class
 
                 const partyElement = document.getElementById('party-info');
                 if (partyElement) {
-                    partyElement.style.display = 'none';
+                    // partyElement.style.display = 'none';
+                    partyElement.innerHTML = '';
                 }
 
                 // Clear the non-collidable players set to ensure all players can collide again
@@ -2189,9 +2258,9 @@ export default class
                     chatContainer.style.display = 'none';
                 } else {
                     chatContainer.style.display = 'block';
-                    // Hide the notification badge when the chat is opened
+                    // Remove the notification badge if it exists
                     if (notificationBadge) {
-                        notificationBadge.style.display = 'none';
+                        toggleButton.removeChild(notificationBadge);
                     }
                 }
             };
@@ -2237,6 +2306,72 @@ export default class
                     console.log("Toggling back")
                 }
             };
+
+            // togglePartyList = () => {
+            //     const partyElement = document.getElementById('party-info');
+            
+            //     if (!partyElement) {
+            //         console.error('Party info container not found!');
+            //         return;
+            //     }
+            
+            //     console.log(`Before toggle: partyElement.style.display = '${partyElement.style.display}'`);
+            
+            //     // Toggle the visibility of the party-info container
+            //     if (partyElement.style.display === 'flex') {
+            //         partyElement.style.display = 'none';
+            //         console.log('Toggling party element to display none');
+            //     } else {
+            //         partyElement.style.display = 'flex';
+            //         console.log('Toggling party element to display flex');
+            //     }
+            
+            //     console.log(`After toggle: partyElement.style.display = '${partyElement.style.display}'`);
+            // };
+
+            togglePartyList = () => {
+                const partyElement = document.getElementById('party-info');
+            
+                if (!partyElement) {
+                    console.error('Party info container not found!');
+                    return;
+                }
+            
+                console.log(`Before toggle: partyElement.style.display = '${partyElement.style.display}'`);
+            
+                // Toggle the visibility of the party-info container
+                if (partyElement.style.display === 'flex') {
+                    partyElement.style.display = 'none';
+                    console.log('Toggling party element to display none');
+                } else {
+                    partyElement.style.display = 'flex';
+                    console.log('Toggling party element to display flex');
+            
+                    // Dynamically check if there are members
+                    if (!this.partyMembers || this.partyMembers.length === 0) {
+                        // Clear previous content and display the message
+                        partyElement.innerHTML = ''; // Clear the container
+                        const noPartyMessage = document.createElement('p');
+                        noPartyMessage.innerText = 'NO PARTY FOUND.';
+                        noPartyMessage.style.cssText = `
+                            font-family: 'Orbitron', sans-serif;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            width: 400px;
+                            height: 400px;
+                            font-size: 18px;
+                            font-weight: 500;
+                            color: white;
+                            margin-top: 20px;
+                            text-align: center;
+                        `;
+                        partyElement.appendChild(noPartyMessage);
+                    }
+                }
+            
+                console.log(`After toggle: partyElement.style.display = '${partyElement.style.display}'`);
+            };            
 
             // Function to show the popup with a custom message
             showPopup(message) {

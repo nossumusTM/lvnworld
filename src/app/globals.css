@@ -1472,12 +1472,13 @@ opacity: 0;
 
 .popup-content {
   position: relative;
-  background: rgba(0, 0, 0, 0.2);
+  background: none;
   padding: 20px;
   border-radius: 5px;
   width: 300px;
   text-align: center;
   font-family: 'Orbitron', sans-serif;
+  font-size: 12px;
 }
 
 .popup-content h1 {
@@ -1916,15 +1917,15 @@ opacity: 0;
 
 .pulse-notification {
   position: absolute;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
+  width: 0px;
+  height: 0px;
+  border-radius: 0px;
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
   animation: animate 5s infinite linear;
   z-index: -1;
-  padding-left: 15px;
-  padding-top: 15px;
+  padding-left: 20px;
+  padding-top: 10px;
 }
 
 @keyframes animate {
