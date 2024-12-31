@@ -740,6 +740,31 @@ opacity: 0;
     overflow-y: auto;
   }
 
+  #party-info {
+    background-color: rgba(0, 0, 0, 0.3);
+    position: absolute;
+    margin: 20px;
+    padding: 20px;
+    bottom: 0;
+    right: 0;
+    width: 400px;
+    height: 390px!important;
+    margin: 10px;
+    max-height: calc(100% - 40px);
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    box-shadow: 0 5px 8px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    z-index: 10000;
+    backdrop-filter: blur(5px);
+    transition: all 0.5s ease-in-out;
+  }
+
+  .open {
+    z-index: 10000 !important;
+  }
+
   #settings-window {
     background-color: rgba(0, 0, 0, 0.3);
     position: absolute;

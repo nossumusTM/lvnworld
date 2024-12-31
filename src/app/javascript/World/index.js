@@ -1900,7 +1900,7 @@ export default class
                     bottom: 0;
                     right: 0;
                     width: 400px;
-                    height: 400px;
+                    height: 300px;
                     max-height: calc(100% - 40px);
                     margin: 10px;
                     padding: 20px;
