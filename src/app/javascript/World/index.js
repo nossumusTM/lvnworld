@@ -634,11 +634,12 @@ export default class
                     friendListBlock.id = 'friend-list-block';
                     friendListBlock.style.cssText = `
                         display: flex;
+                        flex-direction: column;
                         justify-content: center;
                         align-items: center;
                         margin-top: 10px;
                         padding: 10px;
-                        box-shadow: 0 0px 10px 1px rgba(0, 255, 16, 0.5);
+                        gap: 20px;
                         cursor: pointer;
                     `;
                     friendListContainer.appendChild(friendListBlock);
@@ -658,7 +659,7 @@ export default class
                         justify-content: center;
                         align-items: center;
                         padding: 10px;
-                        border-bottom: 1px solid rgba(0, 255, 16, 0.5)
+                        box-shadow: 0 0px 10px 1px rgba(0, 255, 16, 0.5);
                         cursor: pointer;
                         color: white;
                     `;
