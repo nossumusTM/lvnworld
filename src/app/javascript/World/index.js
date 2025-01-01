@@ -757,7 +757,7 @@ export default class
                             if (message.response === 'yes') {
                                 console.log(`${message.playerId} accepted friendship invite from ${message.friendRequestId}`);
                                 this.showPopup(`You are now connected with ${message.friendRequestId.slice(0, 6)}`);
-                                this.updateFriendListUI(friendList);
+                                // this.updateFriendListUI(friendList);
                             } else {
                                 console.log(`${message.playerId} denied friendship invite from ${message.friendRequestId}`);
                                 this.showPopup(`Connection invite denied.`);
@@ -932,11 +932,7 @@ export default class
 
                     case 'playerRemoved':
                         this.removePlayerCar(message.playerId);
-                        this.inParty = false;
-                        this.partyMembers = [];
-                        this.clearChatContainer();
-                        this.hideChatContainer();
-                        this.updateToggleButtonVisibility(this.inParty);
+                        this.clearPartyState();
 
                         // const partyInfoRemoved = document.getElementById('party-info');
                             // if (partyInfoRemoved) {
@@ -945,10 +941,10 @@ export default class
                             //     console.warn('Party element is not ready.')
                             // }
                             
-                            if (this.physics) {
-                            this.physics.nonCollidablePlayers.clear(); // Clear all non-collidable pairs
-                            console.log("Party disbanded")
-                        }
+                        //     if (this.physics) {
+                        //     this.physics.nonCollidablePlayers.clear(); // Clear all non-collidable pairs
+                        //     console.log("Party disbanded")
+                        // }
                         break;
 
                         case 'dropKrashcoin':
