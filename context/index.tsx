@@ -15,8 +15,8 @@ if(!projectId) {
 }
 
 const metadata = {
-    name: 'Krashbox',
-    description: 'Crash, collect and cash-out',
+    name: 'KyberBox',
+    description: 'Crash, collect and cash-in',
     url: 'https://krashbox.world',
     icons: ['https://nossumus.com/public/images/krashbox32x32.png']
 }

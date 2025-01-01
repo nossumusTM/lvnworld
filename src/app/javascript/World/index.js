@@ -623,6 +623,79 @@ export default class
         //     }
         // }
 
+        // populateFriendList(friendList) {
+        //     const friendListContainer = document.getElementById('contact-list');
+        
+        //     if (friendListContainer) {
+        //         // Find or create the friend list block
+        //         let friendListBlock = document.getElementById('friend-list-block');
+        //         if (!friendListBlock) {
+        //             friendListBlock = document.createElement('div');
+        //             friendListBlock.id = 'friend-list-block';
+        //             friendListBlock.style.cssText = `
+        //                 display: flex;
+        //                 flex-direction: column;
+        //                 justify-content: center;
+        //                 align-items: center;
+        //                 margin-top: 10px;
+        //                 padding: 10px;
+        //                 gap: 20px;
+        //                 cursor: pointer;
+        //             `;
+        //             friendListContainer.appendChild(friendListBlock);
+        //         }
+        
+        //         // Clear the friend list block only
+        //         friendListBlock.innerHTML = '';
+        
+        //         // Add each friend to the block
+        //         friendList.forEach(friendId => {
+        //             // Create a container for the friend
+        //             const friendElement = document.createElement('div');
+        //             friendElement.textContent = `${friendId}`;
+        //             friendElement.classList.add('friend-item');
+        //             friendElement.style.cssText = `
+        //                 display: flex;
+        //                 justify-content: center;
+        //                 align-items: center;
+        //                 padding: 10px;
+        //                 box-shadow: 0 0px 10px 1px rgba(0, 255, 16, 0.5);
+        //                 cursor: pointer;
+        //                 color: white;
+        //             `;
+        
+        //             // Add a remove button (hidden by default)
+        //             const removeButton = document.createElement('button');
+        //             removeButton.innerHTML = `${feather.icons['x'].toSvg({ width: 10, height: 10 })}`;
+        //             removeButton.classList.add('remove-friend-button');
+        //             removeButton.style.cssText = `
+        //                 display: none;
+        //                 background-color: transparent;
+        //                 border: none;
+        //                 color: white;
+        //                 padding: 5px 10px;
+        //                 margin-left: 10px;
+        //                 cursor: pointer;
+        //                 font-size: 12px;
+        //             `;
+        //             removeButton.onclick = () => this.removeFriend(friendId, this.ws);
+        
+        //             // Show the remove button when the friend is clicked
+        //             friendElement.addEventListener('click', () => {
+        //                 // Hide all other remove buttons
+        //                 const allRemoveButtons = document.querySelectorAll('.remove-friend-button');
+        //                 allRemoveButtons.forEach(button => (button.style.display = 'none'));
+        
+        //                 // Show the remove button for the clicked friend
+        //                 removeButton.style.display = 'inline-block';
+        //             });
+        
+        //             friendElement.appendChild(removeButton);
+        //             friendListBlock.appendChild(friendElement);
+        //         });
+        //     }
+        // }        
+
         populateFriendList(friendList) {
             const friendListContainer = document.getElementById('contact-list');
         
@@ -652,45 +725,125 @@ export default class
                 friendList.forEach(friendId => {
                     // Create a container for the friend
                     const friendElement = document.createElement('div');
-                    friendElement.textContent = `${friendId}`;
                     friendElement.classList.add('friend-item');
                     friendElement.style.cssText = `
                         display: flex;
                         justify-content: center;
                         align-items: center;
+                        position: relative;
+                        width: 100%;
                         padding: 10px;
                         box-shadow: 0 0px 10px 1px rgba(0, 255, 16, 0.5);
+                        color: white;
                         cursor: pointer;
+                    `;
+        
+                    const friendText = document.createElement('span');
+                    friendText.textContent = `${friendId}`;
+                    friendText.style.cssText = `
+                        font-size: 8px;
                         color: white;
                     `;
         
-                    // Add a remove button (hidden by default)
-                    const removeButton = document.createElement('button');
-                    removeButton.innerHTML = `${feather.icons['x'].toSvg({ width: 10, height: 10 })}`;
-                    removeButton.classList.add('remove-friend-button');
-                    removeButton.style.cssText = `
+                    // Add a container for buttons
+                    const buttonContainer = document.createElement('div');
+                    buttonContainer.style.cssText = `
                         display: none;
-                        background-color: transparent;
+                        flex-direction: unset;
+                        justify-content: center;
+                        align-items: center;
+                        position: absolute;
+                        background: #00000053;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%) scale(0);
+                        transition: transform 0.3s ease-in-out;
+                        backdrop-filter: blur(10px);
+                        border: 0px;
+                        border-radius: 10px;
+                        gap: 10px;
+                    `;
+        
+                    // Add a copy button
+                    const copyButton = document.createElement('button');
+                    copyButton.innerHTML = `${feather.icons['copy'].toSvg({ width: 15, height: 15 })}`;
+                    copyButton.classList.add('copy-friend-button');
+                    copyButton.style.cssText = `
                         border: none;
                         color: white;
                         padding: 5px 10px;
-                        margin-left: 10px;
+                        border-radius: 5px;
                         cursor: pointer;
                         font-size: 12px;
                     `;
-                    removeButton.onclick = () => this.removeFriend(friendId, this.ws);
+                    copyButton.onclick = (event) => {
+                        navigator.clipboard.writeText(friendId).then(() => {
+                            console.log(`Copied friend ID: ${friendId}`);
+                            this.showPopup('Copied to clipboard!');
+                        }).catch(err => {
+                            console.error('Failed to copy text: ', err);
+                        });
+                        event.stopPropagation(); // Prevent hiding when clicking the button
+                    };
         
-                    // Show the remove button when the friend is clicked
+                    // Add a remove button
+                    const removeButton = document.createElement('button');
+                    removeButton.innerHTML = `${feather.icons['trash'].toSvg({ width: 15, height: 15 })}`;
+                    removeButton.classList.add('remove-friend-button');
+                    removeButton.style.cssText = `
+                        border: none;
+                        color: white;
+                        padding: 5px 10px;
+                        border-radius: 5px;
+                        cursor: pointer;
+                        font-size: 12px;
+                    `;
+                    removeButton.onclick = (event) => {
+                        this.removeFriend(friendId, this.ws);
+                        event.stopPropagation(); // Prevent hiding when clicking the button
+                    };
+        
+                    // Append buttons to the button container
+                    buttonContainer.appendChild(copyButton);
+                    buttonContainer.appendChild(removeButton);
+        
+                    // Add event listeners for showing and hiding buttons
                     friendElement.addEventListener('click', () => {
-                        // Hide all other remove buttons
-                        const allRemoveButtons = document.querySelectorAll('.remove-friend-button');
-                        allRemoveButtons.forEach(button => (button.style.display = 'none'));
-        
-                        // Show the remove button for the clicked friend
-                        removeButton.style.display = 'inline-block';
+                        // Reset all friend-item containers and their buttonContainers
+                        const allFriendItems = document.querySelectorAll('.friend-item');
+                        allFriendItems.forEach(item => {
+                            const container = item.querySelector('div');
+                            if (container) {
+                                container.style.transform = 'translate(-50%, -50%) scale(0)';
+                                container.style.display = 'none';
+                            }
+                            // Remove active state from all friend-item containers
+                            item.style.boxShadow = '0 0px 10px 1px rgba(0, 255, 16, 0.5)';
+                        });
+
+                        // Highlight the selected friend-item container
+                        friendElement.style.boxShadow = '0 0px 15px 2px rgba(255, 255, 255, 0.8)';
+
+                        // Show the button container
+                        buttonContainer.style.transform = 'translate(-50%, -50%) scale(1)';
+                        buttonContainer.style.display = 'flex';
                     });
+
+                    document.addEventListener('click', (event) => {
+                        if (!friendElement.contains(event.target)) {
+                            // Reset the button container
+                            buttonContainer.style.transform = 'translate(-50%, -50%) scale(0)';
+                            buttonContainer.style.display = 'none';
+
+                            // Reset the box shadow of the friend-item container
+                            friendElement.style.boxShadow = '0 0px 10px 1px rgba(0, 255, 16, 0.5)';
+                        }
+                    });
+
         
-                    friendElement.appendChild(removeButton);
+                    // Append elements
+                    friendElement.appendChild(friendText);
+                    friendElement.appendChild(buttonContainer);
                     friendListBlock.appendChild(friendElement);
                 });
             }
@@ -743,11 +896,6 @@ export default class
                 partyInfoElement.innerHTML = '';
                 // partyInfoElement.style.display = 'none'; // Hide the party-info UI
             }
-        
-            // const partyToggleButton = document.getElementById('toggle-party-list');
-            // if (partyToggleButton) {
-            //     partyToggleButton.style.display = 'none'; // Hide the PARTY toggle button
-            // }
         
             // Additional clear logic for other players
             if (this.otherPlayers) {
@@ -841,6 +989,7 @@ export default class
 
                     case 'worldFull':
                             console.error(`The world ${message.worldId} is full. Please try joining another world.`);
+                            this.showPopup(`The world ${message.worldId} is full. Please try joining another world.`)
                             // Handle world full situation (e.g., prompt the user to join another world or retry)
                             // For example, you might want to retry joining with a different worldId or notify the user
                             break;
@@ -870,7 +1019,6 @@ export default class
                             if (message.response === 'yes') {
                                 console.log(`${message.playerId} accepted friendship invite from ${message.friendRequestId}`);
                                 this.showPopup(`You are now connected with ${message.friendRequestId.slice(0, 6)}`);
-                                // this.updateFriendListUI(friendList);
                             } else {
                                 console.log(`${message.playerId} denied friendship invite from ${message.friendRequestId}`);
                                 this.showPopup(`Connection invite denied.`);
@@ -961,11 +1109,6 @@ export default class
                         }
                         break;
 
-                    // case 'invite':
-                    //     console.log(`Received invite from ${message.inviterId}`);
-                    //     this.showInvitePrompt(message.inviterId, message.targetPlayerId, ws);
-                    //     break;
-
                     case 'invite':
                         if (!this.inParty) {
                             console.log(`Received invite from ${message.inviterId}`);
@@ -980,6 +1123,8 @@ export default class
                     case 'inviteResponse':
                             if (message.response === 'yes') {
                                 this.addPlayerToParty(message.inviterId, message.playerId);
+                            } else {
+                                this.showPopup(`Party invite denied.`);
                             }
                         break;
 
@@ -1008,7 +1153,6 @@ export default class
                     case 'partyMessage':  // New case for party messages
                         if (this.inParty) {
                             this.displayPartyMessage(message.senderId, message.text, message.senderId === this.playerId); // Display the incoming message in chat
-                            // handleNewMessage(message);
                         }
                         break;
 
@@ -1025,19 +1169,6 @@ export default class
                     // case 'batteryStatus':
                     //     updateBatteryStatus(message.playerId, message.battery);
                     //     break;
-                    
-                    // case 'partyDisbanded':
-                    //     this.inParty = false;
-                    //     this.partyMembers = [];
-                    //     clearChatContainer();
-                    //     hideChatContainer();
-                    //     updateToggleButtonVisibility(this.inParty);
-                    //     document.getElementById('party-info').style.display = 'none';
-                    //     if (this.physics) {
-                    //         this.physics.nonCollidablePlayers.clear(); // Clear all non-collidable pairs
-                    //         console.log("Party disbanded")
-                    //     }
-                    //     break;
 
                     case 'partyDisbanded':
                         this.clearPartyState();
@@ -1051,18 +1182,6 @@ export default class
                     case 'playerRemoved':
                         this.removePlayerCar(message.playerId);
                         this.clearPartyState();
-
-                        // const partyInfoRemoved = document.getElementById('party-info');
-                            // if (partyInfoRemoved) {
-                            //     partyInfoRemoved.style.display = 'none';
-                            // } else {
-                            //     console.warn('Party element is not ready.')
-                            // }
-                            
-                        //     if (this.physics) {
-                        //     this.physics.nonCollidablePlayers.clear(); // Clear all non-collidable pairs
-                        //     console.log("Party disbanded")
-                        // }
                         break;
 
                         case 'dropKrashcoin':
@@ -1531,72 +1650,7 @@ export default class
             if (inviteElement) {
                 inviteElement.style.display = 'none';
             }
-        }
-
-        // showFriendListPrompt(friendRequestId, targetPlayerId, ws) {
-        //     let inviteElement = document.getElementById('friend-invite-prompt');
-        //     if (!inviteElement) {
-        //         inviteElement = document.createElement('div');
-        //         inviteElement.id = 'friend-invite-prompt';
-        //         inviteElement.style = `
-        //             position: absolute;
-        //             top: 50%;
-        //             left: 50%;
-        //             transform: translate(-50%, -50%);
-        //             background-color: rgba(0, 0, 0, 0.5);
-        //             color: white;
-        //             padding: 10px;
-        //             border-radius: 10px;
-        //             z-index: 1000;
-        //             display: flex;
-        //             align-items: center;
-        //             flex-direction: column;
-        //             width: 250px;
-        //         `;
-        
-        //         const messageElement = document.createElement('div');
-        //         messageElement.id = 'friend-invite-message';
-        //         messageElement.style.fontFamily = 'Orbitron, sans-serif';
-        //         inviteElement.appendChild(messageElement);
-        
-        //         const buttonContainer = document.createElement('div');
-        //         buttonContainer.style = `
-        //             display: flex;
-        //             justify-content: space-between;
-        //             width: 100%;
-        //         `;
-        
-        //         const acceptButton = document.createElement('button');
-        //         acceptButton.innerHTML = '✅ Accept';
-        //         acceptButton.style = `
-        //             margin-right: 10px;
-        //             background-color: #8CFF80;
-        //             color: #000;
-        //             flex: 1;
-        //             font-family: Orbitron, sans-serif;
-        //         `;
-        //         acceptButton.onclick = () => this.respondToFriendshipInvite('yes', friendRequestId, targetPlayerId, ws);
-        //         buttonContainer.appendChild(acceptButton);
-        
-        //         const denyButton = document.createElement('button');
-        //         denyButton.innerHTML = '❌ Deny';
-        //         denyButton.style = `
-        //             background-color: #FF5733;
-        //             flex: 1;
-        //             font-family: Orbitron, sans-serif;
-        //         `;
-        //         denyButton.onclick = () => this.respondToFriendshipInvite('no', friendRequestId, targetPlayerId, ws);
-        //         buttonContainer.appendChild(denyButton);
-        
-        //         inviteElement.appendChild(buttonContainer);
-        //         document.body.appendChild(inviteElement);
-        
-        //         setTimeout(() => this.hideInvitePrompt(inviteElement), 20000); // Auto-hide after 20 seconds
-        //     }
-        
-        //     const messageElement = document.getElementById('friend-invite-message');
-        //     messageElement.innerText = `${friendRequestId.slice(0, 6)} wants to add you as a friend. Accept?`;
-        // }        
+        }     
 
         showFriendListPrompt(friendRequestId, targetPlayerId, ws) {
             let inviteElement = document.getElementById('friend-invite-prompt');
@@ -1772,7 +1826,6 @@ export default class
             }
         };
 
-
         // Add player to party
         addPlayerToParty(inviterId, playerId) {
             ws.send(JSON.stringify({
@@ -1780,195 +1833,7 @@ export default class
                 inviterId: inviterId,
                 playerId: playerId
             }));
-            // updatePartyUI(inviterId, playerId);
-        }
-
-        updateFriendListUI(friendList) {
-            const friendListContainer = document.getElementById('friend-list');
-            if (friendListContainer) {
-                friendListContainer.innerHTML = ''; // Clear existing list
-        
-                if (friendList.length === 0) {
-                    const noFriendsElement = document.createElement('div');
-                    noFriendsElement.textContent = 'No friends added yet.';
-                    friendListContainer.appendChild(noFriendsElement);
-                } else {
-                    friendList.forEach(friendId => {
-                        const friendElement = document.createElement('div');
-                        friendElement.textContent = `Friend ID: ${friendId}`;
-                        friendElement.style.cssText = `
-                            padding: 10px;
-                            margin: 5px;
-                            background-color: rgba(0, 0, 0, 0.1);
-                            border-radius: 5px;
-                            color: white;
-                        `;
-                        friendListContainer.appendChild(friendElement);
-                    });
-                }
-            }
-        }        
-                
-        // Update party UI
-        // updatePartyUI(inviterId, members, physics, ws) {
-        //     let partyElement = document.getElementById('party-info');              
-
-        //         if (!partyElement) {
-        //             partyElement = document.createElement('div');
-        //             partyElement.id = 'party-info';
-                        
-        //             const updateStylesForOrientation = (orientation) => {
-        //                 if (orientation === 'portrait') {
-        //                     partyElement.style.top = '180px';
-        //                     partyElement.style.left = '235px';
-        //                     partyElement.style.width = '35%';
-        //                     partyElement.style.fontSize = '13px';
-        //                     partyElement.style.textAlign = 'left';
-        //                     partyElement.style.borderRadius = '5px';
-        //                     partyElement.style.display = 'block';
-        //                     partyElement.style.fontFamily = 'Orbitron, sans-serif';
-        //                     partyElement.style.backgroundColor = 'rgba(0, 0, 0, 0.2)';
-        //                 } else if (orientation === 'landscape') {
-        //                     partyElement.style.display = 'none';
-        //                     partyElement.style.top = '15px';
-        //                     partyElement.style.left = '345px';
-        //                     partyElement.style.width = '15%';
-        //                 }
-        //             };
-                    
-        //             // Check initial orientation
-        //             let portrait = window.matchMedia("(orientation: portrait)");
-        //             updateStylesForOrientation(portrait.matches ? 'portrait' : 'landscape');
-                    
-        //             // Listen for orientation changes
-        //             portrait.addEventListener("change", (e) => {
-        //                 if (e.matches) {
-        //                     updateStylesForOrientation('portrait');
-        //                 } else {
-        //                     updateStylesForOrientation('landscape');
-        //                 }
-        //             });
-                    
-        //             // Alternatively, using screen.orientation (if supported)
-        //             if (screen.orientation) {
-        //                 screen.orientation.addEventListener("change", (e) => {
-        //                     updateStylesForOrientation(screen.orientation.type.includes('portrait') ? 'portrait' : 'landscape');
-        //                 });
-        //             }
-                    
-        //             // Set the common styles for the partyElement
-        //             partyElement.style.position = 'absolute';
-        //             partyElement.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-        //             partyElement.style.color = 'white';
-        //             partyElement.style.padding = '10px';
-        //             partyElement.style.zIndex = '1000';
-        //             partyElement.style.backdropFilter = 'blur(10px)';
-        //             partyElement.style.fontFamily = 'Orbitron, sans-serif';
-        //             partyElement.style.borderRadius = '5px';
-                    
-        //             const leaveButton = document.createElement('button');
-        //             leaveButton.id = 'ordinaryButton';
-        //             leaveButton.onclick = () => this.leaveParty(this.cars[this.playerId], ws); // Pass playerCar
-        //             partyElement.appendChild(leaveButton);
-                    
-        //             document.body.appendChild(partyElement);
-        //         }
-                    
-        //             // Ensure the party UI is visible
-        //             partyElement.style.display = 'block';
-
-        //             // Clear previous content except for the leave button
-        //             partyElement.innerHTML = '';
-
-        //             // Create the leave button
-        //             const leaveButton = document.createElement('button');
-        //             leaveButton.innerHTML = `${feather.icons['log-out'].toSvg({ width: 15, height: 15 })}`;
-        //             leaveButton.style.display = 'flex';
-        //             leaveButton.style.rotate = '180deg';
-        //             leaveButton.style.marginBottom = '5px';
-        //             leaveButton.style.paddingLeft = '5px';
-        //             leaveButton.style.color = 'rgb(255, 87, 51)';
-        //             leaveButton.style.background = 'unset';
-        //             leaveButton.style.border = 'none';
-        //             leaveButton.style.fontSize = '10px';
-        //             leaveButton.style.fontWeight = 'bold';
-        //             leaveButton.style.fontFamily = 'Orbitron, sans-serif';
-        //             leaveButton.onclick = () => this.leaveParty(this.cars[this.playerId], ws); // Pass playerCar
-        //             partyElement.appendChild(leaveButton);
-
-        //             // Conditionally attach it to the switch button
-        //             // const switchContainer = document.getElementById('switch-container');
-        //             // if (switchContainer) {
-        //             //     switchContainer.appendChild(partyElement);  // Append to the switch-container
-        //             // }
-
-        //         function formatPlayerId(id) {
-        //             const firstPart = id.substring(0, 4);
-        //             const lastPart = id.substring(id.length - 4);
-        //             return `${firstPart}...${lastPart}`;
-        //         }
-
-        //         // Create time display element
-        //         const timeElement = document.createElement('div');
-        //         timeElement.id = 'party-time-display';
-        //         timeElement.style.position = 'absolute';
-        //         timeElement.style.top = '8px';
-        //         timeElement.style.left = '50%';
-        //         timeElement.style.transform = 'translateX(-50%)';
-        //         timeElement.style.fontSize = '14px';
-        //         timeElement.style.padding = '3px';
-        //         timeElement.style.fontWeight = 'bold';
-        //         timeElement.style.marginLeft = '3px';
-        //         timeElement.style.fontSize = '10px';
-        //         partyElement.appendChild(timeElement);
-
-        //         // Update time every second
-        //         setInterval(() => {
-        //             const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        //             timeElement.innerText = currentTime;
-        //         }, 1000);
-
-        //         // Add inviter info
-        //         // const inviterInfo = document.createElement('div');
-        //         // inviterInfo.innerText = `♔ ${formatPlayerId(inviterId)}`;
-        //         // partyElement.appendChild(inviterInfo);
-
-        //         // Add the toggle chat button if it doesn't already exist
-        //         const toggleButton = document.createElement('button');
-        //         toggleButton.id = 'toggle-chat-button';
-        //         toggleButton.innerHTML = `${feather.icons['mail'].toSvg({ width: 15, height: 15 })}`;  // Chat icon
-        //         toggleButton.style.color = '#FF5733';
-        //         toggleButton.style.background = 'unset';
-        //         toggleButton.style.border = 'none';
-        //         toggleButton.style.marginLeft = '35%';
-        //         toggleButton.style.top = '0';
-        //         toggleButton.style.cursor = 'pointer';
-        //         partyElement.appendChild(toggleButton);
-
-        //         // Add event listener for toggling the chat visibility
-        //         toggleButton.addEventListener('click', this.toggleChatVisibility);
-
-        //         // Add member info
-        //         members.forEach(memberId => {
-        //             const memberInfo = document.createElement('div');
-        //             memberInfo.id = `member-${memberId}`;
-        //             memberInfo.style.marginTop = '5px';
-        //             memberInfo.innerText = `➤ ${this.formatPlayerId(memberId)}`;
-        //             partyElement.appendChild(memberInfo);
-        //         });
-
-        //         // Pass the updated members to the physics engine
-        //         if (physics) {
-        //             // Update non-collidable pairs only if there are remaining members
-        //             if (members.length > 1) {
-        //                 physics.updateNonCollidablePlayers(members);
-        //             } else {
-        //                 physics.nonCollidablePlayers.clear(); // Clear all non-collidable pairs if the party is disbanded
-        //             }
-        //         } else {
-        //             console.error('Physics engine is not defined.');
-        //         }  
-        //     }
+        }  
 
         updatePartyUI(inviterId, members, physics, ws) {
             let partyElement = document.getElementById('party-info');
@@ -2088,37 +1953,6 @@ export default class
             `;
             leaveButton.onclick = () => this.leaveParty(this.cars[this.playerId], ws);
             partyElement.appendChild(leaveButton);
-        
-            // Add PARTY button
-            // let partyToggleButton = document.getElementById('toggle-party-list');
-            //     partyToggleButton.innerText = 'PARTY';
-               
-            //     // Add event listener for toggling the party info display
-            //     partyToggleButton.addEventListener('click', () => {
-                    
-            //         console.log(`Before toggle: partyElement.style.display = '${partyElement.style.display}'`);
-
-            //         if (partyElement.style.display === 'flex') {
-            //             partyElement.style.display = 'none';
-            //             console.log("Toggling party element to display none");
-            //         } else {
-            //             partyElement.style.display = 'flex';
-            //             console.log("Toggling party element to display flex");
-            //         }
-
-            //         console.log(`After toggle: partyElement.style.display = '${partyElement.style.display}'`);
-            //     });
-
-            //     document.body.appendChild(partyToggleButton);
-
-            // // Ensure the PARTY toggle button is visible
-            // if (partyToggleButton.style.display === 'none') {
-            //     partyToggleButton.style.display = 'flex';
-            // }
-
-            // if (partyToggleButton) {
-            //     partyToggleButton.style.opacity = '1';
-            // }
 
             // Pass the updated members to the physics engine
             if (physics) {
@@ -2395,28 +2229,6 @@ export default class
                 }
             };
 
-            // togglePartyList = () => {
-            //     const partyElement = document.getElementById('party-info');
-            
-            //     if (!partyElement) {
-            //         console.error('Party info container not found!');
-            //         return;
-            //     }
-            
-            //     console.log(`Before toggle: partyElement.style.display = '${partyElement.style.display}'`);
-            
-            //     // Toggle the visibility of the party-info container
-            //     if (partyElement.style.display === 'flex') {
-            //         partyElement.style.display = 'none';
-            //         console.log('Toggling party element to display none');
-            //     } else {
-            //         partyElement.style.display = 'flex';
-            //         console.log('Toggling party element to display flex');
-            //     }
-            
-            //     console.log(`After toggle: partyElement.style.display = '${partyElement.style.display}'`);
-            // };
-
             togglePartyList = () => {
                 const partyElement = document.getElementById('party-info');
             
@@ -2440,7 +2252,7 @@ export default class
                         // Clear previous content and display the message
                         partyElement.innerHTML = ''; // Clear the container
                         const noPartyMessage = document.createElement('p');
-                        noPartyMessage.innerText = 'NO PARTY FOUND.';
+                        noPartyMessage.innerText = 'No party found.';
                         noPartyMessage.style.cssText = `
                             font-family: 'Orbitron', sans-serif;
                             display: flex;
