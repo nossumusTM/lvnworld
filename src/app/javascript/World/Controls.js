@@ -309,6 +309,7 @@ export default class Controls extends EventEmitter
         const inviteButton = document.getElementById('invite-button');
         const contacts = document.getElementById('friend-invite-button');
         const contactList = document.getElementById('toggle-contact-list');
+        const party = document.getElementById('toggle-party-list');
         const settings = document.getElementById('toggle-settings');
         const touchRadio = document.getElementById('touch-radio');
         const touchMute = document.getElementById('touch-mute');
@@ -320,6 +321,7 @@ export default class Controls extends EventEmitter
         targetPlayerId.style.display = this.isVerticalDisplay() ? 'unset' : 'none';
         inviteButton.style.display = this.isVerticalDisplay() ? 'none' : 'none';
         contacts.style.display = this.isVerticalDisplay() ? 'none' : 'none';
+        party.style.display = this.isVerticalDisplay() ? 'none' : 'none';
         contactList.style.display = this.isVerticalDisplay() ? 'none' : 'none';
         settings.style.display = this.isVerticalDisplay() ? 'none' : 'none';
         touchRadio.style.display = this.isVerticalDisplay() ? 'none' : 'none';
@@ -866,9 +868,7 @@ export default class Controls extends EventEmitter
                 touchNext.style.display = 'block';
                 contactList.style.display = 'flex';
                 settings.style.display = 'flex';
-                if (party) {
-                    party.style.display = 'flex';
-                }
+                party.style.display = 'flex';
 
                 // if (touchContacts) {
                 //     touchContacts.style.display = 'flex';
@@ -897,9 +897,7 @@ export default class Controls extends EventEmitter
                 contactList.style.display = 'none';
                 settings.style.display = 'none';
                 // touchContacts.style.display = 'none';
-                if (party) {
-                    party.style.display = 'none';
-                }
+                party.style.display = 'none';
 
             }
         });
@@ -2195,6 +2193,7 @@ export default class Controls extends EventEmitter
             const speedometer = document.getElementById('speedometer');
             const inviteButton = document.getElementById('invite-button');
             const partyInfo = document.getElementById('party-info');
+            const party = document.getElementById('toggle-party-list');
             const switchContainer = document.getElementById('switch-container');
 
 
@@ -2224,6 +2223,10 @@ export default class Controls extends EventEmitter
 
             if (partyInfo) {
                 partyInfo.style.opacity = 1;
+            }
+
+            if (party) {
+                party.style.opacity = 1;
             }
         }
 

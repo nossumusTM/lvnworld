@@ -605,22 +605,128 @@ export default class
         }       
 
         // Function to populate the friend list UI
+        // populateFriendList(friendList) {
+        //     const friendListContainer = document.getElementById('contact-list');
+
+        //     // Clear any existing friend list data
+        //     if (friendListContainer) {
+        //         // friendListContainer.innerHTML = '';
+
+        //         // Add each friend to the friend list container
+        //         // if (friendList.forEach === 'function') {
+        //             friendList.forEach(friendId => {
+        //                 const friendElement = document.createElement('div');
+        //                 friendElement.textContent = `${friendId}`;
+        //                 friendListContainer.appendChild(friendElement);
+        //             });
+        //         // }
+        //     }
+        // }
+
         populateFriendList(friendList) {
             const friendListContainer = document.getElementById('contact-list');
-
-            // Clear any existing friend list data
+        
             if (friendListContainer) {
-                // friendListContainer.innerHTML = '';
-
-                // Add each friend to the friend list container
-                // if (friendList.forEach === 'function') {
-                    friendList.forEach(friendId => {
-                        const friendElement = document.createElement('div');
-                        friendElement.textContent = `${friendId}`;
-                        friendListContainer.appendChild(friendElement);
+                // Find or create the friend list block
+                let friendListBlock = document.getElementById('friend-list-block');
+                if (!friendListBlock) {
+                    friendListBlock = document.createElement('div');
+                    friendListBlock.id = 'friend-list-block';
+                    friendListBlock.style.cssText = `
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        margin-top: 10px;
+                        padding: 10px;
+                        box-shadow: 0 0px 10px 1px rgba(0, 255, 16, 0.5);
+                        cursor: pointer;
+                    `;
+                    friendListContainer.appendChild(friendListBlock);
+                }
+        
+                // Clear the friend list block only
+                friendListBlock.innerHTML = '';
+        
+                // Add each friend to the block
+                friendList.forEach(friendId => {
+                    // Create a container for the friend
+                    const friendElement = document.createElement('div');
+                    friendElement.textContent = `${friendId}`;
+                    friendElement.classList.add('friend-item');
+                    friendElement.style.cssText = `
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        padding: 10px;
+                        border-bottom: 1px solid rgba(0, 255, 16, 0.5)
+                        cursor: pointer;
+                        color: white;
+                    `;
+        
+                    // Add a remove button (hidden by default)
+                    const removeButton = document.createElement('button');
+                    removeButton.innerHTML = `${feather.icons['x'].toSvg({ width: 10, height: 10 })}`;
+                    removeButton.classList.add('remove-friend-button');
+                    removeButton.style.cssText = `
+                        display: none;
+                        background-color: transparent;
+                        border: none;
+                        color: white;
+                        padding: 5px 10px;
+                        margin-left: 10px;
+                        cursor: pointer;
+                        font-size: 12px;
+                    `;
+                    removeButton.onclick = () => this.removeFriend(friendId, this.ws);
+        
+                    // Show the remove button when the friend is clicked
+                    friendElement.addEventListener('click', () => {
+                        // Hide all other remove buttons
+                        const allRemoveButtons = document.querySelectorAll('.remove-friend-button');
+                        allRemoveButtons.forEach(button => (button.style.display = 'none'));
+        
+                        // Show the remove button for the clicked friend
+                        removeButton.style.display = 'inline-block';
                     });
-                // }
+        
+                    friendElement.appendChild(removeButton);
+                    friendListBlock.appendChild(friendElement);
+                });
             }
+        }        
+        
+        requestFriendListUpdate() {
+            const updateRequest = {
+                type: 'updateFriendList',
+                playerId: this.playerId
+            };
+        
+            if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+                this.ws.send(JSON.stringify(updateRequest));
+                console.log('Requested friend list update from the server.');
+            } else {
+                console.error('WebSocket is not open. Unable to request friend list update.');
+            }
+        }  
+
+        removeFriend(friendId, ws) {
+            const removeRequest = {
+                type: 'removeFriend',
+                playerId: this.playerId,
+                friendId: friendId
+            };
+
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify(removeRequest));
+                console.log(`Requested to remove friend ${friendId}`);
+
+                // Request updated friend list
+                this.requestFriendListUpdate();
+
+            } else {
+                console.error('WebSocket is not open or undefined.');
+            }
+
         }
 
         clearPartyState() {
@@ -706,6 +812,12 @@ export default class
                     this.populateFriendList(message.friends);
                     console.log("Friends", message.friends)
                 }
+
+                if (message.type === 'friendListUpdate') {
+                    // Populate the contact list with the retrieved friends
+                    this.populateFriendList(message.friends);
+                    console.log('Friend list updated:', message.friends);
+                }
     
                 switch (message.type) {
                     case 'stateUpdate':
@@ -762,6 +874,11 @@ export default class
                                 console.log(`${message.playerId} denied friendship invite from ${message.friendRequestId}`);
                                 this.showPopup(`Connection invite denied.`);
                             }
+                            break;
+
+                    case 'friendListUpdate':
+                            console.log('Friend list updated:', message.friends);
+                            this.populateFriendList(message.friends); // Dynamically update the UI
                             break;
 
                     case 'update':
@@ -1665,39 +1782,6 @@ export default class
             // updatePartyUI(inviterId, playerId);
         }
 
-        // updateFriendListUI(friendList) {
-        //     const friendListContainer = document.getElementById('friend-list');
-        //     if (friendListContainer) {
-        //         friendListContainer.innerHTML = ''; // Clear existing list
-        
-        //         friendList.forEach(friendId => {
-        //             const friendElement = document.createElement('div');
-        //             friendElement.textContent = `Friend ID: ${friendId}`;
-        //             friendListContainer.appendChild(friendElement);
-        //         });
-        //     }
-        // }     
-        
-        // Function to update the friend list UI
-        // updateFriendListUI(friendList) {
-        //     const friendListContainer = document.getElementById('friend-list');
-        //     if (friendListContainer) {
-        //         friendListContainer.innerHTML = ''; // Clear existing list
-                
-        //         if (friendList.length === 0) {
-        //             const noFriendsElement = document.createElement('div');
-        //             noFriendsElement.textContent = 'No friends added yet.';
-        //             friendListContainer.appendChild(noFriendsElement);
-        //         } else {
-        //             friendList.forEach(friendId => {
-        //                 const friendElement = document.createElement('div');
-        //                 friendElement.textContent = `Friend ID: ${friendId}`;
-        //                 friendListContainer.appendChild(friendElement);
-        //             });
-        //         }
-        //     }
-        // }
-
         updateFriendListUI(friendList) {
             const friendListContainer = document.getElementById('friend-list');
             if (friendListContainer) {
@@ -2063,12 +2147,14 @@ export default class
                         padding: 5px 10px;
                         font-family: 'Orbitron', sans-serif;
                         font-size: 12px;
+                        display: flex;
                         font-weight: bold;
                         color: rgb(255, 255, 255);
                         background-color: rgba(0, 0, 0, 0.5);
                         border: 1px solid rgb(255, 255, 255);
                         border-radius: 5px;
                         cursor: pointer;
+                        opacity: 0;
                     `;
                     document.body.appendChild(partyToggleButton);
                 }
@@ -2077,8 +2163,8 @@ export default class
                 partyToggleButton.onclick = this.togglePartyList;
             
                 // Ensure button is visible
-                partyToggleButton.style.display = 'flex';
-                partyToggleButton.style.opacity = '1';
+                // partyToggleButton.style.display = 'flex';
+                // partyToggleButton.style.opacity = '1';
             };
 
             formatPlayerId(id) {
@@ -2280,8 +2366,11 @@ export default class
                 } else {
                     friendListContainer.style.display = 'flex';
                     console.log("Toggling back")
+
+                    // Request the updated friend list from the server
+                    this.requestFriendListUpdate();
                 }
-            };
+            };     
 
             // Function to toggle the visibility of the friend list
             toggleSettings = () => {
