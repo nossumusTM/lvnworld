@@ -2064,6 +2064,7 @@ export default class
                 const memberDiv = document.createElement('div');
                 memberDiv.id = `member-${memberId}`;
                 memberDiv.style.paddingTop = '10px';
+                memberDiv.style.fontSize = '12px';
                 memberDiv.innerText = `➤ ${this.formatPlayerId(memberId)}`;
                 memberDiv.style.color = 'white';
                 memberDiv.style.paddingLeft = "5px";
