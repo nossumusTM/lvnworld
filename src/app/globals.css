@@ -2942,10 +2942,10 @@ opacity: 0;
 }
 
 #ok-button {
-  background-color: #18FF00;
-  color: #000;
+  background-color: transparent;
+  color: #18ff00;
   font-family: 'Orbitron', sans-serif;
-  border: none;
+  border: 1px solid #18FF00;
   padding: 10px;
   border-radius: 5px;
   cursor: pointer;
@@ -2954,5 +2954,6 @@ opacity: 0;
 }
 
 #ok-button:hover {
-  background-color: #8CFF80;
+  background-color: #18ff00;
+  color: #000;
 }

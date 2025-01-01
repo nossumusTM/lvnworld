@@ -769,7 +769,7 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
             <div id="no-target-popup" className="popup-container" style={{display: 'none'}}>
               <div className="popup-content">
                 <p id="popup-message">Default message</p>
-                <button id="ok-button">OK</button>
+                <button id="ok-button">KK</button>
               </div>
             </div>
 
