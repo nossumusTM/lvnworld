@@ -753,14 +753,15 @@ export default class
                         justify-content: center;
                         align-items: center;
                         position: absolute;
-                        background: #00000053;
+                        background: rgb(0, 0, 0);
                         top: 50%;
                         left: 50%;
                         transform: translate(-50%, -50%) scale(0);
-                        transition: transform 0.3s ease-in-out;
+                        transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+                        box-shadow: rgb(255, 255, 255) 0px 0px 5px 1px;
                         backdrop-filter: blur(10px);
                         border: 0px;
-                        border-radius: 10px;
+                        border-radius: 5px;
                         gap: 10px;
                     `;
         
@@ -815,6 +816,7 @@ export default class
                             const container = item.querySelector('div');
                             if (container) {
                                 container.style.transform = 'translate(-50%, -50%) scale(0)';
+                                container.style.opacity = '0';
                                 container.style.display = 'none';
                             }
                             // Remove active state from all friend-item containers
@@ -822,11 +824,14 @@ export default class
                         });
 
                         // Highlight the selected friend-item container
-                        friendElement.style.boxShadow = '0 0px 15px 2px rgba(255, 255, 255, 0.8)';
+                        friendElement.style.boxShadow = '0 0px 10px 1px rgba(255, 255, 255, 0.8)';
 
                         // Show the button container
-                        buttonContainer.style.transform = 'translate(-50%, -50%) scale(1)';
-                        buttonContainer.style.display = 'flex';
+                        setTimeout(() => {
+                            buttonContainer.style.transform = 'translate(-50%, -50%) scale(1)';
+                            buttonContainer.style.opacity = '1'; // Fade in
+                            buttonContainer.style.display = 'flex';
+                        }, 0);
                     });
 
                     document.addEventListener('click', (event) => {
@@ -1172,6 +1177,7 @@ export default class
 
                     case 'partyDisbanded':
                         this.clearPartyState();
+                        this.showPopup("The party has been disbanded."); // Notify the player visually
                         console.log("Party disbanded");
                         break;
 
