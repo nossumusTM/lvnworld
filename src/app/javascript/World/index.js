@@ -602,99 +602,7 @@ export default class
             } else {
                 console.error('WebSocket connection is not open. From request player score');
             }
-        }       
-
-        // Function to populate the friend list UI
-        // populateFriendList(friendList) {
-        //     const friendListContainer = document.getElementById('contact-list');
-
-        //     // Clear any existing friend list data
-        //     if (friendListContainer) {
-        //         // friendListContainer.innerHTML = '';
-
-        //         // Add each friend to the friend list container
-        //         // if (friendList.forEach === 'function') {
-        //             friendList.forEach(friendId => {
-        //                 const friendElement = document.createElement('div');
-        //                 friendElement.textContent = `${friendId}`;
-        //                 friendListContainer.appendChild(friendElement);
-        //             });
-        //         // }
-        //     }
-        // }
-
-        // populateFriendList(friendList) {
-        //     const friendListContainer = document.getElementById('contact-list');
-        
-        //     if (friendListContainer) {
-        //         // Find or create the friend list block
-        //         let friendListBlock = document.getElementById('friend-list-block');
-        //         if (!friendListBlock) {
-        //             friendListBlock = document.createElement('div');
-        //             friendListBlock.id = 'friend-list-block';
-        //             friendListBlock.style.cssText = `
-        //                 display: flex;
-        //                 flex-direction: column;
-        //                 justify-content: center;
-        //                 align-items: center;
-        //                 margin-top: 10px;
-        //                 padding: 10px;
-        //                 gap: 20px;
-        //                 cursor: pointer;
-        //             `;
-        //             friendListContainer.appendChild(friendListBlock);
-        //         }
-        
-        //         // Clear the friend list block only
-        //         friendListBlock.innerHTML = '';
-        
-        //         // Add each friend to the block
-        //         friendList.forEach(friendId => {
-        //             // Create a container for the friend
-        //             const friendElement = document.createElement('div');
-        //             friendElement.textContent = `${friendId}`;
-        //             friendElement.classList.add('friend-item');
-        //             friendElement.style.cssText = `
-        //                 display: flex;
-        //                 justify-content: center;
-        //                 align-items: center;
-        //                 padding: 10px;
-        //                 box-shadow: 0 0px 10px 1px rgba(0, 255, 16, 0.5);
-        //                 cursor: pointer;
-        //                 color: white;
-        //             `;
-        
-        //             // Add a remove button (hidden by default)
-        //             const removeButton = document.createElement('button');
-        //             removeButton.innerHTML = `${feather.icons['x'].toSvg({ width: 10, height: 10 })}`;
-        //             removeButton.classList.add('remove-friend-button');
-        //             removeButton.style.cssText = `
-        //                 display: none;
-        //                 background-color: transparent;
-        //                 border: none;
-        //                 color: white;
-        //                 padding: 5px 10px;
-        //                 margin-left: 10px;
-        //                 cursor: pointer;
-        //                 font-size: 12px;
-        //             `;
-        //             removeButton.onclick = () => this.removeFriend(friendId, this.ws);
-        
-        //             // Show the remove button when the friend is clicked
-        //             friendElement.addEventListener('click', () => {
-        //                 // Hide all other remove buttons
-        //                 const allRemoveButtons = document.querySelectorAll('.remove-friend-button');
-        //                 allRemoveButtons.forEach(button => (button.style.display = 'none'));
-        
-        //                 // Show the remove button for the clicked friend
-        //                 removeButton.style.display = 'inline-block';
-        //             });
-        
-        //             friendElement.appendChild(removeButton);
-        //             friendListBlock.appendChild(friendElement);
-        //         });
-        //     }
-        // }        
+        }             
 
         populateFriendList(friendList) {
             const friendListContainer = document.getElementById('contact-list');
@@ -722,7 +630,9 @@ export default class
                 friendListBlock.innerHTML = '';
         
                 // Add each friend to the block
-                friendList.forEach(friendId => {
+                friendList.forEach(friend => {
+                    const { friendId, label } = typeof friend === 'string' ? { friendId: friend, label: '' } : friend;
+        
                     // Create a container for the friend
                     const friendElement = document.createElement('div');
                     friendElement.classList.add('friend-item');
@@ -733,13 +643,13 @@ export default class
                         position: relative;
                         width: 100%;
                         padding: 10px;
-                        box-shadow: 0 0px 10px 1px rgba(0, 255, 16, 0.5);
+                        border: 1px solid #18FF00;
                         color: white;
                         cursor: pointer;
                     `;
         
                     const friendText = document.createElement('span');
-                    friendText.textContent = `${friendId}`;
+                    friendText.textContent = `${label || friendId}`;
                     friendText.style.cssText = `
                         font-size: 8px;
                         color: white;
@@ -749,7 +659,6 @@ export default class
                     const buttonContainer = document.createElement('div');
                     buttonContainer.style.cssText = `
                         display: none;
-                        flex-direction: unset;
                         justify-content: center;
                         align-items: center;
                         position: absolute;
@@ -758,9 +667,8 @@ export default class
                         left: 50%;
                         transform: translate(-50%, -50%) scale(0);
                         transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
-                        box-shadow: rgb(255, 255, 255) 0px 0px 5px 1px;
+                        border: 1px solid #FFF;
                         backdrop-filter: blur(10px);
-                        border: 0px;
                         border-radius: 5px;
                         gap: 10px;
                     `;
@@ -768,7 +676,6 @@ export default class
                     // Add a copy button
                     const copyButton = document.createElement('button');
                     copyButton.innerHTML = `${feather.icons['copy'].toSvg({ width: 15, height: 15 })}`;
-                    copyButton.classList.add('copy-friend-button');
                     copyButton.style.cssText = `
                         border: none;
                         color: white;
@@ -779,18 +686,35 @@ export default class
                     `;
                     copyButton.onclick = (event) => {
                         navigator.clipboard.writeText(friendId).then(() => {
-                            console.log(`Copied friend ID: ${friendId}`);
-                            this.showPopup('Copied to clipboard!');
+                            this.showPopup(`Copied address to clipboard.`);
                         }).catch(err => {
-                            console.error('Failed to copy text: ', err);
+                            console.error('Failed to copy text:', err);
                         });
+                        event.stopPropagation(); // Prevent hiding when clicking the button
+                    };
+        
+                    // Add a label button
+                    const labelButton = document.createElement('button');
+                    labelButton.innerHTML = `${feather.icons['tag'].toSvg({ width: 15, height: 15 })}`;
+                    labelButton.style.cssText = `
+                        border: none;
+                        color: white;
+                        padding: 5px 10px;
+                        border-radius: 5px;
+                        cursor: pointer;
+                        font-size: 12px;
+                    `;
+                    labelButton.onclick = (event) => {
+                        const newLabel = prompt('Enter a label for this friend:', label || friendId);
+                        if (newLabel) {
+                            this.updateFriendLabel(friendId, newLabel);
+                        }
                         event.stopPropagation(); // Prevent hiding when clicking the button
                     };
         
                     // Add a remove button
                     const removeButton = document.createElement('button');
                     removeButton.innerHTML = `${feather.icons['trash'].toSvg({ width: 15, height: 15 })}`;
-                    removeButton.classList.add('remove-friend-button');
                     removeButton.style.cssText = `
                         border: none;
                         color: white;
@@ -806,26 +730,21 @@ export default class
         
                     // Append buttons to the button container
                     buttonContainer.appendChild(copyButton);
+                    buttonContainer.appendChild(labelButton);
                     buttonContainer.appendChild(removeButton);
         
                     // Add event listeners for showing and hiding buttons
                     friendElement.addEventListener('click', () => {
-                        // Reset all friend-item containers and their buttonContainers
-                        const allFriendItems = document.querySelectorAll('.friend-item');
-                        allFriendItems.forEach(item => {
-                            const container = item.querySelector('div');
-                            if (container) {
-                                container.style.transform = 'translate(-50%, -50%) scale(0)';
-                                container.style.opacity = '0';
-                                container.style.display = 'none';
-                            }
-                            // Remove active state from all friend-item containers
-                            item.style.boxShadow = '0 0px 10px 1px rgba(0, 255, 16, 0.5)';
+                        // Hide other button containers
+                        document.querySelectorAll('.friend-item > div').forEach(container => {
+                            container.style.transform = 'translate(-50%, -50%) scale(0)';
+                            container.style.opacity = '0';
+                            container.style.display = 'none';
                         });
-
+        
                         // Highlight the selected friend-item container
-                        friendElement.style.boxShadow = '0 0px 10px 1px rgba(255, 255, 255, 0.8)';
-
+                        friendElement.style.border = '1px solid #FFF';
+        
                         // Show the button container
                         setTimeout(() => {
                             buttonContainer.style.transform = 'translate(-50%, -50%) scale(1)';
@@ -833,24 +752,51 @@ export default class
                             buttonContainer.style.display = 'flex';
                         }, 0);
                     });
-
+        
                     document.addEventListener('click', (event) => {
                         if (!friendElement.contains(event.target)) {
                             // Reset the button container
                             buttonContainer.style.transform = 'translate(-50%, -50%) scale(0)';
                             buttonContainer.style.display = 'none';
-
+        
                             // Reset the box shadow of the friend-item container
-                            friendElement.style.boxShadow = '0 0px 10px 1px rgba(0, 255, 16, 0.5)';
+                            friendElement.style.border = '1px solid #18ff00';
                         }
                     });
 
+                    // Set the display text based on the label
+                    if (label) {
+                        friendText.textContent = `${label}`; // Show label only if it exists
+                    } else {
+                        friendText.textContent = `${friendId}`; // Show friendId if no label is set
+                    }
+                    friendText.style.cssText = `
+                        font-size: 10px;
+                        color: white;
+                        margin-left: 10px; /* Optional spacing */
+                    `;
         
                     // Append elements
                     friendElement.appendChild(friendText);
                     friendElement.appendChild(buttonContainer);
                     friendListBlock.appendChild(friendElement);
                 });
+            }
+        }        
+        
+        updateFriendLabel(friendId, label) {
+            const updateRequest = {
+                type: 'updateFriendLabel',
+                playerId: this.playerId,
+                friendId,
+                label,
+            };
+        
+            if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+                this.ws.send(JSON.stringify(updateRequest));
+                console.log(`Requested to update label for friend ${friendId} to '${label}'`);
+            } else {
+                console.error('WebSocket is not open or undefined.');
             }
         }        
         
