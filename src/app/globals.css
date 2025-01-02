@@ -2316,7 +2316,7 @@ opacity: 0;
   align-items: center;
   justify-content: center;
   background: transparent;
-  border-radius: 0px;
+  border-radius: 10px;
   backdrop-filter: blur(10px);
   font-family: 'Orbitron', sans-serif;
   font-size: 20px;
@@ -2496,13 +2496,13 @@ opacity: 0;
     transform: translateX(-1000px); /* Slight backward motion */
   }
   40% {
-    transform: translateX(500px); /* Slight forward motion */
+    transform: translateX(5000px); /* Slight forward motion */
   }
   60% {
     transform: translateX(-300px); /* Settle backward */
   }
   80% {
-    transform: translateX(100px); /* Fine adjustment forward */
+    transform: translateX(1000px); /* Fine adjustment forward */
   }
   100% {
     transform: translateX(0); /* Back to initial position */
@@ -2877,9 +2877,9 @@ opacity: 0;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 40px;
-  height: 40px;
-  border-radius: 100%;
+  width: 100px;
+  height: 100px;
+  /* border-radius: 100%; */
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
   animation: animate 2s infinite linear;

@@ -1874,6 +1874,7 @@ export default function GaragePage() {
                         className="button-element"
                         style={{
                             left: "-100px",
+                            borderRadius: '10px',
                             backdropFilter: "blur(10px)",
                             backgroundColor: isNitroActive ? "rgba(0, 0, 0, 0.5)" : "transparent", // Dynamically set background color
                             transition: "background-color 0.3s ease", // Smooth transition for background color
@@ -1900,6 +1901,7 @@ export default function GaragePage() {
                         className="button-element"
                         style={{
                             right: "-100px",
+                            borderRadius: '10px',
                             backdropFilter: "blur(10px)",
                             backgroundColor: isButtonActive ? "rgba(0, 0, 0, 0.5)" : "transparent", // Dynamically set background color
                             transition: "background-color 0.3s ease", // Smooth transition for background color

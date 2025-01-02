@@ -300,11 +300,11 @@ const Application = ({ playerId, selectedWorldId, token, carName, matcaps }) => 
                     forwardVector.applyQuaternion(chassisObject.quaternion);
 
                     // Calculate a position close to the car for a better perspective
-                    const distance = 30; // Distance behind the car
+                    const distance = 8; // Distance behind the car
 
                     // Calculate a position close to the car for a better perspective
                     const cameraOffset = forwardVector.clone().multiplyScalar(-distance); // Position behind the car
-                    cameraOffset.z = 10; // Raise the camera for a better view
+                    cameraOffset.z = 3; // Raise the camera for a better view
 
                     this.camera.instance.position.copy(chassisObject.position).add(cameraOffset);
                     this.camera.instance.lookAt(chassisObject.position);

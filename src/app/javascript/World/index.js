@@ -72,8 +72,6 @@ export default class
         this.otherPlayers = [];
         this.bullets = [];
 
-        console.log("INDEX CAR NAME", this.carName);
-
         this.messageQueue = [];
         
         this.lastKnownPositions = {};
@@ -645,7 +643,7 @@ export default class
                         position: relative;
                         width: 100%;
                         padding: 10px;
-                        border: 1px solid #18FF00;
+                        box-shadow: 0 0 5px 1px #18FF00;
                         color: white;
                         cursor: pointer;
                     `;
@@ -664,15 +662,15 @@ export default class
                         justify-content: center;
                         align-items: center;
                         position: absolute;
-                        background: rgb(0, 0, 0);
+                        background: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
                         top: 50%;
                         left: 50%;
                         transform: translate(-50%, -50%) scale(0);
-                        transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
-                        border: 1px solid #FFF;
-                        backdrop-filter: blur(10px);
-                        border-radius: 5px;
+                        transition: transform 0.5s ease, opacity 0.5s ease; /* Extend animation duration */
+                        backdrop-filter: blur(10px) saturate(180%); /* Glassmorphism effect */
+                        border-radius: 5px; /* Adjust border-radius */
                         gap: 10px;
+                        padding: 10px; /* Add padding for spacing */
                     `;
         
                     // Add a copy button
@@ -745,13 +743,16 @@ export default class
                         });
         
                         // Highlight the selected friend-item container
-                        friendElement.style.border = '1px solid #FFF';
+                        friendElement.style.boxShadow = '0 0 5px 1px #FFFFFF';
         
                         // Show the button container
                         setTimeout(() => {
-                            buttonContainer.style.transform = 'translate(-50%, -50%) scale(1)';
-                            buttonContainer.style.opacity = '1'; // Fade in
+                            buttonContainer.style.transform = 'translate(-50%, -50%) scale(0)';
                             buttonContainer.style.display = 'flex';
+                            buttonContainer.style.opacity = '1'; // Fade in
+                            setTimeout(() => {
+                                buttonContainer.style.transform = 'translate(-50%, -50%) scale(1)';
+                            }, 10); // Match the transition duration
                         }, 0);
                     });
         
@@ -759,10 +760,13 @@ export default class
                         if (!friendElement.contains(event.target)) {
                             // Reset the button container
                             buttonContainer.style.transform = 'translate(-50%, -50%) scale(0)';
-                            buttonContainer.style.display = 'none';
+                            buttonContainer.style.opacity = '0'; // Fade out
+                            setTimeout(() => {
+                                buttonContainer.style.display = 'none'; // Ensure it's hidden after animation
+                            }, 500); // Match the transition duration
         
                             // Reset the box shadow of the friend-item container
-                            friendElement.style.border = '1px solid #18ff00';
+                            friendElement.style.boxShadow = '0 0 5px 1px #18FF00';
                         }
                     });
 
