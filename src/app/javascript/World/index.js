@@ -1977,37 +1977,36 @@ export default class
                 }
             };
 
-            // Function to display a party message in the chat UI
             displayPartyMessage = (senderId, text, isOwnMessage) => {
                 const chatBox = document.getElementById('party-chat-box');
                 const chatContainer = document.getElementById('party-chat-container');
-
+            
                 // Check if the chat is hidden and show the notification badge
                 if (chatContainer.style.display !== 'block') {
                     this.showNotificationBadge();  // Trigger notification if chat is hidden
                 }
-
+            
                 // Create a container for the message
                 const messageElement = document.createElement('div');
                 messageElement.classList.add('chat-message');
-
+            
                 // Apply the appropriate class for sent/received messages
                 if (isOwnMessage) {
                     messageElement.classList.add('my-message');  // Apply style for own message
                 } else {
                     messageElement.classList.add('other-message');  // Apply style for received message
                 }
-
+            
                 // Format the senderId and create a sender element
                 const senderElement = document.createElement('span');
                 senderElement.classList.add('sender-id');
                 senderElement.innerText = `${this.formatPlayerId(senderId)}: `;
-
+            
                 // Create a text element for the message text
                 const textElement = document.createElement('span');
                 textElement.classList.add('message-text');
                 textElement.innerText = text;
-
+            
                 // Create a timestamp element
                 const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                 const timeElement = document.createElement('span');
@@ -2016,16 +2015,27 @@ export default class
                 timeElement.style.marginLeft = '8px';
                 timeElement.style.color = '#888';
                 timeElement.style.fontSize = '8px';
-
+            
                 // Append sender, text, and timestamp to the message element
                 messageElement.appendChild(senderElement);
                 messageElement.appendChild(textElement);
                 messageElement.appendChild(timeElement);
-
+            
+                // Apply the scaling animation
+                messageElement.style.transform = 'scale(0)';
+                messageElement.style.transition = 'transform 0.5s ease, opacity 0.5s ease';
+                messageElement.style.opacity = '0';
+            
                 // Append the message element to the chat box
                 chatBox.appendChild(messageElement);
                 chatBox.scrollTop = chatBox.scrollHeight;  // Auto-scroll to the latest message
-            };
+            
+                // Trigger the scale-in animation
+                setTimeout(() => {
+                    messageElement.style.transform = 'scale(1)';
+                    messageElement.style.opacity = '1';
+                }, 10);
+            };            
 
             // Update battery status in the UI
             updateBatteryStatus(playerId, battery) {
@@ -2107,14 +2117,15 @@ export default class
             showNotificationBadge = () => {
                 const toggleButton = document.getElementById('toggle-chat-button');
                 let notificationBadge = document.getElementById('chat-notification-badge');
-
-                if (toggleButton) {
-                    // Add the pulsing background animation
-                    const pulseBackground = document.createElement('div');
-                    pulseBackground.classList.add('pulse-notification');  // Apply the pulse CSS class
-                    toggleButton.appendChild(pulseBackground);
+            
+                // If the badge doesn't exist, create it
+                if (!notificationBadge) {
+                    notificationBadge = document.createElement('div');
+                    notificationBadge.id = 'chat-notification-badge';
+                    notificationBadge.classList.add('pulse-notification');
+                    toggleButton.appendChild(notificationBadge);
                 }
-            };
+            };            
 
             // Toggle chat visibility on button click with animation
             toggleChatVisibility = () => {

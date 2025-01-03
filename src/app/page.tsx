@@ -787,7 +787,7 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
             <div id="party-chat-container" className="chat-box" style={{ display: 'none' }}>
               <div id="party-chat-box" className="chat-box-body"></div>
               <div className="chat-box-footer">
-                <input id="party-message-input" type="text" placeholder="Type a message..." className="chat-input" />
+                <input id="party-message-input" type="text" placeholder="Typing..." className="chat-input" />
                 <button id="send-message-button" className="send-button">
                   <i data-feather="send"></i>
                 </button>
