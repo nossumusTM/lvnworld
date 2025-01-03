@@ -1850,8 +1850,15 @@ export default class
                 cursor: pointer;
                 display: flex;
                 align-items: center;
+                transition: all 0.5s ease-in-out;
             `;
-            toggleChatButton.addEventListener('click', this.toggleChatVisibility);
+            // toggleChatButton.addEventListener('click', this.toggleChatVisibility);
+            toggleChatButton.addEventListener('click', () => {
+                this.togglePartyList(); // First toggle the party list
+                setTimeout(() => {
+                    this.toggleChatVisibility(); // Then toggle the chat visibility with a delay to ensure smooth animation
+                }, 500); // Adjust delay if necessary to match the animation duration
+            });
             partyElement.appendChild(toggleChatButton);
 
             // Add a toggle call button
@@ -1869,6 +1876,7 @@ export default class
                 display: flex;
                 align-items: center;
                 padding-left: 10px;
+                transition: all 0.5s ease-in-out;
             `;
             toggleCallButton.addEventListener('click', this.toggleChatVisibility);
             partyElement.appendChild(toggleCallButton);
@@ -2108,7 +2116,7 @@ export default class
                 }
             };
 
-            // Toggle chat visibility on button click
+            // Toggle chat visibility on button click with animation
             toggleChatVisibility = () => {
                 const chatContainer = document.getElementById('party-chat-container');
                 const notificationBadge = document.getElementById('chat-notification-badge'); // Badge element
@@ -2120,15 +2128,35 @@ export default class
 
                 console.log('Chat container found. Toggling visibility.');
 
-                // Toggle chat visibility
-                if (chatContainer.style.display === 'block') {
-                    chatContainer.style.display = 'none';
+                // Toggle visibility with animation
+                if (chatContainer.style.display === 'flex') {
+                    // Hide with scaling animation
+                    chatContainer.style.transform = 'scale(1.25)';
+                    chatContainer.style.opacity = '1';
+
+                    setTimeout(() => {
+                        chatContainer.style.transform = 'scale(0)';
+                        chatContainer.style.opacity = '0';
+                    }, 10);
+
+                    // Set display to none after animation ends
+                    setTimeout(() => {
+                        chatContainer.style.display = 'none';
+                    }, 500); // Match the animation duration
                 } else {
-                    chatContainer.style.display = 'block';
+                    // Show with scaling animation
+                    chatContainer.style.display = 'flex';
+                    chatContainer.style.transform = 'scale(0)';
+                    chatContainer.style.opacity = '0';
+
+                    setTimeout(() => {
+                        chatContainer.style.transform = 'scale(1)';
+                        chatContainer.style.opacity = '1';
+                    }, 10);
+
                     // Hide the notification badge when the chat is opened
-                    // Remove the notification badge if it exists
                     if (notificationBadge) {
-                        toggleButton.removeChild(notificationBadge);
+                        notificationBadge.remove();
                     }
                 }
             };
@@ -2157,7 +2185,7 @@ export default class
                     // Set display to none after animation ends
                     setTimeout(() => {
                         friendListContainer.style.display = 'none';
-                    }, 2000); // Match the animation duration
+                    }, 1000); // Match the animation duration
                 } else {
                     // Show with scaling animation
                     friendListContainer.style.display = 'flex';
@@ -2193,12 +2221,12 @@ export default class
                     setTimeout(() => {
                         settingsContainer.style.transform = 'scale(0)';
                         settingsContainer.style.opacity = '0';
-                    }, 10);
+                    }, 0);
             
                     // Set display to none after animation ends
                     setTimeout(() => {
                         settingsContainer.style.display = 'none';
-                    }, 2000);
+                    }, 1000);
                 } else {
                     // Show with scaling animation
                     settingsContainer.style.display = 'flex';
@@ -2208,7 +2236,7 @@ export default class
                     setTimeout(() => {
                         settingsContainer.style.transform = 'scale(1)';
                         settingsContainer.style.opacity = '1';
-                    }, 10);
+                    }, 0);
                 }
             };            
 
@@ -2236,7 +2264,7 @@ export default class
                     // Set display to none after animation ends
                     setTimeout(() => {
                         partyElement.style.display = 'none';
-                    }, 2000);
+                    }, 1000);
                 } else {
                     // Show with scaling animation
                     partyElement.style.display = 'flex';
@@ -2275,16 +2303,41 @@ export default class
             };            
 
             // Function to show the popup with a custom message
+            // showPopup(message) {
+            //     const popup = document.getElementById('no-target-popup');
+            //     const messageElement = document.getElementById('popup-message');
+
+            //     // Update the message dynamically
+            //     messageElement.textContent = message;
+
+            //     // Show the popup
+            //     popup.style.display = 'flex';
+            // }
+
             showPopup(message) {
                 const popup = document.getElementById('no-target-popup');
                 const messageElement = document.getElementById('popup-message');
-
+            
                 // Update the message dynamically
                 messageElement.textContent = message;
-
-                // Show the popup
+            
+                // Ensure the popup is positioned correctly
+                popup.style.position = 'fixed';
+                popup.style.top = '50%';
+                popup.style.left = '50%';
+                popup.style.transform = 'translate(-50%, -50%) scale(0)';
+                popup.style.opacity = '0';
+            
+                // Show the popup with scaling animation
                 popup.style.display = 'flex';
-            }
+            
+                setTimeout(() => {
+                    popup.style.transition = 'transform 0.5s ease, opacity 0.5s ease';
+                    popup.style.transform = 'translate(-50%, -50%) scale(1)';
+                    popup.style.opacity = '1';
+                }, 10);
+        
+            }            
 
         setupMultiplayer = async (playerId, token, carName, matcaps) => {
             try {
@@ -2528,7 +2581,16 @@ export default class
                 // Add event listener to the OK button to close the popup
                 document.getElementById('ok-button').addEventListener('click', () => {
                     const popup = document.getElementById('no-target-popup');
-                    popup.style.display = 'none'; // Hide the popup
+
+                    // Apply the scale-out animation
+                    popup.style.transition = 'transform 0.5s ease, opacity 0.5s ease';
+                    popup.style.transform = 'translate(-50%, -50%) scale(0)';
+                    popup.style.opacity = '0';
+
+                    // After the animation ends, hide the popup
+                    setTimeout(() => {
+                        popup.style.display = 'none';
+                    }, 500); // Match the transition duration
                 });
 
                 // Add party call button functionality
