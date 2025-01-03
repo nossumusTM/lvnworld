@@ -643,7 +643,8 @@ export default class
                         position: relative;
                         width: 100%;
                         padding: 10px;
-                        box-shadow: 0 0 5px 1px #18FF00;
+                        box-shadow: 0 0 2px 1px #FFFFFF;
+                        transition: all 0.5s ease-in-out;
                         color: white;
                         cursor: pointer;
                     `;
@@ -743,7 +744,9 @@ export default class
                         });
         
                         // Highlight the selected friend-item container
-                        friendElement.style.boxShadow = '0 0 5px 1px #FFFFFF';
+                        setTimeout(() => {
+                            friendElement.style.boxShadow = '0 0 2px 1px #808080';
+                        }, 50);
         
                         // Show the button container
                         setTimeout(() => {
@@ -766,7 +769,7 @@ export default class
                             }, 500); // Match the transition duration
         
                             // Reset the box shadow of the friend-item container
-                            friendElement.style.boxShadow = '0 0 5px 1px #18FF00';
+                            friendElement.style.boxShadow = '0 0 2px 1px #FFFFFF';
                         }
                     });
 
@@ -1795,7 +1798,7 @@ export default class
                     bottom: 0;
                     right: 0;
                     width: 400px;
-                    height: 300px;
+                    height: 410px;
                     max-height: calc(100% - 40px);
                     margin: 0;
                     padding: 20px;
@@ -1819,9 +1822,10 @@ export default class
             // Add live clock at the top
             const timeElement = document.createElement('div');
             timeElement.id = 'party-time-display';
+            timeElement.innerHTML = `PARTY MEMBERS`;
             timeElement.style.cssText = `
-                font-size: 12px;
-                font-weight: bold;
+                font-size: 1em;
+                font-weight: 500;
                 margin-bottom: 10px;
                 color: white;
                 text-align: center;
@@ -1831,10 +1835,10 @@ export default class
             partyElement.appendChild(timeElement);
         
             // Update the clock every second
-            setInterval(() => {
-                const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                timeElement.innerText = `TIME: ${currentTime}`;
-            }, 1000);
+            // setInterval(() => {
+            //     const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            //     timeElement.innerText = `TIME: ${currentTime}`;
+            // }, 1000);
         
             // Add a toggle chat button
             const toggleChatButton = document.createElement('button');

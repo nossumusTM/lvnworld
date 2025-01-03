@@ -660,7 +660,7 @@ export default class Car
         // Set color to white
         bulletBall.traverse((child) => {
             if (child.isMesh) {
-                child.material = this.materials.shades.items.blueGlass;
+                child.material = this.materials.shades.items.transparentLand;
             }
         });
 

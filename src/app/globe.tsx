@@ -43,7 +43,6 @@ export function initGlobe(containerId: string): void {
 
     // const dayTextureUrl = '//unpkg.com/three-globe/example/img/earth-blue-marble.jpg';
     const dayTextureUrl = '//unpkg.com/three-globe/example/img/earth-night.png';
-
     const nightTextureUrl = '//unpkg.com/three-globe/example/img/earth-dark.jpg';
     const bumpTextureUrl = '//unpkg.com/three-globe/example/img/earth-topology.png';
 
