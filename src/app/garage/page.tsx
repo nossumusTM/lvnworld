@@ -1448,6 +1448,40 @@ export default function GaragePage() {
     
     //     setFilteredPngIcons(filteredIcons);
     // };
+
+    // const randomMatcap = () => {
+    //     const matcapKeys = Object.keys(matcapTextures.current);
+    //     const randomIndex = Math.floor(Math.random() * matcapKeys.length);
+    //     return matcapKeys[randomIndex];
+    // };
+    
+
+    // const handleRandomizeClick = () => {
+    //     if (!carGroupRef.current) {
+    //         console.error('Car group reference is not available.');
+    //         return;
+    //     }
+    
+    //     const excludedParts = ['headlights', 'backlights', 'tire', 'antena', 'foglights', 'rocket'];
+    
+    //     carGroupRef.current.traverse((child) => {
+    //         if (
+    //             child instanceof THREE.Mesh &&
+    //             !excludedParts.some((part) => child.name.toLowerCase().includes(part))
+    //         ) {
+    //             // Get a random matcap texture
+    //             const randomMatcapName = randomMatcap();
+    //             const matcapTexture = matcapTextures.current[randomMatcapName];
+    
+    //             // Apply the random texture to the part
+    //             child.material = new THREE.MeshMatcapMaterial({
+    //                 matcap: matcapTexture,
+    //             });
+    
+    //             console.log(`Applied random matcap to ${child.name}: ${randomMatcapName}`);
+    //         }
+    //     });
+    // };    
     
     const handleCarSelection = async (carName: string) => {
         const selectedCar = cars.find((car) => car.name === carName);
@@ -2170,6 +2204,20 @@ export default function GaragePage() {
                         >
                             Customize
                         </button>
+
+                        {/* <button
+                            style={{
+                                padding: '0',
+                                // animation: 'pulse 1.5s infinite',
+                                textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)',
+                                borderRadius: '8px',
+                                cursor: 'pointer',
+                                fontSize: '30px'
+                            }}
+                            onClick={handleRandomizeClick}
+                        >
+                            Randomize
+                        </button> */}
                         {/* <button
                             style={{
                                 padding: '10px 20px',

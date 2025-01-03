@@ -662,7 +662,7 @@ export default class
                         justify-content: center;
                         align-items: center;
                         position: absolute;
-                        background: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
+                        background: rgba(0, 0, 0);
                         top: 50%;
                         left: 50%;
                         transform: translate(-50%, -50%) scale(0);
@@ -751,7 +751,7 @@ export default class
                             buttonContainer.style.display = 'flex';
                             buttonContainer.style.opacity = '1'; // Fade in
                             setTimeout(() => {
-                                buttonContainer.style.transform = 'translate(-50%, -50%) scale(1)';
+                                buttonContainer.style.transform = 'translate(-50%, -50%) scale(1.25)';
                             }, 10); // Match the transition duration
                         }, 0);
                     });
@@ -2133,50 +2133,84 @@ export default class
                 }
             };
 
-            // Function to toggle the visibility of the friend list
             toggleFriendList = () => {
                 const friendListContainer = document.getElementById('contact-list');
-
+            
                 if (!friendListContainer) {
                     console.error('Friend list container not found!');
                     return;
                 }
-
+            
                 console.log('Friend list container found. Toggling visibility.');
-
-                // Toggle friend list visibility
+            
+                // Toggle visibility with animation
                 if (friendListContainer.style.display === 'flex') {
-                    friendListContainer.style.display = 'none';
-                    console.log("Toggling friend-list")
+                    // Hide with scaling animation
+                    friendListContainer.style.transform = 'scale(1.25)';
+                    friendListContainer.style.opacity = '1';
+            
+                    setTimeout(() => {
+                        friendListContainer.style.transform = 'scale(0)';
+                        friendListContainer.style.opacity = '0';
+                    }, 10);
+            
+                    // Set display to none after animation ends
+                    setTimeout(() => {
+                        friendListContainer.style.display = 'none';
+                    }, 2000); // Match the animation duration
                 } else {
+                    // Show with scaling animation
                     friendListContainer.style.display = 'flex';
-                    console.log("Toggling back")
-
+                    friendListContainer.style.transform = 'scale(0)';
+                    friendListContainer.style.opacity = '0';
+            
+                    setTimeout(() => {
+                        friendListContainer.style.transform = 'scale(1)';
+                        friendListContainer.style.opacity = '1';
+                    }, 10);
+            
                     // Request the updated friend list from the server
                     this.requestFriendListUpdate();
                 }
-            };     
+            };
 
-            // Function to toggle the visibility of the friend list
             toggleSettings = () => {
                 const settingsContainer = document.getElementById('settings-window');
-
+            
                 if (!settingsContainer) {
                     console.error('Settings container not found!');
                     return;
                 }
-
+            
                 console.log('Settings container found. Toggling visibility.');
-
-                // Toggle settings container visibility
-                if (settingsContainer && settingsContainer.style.display === 'flex') {
-                    settingsContainer.style.display = 'none';
-                    console.log("Toggling settings container")
+            
+                // Toggle visibility with animation
+                if (settingsContainer.style.display === 'flex') {
+                    // Hide with scaling animation
+                    settingsContainer.style.transform = 'scale(1.25)';
+                    settingsContainer.style.opacity = '1';
+            
+                    setTimeout(() => {
+                        settingsContainer.style.transform = 'scale(0)';
+                        settingsContainer.style.opacity = '0';
+                    }, 10);
+            
+                    // Set display to none after animation ends
+                    setTimeout(() => {
+                        settingsContainer.style.display = 'none';
+                    }, 2000);
                 } else {
+                    // Show with scaling animation
                     settingsContainer.style.display = 'flex';
-                    console.log("Toggling back")
+                    settingsContainer.style.transform = 'scale(0)';
+                    settingsContainer.style.opacity = '0';
+            
+                    setTimeout(() => {
+                        settingsContainer.style.transform = 'scale(1)';
+                        settingsContainer.style.opacity = '1';
+                    }, 10);
                 }
-            };
+            };            
 
             togglePartyList = () => {
                 const partyElement = document.getElementById('party-info');
@@ -2188,13 +2222,31 @@ export default class
             
                 console.log(`Before toggle: partyElement.style.display = '${partyElement.style.display}'`);
             
-                // Toggle the visibility of the party-info container
+                // Toggle visibility with animation
                 if (partyElement.style.display === 'flex') {
-                    partyElement.style.display = 'none';
-                    console.log('Toggling party element to display none');
+                    // Hide with scaling animation
+                    partyElement.style.transform = 'scale(1.25)';
+                    partyElement.style.opacity = '1';
+            
+                    setTimeout(() => {
+                        partyElement.style.transform = 'scale(0)';
+                        partyElement.style.opacity = '0';
+                    }, 10);
+            
+                    // Set display to none after animation ends
+                    setTimeout(() => {
+                        partyElement.style.display = 'none';
+                    }, 2000);
                 } else {
+                    // Show with scaling animation
                     partyElement.style.display = 'flex';
-                    console.log('Toggling party element to display flex');
+                    partyElement.style.transform = 'scale(0)';
+                    partyElement.style.opacity = '0';
+            
+                    setTimeout(() => {
+                        partyElement.style.transform = 'scale(1)';
+                        partyElement.style.opacity = '1';
+                    }, 10);
             
                     // Dynamically check if there are members
                     if (!this.partyMembers || this.partyMembers.length === 0) {
