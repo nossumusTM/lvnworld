@@ -41,8 +41,10 @@ export function initGlobe(containerId: string): void {
     const currentTime = new Date();
     const hours = currentTime.getHours();
 
-    const dayTextureUrl = '//unpkg.com/three-globe/example/img/earth-blue-marble.jpg';
-    const nightTextureUrl = '//unpkg.com/three-globe/example/img/earth-night.jpg';
+    // const dayTextureUrl = '//unpkg.com/three-globe/example/img/earth-blue-marble.jpg';
+    const dayTextureUrl = '//unpkg.com/three-globe/example/img/earth-night.png';
+
+    const nightTextureUrl = '//unpkg.com/three-globe/example/img/earth-dark.jpg';
     const bumpTextureUrl = '//unpkg.com/three-globe/example/img/earth-topology.png';
 
     const isAM = hours < 12;

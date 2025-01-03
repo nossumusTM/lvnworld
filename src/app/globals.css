@@ -783,7 +783,7 @@ opacity: 0;
     overflow: hidden;
     z-index: 10000;
     backdrop-filter: blur(5px);
-    transition: ease-in-out 2s;
+    transition: all 0.5s ease-in-out;
     justify-content: initial;
     display: none;
   }
