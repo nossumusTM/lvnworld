@@ -8154,20 +8154,20 @@ export default class Physics
         this.car.recreateCooldown = false;
 
         // HTML setup (assume this is in your HTML file or dynamically created)
-        const touchReset = document.getElementById('touch-reset');
-        if (touchReset) {
-            const countDisplay = document.createElement('div');
-            countDisplay.id = 'recreateCountDisplay';
-            countDisplay.style.position = 'absolute';
-            countDisplay.style.top = '5px';
-            countDisplay.style.left = '60px';
-            countDisplay.style.backgroundColor = 'transparent';
-            countDisplay.style.color = 'white';
-            countDisplay.style.padding = '5px';
-            countDisplay.style.fontSize = '10px';
-            countDisplay.textContent = `${5 - this.car.recreateCount}`;
-            touchReset.appendChild(countDisplay);
-        }
+        // const touchReset = document.getElementById('touch-reset');
+        // if (touchReset) {
+        //     const countDisplay = document.createElement('div');
+        //     countDisplay.id = 'recreateCountDisplay';
+        //     countDisplay.style.position = 'absolute';
+        //     countDisplay.style.top = '5px';
+        //     countDisplay.style.left = '60px';
+        //     countDisplay.style.backgroundColor = 'transparent';
+        //     countDisplay.style.color = 'white';
+        //     countDisplay.style.padding = '5px';
+        //     countDisplay.style.fontSize = '10px';
+        //     countDisplay.textContent = `${5 - this.car.recreateCount}`;
+        //     touchReset.appendChild(countDisplay);
+        // }
 
         this.car.recreate = () => {
             if (this.car.recreateCooldown) {

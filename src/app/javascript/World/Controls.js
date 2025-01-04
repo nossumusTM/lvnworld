@@ -1129,6 +1129,22 @@ export default class Controls extends EventEmitter
         // this.touch.reset.$element.style.backgroundColor = '#00ff00'; // Uncomment for visual debugging
         document.body.appendChild(this.touch.reset.$element);
 
+        // Create a separate label for the slot
+        const resetLabel = document.createElement('span');
+        resetLabel.id = 'reset-label';
+        resetLabel.textContent = '7';
+        resetLabel.style.position = 'fixed';
+        resetLabel.style.bottom = '175px';
+        resetLabel.style.left = '98px';
+        resetLabel.style.color = 'white';
+        resetLabel.style.fontSize = '10px';
+        resetLabel.style.fontWeight = 'bold';
+        resetLabel.style.pointerEvents = 'none';
+        resetLabel.style.opacity = '0';
+
+        // Append the label to document.body
+        document.body.appendChild(resetLabel);
+
         this.touch.reset.$border = document.createElement('div');
         this.touch.reset.$border.style.position = 'absolute';
         this.touch.reset.$border.style.top = 'calc(50% - 30px)';
@@ -1235,6 +1251,21 @@ export default class Controls extends EventEmitter
         this.touch.camera.$icon.style.backgroundImage = `url(${monitoring})`;
         this.touch.camera.$icon.style.backgroundSize = 'cover';
         this.touch.camera.$element.appendChild(this.touch.camera.$icon);
+
+        // Create a separate label for the slot
+        const cameraLabel = document.createElement('span');
+        cameraLabel.id = 'camera-label';
+        cameraLabel.textContent = '8';
+        cameraLabel.style.position = 'fixed';
+        cameraLabel.style.bottom = '175px';
+        cameraLabel.style.left = '30px';
+        cameraLabel.style.color = 'white';
+        cameraLabel.style.fontSize = '10px';
+        cameraLabel.style.pointerEvents = 'none';
+        cameraLabel.style.opacity = '0';
+
+        // Append the label to document.body
+        document.body.appendChild(cameraLabel);
 
         // Append to body
         document.body.appendChild(this.touch.camera.$element);
@@ -1747,6 +1778,21 @@ export default class Controls extends EventEmitter
         // this.touch.siren.$element.style.backgroundColor = '#00ff00'; // Uncomment for visual debugging
         document.body.appendChild(this.touch.siren.$element);
 
+        // Create a separate label for the slot
+        const sirenLabel = document.createElement('span');
+        sirenLabel.id = 'siren-label';
+        sirenLabel.textContent = '3';
+        sirenLabel.style.position = 'fixed';
+        sirenLabel.style.bottom = '145px';
+        sirenLabel.style.right = '145px';
+        sirenLabel.style.color = 'white';
+        sirenLabel.style.fontSize = '10px';
+        sirenLabel.style.pointerEvents = 'none';
+        sirenLabel.style.opacity = '0';
+
+        // Append the label to document.body
+        document.body.appendChild(sirenLabel);
+
         this.touch.siren.$border = document.createElement('div');
         this.touch.siren.$border.style.position = 'absolute';
         this.touch.siren.$border.style.top = 'calc(50% - 30px)';
@@ -1842,6 +1888,21 @@ export default class Controls extends EventEmitter
         // this.touch.boost.$element.style.backgroundColor = '#00ff00'
         document.body.appendChild(this.touch.boost.$element)
 
+        // Create a separate label for the slot
+        const boostLabel = document.createElement('span');
+        boostLabel.id = 'boost-label';
+        boostLabel.textContent = '2';
+        boostLabel.style.position = 'fixed';
+        boostLabel.style.bottom = '220px';
+        boostLabel.style.right = '70px';
+        boostLabel.style.color = 'white';
+        boostLabel.style.fontSize = '10px';
+        boostLabel.style.pointerEvents = 'none';
+        boostLabel.style.opacity = '0';
+
+        // Append the label to document.body
+        document.body.appendChild(boostLabel);
+
         this.touch.boost.$border = document.createElement('div')
         this.touch.boost.$border.style.position = 'absolute'
         this.touch.boost.$border.style.top = 'calc(50% - 30px)'
@@ -1932,6 +1993,21 @@ export default class Controls extends EventEmitter
         // this.touch.forward.$element.style.backgroundColor = '#00ff00'
         document.body.appendChild(this.touch.forward.$element)
 
+        // Create a separate label for the slot
+        const forwardLabel = document.createElement('span');
+        forwardLabel.id = 'forward-label';
+        forwardLabel.textContent = '4';
+        forwardLabel.style.position = 'fixed';
+        forwardLabel.style.bottom = '145px'
+        forwardLabel.style.right = '70px';
+        forwardLabel.style.color = 'white';
+        forwardLabel.style.fontSize = '10px';
+        forwardLabel.style.pointerEvents = 'none';
+        forwardLabel.style.opacity = '0';
+
+        // Append the label to document.body
+        document.body.appendChild(forwardLabel);
+
         this.touch.forward.$border = document.createElement('div')
         this.touch.forward.$border.style.position = 'absolute'
         this.touch.forward.$border.style.top = 'calc(50% - 30px)'
@@ -2003,7 +2079,7 @@ export default class Controls extends EventEmitter
 
         // Element creation and styling
         this.touch.shoot.$element = document.createElement('div');
-        this.touch.shoot.$element.id = 'btn1';
+        // this.touch.shoot.$element.id = 'btn1';
         this.touch.shoot.$element.style.userSelect = 'none';
         this.touch.shoot.$element.style.position = 'fixed';
         // this.touch.shoot.$element.style.bottom = 'calc(70px * 2 + 35px)';
@@ -2018,6 +2094,23 @@ export default class Controls extends EventEmitter
         this.touch.shoot.$element.style.transition = 'opacity 0.3s 0.4s';
         this.touch.shoot.$element.style.willChange = 'opacity';
         this.touch.shoot.$element.style.opacity = '0';
+
+        // Create a separate label for the slot
+        const shootLabel = document.createElement('span');
+        shootLabel.textContent = '1';
+        shootLabel.id = 'shoot-label';
+        shootLabel.style.position = 'fixed';
+        shootLabel.style.bottom = '220px';
+        shootLabel.style.right = '150px';
+        shootLabel.style.color = 'white';
+        shootLabel.style.fontSize = '10px';
+        shootLabel.style.pointerEvents = 'none';
+        shootLabel.style.opacity = '0';
+
+        // Append the label to document.body
+        document.body.appendChild(shootLabel);
+
+        // Append the button to the body
         document.body.appendChild(this.touch.shoot.$element);
 
         this.touch.shoot.$border = document.createElement('div');
@@ -2114,6 +2207,21 @@ export default class Controls extends EventEmitter
         // this.touch.brake.$element.style.backgroundColor = '#ff0000'
         document.body.appendChild(this.touch.brake.$element)
 
+        // Create a separate label for the slot
+        const brakeLabel = document.createElement('span');
+        brakeLabel.id = 'brake-label';
+        brakeLabel.textContent = '6';
+        brakeLabel.style.position = 'fixed';
+        brakeLabel.style.bottom = '70px';
+        brakeLabel.style.right = '70px';
+        brakeLabel.style.color = 'white';
+        brakeLabel.style.fontSize = '10px';
+        brakeLabel.style.pointerEvents = 'none';
+        brakeLabel.style.opacity = '0';
+
+        // Append the label to document.body
+        document.body.appendChild(brakeLabel);
+
         this.touch.brake.$border = document.createElement('div')
         this.touch.brake.$border.style.position = 'absolute'
         this.touch.brake.$border.style.top = 'calc(50% - 30px)'
@@ -2201,6 +2309,21 @@ export default class Controls extends EventEmitter
         this.touch.backward.$element.style.opacity = '0'
         // this.touch.backward.$element.style.backgroundColor = '#0000ff'
         document.body.appendChild(this.touch.backward.$element)
+
+        // Create a separate label for the slot
+        const backwardLabel = document.createElement('span');
+        backwardLabel.id = 'backward-label';
+        backwardLabel.textContent = '5';
+        backwardLabel.style.position = 'fixed';
+        backwardLabel.style.bottom = '70px';
+        backwardLabel.style.right = '145px';
+        backwardLabel.style.color = 'white';
+        backwardLabel.style.fontSize = '10px';
+        backwardLabel.style.pointerEvents = 'none';
+        backwardLabel.style.opacity = '0';
+
+        // Append the label to document.body
+        document.body.appendChild(backwardLabel);
 
         this.touch.backward.$border = document.createElement('div')
         this.touch.backward.$border.style.position = 'absolute'
@@ -2295,38 +2418,65 @@ export default class Controls extends EventEmitter
             const party = document.getElementById('toggle-party-list');
             const switchContainer = document.getElementById('switch-container');
 
+            const shootLabel = document.getElementById('shoot-label');
+            const boostLabel = document.getElementById('boost-label');
+            const sirenLabel = document.getElementById('siren-label');
+            const forwardLabel = document.getElementById('forward-label');
+            const backwardLabel = document.getElementById('backward-label');
+            const brakeLabel = document.getElementById('brake-label');
+            const cameraLabel = document.getElementById('camera-label');
+            const resetLabel = document.getElementById('reset-label');
 
-            if (userDisplay) {
+
+            if (userDisplay || batteryStatus || speedometer || inviteButton || switchContainer || party) {
                 userDisplay.style.opacity = 1;
-            }
-
-            if (batteryStatus) {
                 batteryStatus.style.opacity = 1;
-            }
-
-            if (signOutButton) {
-                signOutButton.style.opacity = 1;
-            }
-
-            if (speedometer) {
+                // signOutButton.style.opacity = 1;
                 speedometer.style.opacity = 1;
-            }
-
-            if (inviteButton) {
                 inviteButton.style.opacity = 1;
-            }
-
-            if (switchContainer) {
                 switchContainer.style.opacity = 1;
-            }
-
-            if (partyInfo) {
-                partyInfo.style.opacity = 1;
-            }
-
-            if (party) {
+                // partyInfo.style.opacity = 1;
                 party.style.opacity = 1;
             }
+
+            if (shootLabel || boostLabel || sirenLabel || forwardLabel || backwardLabel || brakeLabel || cameraLabel || resetLabel) {
+                shootLabel.style.opacity = 1;
+                boostLabel.style.opacity = 1;
+                sirenLabel.style.opacity = 1;
+                forwardLabel.style.opacity = 1;
+                backwardLabel.style.opacity = 1;
+                brakeLabel.style.opacity = 1;
+                cameraLabel.style.opacity = 1;
+                resetLabel.style.opacity = 1;
+            }
+
+            // if (batteryStatus) {
+            //     batteryStatus.style.opacity = 1;
+            // }
+
+            // if (signOutButton) {
+            //     signOutButton.style.opacity = 1;
+            // }
+
+            // if (speedometer) {
+            //     speedometer.style.opacity = 1;
+            // }
+
+            // if (inviteButton) {
+            //     inviteButton.style.opacity = 1;
+            // }
+
+            // if (switchContainer) {
+            //     switchContainer.style.opacity = 1;
+            // }
+
+            // if (partyInfo) {
+            //     partyInfo.style.opacity = 1;
+            // }
+
+            // if (party) {
+            //     party.style.opacity = 1;
+            // }
         }
 
         // Call this function initially and whenever the window is resized

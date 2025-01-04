@@ -2403,11 +2403,24 @@ export default class
                         const draggedElementId = e.dataTransfer.getData('text');
                         const draggedElement = document.getElementById(draggedElementId);
             
-                        // Ensure the dropped element isn't already inside the slot
-                        if (slot && !slot.contains(draggedElement)) {
-                            slot.appendChild(draggedElement); // Append the dragged element to the slot
-                            slot.style.backgroundColor = 'rgba(0, 0, 0, 0.2)'; // Optional: Highlight the slot
+                        // Check if the slot already contains a button
+                        const existingButton = slot.querySelector('.draggable');
+            
+                        if (existingButton) {
+                            // Swap positions between the dragged element and the existing button
+                            const draggedParent = draggedElement.parentElement;
+                            const existingParent = existingButton.parentElement;
+            
+                            existingParent.appendChild(draggedElement);
+                            draggedParent.appendChild(existingButton);
+            
+                            console.log(`Swapped ${draggedElementId} with ${existingButton.id}`);
+                        } else {
+                            // If no button is in the slot, simply drop the dragged element into the slot
+                            slot.appendChild(draggedElement);
                         }
+            
+                        slot.style.backgroundColor = 'rgba(0, 0, 0, 0.2)'; // Optional: Highlight the slot
                     });
             
                     // Double-click event to remove button
@@ -2456,7 +2469,7 @@ export default class
                     this.showPopup('Settings saved successfully.');
                     this.controls.updateController();
                 });
-            }                   
+            }                          
 
         setupMultiplayer = async (playerId, token, carName, matcaps) => {
             try {
