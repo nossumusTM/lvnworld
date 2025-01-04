@@ -222,14 +222,14 @@ export default class Controls extends EventEmitter
     }
 
     slotPositions = {
-        slot1: { bottom: 'calc(70px * 2 + 35px)', right: '78px' },
-        slot2: { bottom: 'calc(70px * 2 + 35px)', right: '0px' },
-        slot3: { bottom: '98px', right: '78px' },
-        slot4: { bottom: '98px', right: '0px' },
-        slot5: { bottom: '20px', right: '78px' },
-        slot6: { bottom: '20px', right: '0px' },
-        slot7: { bottom: '175px', left: '10px' },
-        slot8: { bottom: '175px', left: '80px' },
+        slot1: { bottom: 'calc(70px * 2 + 35px)', right: '78px', left: 'unset' },
+        slot2: { bottom: 'calc(70px * 2 + 35px)', right: '0px', left: 'unset' },
+        slot3: { bottom: '98px', right: '78px', left: 'unset'},
+        slot4: { bottom: '98px', right: '0px', left: 'unset'},
+        slot5: { bottom: '20px', right: '78px', left: 'unset' },
+        slot6: { bottom: '20px', right: '0px', left: 'unset'},
+        slot7: { bottom: '175px', left: '10px', right: 'unset' },
+        slot8: { bottom: '175px', left: '80px', right: 'unset' },
     };
 
     updateController() {
@@ -600,14 +600,7 @@ export default class Controls extends EventEmitter
 
             if (camera) {
                 // Reset
-                camera.style.left = '';
-                // if (this.touch.camera.$element) {
-                //     let cameraButtonElementBottom = this.touch.camera.$element.style.bottom;
-                //     // this.touch.camera.$element.style.left = cameraButtonElementLeft;
-                //     cameraButtonElementBottom = this.isVerticalDisplay() ? '175px' : '110px';
-                //     // const cameraButtonElementLeft = this.isVerticalDisplay() ? '10px': '165px';
-                //     this.updateButtonPositions();
-                // }
+                camera.style.left = 'unset';
 
                 // Set
                 camera.style.right = '10px';
@@ -619,14 +612,7 @@ export default class Controls extends EventEmitter
 
             if (reset) {
                 // Reset
-                reset.style.left = '';
-                // if (this.touch.reset.$element) {
-                //     let resetButtonElementBottom = this.touch.reset.$element.style.bottom;
-                //     // this.touch.reset.$element.style.left = resetButtonElementLeft;
-                //     resetButtonElementBottom = this.isVerticalDisplay() ? '175px' : '40px';
-                //     // const resetButtonElementLeft = this.isVerticalDisplay() ? '83px': '165px';
-                //     this.updateButtonPositions();
-                // }
+                reset.style.left = 'unset';
 
                 // Set
                 reset.style.right = '80px';
@@ -722,7 +708,7 @@ export default class Controls extends EventEmitter
         }
 
         // Add event listener for the "Right" button
-        document.getElementById('move-joystick-right').addEventListener('click', moveJoystickRight.bind(this));
+        // document.getElementById('move-joystick-right').addEventListener('click', moveJoystickRight.bind(this));
 
         // Function to move the joystick to the right
         function moveJoystickLeft() {
@@ -751,14 +737,7 @@ export default class Controls extends EventEmitter
 
             if (camera) {
                 // Reset
-                camera.style.right = '';
-                // if (this.touch.camera.$element) {
-                //     let cameraButtonElementBottom = this.touch.camera.$element.style.bottom;
-                //     // this.touch.camera.$element.style.left = cameraButtonElementLeft;
-                //     cameraButtonElementBottom = this.isVerticalDisplay() ? '175px' : '110px';
-                //     // const cameraButtonElementLeft = this.isVerticalDisplay() ? '10px': '165px';
-                //     this.updateButtonPositions();
-                // }
+                camera.style.right = 'unset';
 
                 // Set
                 camera.style.left = '10px';
@@ -770,15 +749,7 @@ export default class Controls extends EventEmitter
 
             if (reset) {
                 // Reset
-                reset.style.right = '';
-
-                // if (this.touch.reset.$element) {
-                //     let resetButtonElementBottom = this.touch.reset.$element.style.bottom;
-                //     // this.touch.reset.$element.style.left = resetButtonElementLeft;
-                //     resetButtonElementBottom = this.isVerticalDisplay() ? '175px' : '40px';
-                //     // const resetButtonElementLeft = this.isVerticalDisplay() ? '83px': '165px';
-                //     this.updateButtonPositions();
-                // }
+                reset.style.right = 'unset';
 
                 // Set
                 reset.style.left = '80px';
@@ -874,7 +845,7 @@ export default class Controls extends EventEmitter
         }
 
         // Add event listener for the "Right" button
-        document.getElementById('move-joystick-left').addEventListener('click', moveJoystickLeft.bind(this));
+        // document.getElementById('move-joystick-left').addEventListener('click', moveJoystickLeft.bind(this));
 
         /**
          * Switch
@@ -1112,7 +1083,7 @@ export default class Controls extends EventEmitter
 
         const initialReset = this.slotPositions.slot8;
         this.touch.reset.$element.style.bottom = initialReset.bottom;
-        this.touch.reset.$element.style.right = initialReset.left;
+        this.touch.reset.$element.style.left = initialReset.left;
 
         this.touch.reset.$element.style.width = '95px';
         this.touch.reset.$element.style.height = '70px';
@@ -1197,7 +1168,7 @@ export default class Controls extends EventEmitter
 
         const initialCamera = this.slotPositions.slot7;
         this.touch.camera.$element.style.bottom = initialCamera.bottom;
-        this.touch.camera.$element.style.right = initialCamera.left;
+        this.touch.camera.$element.style.left = initialCamera.left;
 
         this.touch.camera.$element.style.width = '95px';
         this.touch.camera.$element.style.height = '70px';
