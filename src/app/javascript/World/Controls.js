@@ -600,7 +600,7 @@ export default class Controls extends EventEmitter
 
             if (camera) {
                 // Reset
-                camera.style.left = 'unset';
+                camera.style.left = '';
 
                 // Set
                 camera.style.right = '10px';
@@ -612,7 +612,7 @@ export default class Controls extends EventEmitter
 
             if (reset) {
                 // Reset
-                reset.style.left = 'unset';
+                reset.style.left = '';
 
                 // Set
                 reset.style.right = '80px';
@@ -708,7 +708,7 @@ export default class Controls extends EventEmitter
         }
 
         // Add event listener for the "Right" button
-        // document.getElementById('move-joystick-right').addEventListener('click', moveJoystickRight.bind(this));
+        document.getElementById('move-joystick-right').addEventListener('click', moveJoystickRight.bind(this));
 
         // Function to move the joystick to the right
         function moveJoystickLeft() {
@@ -737,7 +737,7 @@ export default class Controls extends EventEmitter
 
             if (camera) {
                 // Reset
-                camera.style.right = 'unset';
+                camera.style.right = '';
 
                 // Set
                 camera.style.left = '10px';
@@ -749,7 +749,7 @@ export default class Controls extends EventEmitter
 
             if (reset) {
                 // Reset
-                reset.style.right = 'unset';
+                reset.style.right = '';
 
                 // Set
                 reset.style.left = '80px';
@@ -845,7 +845,7 @@ export default class Controls extends EventEmitter
         }
 
         // Add event listener for the "Right" button
-        // document.getElementById('move-joystick-left').addEventListener('click', moveJoystickLeft.bind(this));
+        document.getElementById('move-joystick-left').addEventListener('click', moveJoystickLeft.bind(this));
 
         /**
          * Switch
