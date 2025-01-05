@@ -1,5 +1,5 @@
 const mobileDoubleTriangle = 'images/mobile/doubleTriangle.png'
-const monitoring = 'images/mobile/monitoring.png'
+const monitoring = 'images/mobile/warning.png'
 const mobilePaperPlane = 'images/mobile/paperPlane.png'
 const mobileTriangle = 'images/mobile/triangle.png'
 const mobileCross = 'images/mobile/cross.png'
@@ -1134,7 +1134,7 @@ export default class Controls extends EventEmitter
         resetLabel.id = 'reset-label';
         resetLabel.textContent = '7';
         resetLabel.style.position = 'fixed';
-        resetLabel.style.bottom = '220px';
+        resetLabel.style.bottom = '182px';
         resetLabel.style.left = '105px';
         resetLabel.style.color = 'white';
         resetLabel.style.fontSize = '10px';
@@ -1256,7 +1256,7 @@ export default class Controls extends EventEmitter
         cameraLabel.id = 'camera-label';
         cameraLabel.textContent = '8';
         cameraLabel.style.position = 'fixed';
-        cameraLabel.style.bottom = '220px';
+        cameraLabel.style.bottom = '182px';
         cameraLabel.style.left = '35px';
         cameraLabel.style.color = 'white';
         cameraLabel.style.fontSize = '10px';
@@ -1721,7 +1721,7 @@ export default class Controls extends EventEmitter
 
         // Toggle background color based on isActive flag
         const updateMuteButtonStyle = () => {
-            this.touch.mute.$border.style.background = this.touch.mute.isActive ? '#FF5733' : 'rgba(0, 0, 0, 0.5)';
+            this.touch.mute.$border.style.background = this.touch.mute.isActive ? 'rgba(255, 87, 51, 0.7)' : 'rgba(0, 0, 0, 0.5)';
         };
 
         // Events

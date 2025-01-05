@@ -894,6 +894,8 @@ opacity: 0;
   animation: loadingCube 1s infinite step-end;
 }
 
+
+
 #loadingText {
     display: flex;
     align-items: center;
