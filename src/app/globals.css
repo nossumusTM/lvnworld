@@ -2654,7 +2654,7 @@ opacity: 0;
 
 @property --c2 {
   syntax: '<color>';
-  initial-value: rgba(3, 196, 240, 0.1);
+  initial-value: rgba(3, 196, 240, 0);
   inherits: true;
 }
 
@@ -2674,15 +2674,15 @@ opacity: 0;
   align-items: center;
   justify-content: center;
   width: 80px;
+  height: 40px;
   top: 5px;
   left: 10px;
   margin-top: -5px;
-  border-radius: 10px;
-  height: 40px;
   backdrop-filter: blur(5px);
   background: transparent;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-  border: 1px solid transparent;
+  border: 1px solid #fff;
+  border-radius: 10px;
   /* Set border animation with conic gradient */
   border-image: conic-gradient(from var(--angle), var(--c2), var(--c1) 0.1turn, var(--c1) 0.15turn, var(--c2) 0.25turn) 1;
   z-index: 100;

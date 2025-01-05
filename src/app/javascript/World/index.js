@@ -88,7 +88,7 @@ export default class
         this.container = new THREE.Object3D()
         this.container.matrixAutoUpdate = false
 
-        // this.setAxes()
+        this.setAxes()
         this.setSounds()
         this.setControls()
         // this.setFloor()
@@ -3717,7 +3717,7 @@ export default class
 
     setAxes()
     {
-        this.axis = new THREE.AxesHelper()
+        this.axis = new THREE.AxesHelper(50)
         this.container.add(this.axis)
     }
 

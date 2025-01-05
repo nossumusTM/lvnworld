@@ -184,7 +184,52 @@ export default class Car
             ];
 
             // Initialize particles with positions relative to the antenna
-            const initialOffset = new THREE.Vector3(0.5, 0.2, 0.5); // Offset from antenna position
+            // const initialOffset = new THREE.Vector3(0.5, 0.2, 0.5); // Offset from antenna position
+
+            // Customize initial particle offset based on car name
+            let initialOffset;
+            switch (this.carName) {
+                case 'Kybertruck':
+                    initialOffset = new THREE.Vector3(0.6, 0.3, 0.6);
+                    break;
+                case 'Charger Power Bank':
+                    initialOffset = new THREE.Vector3(0.92, 0.25, 0.7);
+                    break;
+                case 'Wreckslinger':
+                    initialOffset = new THREE.Vector3(1.1, 0.23, 0.75);
+                    break;
+                case 'Gangover':
+                    initialOffset = new THREE.Vector3(1.05, 0.19, 0.75);
+                    break;
+                case 'McLaren':
+                    initialOffset = new THREE.Vector3(0.82, 0.22, 0.65);
+                    break;
+                case '240 GTI':
+                    initialOffset = new THREE.Vector3(1.15, 0.22, 0.92);
+                    break;
+                case 'Goodwing':
+                    initialOffset = new THREE.Vector3(0.99, 0.22, 0.74);
+                    break;
+                case 'Howler Packard':
+                    initialOffset = new THREE.Vector3(0.42, 0.17, 0.08);
+                    break;
+                case 'RC TraxShark':
+                    initialOffset = new THREE.Vector3(0.84, 0.13, 0.4);
+                    break;
+                case 'Pusher Crowd':
+                    initialOffset = new THREE.Vector3(0.79, 0.03, 0.65);
+                    break;
+                case 'Impactus':
+                    initialOffset = new THREE.Vector3(0.72, 0.22, 0.65);
+                    break;
+                case 'Crushinator':
+                    initialOffset = new THREE.Vector3(0.73, -0.01, -0.2);
+                    break;
+                default:
+                    initialOffset = new THREE.Vector3(0.6, 0.3, 0.6);
+                    break;
+            }
+
             for (let i = 0; i < particleCount; i++) {
                 vertices.push(initialOffset.x, initialOffset.y, initialOffset.z);
                 const [r, g, b] = sirenColors[i % 2];

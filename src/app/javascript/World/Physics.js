@@ -8186,10 +8186,10 @@ export default class Physics
                 console.log(`Recreate used ${this.car.recreateCount}/50 times.`);
 
                 // Update the display for remaining resets
-                if (touchReset) {
-                    const countDisplay = document.getElementById('recreateCountDisplay');
-                    countDisplay.textContent = `${50 - this.car.recreateCount}`;
-                }
+                // if (touchReset) {
+                //     const countDisplay = document.getElementById('recreateCountDisplay');
+                //     countDisplay.textContent = `${50 - this.car.recreateCount}`;
+                // }
 
                 // Check if limit has been reached
                 if (this.car.recreateCount === 50) {
@@ -8197,10 +8197,10 @@ export default class Physics
                     console.log("Recreate disabled for 10 minutes.");
 
                     // Display cooldown notice
-                    if (touchReset) {
-                        const countDisplay = document.getElementById('recreateCountDisplay');
-                        countDisplay.textContent = "0";
-                    }
+                    // if (touchReset) {
+                    //     const countDisplay = document.getElementById('recreateCountDisplay');
+                    //     countDisplay.textContent = "0";
+                    // }
 
                     // Set timer to reset count and cooldown after 10 minutes (600,000 ms)
                     setTimeout(() => {
@@ -8209,10 +8209,10 @@ export default class Physics
                         console.log("Recreate is available again.");
 
                         // Reset the display to 5 resets
-                        if (touchReset) {
-                            const countDisplay = document.getElementById('recreateCountDisplay');
-                            countDisplay.textContent = "5";
-                        }
+                        // if (touchReset) {
+                        //     const countDisplay = document.getElementById('recreateCountDisplay');
+                        //     countDisplay.textContent = "5";
+                        // }
                     }, 600000); // 10 minutes in milliseconds
                 }
             } else {
