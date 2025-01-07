@@ -1815,7 +1815,7 @@ export default class
                     position: absolute;
                     bottom: 0;
                     right: 0;
-                    width: 400px;
+                    width: -webkit-fill-available;
                     height: 410px;
                     max-height: calc(100% - 40px);
                     margin: 0;
@@ -1863,7 +1863,7 @@ export default class
             toggleChatButton.id = 'toggle-chat-button';
             toggleChatButton.innerHTML = `${feather.icons['mail'].toSvg({ width: 20, height: 20 })}`;
             toggleChatButton.style.cssText = `
-                margin: 14px;
+                margin: 14px 20px;
                 font-family: 'Orbitron', sans-serif;
                 font-size: 10px;
                 color: #FF5733;

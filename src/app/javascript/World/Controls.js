@@ -149,9 +149,9 @@ export default class Controls extends EventEmitter
                     this.actions.camera = true
                     break
 
-                case 'r':
-                    this.trigger('action', ['reset'])
-                    break
+                // case 'r':
+                //     this.trigger('action', ['reset'])
+                //     break
             }
         }
 
@@ -209,9 +209,9 @@ export default class Controls extends EventEmitter
                     this.actions.camera = false
                     break
 
-                case 'r':
-                    this.trigger('action', ['reset'])
-                    break
+                // case 'r':
+                //     this.trigger('action', ['reset'])
+                //     break
             }
         }
 
