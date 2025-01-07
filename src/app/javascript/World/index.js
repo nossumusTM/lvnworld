@@ -2507,9 +2507,9 @@ export default class
                 // Check if buttonPositions exist in localStorage
                 const savedPositions = JSON.parse(localStorage.getItem('buttonPositions'));
             
-                if (savedPositions) {
+                if (savedPositions && this.controls.touch) {
                     console.log('Applying saved button positions...');
-                    // this.controls.updateController(); // Apply saved positions
+                    this.controls.updateController(); // Apply saved positions
                 } else {
                     console.log('Applying default button positions...');
                 }
