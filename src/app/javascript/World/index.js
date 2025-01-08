@@ -1090,8 +1090,96 @@ export default class
                             console.error('Party call button not found in the DOM.');
                         }
                         
-                        break;    
+                        break;
+
+                    case 'partyMessage':  // New case for party messages
+                        if (this.inParty) {
+                            this.displayPartyMessage(message.senderId, message.text, message.senderId === this.playerId); // Display the incoming message in chat
+                        }
+                        break;
+
+                    case 'partyCall':
+                        console.log("Handling partyCall message...");
+                        if (this.inParty && message.senderId === message.party.leader) {
+                            this.promptPartyCallParticipation(message.senderId);
+                        }
+
+                        break;
+
+                    case 'iceCandidate':
+                        console.log("Received ICE candidate from:", message.senderId);
+
+                        // Ensure `peerConnections` is initialized
+                        if (!this.peerConnections) {
+                            console.warn("Initializing peerConnections object...");
+                            this.peerConnections = {};
+                        }
+
+                        // Get the existing PeerConnection for the sender
+                        const peerConnection = this.peerConnections[message.senderId];
+
+                        if (!peerConnection) {
+                            console.error(`PeerConnection not found for sender: ${message.senderId}`);
+                            return;
+                        }
+
+                        // Check if the remote description is set
+                        if (peerConnection.remoteDescription && peerConnection.remoteDescription.type) {
+                            // Remote description is set, add ICE candidate directly
+                            peerConnection.addIceCandidate(new RTCIceCandidate(message.candidate))
+                                .then(() => console.log("ICE candidate added."))
+                                .catch(error => console.error("Error adding ICE candidate:", error));
+                        } else {
+                            // Queue ICE candidate if remote description is not set
+                            console.warn("Remote description not set. Queuing ICE candidate...");
+                            if (!peerConnection.iceCandidateQueue) {
+                                peerConnection.iceCandidateQueue = [];
+                            }
+                            peerConnection.iceCandidateQueue.push(message.candidate);
+                        }
+                        break;
+
+                    // case 'partyCallResponse':
+                    //     console.log("Handling partyCallResponse message...");
+
+                    //     this.handlePartyCallResponse(message.senderId, message.response, message.offer, message.answer, message.leaderId);
+                    //     console.log("Handling partyCallResponse message with leaderId", message.leaderId);
+
+                    //     break;
+
+                    case 'partyCallResponse':
+                        console.log(`Handling partyCallResponse from ${message.senderId}: ${message.response}`);
+
+                        if (message.response === 'offer') {
+                            this.handlePartyCallResponse(message.senderId, 'offer', message.offer);
+                        } else if (message.response === 'answer') {
+                            this.handlePartyCallResponse(message.senderId, 'answer', null, message.answer);
+
+                            // ✅ Notify that the party call has started after receiving the answer
+                            if (this.isPartyLeader) {
+                                this.ws.send(JSON.stringify({
+                                    type: 'partyCallStarted',
+                                    leaderId: this.playerId,
+                                    memberId: message.senderId
+                                }));
+                                console.log(`Sent partyCallStarted to all members.`);
+                            }
+                        }
+                        break;
                         
+                    case 'partyCallStarted':
+                        console.log(`Party call started. Leader: ${message.leaderId}, member ${message.memberId}`);
+                        this.displayPartyMessage(message.leaderId, "Audiocast initialized.", false);
+
+                        // Start the call session
+                        this.startPartyCallSession(message.leaderId, message.memberId);
+                        break;
+
+                    case 'partyCallDeclined':
+                        console.log(`${message.senderId} declined the party call.`);
+                        this.displayPartyMessage(message.leaderId, `${this.formatPlayerId(message.senderId)} declined the call.`, false);
+                        break;
+
                     case 'partyCallEnded':
                         console.log("Handling partyCallEnded message...");
                         this.displayPartyMessage(message.leaderId, "Audiocast has been terminated.", false);
@@ -1112,46 +1200,14 @@ export default class
 
                         break;
 
-                    case 'partyMessage':  // New case for party messages
-                        if (this.inParty) {
-                            this.displayPartyMessage(message.senderId, message.text, message.senderId === this.playerId); // Display the incoming message in chat
-                        }
-                        break;
-
-                    case 'partyCall':
-                        console.log("Handling partyCall message...");
-                        if (this.inParty && message.senderId === message.party.leader) {
-                            this.promptPartyCallParticipation(message.senderId);
-                        }
-
-                        break;
-
-                    case 'partyCallResponse':
-                        console.log("Handling partyCallResponse message...");
-
-                        this.handlePartyCallResponse(message.senderId, message.response, message.leaderId);
-                        console.log("Handling partyCallResponse message with leaderId", message.leaderId);
-
-                        // Start the call session using leaderId
-                        // if (this.inParty && message.response === 'yes') {
-                        //     this.displayPartyMessage(message.leaderId, "Party call started.", false);
-                        //     // this.startPartyCallSession(message.leaderId);
-                        // }
-                        break;
-                        
-                    case 'partyCallStarted':
-                        console.log(`Party call started. Leader: ${message.leaderId}`);
-                        this.displayPartyMessage(message.leaderId, "Audiocast initialized.", false);
-                        this.startPartyCallSession(message.leaderId);
-                        break;
-
-                    // case 'batteryStatus':
-                    //     updateBatteryStatus(message.playerId, message.battery);
-                    //     break;
-
                     case 'partyDisbanded':
                         this.clearPartyState();
                         this.showPopup("The party has been disbanded."); // Notify the player visually
+
+                        let partyContainer = document.getElementById('party-info')
+                        if (partyContainer.style.display === 'flex') {
+                            this.togglePartyList();
+                        }
                         console.log("Party disbanded");
                         break;
 
@@ -1184,6 +1240,10 @@ export default class
                             this.coinActive = false;
                         }
                         break;
+
+                    // case 'batteryStatus':
+                    //     updateBatteryStatus(message.playerId, message.battery);
+                    //     break;
 
                     case 'updateNonCollidablePairs':
                         // Update the local non-collidable pairs list on the client side
@@ -2515,6 +2575,16 @@ export default class
                 }
             }
 
+            requestMicrophoneAccess = async () => {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    this.localStream = stream;
+                    console.log("Microphone access granted.");
+                } catch (error) {
+                    console.error("Error accessing microphone:", error);
+                    throw error;
+                }
+            };
             
             initiatePartyCall = (leaderId, members) => {
                 if (!this.playerId) {
@@ -2593,41 +2663,152 @@ export default class
                 callPromptElement.appendChild(buttonContainer);
             
                 document.body.appendChild(callPromptElement);
-            };            
-            
-            respondToPartyCall = (response, leaderId) => {
-                if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-                    const message = {
-                        type: 'partyCallResponse',
-                        senderId: this.playerId,
-                        leaderId: leaderId,
-                        response: response
-                    };
+            };        
 
-                    console.log("Sending partyCallResponse:", message);
-                    this.ws.send(JSON.stringify(message));
+            respondToPartyCall = async (response, leaderId) => {
+                if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+                    if (response === 'yes') {
+                        console.log(`Accepting party call from leader: ${leaderId}. Creating WebRTC offer...`);
+            
+                        // ✅ Request microphone access if not already granted
+                        if (!this.localStream) {
+                            try {
+                                this.localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                                console.log("Microphone access granted.");
+                            } catch (error) {
+                                console.error("Failed to get microphone access:", error);
+                                return;
+                            }
+                        }
+            
+                        const peerConnection = new RTCPeerConnection();
+                        this.peerConnections = this.peerConnections || {};
+                        this.peerConnections[leaderId] = peerConnection;
+            
+                        // Handle ICE candidates
+                        peerConnection.onicecandidate = event => {
+                            if (event.candidate) {
+                                this.ws.send(JSON.stringify({
+                                    type: 'iceCandidate',
+                                    senderId: this.playerId,
+                                    receiverId: leaderId,
+                                    candidate: event.candidate
+                                }));
+                            }
+                        };
+            
+                        // ✅ Add local audio stream to PeerConnection
+                        this.localStream.getTracks().forEach(track => peerConnection.addTrack(track, this.localStream));
+            
+                        // Create and send the offer
+                        peerConnection.createOffer().then(offer => {
+                            peerConnection.setLocalDescription(offer);
+                            this.ws.send(JSON.stringify({
+                                type: 'partyCallResponse',
+                                senderId: this.playerId,
+                                leaderId: leaderId,
+                                receiverId: leaderId,
+                                response: 'yes',
+                                offer: offer
+                            }));
+                            console.log("Sent WebRTC offer to leader:", leaderId);
+                        });
+                    } else {
+                        // Handle 'no' response
+                        this.ws.send(JSON.stringify({
+                            type: 'partyCallResponse',
+                            senderId: this.playerId,
+                            leaderId: leaderId,
+                            receiverId: leaderId,
+                            response: 'no'
+                        }));
+                        console.log(`Declined party call from leader: ${leaderId}`);
+                    }
                 } else {
                     console.error("WebSocket connection is not open. Cannot send partyCallResponse.");
                 }
-            };
-            
-            handlePartyCallResponse = (senderId, response, leaderId) => {
-                console.log(`Handling partyCallResponse leaderId: ${leaderId}`);
-                const message = response === 'yes'
-                    ? `${this.formatPlayerId(senderId)} joined the party call.`
-                    : `${this.formatPlayerId(senderId)} declined the party call.`;
-            
-                console.log(`Handling partyCallResponse: ${message}`);
-                this.displayPartyMessage(leaderId, message, false);
-            
-                // Start the session if the response is 'yes'
-                // if (response === 'yes' && !document.getElementById('party-call-session')) {
-                //     this.startPartyCallSession(leaderId || this.playerId);  // Ensure leaderId is passed
-                // }
             };            
 
-            startPartyCallSession = (leaderId) => {
+            handlePartyCallResponse = (senderId, response, offer = null, answer = null) => {
+                console.log(`Handling partyCallResponse from ${senderId}, response: ${response}`);
+            
+                this.peerConnections = this.peerConnections || {};
+            
+                if (response === 'offer') {
+                    let peerConnection = this.peerConnections[senderId];
+                    if (!peerConnection) {
+                        console.log(`Creating new PeerConnection for ${senderId}`);
+                        peerConnection = new RTCPeerConnection();
+                        this.peerConnections[senderId] = peerConnection;
+            
+                        // Handle ICE candidates
+                        peerConnection.onicecandidate = event => {
+                            if (event.candidate) {
+                                this.ws.send(JSON.stringify({
+                                    type: 'iceCandidate',
+                                    senderId: this.playerId,
+                                    receiverId: senderId,
+                                    candidate: event.candidate
+                                }));
+                            }
+                        };
+            
+                        // Handle incoming audio tracks
+                        peerConnection.ontrack = event => {
+                            const audioElement = document.createElement('audio');
+                            audioElement.srcObject = event.streams[0];
+                            audioElement.autoplay = true;
+                            document.body.appendChild(audioElement);
+                            console.log("Audio stream added to DOM");
+                        };
+                    }
+            
+                    // Set the remote description and create an answer
+                    peerConnection.setRemoteDescription(new RTCSessionDescription(offer))
+                        .then(() => {
+                            console.log("Remote description set. Creating WebRTC answer...");
+                            return peerConnection.createAnswer();
+                        })
+                        .then(answer => {
+                            peerConnection.setLocalDescription(answer);
+                            this.ws.send(JSON.stringify({
+                                type: 'partyCallResponse',
+                                senderId: this.playerId,
+                                receiverId: senderId,
+                                response: 'answer',
+                                answer: answer
+                            }));
+                            console.log("Sent WebRTC answer to:", senderId);
+                        })
+                        .catch(error => console.error("Error handling offer:", error));
+                } else if (response === 'answer') {
+                    const peerConnection = this.peerConnections[senderId];
+                    if (!peerConnection) {
+                        console.error("PeerConnection not found for:", senderId);
+                        return;
+                    }
+            
+                    peerConnection.setRemoteDescription(new RTCSessionDescription(answer))
+                        .then(() => console.log("Remote description set for", senderId))
+                        .catch(error => console.error("Error setting remote description:", error));
+                }
+            };                  
+
+            startPartyCallSession = async (leaderId, memberId) => {
                 console.log(`Starting party call session. Leader: ${leaderId}`);
+            
+                // Request microphone access and ensure the local stream is available
+                try {
+                    await this.requestMicrophoneAccess();
+                } catch (error) {
+                    console.error("Failed to get microphone access:", error);
+                    return;
+                }
+            
+                if (!this.localStream) {
+                    console.error("No microphone stream available.");
+                    return;
+                }
             
                 // Check if the session UI already exists
                 if (document.getElementById('party-call-session')) {
@@ -2636,6 +2817,16 @@ export default class
                 }
             
                 // Create the call session display
+                this.createCallSessionUI(this.isPartyLeader);
+            
+                // Delegate audio streaming to `streamAudioToPartyMembers`
+                if (this.isPartyLeader) {
+                    this.streamAudioToPartyMembers();
+                }
+            };            
+
+            createCallSessionUI = (isPartyLeader) => {
+                // Create the session display element
                 const sessionElement = document.createElement('div');
                 sessionElement.id = 'party-call-session';
                 sessionElement.style.cssText = `
@@ -2652,13 +2843,13 @@ export default class
                     z-index: 999;
                 `;
             
-                // Create a timer display
+                // Create the timer display
                 const timerElement = document.createElement('span');
                 timerElement.id = 'call-timer';
                 timerElement.innerText = '00:00';
                 sessionElement.appendChild(timerElement);
             
-                // Create a terminate call button
+                // Create the end call button
                 const endCallButton = document.createElement('button');
                 endCallButton.id = 'end-call-button';
                 endCallButton.innerText = 'End Call';
@@ -2680,7 +2871,7 @@ export default class
                     chatBox.parentElement.insertBefore(sessionElement, chatBox);
                 }
             
-                // Start the timer
+                // Start the session timer
                 let callStartTime = Date.now();
                 const updateTimer = () => {
                     const elapsedTime = Date.now() - callStartTime;
@@ -2688,31 +2879,98 @@ export default class
                     const seconds = String(Math.floor((elapsedTime % 60000) / 1000)).padStart(2, '0');
                     timerElement.innerText = `${minutes}:${seconds}`;
                 };
-
+            
                 this.timerInterval = setInterval(updateTimer, 1000);
             
                 // Handle the end call button click
                 endCallButton.addEventListener('click', () => {
-                    console.log(`Ending call session for ${this.playerId}`);
+                    console.log("Ending call session.");
             
-                    // If the party leader ends the call, notify everyone
-                    if (this.isPartyLeader) {
+                    // Notify the server based on whether the user is the party leader
+                    if (isPartyLeader) {
                         this.ws.send(JSON.stringify({
                             type: 'endPartyCall',
                             senderId: this.playerId,
                             leaderId: this.playerId
                         }));
                     } else {
-                        // If a member leaves the call
                         this.ws.send(JSON.stringify({
                             type: 'leavePartyCall',
                             senderId: this.playerId
                         }));
                     }
             
-                    // Cleanup UI and stop the timer
+                    // Stop the timer and clean up the session UI
                     clearInterval(this.timerInterval);
                     sessionElement.remove();
+            
+                    // Stop the local microphone stream
+                    if (this.localStream) {
+                        this.localStream.getTracks().forEach(track => track.stop());
+                        console.log("Microphone stream stopped.");
+                    }
+                });
+            };            
+            
+            streamAudioToPartyMembers = () => {
+                if (!this.localStream) {
+                    console.error("No local stream to send.");
+                    return;
+                }
+            
+                // Ensure peerConnections is initialized
+                if (!this.peerConnections) {
+                    console.warn("Initializing peerConnections object...");
+                    this.peerConnections = {};
+                }
+            
+                this.partyMembers.forEach(memberId => {
+                    if (memberId === this.playerId) {
+                        console.warn("Skipping self-offer to:", memberId);
+                        return;
+                    }
+            
+                    if (this.peerConnections[memberId]) {
+                        console.warn(`PeerConnection already exists for ${memberId}`);
+                        return;
+                    }
+            
+                    console.log(`Starting audio stream to ${memberId}`);
+                    const peerConnection = new RTCPeerConnection();
+            
+                    // Handle ICE candidates
+                    peerConnection.onicecandidate = event => {
+                        if (event.candidate) {
+                            console.log(`Sending ICE candidate to: ${memberId}`);
+                            this.ws.send(JSON.stringify({
+                                type: 'iceCandidate',
+                                senderId: this.playerId,
+                                receiverId: memberId,
+                                candidate: event.candidate
+                            }));
+                        }
+                    };
+            
+                    // Add the local stream to the connection
+                    this.localStream.getTracks().forEach(track => peerConnection.addTrack(track, this.localStream));
+                    console.log("Added local track to peer connection");
+            
+                    // Send the offer to the other party member via WebSocket
+                    peerConnection.createOffer()
+                        .then(offer => peerConnection.setLocalDescription(offer))
+                        .then(() => {
+                            this.ws.send(JSON.stringify({
+                                type: 'partyCallResponse',
+                                senderId: this.playerId,
+                                receiverId: memberId,
+                                response: 'offer',
+                                offer: peerConnection.localDescription
+                            }));
+                            console.log("Sent WebRTC offer to:", memberId);
+                        });
+            
+                    // Store the peer connection for future use
+                    this.peerConnections[memberId] = peerConnection;
                 });
             };            
 
