@@ -1109,36 +1109,40 @@ export default class
                     case 'iceCandidate':
                         console.log("Received ICE candidate from:", message.senderId);
 
-                        // Ensure `peerConnections` is initialized
-                        if (!this.peerConnections) {
-                            console.warn("Initializing peerConnections object...");
-                            this.peerConnections = {};
-                        }
+                        // ✅ Ensure `peerConnections` is initialized
+                        this.peerConnections = this.peerConnections || {};
 
-                        // Get the existing PeerConnection for the sender
-                        const peerConnection = this.peerConnections[message.senderId];
-
+                        // ✅ Check if a PeerConnection exists for the sender
+                        let peerConnection = this.peerConnections[message.senderId];
                         if (!peerConnection) {
-                            console.error(`PeerConnection not found for sender: ${message.senderId}`);
-                            return;
+                            console.warn(`PeerConnection not found for sender: ${message.senderId}. Creating a new one...`);
+                            peerConnection = new RTCPeerConnection();
+                            this.peerConnections[message.senderId] = peerConnection;
+
+                            // ✅ Handle queued ICE candidates
+                            peerConnection.iceCandidateQueue = peerConnection.iceCandidateQueue || [];
+                            peerConnection.iceCandidateQueue.forEach(candidate => {
+                                peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
+                                    .then(() => console.log("Queued ICE candidate added."))
+                                    .catch(error => console.error("Error adding queued ICE candidate:", error));
+                            });
+                            peerConnection.iceCandidateQueue = [];
                         }
 
-                        // Check if the remote description is set
+                        // ✅ Add the ICE candidate if remote description is already set
                         if (peerConnection.remoteDescription && peerConnection.remoteDescription.type) {
-                            // Remote description is set, add ICE candidate directly
                             peerConnection.addIceCandidate(new RTCIceCandidate(message.candidate))
                                 .then(() => console.log("ICE candidate added."))
                                 .catch(error => console.error("Error adding ICE candidate:", error));
                         } else {
-                            // Queue ICE candidate if remote description is not set
+                            // ✅ Queue the ICE candidate if remote description is not yet set
                             console.warn("Remote description not set. Queuing ICE candidate...");
-                            if (!peerConnection.iceCandidateQueue) {
-                                peerConnection.iceCandidateQueue = [];
-                            }
+                            peerConnection.iceCandidateQueue = peerConnection.iceCandidateQueue || [];
                             peerConnection.iceCandidateQueue.push(message.candidate);
                         }
                         break;
 
+                        
                     // case 'partyCallResponse':
                     //     console.log("Handling partyCallResponse message...");
 
@@ -2681,11 +2685,12 @@ export default class
                             }
                         }
             
+                        // ✅ Establish PeerConnection
                         const peerConnection = new RTCPeerConnection();
                         this.peerConnections = this.peerConnections || {};
                         this.peerConnections[leaderId] = peerConnection;
             
-                        // Handle ICE candidates
+                        // ✅ Handle ICE candidates
                         peerConnection.onicecandidate = event => {
                             if (event.candidate) {
                                 this.ws.send(JSON.stringify({
@@ -2697,24 +2702,25 @@ export default class
                             }
                         };
             
-                        // ✅ Add local audio stream to PeerConnection
+                        // ✅ Add local audio stream
                         this.localStream.getTracks().forEach(track => peerConnection.addTrack(track, this.localStream));
             
-                        // Create and send the offer
-                        peerConnection.createOffer().then(offer => {
-                            peerConnection.setLocalDescription(offer);
-                            this.ws.send(JSON.stringify({
-                                type: 'partyCallResponse',
-                                senderId: this.playerId,
-                                leaderId: leaderId,
-                                receiverId: leaderId,
-                                response: 'yes',
-                                offer: offer
-                            }));
-                            console.log("Sent WebRTC offer to leader:", leaderId);
-                        });
+                        // ✅ Create and send the offer
+                        const offer = await peerConnection.createOffer();
+                        await peerConnection.setLocalDescription(offer);
+            
+                        this.ws.send(JSON.stringify({
+                            type: 'partyCallResponse',
+                            senderId: this.playerId,
+                            leaderId: leaderId,
+                            receiverId: leaderId,
+                            response: 'yes',
+                            offer: offer
+                        }));
+            
+                        console.log("Sent WebRTC offer to leader:", leaderId);
                     } else {
-                        // Handle 'no' response
+                        // ✅ Handle 'no' response
                         this.ws.send(JSON.stringify({
                             type: 'partyCallResponse',
                             senderId: this.playerId,
@@ -2734,6 +2740,7 @@ export default class
             
                 this.peerConnections = this.peerConnections || {};
             
+                // ✅ Handle incoming WebRTC offer
                 if (response === 'offer') {
                     let peerConnection = this.peerConnections[senderId];
                     if (!peerConnection) {
@@ -2741,7 +2748,7 @@ export default class
                         peerConnection = new RTCPeerConnection();
                         this.peerConnections[senderId] = peerConnection;
             
-                        // Handle ICE candidates
+                        // ✅ Handle ICE candidates
                         peerConnection.onicecandidate = event => {
                             if (event.candidate) {
                                 this.ws.send(JSON.stringify({
@@ -2753,17 +2760,17 @@ export default class
                             }
                         };
             
-                        // Handle incoming audio tracks
+                        // ✅ Handle incoming tracks
                         peerConnection.ontrack = event => {
+                            console.log("Received remote audio track");
                             const audioElement = document.createElement('audio');
                             audioElement.srcObject = event.streams[0];
                             audioElement.autoplay = true;
                             document.body.appendChild(audioElement);
-                            console.log("Audio stream added to DOM");
                         };
                     }
             
-                    // Set the remote description and create an answer
+                    // ✅ Set the remote description and create an answer
                     peerConnection.setRemoteDescription(new RTCSessionDescription(offer))
                         .then(() => {
                             console.log("Remote description set. Creating WebRTC answer...");
@@ -2781,7 +2788,10 @@ export default class
                             console.log("Sent WebRTC answer to:", senderId);
                         })
                         .catch(error => console.error("Error handling offer:", error));
-                } else if (response === 'answer') {
+                }
+            
+                // ✅ Handle incoming WebRTC answer
+                else if (response === 'answer') {
                     const peerConnection = this.peerConnections[senderId];
                     if (!peerConnection) {
                         console.error("PeerConnection not found for:", senderId);
@@ -2792,8 +2802,8 @@ export default class
                         .then(() => console.log("Remote description set for", senderId))
                         .catch(error => console.error("Error setting remote description:", error));
                 }
-            };                  
-
+            };            
+            
             startPartyCallSession = async (leaderId, memberId) => {
                 console.log(`Starting party call session. Leader: ${leaderId}`);
             
@@ -2918,11 +2928,7 @@ export default class
                     return;
                 }
             
-                // Ensure peerConnections is initialized
-                if (!this.peerConnections) {
-                    console.warn("Initializing peerConnections object...");
-                    this.peerConnections = {};
-                }
+                this.peerConnections = this.peerConnections || {};
             
                 this.partyMembers.forEach(memberId => {
                     if (memberId === this.playerId) {
@@ -2938,7 +2944,7 @@ export default class
                     console.log(`Starting audio stream to ${memberId}`);
                     const peerConnection = new RTCPeerConnection();
             
-                    // Handle ICE candidates
+                    // ✅ Handle ICE candidates
                     peerConnection.onicecandidate = event => {
                         if (event.candidate) {
                             console.log(`Sending ICE candidate to: ${memberId}`);
@@ -2951,11 +2957,20 @@ export default class
                         }
                     };
             
-                    // Add the local stream to the connection
+                    // ✅ Handle incoming tracks
+                    peerConnection.ontrack = event => {
+                        console.log(`Received remote audio track from ${memberId}`);
+                        const audioElement = document.createElement('audio');
+                        audioElement.srcObject = event.streams[0];
+                        audioElement.autoplay = true;
+                        document.body.appendChild(audioElement);
+                    };
+            
+                    // ✅ Add the local stream to the connection
                     this.localStream.getTracks().forEach(track => peerConnection.addTrack(track, this.localStream));
                     console.log("Added local track to peer connection");
             
-                    // Send the offer to the other party member via WebSocket
+                    // ✅ Create and send the offer
                     peerConnection.createOffer()
                         .then(offer => peerConnection.setLocalDescription(offer))
                         .then(() => {
@@ -2967,12 +2982,13 @@ export default class
                                 offer: peerConnection.localDescription
                             }));
                             console.log("Sent WebRTC offer to:", memberId);
-                        });
+                        })
+                        .catch(error => console.error("Error creating offer:", error));
             
-                    // Store the peer connection for future use
+                    // ✅ Store the PeerConnection for future use
                     this.peerConnections[memberId] = peerConnection;
                 });
-            };            
+            };                   
 
         setupMultiplayer = async (playerId, token, carName, matcaps) => {
             try {
