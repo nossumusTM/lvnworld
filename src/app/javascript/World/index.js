@@ -2757,6 +2757,14 @@ export default class
                     }
                 };
             
+                // ✅ Add the leader’s local track if it's not already added
+                if (this.localStream) {
+                    this.localStream.getTracks().forEach(track => {
+                        console.log(`Adding leader's local track: ${track.kind}`);
+                        peerConnection.addTrack(track, this.localStream);
+                    });
+                }
+            
                 if (response === 'offer' && offer) {
                     try {
                         await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
@@ -2773,6 +2781,7 @@ export default class
                             answer: answer
                         }));
                         console.log("Sent WebRTC answer to:", senderId);
+            
                     } catch (error) {
                         console.error("Error handling offer:", error);
                     }
