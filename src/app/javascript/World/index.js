@@ -2666,15 +2666,15 @@ export default class
                     if (response === 'yes') {
                         console.log(`Accepting party call from leader: ${leaderId}. Creating WebRTC offer...`);
             
-                        // ✅ Ensure microphone access
+                        // ✅ Request microphone access if not already granted
                         if (!this.localStream) {
-                            try {
-                                await this.requestMicrophoneAccess();
-                                console.log("Microphone access granted.");
-                            } catch (error) {
-                                console.error("Failed to get microphone access:", error);
-                                return;
-                            }
+                            // Request microphone access and ensure the local stream is available
+                        try {
+                            await this.requestMicrophoneAccess();
+                        } catch (error) {
+                            console.error("Failed to get microphone access:", error);
+                            return;
+                        }
                         }
             
                         // ✅ Establish PeerConnection
@@ -2694,25 +2694,8 @@ export default class
                             }
                         };
             
-                        // ✅ Handle incoming remote audio track
-                        peerConnection.ontrack = event => {
-                            console.log("Received remote audio track from leader.");
-            
-                            let audioElement = document.querySelector(`#audio-${leaderId}`);
-                            if (!audioElement) {
-                                audioElement = document.createElement('audio');
-                                audioElement.id = `audio-${leaderId}`;
-                                audioElement.autoplay = true;
-                                document.body.appendChild(audioElement);
-                            }
-            
-                            audioElement.srcObject = event.streams[0];
-                            console.log(`Audio stream set for leader: ${leaderId}`);
-                        };
-            
-                        // ✅ Add the local audio stream
+                        // ✅ Add local audio stream
                         this.localStream.getTracks().forEach(track => peerConnection.addTrack(track, this.localStream));
-                        console.log("Local tracks added to peer connection.");
             
                         // ✅ Create and send the offer
                         const offer = await peerConnection.createOffer();
@@ -2742,7 +2725,7 @@ export default class
                 } else {
                     console.error("WebSocket connection is not open. Cannot send partyCallResponse.");
                 }
-            };                  
+            };            
 
             handlePartyCallResponse = (senderId, response, offer = null, answer = null) => {
                 console.log(`Handling partyCallResponse from ${senderId}, response: ${response}`);
