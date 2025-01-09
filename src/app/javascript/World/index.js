@@ -2662,11 +2662,29 @@ export default class
                         const peerConnection = this.peerConnections[leaderId] || new RTCPeerConnection();
                         this.peerConnections[leaderId] = peerConnection;
             
-                        // ✅ Add member's local audio track to the existing PeerConnection
+                        // ✅ Add member's local audio track to the PeerConnection
                         this.localStream.getTracks().forEach(track => {
                             console.log(`Adding local track from member: ${track.kind}`);
                             peerConnection.addTrack(track, this.localStream);
                         });
+            
+                        // ✅ Handle incoming remote audio track from leader
+                        peerConnection.ontrack = event => {
+                            console.log("Received remote audio track from leader");
+            
+                            let audioElement = document.querySelector(`#audio-${leaderId}`);
+                            if (!audioElement) {
+                                audioElement = document.createElement('audio');
+                                audioElement.id = `audio-${leaderId}`;
+                                audioElement.autoplay = true;
+                                document.body.appendChild(audioElement);
+                            }
+            
+                            if (!audioElement.srcObject) {
+                                audioElement.srcObject = event.streams[0];
+                                console.log(`Audio stream set for leader ${leaderId}`);
+                            }
+                        };
             
                         // ✅ Handle ICE candidates
                         peerConnection.onicecandidate = event => {
@@ -2707,11 +2725,11 @@ export default class
                 } else {
                     console.error("WebSocket connection is not open. Cannot send partyCallResponse.");
                 }
-            };            
+            };                     
 
             handlePartyCallResponse = async (senderId, response, offer = null, answer = null, leaderId = null) => {
                 console.log(`Handling partyCallResponse from ${senderId}, response: ${response}`);
-                
+            
                 this.peerConnections = this.peerConnections || {};
                 let peerConnection = this.peerConnections[leaderId || senderId];
             
@@ -2755,7 +2773,6 @@ export default class
                             answer: answer
                         }));
                         console.log("Sent WebRTC answer to:", senderId);
-            
                     } catch (error) {
                         console.error("Error handling offer:", error);
                     }
