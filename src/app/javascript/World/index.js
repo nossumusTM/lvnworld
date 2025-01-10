@@ -2850,6 +2850,12 @@ export default class
                         }
                     };
                 }
+
+                // ✅ Share the leader's stream with all members
+                if (this.isPartyLeader && this.localStream) {
+                    console.log("Sharing leader's audio stream with all members...");
+                    this.setAudioStreamForAllMembers(this.localStream);
+                }
             
                 // ✅ Handle WebRTC offer
                 if (response === 'offer' && offer) {
@@ -2924,6 +2930,28 @@ export default class
                         });
                     };
                 }
+            };       
+            
+            setAudioStreamForAllMembers = (stream) => {
+                if (!this.peerConnections) {
+                    console.error("No PeerConnections available.");
+                    return;
+                }
+            
+                Object.keys(this.peerConnections).forEach((peerId) => {
+                    console.log(`🔊 Adding stream to PeerConnection with ID: ${peerId}`);
+            
+                    const peerConnection = this.peerConnections[peerId];
+                    const existingTracks = peerConnection.getSenders().map(sender => sender.track);
+            
+                    // Only add tracks if they aren't already added
+                    stream.getTracks().forEach(track => {
+                        if (!existingTracks.includes(track)) {
+                            peerConnection.addTrack(track, stream);
+                            console.log(`✅ Added track to ${peerId}`);
+                        }
+                    });
+                });
             };            
             
             startPartyCallSession = async (leaderId, memberId) => {
