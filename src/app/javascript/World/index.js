@@ -1113,7 +1113,10 @@ export default class
                         let peerConnection = this.peerConnections[message.senderId];
 
                         if (!peerConnection) {
-                            console.error(`PeerConnection not found for sender: ${message.senderId}`);
+                            console.warn(`PeerConnection not found for sender: ${message.senderId}. Queuing ICE candidate.`);
+                            this.iceCandidateQueue = this.iceCandidateQueue || {};
+                            this.iceCandidateQueue[message.senderId] = this.iceCandidateQueue[message.senderId] || [];
+                            this.iceCandidateQueue[message.senderId].push(message.candidate);
                             return;
                         }
 
@@ -1133,11 +1136,15 @@ export default class
 
                         // Handle offer and answer correctly
                         if (message.response === 'offer') {
-                            this.handlePartyCallResponse(message.senderId, 'offer', message.offer, null, message.leaderId);
+                            this.handlePartyCallResponse(message.senderId, 'offer', message.offer, null);
+                            console.log(`OFFER: Sender is ${message.senderId}`);
+
                         } else if (message.response === 'answer') {
-                            this.handlePartyCallResponse(message.senderId, 'answer', null, message.answer, message.leaderId);
+                            this.handlePartyCallResponse(message.senderId, 'answer', null, message.answer);
+                            console.log(`ANSWER: Sender is ${message.senderId}`);
+
                         } else if (message.response === 'yes') {
-                            this.handlePartyCallResponse(message.senderId, 'offer', message.offer, null, message.leaderId);
+                            this.handlePartyCallResponse(message.senderId, 'offer', message.offer, null);
                         } else if (message.response === 'no') {
                             console.log("Call declined by member.");
                         }
@@ -1151,11 +1158,17 @@ export default class
                         this.startPartyCallSession(message.leaderId, message.memberId);
 
                         // ✅ Member handles receiving the leader's audio track
-                        if (!this.isPartyLeader) {
-                            console.log(`Setting up PeerConnection to receive leader's track: ${message.leaderId}`);
-                            // this.handlePartyCallResponse(message.leaderId, 'offer');
+                        
+                        console.log(`Setting up PeerConnection to receive leader's track: ${message.leaderId}`);
+                        // ✅ Leader broadcasts to the member, and the member broadcasts to the leader
+                        if (this.isPartyLeader) {
+                            console.log(`Leader broadcasting to member: ${message.memberId}`);
+                            this.broadcastPartyCallToMembers(message.memberId);
+                        } else {
+                            console.log(`Member broadcasting back to leader: ${message.leaderId}`);
                             this.broadcastPartyCallToMembers(message.leaderId);
                         }
+                       
                         
                         break;
 
@@ -2721,12 +2734,12 @@ export default class
             
                 // Ensure PeerConnection exists
                 this.peerConnections = this.peerConnections || {};
-                let peerConnection = this.peerConnections[leaderId || senderId];
+                let peerConnection = this.peerConnections[senderId];
             
                 if (!peerConnection) {
-                    console.log(`Creating new PeerConnection for ${leaderId || senderId}`);
+                    console.log(`Creating new PeerConnection for ${senderId}`);
                     peerConnection = new RTCPeerConnection();
-                    this.peerConnections[leaderId || senderId] = peerConnection;
+                    this.peerConnections[senderId] = peerConnection;
             
                     // ✅ Handle ICE candidates
                     peerConnection.onicecandidate = event => {
@@ -2734,54 +2747,46 @@ export default class
                             this.ws.send(JSON.stringify({
                                 type: 'iceCandidate',
                                 senderId: this.playerId,
-                                receiverId: leaderId || senderId,
+                                receiverId: senderId,
                                 candidate: event.candidate
                             }));
                         }
-                    };              
+                    };
             
                     // ✅ Handle incoming remote audio track
                     peerConnection.ontrack = event => {
                         console.log("Received remote audio track from leader");
-                    
-                        let audioElement = document.querySelector(`#audio-${leaderId || senderId}`);
+            
+                        let audioElement = document.querySelector(`#audio-${senderId}`);
                         if (!audioElement) {
                             audioElement = document.createElement('audio');
-                            audioElement.id = `audio-${leaderId || senderId}`;
+                            audioElement.id = `audio-${senderId}`;
                             audioElement.autoplay = true;
                             audioElement.playsInline = true;
                             document.body.appendChild(audioElement);
                         }
-                    
+            
                         if (!audioElement.srcObject) {
                             audioElement.srcObject = event.streams[0];
-                            console.log(`Audio stream set for ${leaderId || senderId}`);
+                            console.log(`Audio stream set for ${senderId}`);
                             audioElement.onloadedmetadata = () => {
                                 audioElement.play().catch(error => {
                                     console.error("Error playing audio:", error);
                                 });
                             };
                         }
-                    };                    
+                    };
                 }
-
-                if (this.isPartyLeader) {
+            
+                // ✅ Ensure the leader's local audio track is added
+                if (this.isPartyLeader && this.localStream) {
                     console.log("Checking if leader's local audio track is added...");
-                
-                    if (!this.localStream) {
-                        console.error("Local stream is not available for the leader. Requesting microphone access...");
-                        await this.requestMicrophoneAccess();
-                    }
-                
                     const audioTrack = this.localStream.getAudioTracks()[0];
                     if (audioTrack && !peerConnection.getSenders().find(sender => sender.track === audioTrack)) {
                         console.log("✅ Adding leader's local audio track");
                         peerConnection.addTrack(audioTrack, this.localStream);
-                    } else {
-                        console.warn("⚠️ Leader's audio track is already added or not available.");
                     }
                 }
-                
             
                 // ✅ Handle WebRTC offer
                 if (response === 'offer' && offer) {
@@ -2789,29 +2794,35 @@ export default class
                         await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
                         console.log("Remote description set. Creating WebRTC answer...");
             
+                        // ✅ Ensure leader's local track is added before creating answer
+                        const audioTrack = this.localStream?.getAudioTracks()[0];
+                        if (audioTrack && !peerConnection.getSenders().find(sender => sender.track === audioTrack)) {
+                            console.log("✅ Adding leader's local audio track before creating answer");
+                            peerConnection.addTrack(audioTrack, this.localStream);
+                        }
+            
                         const answer = await peerConnection.createAnswer();
                         await peerConnection.setLocalDescription(answer);
             
                         this.ws.send(JSON.stringify({
                             type: 'partyCallResponse',
                             senderId: this.playerId,
-                            receiverId: leaderId || senderId,
+                            receiverId: senderId,
                             response: 'answer',
                             answer: answer
                         }));
-                        console.log("Sent WebRTC answer to:", leaderId || senderId);
-            
+                        console.log("Sent WebRTC answer to:", senderId);
                     } catch (error) {
                         console.error("Error handling offer:", error);
-                    }   
+                    }
                 }
             
                 // ✅ Handle WebRTC answer
                 if (response === 'answer' && answer) {
                     try {
                         await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
-                        console.log("Remote description set for", leaderId || senderId);
-                
+                        console.log("Remote description set for", senderId);
+            
                         // ✅ Process queued ICE candidates
                         if (peerConnection.iceCandidateQueue) {
                             peerConnection.iceCandidateQueue.forEach(async candidate => {
@@ -2827,9 +2838,8 @@ export default class
                     } catch (error) {
                         console.error("Error setting remote description:", error);
                     }
-                }                
+                }
             };
-            
             
             startPartyCallSession = async (leaderId, memberId) => {
                 console.log(`Starting party call session. Leader: ${leaderId}`);
@@ -2945,26 +2955,26 @@ export default class
                 });
             };            
 
-            broadcastPartyCallToMembers = async (leaderId) => {
-                console.log(`Broadcasting party call to members for leader: ${leaderId}`);
+            broadcastPartyCallToMembers = async (peerId) => {
+                console.log(`Broadcasting party call to PeerConnection with ID: ${peerId}`);
             
                 // Ensure PeerConnection exists
                 this.peerConnections = this.peerConnections || {};
-                let peerConnection = this.peerConnections[leaderId];
+                let peerConnection = this.peerConnections[peerId];
             
                 if (!peerConnection) {
-                    console.log(`Creating new PeerConnection for leader: ${leaderId}`);
+                    console.log(`Creating new PeerConnection for: ${peerId}`);
                     peerConnection = new RTCPeerConnection();
-                    this.peerConnections[leaderId] = peerConnection;
+                    this.peerConnections[peerId] = peerConnection;
             
                     // ✅ Handle incoming remote audio track
                     peerConnection.ontrack = event => {
-                        console.log("Received remote audio track from leader");
+                        console.log(`Received remote audio track from ${peerId}`);
             
-                        let audioElement = document.querySelector(`#audio-${leaderId}`);
+                        let audioElement = document.querySelector(`#audio-${peerId}`);
                         if (!audioElement) {
                             audioElement = document.createElement('audio');
-                            audioElement.id = `audio-${leaderId}`;
+                            audioElement.id = `audio-${peerId}`;
                             audioElement.autoplay = true;
                             audioElement.playsInline = true;
                             document.body.appendChild(audioElement);
@@ -2972,7 +2982,7 @@ export default class
             
                         if (!audioElement.srcObject) {
                             audioElement.srcObject = event.streams[0];
-                            console.log(`Audio stream set for leader ${leaderId}`);
+                            console.log(`Audio stream set for ${peerId}`);
                             audioElement.onloadedmetadata = () => {
                                 audioElement.play().catch(error => {
                                     console.error("Error playing audio:", error);
@@ -2987,7 +2997,7 @@ export default class
                             this.ws.send(JSON.stringify({
                                 type: 'iceCandidate',
                                 senderId: this.playerId,
-                                receiverId: leaderId,
+                                receiverId: peerId,
                                 candidate: event.candidate
                             }));
                         }
@@ -2995,7 +3005,6 @@ export default class
                 }
             };
             
-
         setupMultiplayer = async (playerId, token, carName, matcaps) => {
             try {
                 // Check if the token is provided
