@@ -1159,15 +1159,15 @@ export default class
 
                         // ✅ Member handles receiving the leader's audio track
                         
-                        // console.log(`Setting up PeerConnection to receive leader's track: ${message.leaderId}`);
+                        console.log(`Setting up PeerConnection to receive leader's track: ${message.leaderId}`);
                         // ✅ Leader broadcasts to the member, and the member broadcasts to the leader
-                        // if (this.isPartyLeader) {
-                        //     console.log(`Leader broadcasting to member: ${message.memberId}`);
-                        //     this.broadcastPartyCallToMembers(message.memberId);
-                        // } else {
-                        //     console.log(`Member broadcasting back to leader: ${message.leaderId}`);
-                        //     this.broadcastPartyCallToMembers(message.leaderId);
-                        // }
+                        if (this.isPartyLeader) {
+                            console.log(`Leader broadcasting to member: ${message.memberId}`);
+                            this.broadcastPartyCallToMembers(message.memberId);
+                        } else {
+                            console.log(`Member broadcasting back to leader: ${message.leaderId}`);
+                            this.broadcastPartyCallToMembers(message.leaderId);
+                        }
                        
                         
                         break;
@@ -2660,11 +2660,6 @@ export default class
                             peerConnection.ontrack = (event) => {
                                 console.log(`Received remote audio track from ${memberId}`);
                                 this.setAudioStreamForMember(memberId, event.streams[0]);
-                                // ✅ Share the leader's stream with all members
-                                if (this.isPartyLeader && this.localStream) {
-                                    console.log("Sharing leader's audio stream with all members...");
-                                    this.setAudioStreamForAllMembers(this.localStream);
-                                }
                             };
             
                             // ✅ Handle ICE candidates
@@ -2789,11 +2784,6 @@ export default class
                         peerConnection.ontrack = (event) => {
                             console.log(`🎧 Received remote audio track from ${leaderId}`);
                             this.setAudioStreamForMember(leaderId, event.streams[0]);
-                            // ✅ Share the leader's stream with all members
-                            if (this.isPartyLeader && this.localStream) {
-                                console.log("Sharing leader's audio stream with all members...");
-                                this.setAudioStreamForAllMembers(this.localStream);
-                            }
                         };
             
                         // ✅ Add local audio stream
@@ -2845,11 +2835,6 @@ export default class
                     peerConnection.ontrack = (event) => {
                         console.log(`🎧 Received remote audio track from ${senderId}`);
                         this.setAudioStreamForMember(senderId, event.streams[0]);
-                        // ✅ Share the leader's stream with all members
-                        if (this.isPartyLeader && this.localStream) {
-                            console.log("Sharing leader's audio stream with all members...");
-                            this.setAudioStreamForAllMembers(this.localStream);
-                        }
                     };
             
                     // ✅ Handle ICE candidates
@@ -3140,6 +3125,12 @@ export default class
                         peerConnection.addTrack(audioTrack, this.localStream);
                         console.log("✅ Local audio track added to PeerConnection.");
                     }
+                }
+
+                // ✅ Add the local audio stream to all members
+                if (this.localStream) {
+                    console.log("Adding local audio stream to PeerConnection...");
+                    this.setAudioStreamForAllMembers(this.localStream);
                 }
             };                                    
             
