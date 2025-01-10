@@ -1156,19 +1156,6 @@ export default class
 
                         // Start the call session
                         this.startPartyCallSession(message.leaderId, message.memberId);
-
-                        // ✅ Member handles receiving the leader's audio track
-                        
-                        console.log(`Setting up PeerConnection to receive leader's track: ${message.leaderId}`);
-                        // ✅ Leader broadcasts to the member, and the member broadcasts to the leader
-                        if (this.isPartyLeader) {
-                            console.log(`Leader broadcasting to member: ${message.memberId}`);
-                            this.broadcastPartyCallToMembers(message.memberId);
-                        } else {
-                            console.log(`Member broadcasting back to leader: ${message.leaderId}`);
-                            this.broadcastPartyCallToMembers(message.leaderId);
-                        }
-                       
                         
                         break;
 
@@ -3068,71 +3055,71 @@ export default class
                 });
             };            
 
-            broadcastPartyCallToMembers = async (peerId) => {
-                console.log(`Broadcasting party call to PeerConnection with ID: ${peerId}`);
+            // broadcastPartyCallToMembers = async (peerId) => {
+            //     console.log(`Broadcasting party call to PeerConnection with ID: ${peerId}`);
             
-                // Ensure PeerConnection exists
-                this.peerConnections = this.peerConnections || {};
-                let peerConnection = this.peerConnections[peerId];
+            //     // Ensure PeerConnection exists
+            //     this.peerConnections = this.peerConnections || {};
+            //     let peerConnection = this.peerConnections[peerId];
             
-                if (!peerConnection) {
-                    console.log(`Creating new PeerConnection for: ${peerId}`);
-                    peerConnection = new RTCPeerConnection();
-                    this.peerConnections[peerId] = peerConnection;
+            //     if (!peerConnection) {
+            //         console.log(`Creating new PeerConnection for: ${peerId}`);
+            //         peerConnection = new RTCPeerConnection();
+            //         this.peerConnections[peerId] = peerConnection;
             
-                    // ✅ Handle incoming remote audio track
-                    peerConnection.ontrack = (event) => {
-                        console.log(`Received remote audio track from ${peerId}`);
+            //         // ✅ Handle incoming remote audio track
+            //         peerConnection.ontrack = (event) => {
+            //             console.log(`Received remote audio track from ${peerId}`);
             
-                        let audioElement = document.querySelector(`#audio-${peerId}`);
-                        if (!audioElement) {
-                            audioElement = document.createElement('audio');
-                            audioElement.id = `audio-${peerId}`;
-                            audioElement.autoplay = true;
-                            audioElement.playsInline = true;
-                            document.body.appendChild(audioElement);
-                        }
+            //             let audioElement = document.querySelector(`#audio-${peerId}`);
+            //             if (!audioElement) {
+            //                 audioElement = document.createElement('audio');
+            //                 audioElement.id = `audio-${peerId}`;
+            //                 audioElement.autoplay = true;
+            //                 audioElement.playsInline = true;
+            //                 document.body.appendChild(audioElement);
+            //             }
             
-                        if (!audioElement.srcObject) {
-                            audioElement.srcObject = event.streams[0];
-                            console.log(`✅ Audio stream set for ${peerId}`);
-                            audioElement.onloadedmetadata = () => {
-                                audioElement.play().catch((error) => {
-                                    console.error("Error playing audio:", error);
-                                });
-                            };
-                        }
-                    };
+            //             if (!audioElement.srcObject) {
+            //                 audioElement.srcObject = event.streams[0];
+            //                 console.log(`✅ Audio stream set for ${peerId}`);
+            //                 audioElement.onloadedmetadata = () => {
+            //                     audioElement.play().catch((error) => {
+            //                         console.error("Error playing audio:", error);
+            //                     });
+            //                 };
+            //             }
+            //         };
             
-                    // ✅ Handle ICE candidates
-                    peerConnection.onicecandidate = (event) => {
-                        if (event.candidate) {
-                            this.ws.send(JSON.stringify({
-                                type: 'iceCandidate',
-                                senderId: this.playerId,
-                                receiverId: peerId,
-                                candidate: event.candidate,
-                            }));
-                        }
-                    };
-                }
+            //         // ✅ Handle ICE candidates
+            //         peerConnection.onicecandidate = (event) => {
+            //             if (event.candidate) {
+            //                 this.ws.send(JSON.stringify({
+            //                     type: 'iceCandidate',
+            //                     senderId: this.playerId,
+            //                     receiverId: peerId,
+            //                     candidate: event.candidate,
+            //                 }));
+            //             }
+            //         };
+            //     }
             
-                // ✅ Add the local audio stream
-                if (this.localStream) {
-                    console.log("Adding local audio stream to PeerConnection...");
-                    const audioTrack = this.localStream.getAudioTracks()[0];
-                    if (audioTrack && !peerConnection.getSenders().find((sender) => sender.track === audioTrack)) {
-                        peerConnection.addTrack(audioTrack, this.localStream);
-                        console.log("✅ Local audio track added to PeerConnection.");
-                    }
-                }
+            //     // ✅ Add the local audio stream
+            //     if (this.localStream) {
+            //         console.log("Adding local audio stream to PeerConnection...");
+            //         const audioTrack = this.localStream.getAudioTracks()[0];
+            //         if (audioTrack && !peerConnection.getSenders().find((sender) => sender.track === audioTrack)) {
+            //             peerConnection.addTrack(audioTrack, this.localStream);
+            //             console.log("✅ Local audio track added to PeerConnection.");
+            //         }
+            //     }
 
-                // ✅ Add the local audio stream to all members
-                if (this.localStream) {
-                    console.log("Adding local audio stream to PeerConnection...");
-                    this.setAudioStreamForAllMembers(this.localStream);
-                }
-            };                                    
+            //     // ✅ Add the local audio stream to all members
+            //     if (this.localStream) {
+            //         console.log("Adding local audio stream to PeerConnection...");
+            //         this.setAudioStreamForAllMembers(this.localStream);
+            //     }
+            // };                                    
             
         setupMultiplayer = async (playerId, token, carName, matcaps) => {
             try {
