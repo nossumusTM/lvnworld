@@ -2082,10 +2082,10 @@ export default class Car
             this.handleSirenEffect();
     
             // Handle screech sound
-            if (this.movement.localAcceleration.x > 0.03 && this.time.elapsed - this.movement.lastScreech > 5000) {
-                this.movement.lastScreech = this.time.elapsed;
-                this.sounds.play('screech');
-            }
+            // if (this.movement.localAcceleration.x > 0.03 && this.time.elapsed - this.movement.lastScreech > 5000) {
+            //     this.movement.lastScreech = this.time.elapsed;
+            //     this.sounds.play('screech');
+            // }
         });
     }
 

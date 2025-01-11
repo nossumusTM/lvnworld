@@ -8,6 +8,8 @@ import Time from './Utils/Time.js'
 import World from './World/index.js'
 import Resources from './Resources.js'
 import Camera from './Camera.js'
+import gsap from 'gsap'
+import { TweenLite } from 'gsap/TweenLite'
 
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js'
@@ -293,42 +295,54 @@ const Application = ({ playerId, selectedWorldId, token, carName, matcaps }) => 
         this.time.on('tick', () => {
             if (this.world && this.world.car) {
                 const chassisObject = this.world.car.chassis.object;
-
+        
                 if (this.camera.isNewCameraActive) {
-                    // New camera logic
-                    const forwardVector = new THREE.Vector3(1, 0, 0); // Forward in local space
+                    // Calculate the forward vector in local space
+                    const forwardVector = new THREE.Vector3(1, 0, 0);
                     forwardVector.applyQuaternion(chassisObject.quaternion);
-
-                    // Calculate a position close to the car for a better perspective
-                    const distance = 8; // Distance behind the car
-
-                    // Calculate a position close to the car for a better perspective
-                    const cameraOffset = forwardVector.clone().multiplyScalar(-distance); // Position behind the car
-                    cameraOffset.z = 2.5; // Raise the camera for a better view
-
-                    // Adjust the camera's position to render distant areas
-                    const preloadOffset = forwardVector.clone().multiplyScalar(-distance * 1.2); // Look ahead distance
+        
+                    // Default camera offset (behind the car)
+                    const distance = 8;
+                    let cameraOffset = forwardVector.clone().multiplyScalar(-distance);
+                    cameraOffset.z = 2.5; // Raise the camera slightly for better visibility
+        
+                    // Adjust the camera offset if flight mode is enabled
+                    if (this.world.car.physics.car.flightMode) {
+                        // Move the camera to the left side during flight mode to avoid crashing into the car
+                        cameraOffset.x = -6; // Shift the camera to the left
+                    }
+        
+                    // Calculate the target position for the camera
+                    const targetPosition = chassisObject.position.clone().add(cameraOffset);
+        
+                    // Calculate the preload position to smooth the camera movement
+                    const preloadOffset = forwardVector.clone().multiplyScalar(-distance * 1.2);
                     const preloadPosition = chassisObject.position.clone().add(preloadOffset);
-
-                    this.camera.instance.position.lerp(preloadPosition, 0.1); // Smooth movement towards the target position
+        
+                    // Smooth movement of the camera position
+                    this.camera.instance.position.lerp(preloadPosition, 0.1);
                     this.camera.instance.position.copy(chassisObject.position).add(cameraOffset);
+        
+                    // Continuously update the camera to look at the car's position
                     this.camera.instance.lookAt(chassisObject.position);
-
+        
                     // Adjust clipping planes
-                    this.camera.instance.near = 0.1; // Keep a close near plane
-                    this.camera.instance.far = 2000; // Extended far plane for rendering distant areas
+                    this.camera.instance.near = 0.1;
+                    this.camera.instance.far = 2000;
                     this.camera.instance.updateProjectionMatrix();
-
+        
                     // Apply zoom settings
                     this.camera.zoom.targetValue = 0;
                     this.camera.zoom.value = 0;
                     this.camera.zoom.distance = this.camera.zoom.minDistance + this.camera.zoom.amplitude * this.camera.zoom.value;
+        
                 } else {
-                    // Old camera logic
-                    const offset = new THREE.Vector3(0, 5, -10); // Position behind and above the car
+                    // Old camera logic (behind and above the car)
+                    const offset = new THREE.Vector3(0, 5, -10);
                     const carPosition = chassisObject.position.clone().add(offset);
-
-                    this.camera.instance.position.lerp(carPosition, 0.1); // Smooth movement
+        
+                    // Smooth movement of the old camera position
+                    this.camera.instance.position.lerp(carPosition, 0.1);
                     this.camera.target.x = chassisObject.position.x;
                     this.camera.target.y = chassisObject.position.y;
                     this.camera.target.z = chassisObject.position.z;

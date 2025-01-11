@@ -357,7 +357,7 @@ export default class Objects
             object.collision.body.addEventListener('collide', (_event) =>
             {
                 const relativeVelocity = _event.contact.getImpactVelocityAlongNormal()
-                this.sounds.play(_options.soundName, relativeVelocity)
+                // this.sounds.play(_options.soundName, relativeVelocity)
             })
         }
 

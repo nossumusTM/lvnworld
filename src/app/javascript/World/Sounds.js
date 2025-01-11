@@ -540,7 +540,7 @@ export default class Sounds
             loop: true
         })
 
-        this.engine.sound.play();
+        // this.engine.sound.play();
 
         // Time tick
         this.time.on('tick', () =>
