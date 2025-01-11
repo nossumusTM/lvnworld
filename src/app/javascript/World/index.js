@@ -79,6 +79,10 @@ export default class
 
         this.messengerVisible = false;
 
+        this.peerConnections = {};
+        this.localStream = null;
+        this.timerInterval = null;
+
         // Debug
         if(this.debug)
         {
@@ -1024,6 +1028,13 @@ export default class
                             // alert('You are already in a party and cannot be invited.');
                             this.showPopup('Target player is already in a party and cannot be invited.');
                         }
+
+                        // ✅ Check if the party already has 2 players
+                        if (this.partyMembers && this.partyMembers.length >= 2) {
+                            console.log('Party is full. Invite cannot be sent.');
+                            this.showPopup('The party is full. You cannot invite more players.');
+                            return;
+                        }
                         break;
 
                     case 'inviteResponse':
@@ -1194,6 +1205,22 @@ export default class
 
                         // Start the call session
                         this.startPartyCallSession(message.leaderId, message.memberId);
+
+                        // ✅ Set the audio stream for the member
+                        if (this.peerConnections && this.peerConnections[message.memberId]) {
+                            const peerConnection = this.peerConnections[message.memberId];
+                            const remoteStream = new MediaStream();
+                            
+                            peerConnection.getReceivers().forEach(receiver => {
+                                if (receiver.track && receiver.track.kind === 'audio') {
+                                    remoteStream.addTrack(receiver.track);
+                                }
+                            });
+
+                            if (remoteStream.getTracks().length > 0) {
+                                this.setAudioStreamForMember(message.memberId, remoteStream);
+                            }
+                        }
                         
                         break;
 
@@ -1205,21 +1232,13 @@ export default class
                     case 'partyCallEnded':
                         console.log("Handling partyCallEnded message...");
                         this.displayPartyMessage(message.leaderId, "Audiocast has been terminated.", false);
-
-                        // Stop the timer and remove the session UI
-                        clearInterval(this.timerInterval);
-                        document.getElementById('party-call-session')?.remove();
-
+                        this.cleanUpCallSession();
                         break;
 
                     case 'partyCallEndedForMember':
                         console.log("Handling partyCallEndedForMember message...");
                         this.displayPartyMessage(message.senderId, "You have left the audiocast.", false);
-
-                        // Stop the timer and remove the session UI
-                        clearInterval(this.timerInterval);
-                        document.getElementById('party-call-session')?.remove();
-
+                        this.cleanUpCallSession();
                         break;
 
                     case 'partyDisbanded':
@@ -2196,36 +2215,7 @@ export default class
                 const firstPart = playerId.substring(0, 4);
                 const lastPart = playerId.substring(playerId.length - 4);
                 return `${firstPart}...${lastPart}`;
-            }            
-
-            // // Function to show a notification badge on the toggle button
-            // showNotificationBadge = () => {
-            //     const toggleButton = document.getElementById('toggle-chat-button');
-            //     let notificationBadge = document.getElementById('chat-notification-badge');
-
-            //     if (toggleButton && !notificationBadge) {
-            //         // Create a new notification badge if it doesn't exist
-            //         notificationBadge = document.createElement('div');
-            //         notificationBadge.id = 'chat-notification-badge';
-            //         notificationBadge.style.position = 'absolute';
-            //         notificationBadge.style.top = '-15px';
-            //         notificationBadge.innerHTML = `${feather.icons['mouse-pointer'].toSvg({ width: 15, height: 15 })}`;
-            //         notificationBadge.style.right = '2px';
-            //         notificationBadge.style.rotate = '270deg';
-            //         notificationBadge.style.backgroundColor = 'transparent';
-            //         notificationBadge.style.borderRadius = '50%';
-            //         notificationBadge.style.zIndex = '1000';
-            //         notificationBadge.style.fontSize = '30px';
-            //         notificationBadge.style.color = '#18FF00';
-            //         // toggleButton.style.position = 'relative'; // Ensure relative positioning
-            //         toggleButton.appendChild(notificationBadge);
-            //     }
-
-            //     // Ensure the badge is visible
-            //     if (notificationBadge) {
-            //         notificationBadge.style.display = 'block';
-            //     }
-            // };
+            }
         
             // Function to show a notification badge on the toggle button
             showNotificationBadge = () => {
@@ -2427,19 +2417,7 @@ export default class
                 }
             
                 console.log(`After toggle: partyElement.style.display = '${partyElement.style.display}'`);
-            };            
-
-            // Function to show the popup with a custom message
-            // showPopup(message) {
-            //     const popup = document.getElementById('no-target-popup');
-            //     const messageElement = document.getElementById('popup-message');
-
-            //     // Update the message dynamically
-            //     messageElement.textContent = message;
-
-            //     // Show the popup
-            //     popup.style.display = 'flex';
-            // }
+            };
 
             showPopup(message) {
                 const popup = document.getElementById('no-target-popup');
@@ -2608,50 +2586,6 @@ export default class
                 }
             };
             
-            // initiatePartyCall = async (leaderId, members) => {
-            //     if (!this.playerId) {
-            //         console.error("Player ID is undefined. Cannot initiate party call.");
-            //         return;
-            //     }
-            
-            //     console.log(`Attempting to initiate a party call. Leader: ${leaderId}, Members:`, members);
-            
-            //     if (this.isPartyLeader && this.ws && this.ws.readyState === WebSocket.OPEN) {
-
-            //         // ✅ Ensure the leader has local audio stream
-            //         if (!this.localStream) {
-            //             console.log("Requesting microphone access for leader...");
-            //             try {
-            //                 await this.requestMicrophoneAccess();
-            //             } catch (error) {
-            //                 console.error("Failed to get microphone access:", error);
-            //                 return;
-            //             }
-            //         }
-
-            //         console.log("Party call conditions met. Sending partyCall message...");
-            
-            //         // Ensure all fields are correctly populated
-            //         const message = {
-            //             type: 'partyCall',
-            //             senderId: this.playerId,
-            //             party: {
-            //                 leader: leaderId || this.playerId,  // Use playerId if leaderId is undefined
-            //                 members: members || this.partyMembers  // Use current party members if members are undefined
-            //             }
-            //         };
-            
-            //         console.log("Sending partyCall message to server:", message);
-            
-            //         this.ws.send(JSON.stringify(message));
-            
-            //         // Notify in chat
-            //         this.displayPartyMessage(this.playerId, "Initializing audiocast...", true);
-            //     } else {
-            //         console.error("Only the party leader can initiate a party call.");
-            //     }
-            // };   
-            
             initiatePartyCall = async (leaderId, members) => {
                 if (!this.playerId) {
                     console.error("Player ID is undefined. Cannot initiate party call.");
@@ -2685,6 +2619,7 @@ export default class
                             peerConnection.ontrack = (event) => {
                                 console.log(`Received remote audio track from ${memberId}`);
                                 this.setAudioStreamForMember(memberId, event.streams[0]);
+                                console.log("Streams from initiate party call:", event.streams)
                             };
             
                             // ✅ Handle ICE candidates
@@ -2809,6 +2744,8 @@ export default class
                         peerConnection.ontrack = (event) => {
                             console.log(`🎧 Received remote audio track from ${leaderId}`);
                             this.setAudioStreamForMember(leaderId, event.streams[0]);
+                            console.log("Streams from respond to party call:", event.streams)
+
                         };
             
                         // ✅ Add local audio stream
@@ -2860,6 +2797,8 @@ export default class
                     peerConnection.ontrack = (event) => {
                         console.log(`🎧 Received remote audio track from ${senderId}`);
                         this.setAudioStreamForMember(senderId, event.streams[0]);
+                        console.log("Streams from handle party call response:", event.streams)
+
                     };
             
                     // ✅ Handle ICE candidates
@@ -2938,25 +2877,32 @@ export default class
             
             setAudioStreamForMember = (memberId, stream) => {
                 let audioElement = document.querySelector(`#audio-${memberId}`);
-                if (!audioElement) {
-                    audioElement = document.createElement('audio');
-                    audioElement.id = `audio-${memberId}`;
-                    audioElement.autoplay = true;
-                    audioElement.playsInline = true;
-                    document.body.appendChild(audioElement);
+                
+                // ✅ Reset the audio element if it already exists
+                if (audioElement) {
+                    audioElement.srcObject = null;
+                    audioElement.remove();
+                    console.log(`🔄 Resetting audio element for ${memberId}`);
                 }
             
-                if (!audioElement.srcObject) {
-                    audioElement.srcObject = stream;
-                    console.log(`✅ Audio stream set for ${memberId}`);
-                    audioElement.onloadedmetadata = () => {
-                        audioElement.play().catch((error) => {
-                            console.error("Error playing audio:", error);
-                        });
-                    };
-                }
-            };       
+                // ✅ Create a new audio element
+                audioElement = document.createElement('audio');
+                audioElement.id = `audio-${memberId}`;
+                audioElement.autoplay = true;
+                audioElement.playsInline = true;
+                document.body.appendChild(audioElement);
             
+                // ✅ Set the audio stream
+                audioElement.srcObject = stream;
+                console.log(`✅ Audio stream set for ${memberId}`);
+            
+                audioElement.onloadedmetadata = () => {
+                    audioElement.play().catch((error) => {
+                        console.error("Error playing audio:", error);
+                    });
+                };
+            };            
+
             setAudioStreamForAllMembers = (stream) => {
                 if (!this.peerConnections) {
                     console.error("No PeerConnections available.");
@@ -3004,10 +2950,9 @@ export default class
                 // Create the call session display
                 this.createCallSessionUI(this.isPartyLeader);
             
-            };            
-
+            };
+            
             createCallSessionUI = (isPartyLeader) => {
-                // Create the session display element
                 const sessionElement = document.createElement('div');
                 sessionElement.id = 'party-call-session';
                 sessionElement.style.cssText = `
@@ -3024,13 +2969,11 @@ export default class
                     z-index: 999;
                 `;
             
-                // Create the timer display
                 const timerElement = document.createElement('span');
                 timerElement.id = 'call-timer';
                 timerElement.innerText = '00:00';
                 sessionElement.appendChild(timerElement);
             
-                // Create the end call button
                 const endCallButton = document.createElement('button');
                 endCallButton.id = 'end-call-button';
                 endCallButton.innerText = 'End Call';
@@ -3046,13 +2989,11 @@ export default class
                 `;
                 sessionElement.appendChild(endCallButton);
             
-                // Append the session display to the chat box
                 const chatBox = document.getElementById('party-chat-box');
                 if (chatBox) {
                     chatBox.parentElement.insertBefore(sessionElement, chatBox);
                 }
             
-                // Start the session timer
                 let callStartTime = Date.now();
                 const updateTimer = () => {
                     const elapsedTime = Date.now() - callStartTime;
@@ -3063,10 +3004,9 @@ export default class
             
                 this.timerInterval = setInterval(updateTimer, 1000);
             
-                // Handle the end call button click
                 endCallButton.addEventListener('click', () => {
                     console.log("Ending call session.");
-            
+                
                     // Notify the server based on whether the user is the party leader
                     if (isPartyLeader) {
                         this.ws.send(JSON.stringify({
@@ -3080,84 +3020,36 @@ export default class
                             senderId: this.playerId
                         }));
                     }
-            
-                    // Stop the timer and clean up the session UI
-                    clearInterval(this.timerInterval);
-                    sessionElement.remove();
-            
-                    // Stop the local microphone stream
-                    if (this.localStream) {
-                        this.localStream.getTracks().forEach(track => track.stop());
-                        console.log("Microphone stream stopped.");
-                    }
+                
+                    // Clean up the call session
+                    this.cleanUpCallSession();
                 });
+            };
+
+            cleanUpCallSession = () => {
+                // Stop the timer
+                clearInterval(this.timerInterval);
+                document.getElementById('party-call-session')?.remove();
+            
+                // Stop the local microphone stream
+                if (this.localStream) {
+                    this.localStream.getTracks().forEach(track => track.stop());
+                    console.log("Microphone stream stopped.");
+                    this.localStream = null; // Reset the localStream
+                }
+            
+                // Close all PeerConnections
+                if (this.peerConnections) {
+                    Object.keys(this.peerConnections).forEach(peerId => {
+                        const peerConnection = this.peerConnections[peerId];
+                        if (peerConnection) {
+                            peerConnection.close();
+                            console.log(`PeerConnection with ${peerId} closed.`);
+                        }
+                    });
+                    this.peerConnections = {}; // Reset the PeerConnections
+                }
             };            
-
-            // broadcastPartyCallToMembers = async (peerId) => {
-            //     console.log(`Broadcasting party call to PeerConnection with ID: ${peerId}`);
-            
-            //     // Ensure PeerConnection exists
-            //     this.peerConnections = this.peerConnections || {};
-            //     let peerConnection = this.peerConnections[peerId];
-            
-            //     if (!peerConnection) {
-            //         console.log(`Creating new PeerConnection for: ${peerId}`);
-            //         peerConnection = new RTCPeerConnection();
-            //         this.peerConnections[peerId] = peerConnection;
-            
-            //         // ✅ Handle incoming remote audio track
-            //         peerConnection.ontrack = (event) => {
-            //             console.log(`Received remote audio track from ${peerId}`);
-            
-            //             let audioElement = document.querySelector(`#audio-${peerId}`);
-            //             if (!audioElement) {
-            //                 audioElement = document.createElement('audio');
-            //                 audioElement.id = `audio-${peerId}`;
-            //                 audioElement.autoplay = true;
-            //                 audioElement.playsInline = true;
-            //                 document.body.appendChild(audioElement);
-            //             }
-            
-            //             if (!audioElement.srcObject) {
-            //                 audioElement.srcObject = event.streams[0];
-            //                 console.log(`✅ Audio stream set for ${peerId}`);
-            //                 audioElement.onloadedmetadata = () => {
-            //                     audioElement.play().catch((error) => {
-            //                         console.error("Error playing audio:", error);
-            //                     });
-            //                 };
-            //             }
-            //         };
-            
-            //         // ✅ Handle ICE candidates
-            //         peerConnection.onicecandidate = (event) => {
-            //             if (event.candidate) {
-            //                 this.ws.send(JSON.stringify({
-            //                     type: 'iceCandidate',
-            //                     senderId: this.playerId,
-            //                     receiverId: peerId,
-            //                     candidate: event.candidate,
-            //                 }));
-            //             }
-            //         };
-            //     }
-            
-            //     // ✅ Add the local audio stream
-            //     if (this.localStream) {
-            //         console.log("Adding local audio stream to PeerConnection...");
-            //         const audioTrack = this.localStream.getAudioTracks()[0];
-            //         if (audioTrack && !peerConnection.getSenders().find((sender) => sender.track === audioTrack)) {
-            //             peerConnection.addTrack(audioTrack, this.localStream);
-            //             console.log("✅ Local audio track added to PeerConnection.");
-            //         }
-            //     }
-
-            //     // ✅ Add the local audio stream to all members
-            //     if (this.localStream) {
-            //         console.log("Adding local audio stream to PeerConnection...");
-            //         this.setAudioStreamForAllMembers(this.localStream);
-            //     }
-            // };                                    
             
         setupMultiplayer = async (playerId, token, carName, matcaps) => {
             try {
