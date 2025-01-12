@@ -1860,6 +1860,7 @@ export default class
             const chatContainer = document.getElementById('party-chat-container');
             if (chatContainer) {
             chatContainer.style.display = 'block'; // Show the chat container
+            this.messengerVisible = true;
             }
         };
 
@@ -1868,6 +1869,7 @@ export default class
             const chatContainer = document.getElementById('party-chat-container');
             if (chatContainer) {
             chatContainer.style.display = 'none'; // Hide the chat container
+            this.messengerVisible = false;
             }
         };
 
@@ -1918,7 +1920,7 @@ export default class
                     bottom: 0;
                     right: 0;
                     width: -webkit-fill-available;
-                    height: 410px;
+                    height: 200px;
                     max-height: calc(100% - 40px);
                     margin: 0;
                     padding: 20px;
@@ -2111,6 +2113,32 @@ export default class
                 // Check if the chat is hidden and show the notification badge
                 if (chatContainer.style.display !== 'block') {
                     this.showNotificationBadge();  // Trigger notification if chat is hidden
+
+                    // Play sound after displaying the prompt
+                    if (this.sounds && typeof this.sounds.notification.sound.play === 'function') {
+                        this.sounds.notification.sound.play();
+                        console.log("Playing", this.sounds);
+                    };
+
+                    setTimeout(() => {
+                        // Stop sound after displaying the prompt
+                        if (this.sounds && typeof this.sounds.notification.sound.stop === 'function') {
+                            this.sounds.notification.sound.stop();
+                        };
+                    }, 1500);
+                }
+
+                // Check if the chat is hidden and show the notification badge
+                if (chatContainer.style.display === 'flex') {
+                    // Stop sound after displaying the prompt
+                    if (this.sounds && typeof this.sounds.notification.sound.stop === 'function') {
+                        this.sounds.notification.sound.stop();
+                    };
+                } else if (chatContainer.style.display === 'block'){
+                    // Stop sound after displaying the prompt
+                    if (this.sounds && typeof this.sounds.notification.sound.stop === 'function') {
+                        this.sounds.notification.sound.stop();
+                    };
                 }
             
                 // Create a container for the message
@@ -2120,6 +2148,10 @@ export default class
                 // Apply the appropriate class for sent/received messages
                 if (isOwnMessage) {
                     messageElement.classList.add('my-message');  // Apply style for own message
+                    // Stop sound after displaying the prompt
+                    if (this.sounds && typeof this.sounds.notification.sound.stop === 'function') {
+                        this.sounds.notification.sound.stop();
+                    };
                 } else {
                     messageElement.classList.add('other-message');  // Apply style for received message
                 }
@@ -2163,8 +2195,6 @@ export default class
                     messageElement.style.opacity = '1';
                 }, 10);
             };         
-            
-            
 
             // Update battery status in the UI
             updateBatteryStatus(playerId, battery) {
@@ -2257,23 +2287,34 @@ export default class
                     setTimeout(() => {
                         chatContainer.style.display = 'none';
                     }, 500);  // Match the animation duration
+
+                    // Stop sound after displaying the prompt
+                    if (this.sounds && typeof this.sounds.notification.sound.stop === 'function') {
+                        this.sounds.notification.sound.stop();
+                        console.log("Playing", this.sounds);
+                    };
             
                     this.messengerVisible = false;  // Update flag
                 } else {
+                    const chatContainer = document.getElementById('party-chat-container');
+
                     // Show chat with scaling animation
-                    chatContainer.style.display = 'flex';
-                    chatContainer.style.transform = 'scale(0)';
-                    chatContainer.style.opacity = '0';
-            
-                    setTimeout(() => {
-                        chatContainer.style.transform = 'scale(1)';
-                        chatContainer.style.opacity = '1';
-                    }, 10);
-            
-                    // Remove notification badge when chat is opened
-                    if (notificationBadge) {
-                        notificationBadge.remove();
-                    }
+                    if (chatContainer)  {
+                        chatContainer.style.display = 'flex';
+                        chatContainer.style.transform = 'scale(0)';
+                        chatContainer.style.opacity = '0';
+                
+                        setTimeout(() => {
+                            chatContainer.style.transform = 'scale(1)';
+                            chatContainer.style.opacity = '1';
+                        }, 10);
+
+                        // Remove notification badge when chat is opened
+                        if (notificationBadge) {
+                            notificationBadge.remove();
+                        }
+                }
+                    
             
                     this.messengerVisible = true;  // Update flag
                 }

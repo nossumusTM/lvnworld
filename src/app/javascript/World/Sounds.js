@@ -32,6 +32,12 @@ const radioTurnSound = '/sounds/radio/switch.mp3';
 
 const audioStream = '/sounds/stream/audiostream.mp3';
 const audioBroker = '/sounds/stream/broker.mp3';
+const audioMessage = '/sounds/stream/message.mp3';
+const audioTerminated = '/sounds/stream/terminated.mp3';
+const audioRingtone = '/sounds/stream/ringtone.mp3';
+const audioInvitation = '/sounds/stream/invitation.mp3';
+const audioBeep = '/sounds/stream/beep.mp3';
+const audioPopup = '/sounds/stream/popup.mp3';
 
 const engineSound = '/sounds/engines/1/rear.mp3'
 // const rodeo = '/sounds/engines/2/rodeo.mp3'
@@ -122,6 +128,11 @@ export default class Sounds
         this.setMute()
         this.setEngine()
         this.setRingtone()
+        this.setNotification()
+        this.setTerminatedNotification()
+        this.setMessage()
+        this.setBeep()
+        this.setPopup()
     }
 
     setSettings()
@@ -515,7 +526,216 @@ export default class Sounds
         })
 
         this.ringtone.sound.stop();
-        // this.ringtone.play();
+    }
+
+    setNotification() {
+        // Set up
+        this.notification = {}
+
+        this.notification.progress = 0
+        this.notification.progressEasingUp = 0.3
+        this.notification.progressEasingDown = 0.15
+
+        this.notification.speed = 0
+        this.notification.speedMultiplier = 2.5
+        this.notification.acceleration = 0
+        this.notification.accelerationMultiplier = 0.4
+
+        this.notification.rate = {}
+        this.notification.rate.min = 0.05
+        this.notification.rate.max = 1.4
+
+        this.notification.volume = {}
+        this.notification.volume.min = 0.001
+        this.notification.volume.max = 0.003
+        this.notification.volume.master = 0
+
+        this.notification.sound = new Howl({
+            src: [audioInvitation],
+            loop: true
+        })
+
+        this.notification.sound.stop();
+    }
+
+    setMessage() {
+        // Set up
+        this.message = {}
+
+        this.message.progress = 0
+        this.message.progressEasingUp = 0.3
+        this.message.progressEasingDown = 0.15
+
+        this.message.speed = 0
+        this.message.speedMultiplier = 2.5
+        this.message.acceleration = 0
+        this.message.accelerationMultiplier = 0.4
+
+        this.message.rate = {}
+        this.message.rate.min = 0.05
+        this.message.rate.max = 1.4
+
+        this.message.volume = {}
+        this.message.volume.min = 0.001
+        this.message.volume.max = 0.003
+        this.message.volume.master = 0
+
+        this.message.sound = new Howl({
+            src: [audioMessage],
+            loop: true
+        })
+
+        this.message.sound.stop();
+    }
+
+    setTerminatedNotification() {
+        // Set up
+        this.terminatedNotification = {}
+
+        this.terminatedNotification.progress = 0
+        this.terminatedNotification.progressEasingUp = 0.3
+        this.terminatedNotification.progressEasingDown = 0.15
+
+        this.terminatedNotification.speed = 0
+        this.terminatedNotification.speedMultiplier = 2.5
+        this.terminatedNotification.acceleration = 0
+        this.terminatedNotification.accelerationMultiplier = 0.4
+
+        this.terminatedNotification.rate = {}
+        this.terminatedNotification.rate.min = 0.05
+        this.terminatedNotification.rate.max = 1.4
+
+        this.terminatedNotification.volume = {}
+        this.terminatedNotification.volume.min = 0.001
+        this.terminatedNotification.volume.max = 0.003
+        this.terminatedNotification.volume.master = 0
+
+        this.terminatedNotification.sound = new Howl({
+            src: [audioTerminated],
+            loop: true
+        })
+
+        this.terminatedNotification.sound.stop();
+    }
+
+    // setRingtone() {
+    //     // Set up
+    //     this.ringtone = {}
+
+    //     this.ringtone.progress = 0
+    //     this.ringtone.progressEasingUp = 0.3
+    //     this.ringtone.progressEasingDown = 0.15
+
+    //     this.ringtone.speed = 0
+    //     this.ringtone.speedMultiplier = 2.5
+    //     this.ringtone.acceleration = 0
+    //     this.ringtone.accelerationMultiplier = 0.4
+
+    //     this.ringtone.rate = {}
+    //     this.ringtone.rate.min = 0.05
+    //     this.ringtone.rate.max = 1.4
+
+    //     this.ringtone.volume = {}
+    //     this.ringtone.volume.min = 0.001
+    //     this.ringtone.volume.max = 0.003
+    //     this.ringtone.volume.master = 0
+
+    //     this.ringtone.sound = new Howl({
+    //         src: [audioRingtone],
+    //         loop: true
+    //     })
+
+    //     this.ringtone.sound.stop();
+    // }
+
+    // setInvitation() {
+    //     // Set up
+    //     this.invitation = {}
+
+    //     this.invitation.progress = 0
+    //     this.invitation.progressEasingUp = 0.3
+    //     this.invitation.progressEasingDown = 0.15
+
+    //     this.invitation.speed = 0
+    //     this.invitation.speedMultiplier = 2.5
+    //     this.invitation.acceleration = 0
+    //     this.invitation.accelerationMultiplier = 0.4
+
+    //     this.invitation.rate = {}
+    //     this.invitation.rate.min = 0.05
+    //     this.invitation.rate.max = 1.4
+
+    //     this.invitation.volume = {}
+    //     this.invitation.volume.min = 0.001
+    //     this.invitation.volume.max = 0.003
+    //     this.invitation.volume.master = 0
+
+    //     this.invitation.sound = new Howl({
+    //         src: [audioInvitation],
+    //         loop: true
+    //     })
+
+    //     this.invitation.sound.stop();
+    // }
+
+    setBeep() {
+        // Set up
+        this.beep = {}
+
+        this.beep.progress = 0
+        this.beep.progressEasingUp = 0.3
+        this.beep.progressEasingDown = 0.15
+
+        this.beep.speed = 0
+        this.beep.speedMultiplier = 2.5
+        this.beep.acceleration = 0
+        this.beep.accelerationMultiplier = 0.4
+
+        this.beep.rate = {}
+        this.beep.rate.min = 0.05
+        this.beep.rate.max = 1.4
+
+        this.beep.volume = {}
+        this.beep.volume.min = 0.001
+        this.beep.volume.max = 0.003
+        this.beep.volume.master = 0
+
+        this.beep.sound = new Howl({
+            src: [audioBeep],
+            loop: true
+        })
+
+        this.beep.sound.stop();
+    }
+
+    setPopup() {
+        // Set up
+        this.popup = {}
+
+        this.popup.progress = 0
+        this.popup.progressEasingUp = 0.3
+        this.popup.progressEasingDown = 0.15
+
+        this.popup.speed = 0
+        this.popup.speedMultiplier = 2.5
+        this.popup.acceleration = 0
+        this.popup.accelerationMultiplier = 0.4
+
+        this.popup.rate = {}
+        this.popup.rate.min = 0.05
+        this.popup.rate.max = 1.4
+
+        this.popup.volume = {}
+        this.popup.volume.min = 0.001
+        this.popup.volume.max = 0.003
+        this.popup.volume.master = 0
+
+        this.popup.sound = new Howl({
+            src: [audioPopup],
+            loop: true
+        })
+
+        this.popup.sound.stop();
     }
 
     // cycleRadioChannel() {

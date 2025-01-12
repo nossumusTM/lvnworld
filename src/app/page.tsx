@@ -659,7 +659,7 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
               width: '480px', textAlign: 'center', color: '#F2F0EF', fontSize: '10px', padding: '10px',
               textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)', borderRadius: '10px'
             }}>
-              Powered by Nossumus Foundation. Kyberbox is a real-time on-chain playground. ©2024
+              Powered by Nossumus Foundation. Netscuro is a real-time on-chain playground. ©2025
             </h2>
           </div>
         </div>
@@ -711,8 +711,8 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
                 </div>
               </div>
               <div id='garage' className='garage'>
-                <button id='garage-button' onClick={handleGarageButtonClick}>SHOWROOM</button>
-                <button id='chatbox-button'>TEXTBOX</button>
+                <button id='garage-button' onClick={handleGarageButtonClick}>NET—ROOM</button>
+                <button id='chatbox-button'>NET—LINK</button>
               </div>
             </>
           )}

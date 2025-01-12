@@ -5,7 +5,7 @@ import { headers } from 'next/headers';
 import ContextProvider from "../../context";
 
 export const metadata: Metadata = {
-  title: 'KyberBox│▌▌│▌▌ ▌ │▌ ▌ ▌│▌',
+  title: 'Netscuro™ | The Velo Playground Onchain.',
   description: 'Powered by Nossumus Foundation.'
 };
 
@@ -29,6 +29,7 @@ export default function RootLayout({
     {/* Favicon using PNG */}
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="icon" href="/favicon1.ico" sizes="256x256" />
     </head>
       <body>
         {/* Wrap everything in the ContextProvider and pass cookies */}
