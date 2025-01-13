@@ -5,8 +5,8 @@ import { headers } from 'next/headers';
 import ContextProvider from "../../context";
 
 export const metadata: Metadata = {
-  title: 'Netrym™ | The Velo Playground Onchain.',
-  description: 'Powered by Nossumus Foundation.'
+  title: 'Netrym | The Velo Playground Onchain.',
+  description: 'Nossumus Inc. Foundation.'
 };
 
 // Define RootLayout
@@ -33,7 +33,7 @@ export default function RootLayout({
     </head>
       <body>
         {/* Wrap everything in the ContextProvider and pass cookies */}
-        <ContextProvider cookies={cookies}>{children}</ContextProvider>
+        <ContextProvider>{children}</ContextProvider>
       </body>
     </html>
   );

@@ -1586,10 +1586,10 @@ export default function GaragePage() {
             handleNavigation();
 
             // Set a timeout to reload the page after cleanup
-            setTimeout(() => {
-                // Reload the page to ensure a clean state
-                window.location.reload();
-            }, 500); // Adjust the timeout duration if needed
+            // setTimeout(() => {
+            //     // Reload the page to ensure a clean state
+            //     window.location.reload();
+            // }, 500); // Adjust the timeout duration if needed
 
             setNavigateToPage(null); // Reset navigation state
         }

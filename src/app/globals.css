@@ -1671,7 +1671,7 @@ opacity: 0;
   border: 1px solid transparent;
   border-radius: 10px;
   /* border: 2px solid rgba(0, 0, 0, 0.5); */
-  /* text-shadow: 30px 30px 30px #0213f7; */
+  text-shadow: 0px 10px 5px #0213f7;
   text-decoration: none;
   text-transform: uppercase;
   padding: 10px;
@@ -2754,7 +2754,7 @@ opacity: 0;
 
 @property --c1 {
   syntax: '<color>';
-  initial-value: #0213f7;
+  initial-value: #808080;
   inherits: true;
 }
 
@@ -2787,7 +2787,7 @@ opacity: 0;
   backdrop-filter: blur(5px);
   background: transparent;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-  border: 2px solid #fff;
+  border: 1px solid #fff;
   border-radius: 10px;
   /* Set border animation with conic gradient */
   border-image: conic-gradient(from var(--angle), var(--c2), var(--c1) 0.1turn, var(--c1) 0.15turn, var(--c2) 0.25turn) 1;

@@ -565,15 +565,6 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
       }
 
       if (isConnected && address && !hasAppInitialized) {
-        setPlayerId(address);
-
-        // localStorage.setItem('playerId', address);
-        console.log('Wallet connected:', address);
-        localStorage.removeItem('playerId');
-        localStorage.removeItem('worldId');
-
-        setHasAppInitialized(true);
-  
         // Step 1: Fetch the token first
         getToken(address)
         .then(() => {
@@ -594,6 +585,15 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
             }
             retryCount++;
           }, 500);
+
+          setHasAppInitialized(true);
+          setPlayerId(address);
+
+          // localStorage.setItem('playerId', address);
+          console.log('Wallet connected:', address);
+          localStorage.removeItem('playerId');
+          localStorage.removeItem('worldId');
+
         })
         .catch((error) => {
           console.error('Error fetching token:', error);
@@ -668,7 +668,7 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
               width: '480px', textAlign: 'center', color: '#F2F0EF', fontSize: '10px', padding: '10px',
               textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)', borderRadius: '10px'
             }}>
-              Powered by Nossumus Inc. Netrym™ is a real-time on-chain playground. ©2025
+              Powered by Nossumus Inc. Netrym is a real-time onchain playground. ©2025
             </h2>
           </div>
         </div>

@@ -829,6 +829,19 @@ export default class
 
             ws.onopen = () => {
 
+                // Maintain a cache of used nonces
+                // this.usedNonces = new Set();
+
+                // // Add a cleanup mechanism for nonces
+                // setInterval(() => {
+                //     const now = Date.now();
+                //     for (const nonce of this.usedNonces) {
+                //         if (nonce.timestamp < now - 5000) {
+                //             this.usedNonces.delete(nonce);
+                //         }
+                //     }
+                // }, 5000);
+
                 // Clear old party state in case the player was previously in a party
                 this.inParty = false;
                 this.partyMembers = [];
@@ -855,6 +868,25 @@ export default class
     
             ws.onmessage = (event) => {
                 const message = JSON.parse(event.data);
+
+                // Validate timestamp and nonce early to catch potential replay attacks
+                const now = Date.now();
+                // const { timestamp, nonce } = message;
+
+                // Validate timestamp
+                // if (Math.abs(now - timestamp) > 5000) {
+                //     console.error('Replay attack detected: Invalid timestamp.');
+                //     return;
+                // }
+
+                // // Validate nonce
+                // if (this.usedNonces.has(nonce)) {
+                //     console.error('Replay attack detected: Nonce already used.');
+                //     return;
+                // }
+
+                // // Store nonce to prevent reuse
+                // this.usedNonces.add(nonce);
 
                 if (message.type === 'playerCount') {
                     // Safely access the element and update its text content
