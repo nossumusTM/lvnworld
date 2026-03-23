@@ -481,6 +481,15 @@ appInstanceRef.current = app;
 return () => {
   console.log('Cleaning up Application');
   if (appInstanceRef.current) {
+    const worldSocket = appInstanceRef.current?.world?.ws;
+    const currentPlayerId = appInstanceRef.current?.playerId;
+    if (worldSocket && worldSocket.readyState === WebSocket.OPEN && currentPlayerId) {
+      worldSocket.send(JSON.stringify({
+        type: 'remove',
+        playerId: currentPlayerId
+      }));
+      worldSocket.close();
+    }
     appInstanceRef.current.destructor();
   }
 };

@@ -70,7 +70,11 @@ export default class
         this.carName = _options.carName;
         this.matcaps = _options.matcaps;
         this.otherPlayers = [];
+        this.otherPlayerSelectedCars = {};
+        this.playerScores = {};
+        this.friends = [];
         this.bullets = [];
+        this.partyLeaderId = null;
 
         this.messageQueue = [];
         
@@ -101,6 +105,142 @@ export default class
         this.setAreas()
         this.setStartingScreen()
     }
+
+    animateScoreGain = (car) => {
+        if (!car || car.__removing) return;
+
+        const target = car.container || car.chassis?.object;
+        if (!target) return;
+
+        gsap.killTweensOf(target.scale);
+        gsap.to(target.scale, {
+            duration: 0.12,
+            x: 1.08,
+            y: 1.08,
+            z: 1.08,
+            ease: 'power2.out',
+            yoyo: true,
+            repeat: 1
+        });
+
+        target.traverse((child) => {
+            if (!child || !child.material) return;
+            const materials = Array.isArray(child.material) ? child.material : [child.material];
+            materials.forEach((mat) => {
+                if (!mat || !('emissive' in mat)) return;
+                const originalIntensity = typeof mat.emissiveIntensity === 'number' ? mat.emissiveIntensity : 1;
+                gsap.killTweensOf(mat);
+                gsap.fromTo(
+                    mat,
+                    { emissiveIntensity: originalIntensity + 1.25 },
+                    {
+                        duration: 0.25,
+                        emissiveIntensity: originalIntensity,
+                        ease: 'power2.out'
+                    }
+                );
+            });
+        });
+    };
+
+    getCarByPlayerId = (playerId) => {
+        if (!playerId) return null;
+        if (playerId === this.playerId) return this.car || null;
+        return this.otherPlayers?.[playerId] || null;
+    };
+
+    playCarDestroyedFx = (car, durationMs = 5000) => {
+        if (!car) return;
+        const target = car.container || car.chassis?.object;
+        if (!target) return;
+
+        if (typeof car.createCrashEffect === 'function' && car.chassis?.object) {
+            car.createCrashEffect(car.chassis.object.position, car.chassis.object.quaternion, car.chassis.object);
+        }
+
+        gsap.killTweensOf(target.scale);
+        gsap.to(target.scale, {
+            duration: 0.25,
+            x: 0.72,
+            y: 0.72,
+            z: 0.72,
+            ease: 'power2.out'
+        });
+
+        target.traverse((child) => {
+            if (!child || !child.material) return;
+            const mats = Array.isArray(child.material) ? child.material : [child.material];
+            mats.forEach((mat) => {
+                if (!mat) return;
+                mat.transparent = true;
+                gsap.fromTo(mat, { opacity: 1 }, { duration: 0.22, opacity: 0.35, yoyo: true, repeat: 4, ease: 'power1.inOut' });
+            });
+        });
+    };
+
+    playCarRestoreFx = (car) => {
+        if (!car) return;
+        const target = car.container || car.chassis?.object;
+        if (!target) return;
+
+        if (typeof car.createSparkEffect === 'function') {
+            car.createSparkEffect();
+        }
+
+        gsap.killTweensOf(target.scale);
+        gsap.fromTo(
+            target.scale,
+            { x: 0.8, y: 0.8, z: 0.8 },
+            { duration: 0.35, x: 1, y: 1, z: 1, ease: 'back.out(2.2)' }
+        );
+
+        target.traverse((child) => {
+            if (!child || !child.material) return;
+            const mats = Array.isArray(child.material) ? child.material : [child.material];
+            mats.forEach((mat) => {
+                if (!mat) return;
+                mat.transparent = true;
+                gsap.to(mat, { duration: 0.3, opacity: 1, ease: 'power2.out' });
+            });
+        });
+    };
+
+    applyRandomMatcapsIfMissing = () => {
+        const hasMatcaps = this.matcaps && typeof this.matcaps === 'object' && Object.keys(this.matcaps).length > 0;
+        if (hasMatcaps) return;
+
+        const pool = ['black', 'metal', 'blueGlass', 'volcano', 'amazon', 'blacksea', 'elevator'];
+        const pick = () => pool[Math.floor(Math.random() * pool.length)];
+        this.matcaps = {
+            chassis: pick(),
+            chassisbottom: pick(),
+            wheels: pick(),
+            window: pick(),
+            spoiler: pick()
+        };
+
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('matcaps', JSON.stringify(this.matcaps));
+        }
+    };
+
+    getCarKey = (car) => {
+        if (!car || !car.physics) return null;
+        if (car.physics.car?.chassis?.body) return 'car';
+
+        for (let i = 1; i <= 20; i++) {
+            const key = `car${i}`;
+            if (car.physics[key]?.chassis?.body) return key;
+        }
+
+        return null;
+    };
+
+    getCarBody = (car) => {
+        const key = this.getCarKey(car);
+        if (!key) return null;
+        return car.physics[key]?.chassis?.body || null;
+    };
 
     /**
      * Clock
@@ -261,28 +401,10 @@ export default class
             if (playerId === this.playerId) return; // Skip the player's own car
     
             const car = this.physics.cars[playerId];
-            const distance = this.car.physics.car.chassis.body.position.distanceTo(
-                car instanceof Car1 ? car.physics.car1.chassis.body.position :
-                car instanceof Car2 ? car.physics.car2.chassis.body.position :
-                car instanceof Car3 ? car.physics.car3.chassis.body.position :
-                car instanceof Car4 ? car.physics.car4.chassis.body.position :
-                car instanceof Car5 ? car.physics.car5.chassis.body.position :
-                car instanceof Car6 ? car.physics.car6.chassis.body.position :
-                car instanceof Car7 ? car.physics.car7.chassis.body.position :
-                car instanceof Car8 ? car.physics.car8.chassis.body.position :
-                car instanceof Car9 ? car.physics.car9.chassis.body.position :
-                car instanceof Car10 ? car.physics.car10.chassis.body.position :
-                car instanceof Car11 ? car.physics.car11.chassis.body.position :
-                car instanceof Car12 ? car.physics.car12.chassis.body.position :
-                car instanceof Car13 ? car.physics.car13.chassis.body.position :
-                car instanceof Car14 ? car.physics.car14.chassis.body.position :
-                car instanceof Car15 ? car.physics.car15.chassis.body.position :
-                car instanceof Car16 ? car.physics.car16.chassis.body.position :
-                car instanceof Car17 ? car.physics.car17.chassis.body.position :
-                car instanceof Car18 ? car.physics.car18.chassis.body.position :
-                car instanceof Car19 ? car.physics.car19.chassis.body.position :
-                car.physics.car20.chassis.body.position
-            );
+            const localBody = this.getCarBody(this.car);
+            const remoteBody = this.getCarBody(car);
+            if (!localBody || !remoteBody) return;
+            const distance = localBody.position.distanceTo(remoteBody.position);
     
             if (distance < 5 && distance < nearestDistance) { // Adjust the distance radius as needed
                 nearestDistance = distance;
@@ -396,6 +518,7 @@ export default class
             battery: this.battery,
             score: this.score || 0,
             ws: this.ws,
+            isRemotePlayer: false,
             carName: this.carName,
             matcaps: this.matcaps
         });
@@ -475,7 +598,9 @@ export default class
     
         // Plane dimensions
         const planeWidth = 1190; // Covers the world size
-        const planeHeight = 50;  // Adjust as needed
+        const planeHeight = 180;
+        const borderCenterZ = 48;
+        const roofZ = 84;
     
         // Create the plane geometry
         const planeGeometry = new THREE.PlaneGeometry(planeWidth, planeHeight);
@@ -492,14 +617,14 @@ export default class
     
         // Bottom border
         const bottomPlane = new THREE.Mesh(planeGeometry, topBottomMaterial);
-        bottomPlane.position.set(0, -595, 10); // Adjust to match the bottom border
+        bottomPlane.position.set(0, -595, borderCenterZ);
         bottomPlane.rotation.x = Math.PI / 2;
         bottomPlane.rotation.y = Math.PI;
         planes.push(bottomPlane);
     
         // Top border
         const topPlane = new THREE.Mesh(planeGeometry, topBottomMaterial);
-        topPlane.position.set(0, 595, 10); // Adjust to match the top border
+        topPlane.position.set(0, 595, borderCenterZ);
         topPlane.rotation.x = Math.PI / 2; // Rotate to face the correct direction
         planes.push(topPlane);
     
@@ -518,7 +643,7 @@ export default class
         leftPlane.material.map = videoTexture.clone(); // Clone the texture for independent transformation
         leftPlane.material.map.center.set(0.5, 0.5); // Set the pivot point for rotation
         leftPlane.material.map.rotation = Math.PI / 2; // Rotate the texture to align correctly
-        leftPlane.position.set(-595, 0, 10); // Adjust to match the left border
+        leftPlane.position.set(-595, 0, borderCenterZ);
         leftPlane.rotation.y = Math.PI / 2; // Align the plane geometry
         planes.push(leftPlane);
     
@@ -527,9 +652,39 @@ export default class
         rightPlane.material.map = videoTexture.clone(); // Clone the texture for independent transformation
         rightPlane.material.map.center.set(0.5, 0.5); // Set the pivot point for rotation
         rightPlane.material.map.rotation = -Math.PI / 2; // Rotate the texture to align correctly
-        rightPlane.position.set(595, 0, 10); // Adjust to match the right border
+        rightPlane.position.set(595, 0, borderCenterZ);
         rightPlane.rotation.y = -Math.PI / 2; // Align the plane geometry
         planes.push(rightPlane);
+
+        // Roof panel to visually close the arena from the top
+        const roofPlane = new THREE.Mesh(
+            new THREE.PlaneGeometry(planeWidth, planeWidth),
+            new THREE.MeshBasicMaterial({
+                map: videoTexture,
+                side: THREE.DoubleSide,
+                toneMapped: false,
+                transparent: true,
+                opacity: 0.55
+            })
+        );
+        roofPlane.position.set(0, 0, roofZ);
+        planes.push(roofPlane);
+
+        // Corner panels so there are no visible gaps at border intersections
+        const cornerGeometry = new THREE.PlaneGeometry(planeHeight, planeHeight);
+        const cornerConfigs = [
+            { x: -595, y: -595, ry: Math.PI / 4 },
+            { x: 595, y: -595, ry: -Math.PI / 4 },
+            { x: -595, y: 595, ry: -Math.PI / 4 },
+            { x: 595, y: 595, ry: Math.PI / 4 }
+        ];
+        cornerConfigs.forEach((corner) => {
+            const cornerPlane = new THREE.Mesh(cornerGeometry, sideMaterial.clone());
+            cornerPlane.material.map = videoTexture.clone();
+            cornerPlane.position.set(corner.x, corner.y, borderCenterZ);
+            cornerPlane.rotation.y = corner.ry;
+            planes.push(cornerPlane);
+        });
     
         // Add planes to the scene
         planes.forEach(plane => this.container.add(plane));
@@ -553,10 +708,36 @@ export default class
             } else {
                 console.error('WebSocket connection is not open. From request player score');
             }
-        }             
+        }
+
+        requestControllerPrefs(playerId) {
+            if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+                this.ws.send(JSON.stringify({
+                    type: 'getControllerPrefs',
+                    playerId
+                }));
+            }
+        }
+
+        saveControllerPrefs(buttonPositions) {
+            if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+                this.ws.send(JSON.stringify({
+                    type: 'saveControllerPrefs',
+                    playerId: this.playerId,
+                    buttonPositions
+                }));
+            }
+        }
 
         populateFriendList(friendList) {
             const friendListContainer = document.getElementById('contact-list');
+            this.friends = Array.isArray(friendList)
+                ? friendList.map((friend) => (
+                    typeof friend === 'string'
+                        ? { friendId: friend, label: '' }
+                        : { friendId: friend.friendId, label: friend.label || '' }
+                ))
+                : [];
         
             if (friendListContainer) {
                 // Find or create the friend list block
@@ -742,6 +923,14 @@ export default class
                     friendListBlock.appendChild(friendElement);
                 });
             }
+        }
+
+        isAlreadyLinked(targetPlayerId) {
+            if (!targetPlayerId || !Array.isArray(this.friends)) return false;
+            return this.friends.some((friend) => {
+                const friendId = typeof friend === 'string' ? friend : friend?.friendId;
+                return friendId === targetPlayerId;
+            });
         }        
         
         updateFriendLabel(friendId, label) {
@@ -797,10 +986,12 @@ export default class
         clearPartyState() {
             this.inParty = false;
             this.isPartyLeader = false;
+            this.partyLeaderId = null;
             this.partyMembers = [];
             this.clearChatContainer();
             this.hideChatContainer();
             this.updateToggleButtonVisibility(this.inParty);
+            this.updateInviteButtonState();
         
             const partyInfoElement = document.getElementById('party-info');
             if (partyInfoElement) {
@@ -846,8 +1037,16 @@ export default class
                 this.inParty = false;
                 this.partyMembers = [];
                 this.isPartyLeader = false;
+                this.partyLeaderId = null;
+                this.updateInviteButtonState();
 
-                ws.send(JSON.stringify({ type: 'join', playerId: this.playerId, worldId: this.worldId }));
+                ws.send(JSON.stringify({
+                    type: 'join',
+                    playerId: this.playerId,
+                    worldId: this.worldId,
+                    selectedCar: this.carName || null,
+                    matcaps: this.matcaps || {}
+                }));
                 console.log('Connected to WebSocket server with worldId', this.worldId);
 
                 // Request the player's score from the server
@@ -860,6 +1059,7 @@ export default class
                 };
 
                 ws.send(JSON.stringify(getContact));
+                this.requestControllerPrefs(this.playerId);
 
                 while (this.messageQueue.length > 0) {
                     ws.send(JSON.stringify(this.messageQueue.shift()));
@@ -909,11 +1109,25 @@ export default class
                     this.populateFriendList(message.friends);
                     console.log('Friend list updated:', message.friends);
                 }
+
+                if (message.type === 'controllerPrefs') {
+                    if (typeof window !== 'undefined') {
+                        if (message.buttonPositions && typeof message.buttonPositions === 'object') {
+                            localStorage.setItem('buttonPositions', JSON.stringify(message.buttonPositions));
+                        } else {
+                            localStorage.removeItem('buttonPositions');
+                        }
+                    }
+                    if (this.controls && this.controls.touch) {
+                        this.controls.updateController();
+                    }
+                }
     
                 switch (message.type) {
                     case 'stateUpdate':
                         // Initialize all existing players' cars
                         message.state.forEach(playerState => {
+                            this.playerScores[playerState.playerId] = playerState.score || 0;
                             if (playerState.playerId !== this.playerId) {
                                 // const { selectedCar, matcaps } = playerState;
                                 this.createOtherPlayerCar(playerState.playerId, playerState);
@@ -926,6 +1140,13 @@ export default class
                                 console.log("Message for other player car", message)
                                 // const { selectedCar, matcaps } = message;  // Use default value for matcaps
                                 this.createOtherPlayerCar(message.playerId, message.state);
+                                this.playerScores[message.playerId] = message?.state?.score || 0;
+                            }
+                        break;
+
+                    case 'playerSelectionUpdate':
+                            if (message.playerId !== this.playerId) {
+                                this.createOtherPlayerCar(message.playerId, message);
                             }
                         break;
 
@@ -974,9 +1195,26 @@ export default class
 
                     case 'update':
                         if (message.playerId !== this.playerId) {
+                            const remoteSelectedCar = this.normalizeCarName(
+                                message.selectedCar ||
+                                this.otherPlayerSelectedCars[message.playerId] ||
+                                'Kybertruck'
+                            );
+                            const currentSelectedCar = this.otherPlayerSelectedCars[message.playerId];
+
+                            if (!this.otherPlayers[message.playerId] || currentSelectedCar !== remoteSelectedCar) {
+                                this.createOtherPlayerCar(message.playerId, message);
+                            }
+
                             const car = this.otherPlayers[message.playerId];
                             if (car) {
+                                const previousScore = this.playerScores[message.playerId] || 0;
+                                const nextScore = typeof message.score === 'number' ? message.score : previousScore;
                                 this.updateCarState(car, message);
+                                if (nextScore > previousScore) {
+                                    this.animateScoreGain(car);
+                                }
+                                this.playerScores[message.playerId] = nextScore;
                                 this.updateMiniMap(
                                     message.playerId,
                                     message.position.x,
@@ -1004,6 +1242,7 @@ export default class
                                     shooterCar.createAndShootBullet({
                                         shooterId: message.shooterId,
                                         bulletData: {
+                                            shooterId: message.shooterId,
                                             position: message.position,
                                             rotation: message.rotation,
                                             velocity: message.velocity
@@ -1073,11 +1312,13 @@ export default class
 
                     case 'partyUpdate':
                         this.inParty = true;
+                        this.partyLeaderId = message.party.leader;
                         this.isPartyLeader = message.party.leader === this.playerId;  // Check if current player is the leader
                         console.log(`Party update received. Current player: ${this.playerId}, Party leader: ${message.party.leader}`);
                         console.log(`Is party leader: ${this.isPartyLeader}`);
 
                         this.updateToggleButtonVisibility(this.inParty);
+                        this.updateInviteButtonState();
 
                         const partyInfo = document.getElementById('party-info');
                         if (partyInfo) {
@@ -1285,7 +1526,7 @@ export default class
                         this.showPopup("The party has been disbanded."); // Notify the player visually
 
                         let partyContainer = document.getElementById('party-info')
-                        if (partyContainer.style.display === 'flex') {
+                        if (partyContainer && partyContainer.style.display === 'flex') {
                             this.togglePartyList();
                         }
                         console.log("Party disbanded");
@@ -1297,7 +1538,18 @@ export default class
 
                     case 'playerRemoved':
                         this.removePlayerCar(message.playerId);
-                        this.clearPartyState();
+                        break;
+
+                    case 'partyInviteDenied':
+                        if (message.reason === 'onlyLeaderCanInvite') {
+                            this.showPopup('Only party leader can invite players.');
+                        } else if (message.reason === 'partyFull') {
+                            this.showPopup('Party is full.');
+                        } else if (message.reason === 'targetAlreadyInParty') {
+                            this.showPopup('Target player is already in a party.');
+                        } else {
+                            this.showPopup('Party invite denied.');
+                        }
                         break;
 
                     case 'dropKrashcoin':
@@ -1353,6 +1605,20 @@ export default class
                             }, 15000); // 5 seconds delay
                         }
                         break;
+
+                    case 'destroyCar':
+                        {
+                            const durationMs = typeof message.durationMs === 'number' ? message.durationMs : 5000;
+                            const targetCar = this.getCarByPlayerId(message.carId);
+                            if (targetCar) {
+                                this.physics.applyDestroyedState(targetCar, durationMs);
+                                this.playCarDestroyedFx(targetCar, durationMs);
+                                setTimeout(() => {
+                                    this.playCarRestoreFx(targetCar);
+                                }, durationMs);
+                            }
+                        }
+                        break;
     
                     default:
                         // console.error('Unknown message type:', message.type);
@@ -1382,41 +1648,93 @@ export default class
             };
         }
 
+        normalizeCarName = (carName) => {
+            if (!carName || typeof carName !== 'string') return 'kybertruck';
+            return carName.trim().toLowerCase();
+        };
+
+        resolveCarClass = (carName) => {
+            const normalized = this.normalizeCarName(carName);
+            const selectedCarToClass = {
+                'kybertruck': Car1,
+                'charger power bank': Car2,
+                'charger': Car2,
+                'wreckslinger': Car3
+            };
+
+            if (selectedCarToClass[normalized]) {
+                return selectedCarToClass[normalized];
+            }
+
+            const fallbackPool = [Car1, Car2, Car3];
+            const hash = normalized
+                .split('')
+                .reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
+            return fallbackPool[hash % fallbackPool.length];
+        };
+
         createOtherPlayerCar = (playerId, data) => {
 
             // if (this.otherPlayers[playerId]) {
             //     removePlayerCar(playerId);
             // }
 
-            const carClasses = [
-                Car1, Car2, Car3, Car4, Car5, Car6, Car7, Car8, Car9, Car10,
-                Car11, Car12, Car13, Car14, Car15, Car16, Car17, Car18, Car19
-            ];
+            const selectedCar = data?.selectedCar || data?.carName || 'Kybertruck';
+            const normalizedSelectedCar = this.normalizeCarName(selectedCar);
+            const currentSelectedCar = this.otherPlayerSelectedCars[playerId];
 
-            const carClassIndex = Object.keys(this.otherPlayers).length % carClasses.length;
-            const CarClass = carClasses[carClassIndex];
+            if (this.otherPlayers[playerId] && currentSelectedCar === normalizedSelectedCar) {
+                this.updateCarState(this.otherPlayers[playerId], data);
+                return;
+            }
 
-            this.physics.updateCarClass(CarClass);
+            if (this.otherPlayers[playerId] && currentSelectedCar !== normalizedSelectedCar) {
+                this.removePlayerCar(playerId);
+            }
 
-            const otherPlayerCar = new CarClass({
+            const remoteControls = {
+                actions: {
+                    boost: false,
+                    brake: false,
+                    down: false,
+                    left: false,
+                    right: false,
+                    up: false,
+                    shoot: false,
+                    siren: false
+                },
+                on: () => {},
+                off: () => {}
+            };
+            const remotePhysics = Object.create(this.physics);
+            remotePhysics.controls = remoteControls;
+            remotePhysics.setCar(playerId, selectedCar);
+
+            const otherPlayerCar = new Car({
                 time: this.time,
                 resources: this.resources,
                 objects: this.objects,
-                physics: this.physics,
+                physics: remotePhysics,
                 shadows: this.shadows,
                 materials: this.materials,
                 renderer: this.renderer,
                 camera: this.camera,
-                controls: this.controls,
+                controls: remoteControls,
+                sounds: this.sounds,
+                config: this.config,
                 playerId: playerId,
                 bullets: this.bullets,
                 battery: this.battery,
                 worldId: this.worldId,
                 score: this.score,
-                ws: this.ws
+                ws: null,
+                isRemotePlayer: true,
+                carName: selectedCar,
+                matcaps: data?.matcaps || {}
             });
 
             this.otherPlayers[playerId] = otherPlayerCar;
+            this.otherPlayerSelectedCars[playerId] = normalizedSelectedCar;
 
             this.container.add(otherPlayerCar.container);
             
@@ -1428,26 +1746,8 @@ export default class
         updateCarState = (car, data) => {
             if (!car || !data) return;
 
-            let carKey;
-            if (car instanceof Car1) carKey = 'car1';
-            else if (car instanceof Car2) carKey = 'car2';
-            else if (car instanceof Car3) carKey = 'car3';
-            else if (car instanceof Car4) carKey = 'car4';
-            else if (car instanceof Car5) carKey = 'car5';
-            else if (car instanceof Car6) carKey = 'car6';
-            else if (car instanceof Car7) carKey = 'car7';
-            else if (car instanceof Car8) carKey = 'car8';
-            else if (car instanceof Car9) carKey = 'car9';
-            else if (car instanceof Car10) carKey = 'car10';
-            else if (car instanceof Car11) carKey = 'car11';
-            else if (car instanceof Car12) carKey = 'car12';
-            else if (car instanceof Car13) carKey = 'car13';
-            else if (car instanceof Car14) carKey = 'car14';
-            else if (car instanceof Car15) carKey = 'car15';
-            else if (car instanceof Car16) carKey = 'car16';
-            else if (car instanceof Car17) carKey = 'car17';
-            else if (car instanceof Car18) carKey = 'car18';
-            else if (car instanceof Car19) carKey = 'car19';
+            const carKey = this.getCarKey(car);
+            if (!carKey || !car.physics?.[carKey]) return;
 
             if (data.position) car.physics[carKey].chassis.body.position.set(data.position.x, data.position.y, data.position.z);
             if (data.rotation) car.physics[carKey].chassis.body.quaternion.set(data.rotation.x, data.rotation.y, data.rotation.z, data.rotation.w);
@@ -1522,12 +1822,28 @@ export default class
                 }
             }                                                  
 
+            const remoteSpeed = data.velocity
+                ? Math.sqrt(
+                    (data.velocity.x || 0) * (data.velocity.x || 0) +
+                    (data.velocity.y || 0) * (data.velocity.y || 0) +
+                    (data.velocity.z || 0) * (data.velocity.z || 0)
+                )
+                : 0;
+            const remoteControlsActive = Boolean(
+                data.controls?.up ||
+                data.controls?.down ||
+                data.controls?.boost
+            );
+            const shouldSpinWheels = remoteControlsActive || remoteSpeed > 0.35;
+
             if (data.wheels) {
                 data.wheels.forEach((wheelData, index) => {
                     const wheelBody = car.physics[carKey].wheels.bodies[index];
                     wheelBody.position.set(wheelData.position.x, wheelData.position.y, wheelData.position.z);
-                    wheelBody.quaternion.set(wheelData.rotation.x, wheelData.rotation.y, wheelData.rotation.z, wheelData.rotation.w);
-                    car.physics[carKey].vehicle.wheelInfos[index].rotation = wheelData.rotationAngle;
+                    if (shouldSpinWheels) {
+                        wheelBody.quaternion.set(wheelData.rotation.x, wheelData.rotation.y, wheelData.rotation.z, wheelData.rotation.w);
+                        car.physics[carKey].vehicle.wheelInfos[index].rotation = wheelData.rotationAngle;
+                    }
                     car.physics[carKey].vehicle.wheelInfos[index].brake = wheelData.brake
                 })
             }
@@ -1543,8 +1859,11 @@ export default class
                 car.controls.actions.siren = data.controls.siren;
 
                 const carSteeringValue = data.controls.steering;
-                car.physics[carKey].vehicle.setSteeringValue(-carSteeringValue, 0);
-                car.physics[carKey].vehicle.setSteeringValue(-carSteeringValue, 1);
+                const shouldApplyRemoteForces = false;
+                if (shouldApplyRemoteForces) {
+                    car.physics[carKey].vehicle.setSteeringValue(-carSteeringValue, 0);
+                    car.physics[carKey].vehicle.setSteeringValue(-carSteeringValue, 1);
+                }
 
                 if (data.controls.boost) {
                     car.createNitroEffect(car.physics[carKey].chassis.body.position, car.physics[carKey].chassis.body.quaternion, car.chassis.object)
@@ -1554,31 +1873,33 @@ export default class
                     car.createSirenEffect()
                 }
 
-                if (data.controls.up) {
-                    car.physics[carKey].vehicle.applyEngineForce(car.physics[carKey].options.controlsAcceleratingSpeed, 2);
-                    car.physics[carKey].vehicle.applyEngineForce(car.physics[carKey].options.controlsAcceleratingSpeed, 3);
-                } else if (data.controls.down) {
-                    car.physics[carKey].vehicle.applyEngineForce(-car.physics[carKey].options.controlsAcceleratingSpeed, 2);
-                    car.physics[carKey].vehicle.applyEngineForce(-car.physics[carKey].options.controlsAcceleratingSpeed, 3);
-                    car.backLightsReverse.material.opacity = data.controls.down ? 1 : 0.5;
-                } else {
-                    car.physics[carKey].vehicle.applyEngineForce(0, 2);
-                    car.physics[carKey].vehicle.applyEngineForce(0, 3);
-                }
+                if (shouldApplyRemoteForces) {
+                    if (data.controls.up) {
+                        car.physics[carKey].vehicle.applyEngineForce(car.physics[carKey].options.controlsAcceleratingSpeed, 2);
+                        car.physics[carKey].vehicle.applyEngineForce(car.physics[carKey].options.controlsAcceleratingSpeed, 3);
+                    } else if (data.controls.down) {
+                        car.physics[carKey].vehicle.applyEngineForce(-car.physics[carKey].options.controlsAcceleratingSpeed, 2);
+                        car.physics[carKey].vehicle.applyEngineForce(-car.physics[carKey].options.controlsAcceleratingSpeed, 3);
+                        car.backLightsReverse.material.opacity = data.controls.down ? 1 : 0.5;
+                    } else {
+                        car.physics[carKey].vehicle.applyEngineForce(0, 2);
+                        car.physics[carKey].vehicle.applyEngineForce(0, 3);
+                    }
 
-                if (data.controls.brake) {
-                    car.physics[carKey].vehicle.setBrake(car.physics[carKey].options.controlsBrakeStrength, 0);
-                    car.physics[carKey].vehicle.setBrake(car.physics[carKey].options.controlsBrakeStrength, 1);
-                    car.physics[carKey].vehicle.setBrake(car.physics[carKey].options.controlsBrakeStrength, 2);
-                    car.physics[carKey].vehicle.setBrake(car.physics[carKey].options.controlsBrakeStrength, 3);
+                    if (data.controls.brake) {
+                        car.physics[carKey].vehicle.setBrake(car.physics[carKey].options.controlsBrakeStrength, 0);
+                        car.physics[carKey].vehicle.setBrake(car.physics[carKey].options.controlsBrakeStrength, 1);
+                        car.physics[carKey].vehicle.setBrake(car.physics[carKey].options.controlsBrakeStrength, 2);
+                        car.physics[carKey].vehicle.setBrake(car.physics[carKey].options.controlsBrakeStrength, 3);
 
-                    car.backLightsBrake.material.opacity = data.controls.brake ? 1 : 0.5;
+                        car.backLightsBrake.material.opacity = data.controls.brake ? 1 : 0.5;
 
-                } else {
-                    car.physics[carKey].vehicle.setBrake(0, 0);
-                    car.physics[carKey].vehicle.setBrake(0, 1);
-                    car.physics[carKey].vehicle.setBrake(0, 2);
-                    car.physics[carKey].vehicle.setBrake(0, 3);
+                    } else {
+                        car.physics[carKey].vehicle.setBrake(0, 0);
+                        car.physics[carKey].vehicle.setBrake(0, 1);
+                        car.physics[carKey].vehicle.setBrake(0, 2);
+                        car.physics[carKey].vehicle.setBrake(0, 3);
+                    }
                 }
             }
             
@@ -1597,37 +1918,80 @@ export default class
         removePlayerCar = (playerId) => {
             const removedPlayerCar = this.otherPlayers[playerId];
 
-            if (removedPlayerCar) {
-                const carKey = removedPlayerCar instanceof Car ? 'car' :
-                               removedPlayerCar instanceof Car1 ? 'car1' :
-                               removedPlayerCar instanceof Car2 ? 'car2' :
-                               removedPlayerCar instanceof Car3 ? 'car3' :
-                               removedPlayerCar instanceof Car4 ? 'car4' :
-                               removedPlayerCar instanceof Car5 ? 'car5' :
-                               removedPlayerCar instanceof Car6 ? 'car6' :
-                               removedPlayerCar instanceof Car7 ? 'car7' :
-                               removedPlayerCar instanceof Car8 ? 'car8' :
-                               removedPlayerCar instanceof Car9 ? 'car9' :
-                               removedPlayerCar instanceof Car10 ? 'car10' :
-                               removedPlayerCar instanceof Car11 ? 'car11' :
-                               removedPlayerCar instanceof Car12 ? 'car12' :
-                               removedPlayerCar instanceof Car13 ? 'car13' :
-                               removedPlayerCar instanceof Car14 ? 'car14' :
-                               removedPlayerCar instanceof Car15 ? 'car15' :
-                               removedPlayerCar instanceof Car16 ? 'car16' :
-                               removedPlayerCar instanceof Car17 ? 'car17' :
-                               removedPlayerCar instanceof Car18 ? 'car18' :
-                               removedPlayerCar instanceof Car19 ? 'car19' : 'car20';
-
-                this.physics.world.removeBody(removedPlayerCar.physics[carKey].chassis.body);
-                // this.container.remove(removedPlayerCar.container)
-                // removedPlayerCar.physics[carKey].destroy();
+            if (!removedPlayerCar) {
+                delete this.physics.cars[playerId];
+                delete this.otherPlayers[playerId];
+                delete this.otherPlayerSelectedCars[playerId];
+                this.removeFromMiniMap(playerId);
+                return;
             }
 
-            delete this.physics.cars[playerId];
-            delete this.otherPlayers[playerId];
-            this.removeFromMiniMap(playerId);
-            console.log(`Player ${playerId} removed`);
+            if (removedPlayerCar.__removing) return;
+            removedPlayerCar.__removing = true;
+
+            const carKey = this.getCarKey(removedPlayerCar);
+
+            const carContainer = removedPlayerCar.container || removedPlayerCar.chassis?.object;
+            const setOpacity = (value) => {
+                if (!carContainer) return;
+                carContainer.traverse((child) => {
+                    if (child && child.material) {
+                        if (Array.isArray(child.material)) {
+                            child.material.forEach((mat) => {
+                                if (!mat) return;
+                                mat.transparent = true;
+                                mat.opacity = value;
+                            });
+                        } else {
+                            child.material.transparent = true;
+                            child.material.opacity = value;
+                        }
+                    }
+                });
+            };
+
+            const finalizeRemoval = () => {
+                try {
+                    const chassisBody = carKey ? removedPlayerCar.physics?.[carKey]?.chassis?.body : null;
+                    if (chassisBody) {
+                        this.physics.world.removeBody(chassisBody);
+                    }
+                } catch (_err) {
+                    // no-op
+                }
+
+                if (carContainer) {
+                    this.container.remove(carContainer);
+                }
+
+                delete this.physics.cars[playerId];
+                delete this.otherPlayers[playerId];
+                delete this.otherPlayerSelectedCars[playerId];
+                this.removeFromMiniMap(playerId);
+                console.log(`Player ${playerId} removed`);
+            };
+
+            if (!carContainer) {
+                finalizeRemoval();
+                return;
+            }
+
+            const fadeState = { opacity: 1 };
+            gsap.to(fadeState, {
+                duration: 0.35,
+                opacity: 0,
+                ease: 'power2.out',
+                onUpdate: () => setOpacity(fadeState.opacity)
+            });
+
+            gsap.to(carContainer.scale, {
+                duration: 0.4,
+                x: 0.01,
+                y: 0.01,
+                z: 0.01,
+                ease: 'power2.in',
+                onComplete: finalizeRemoval
+            });
         };
 
         // Show invite prompt
@@ -1959,11 +2323,48 @@ export default class
                 console.log('Player is not in a party. Hiding toggle button.');
                 this.hideToggleButton();  // Hide the button if the player is not in a party
             }
+            this.updateInviteButtonState();
+        };
+
+        updateInviteButtonState = () => {
+            const inviteButton = document.getElementById('invite-button');
+            if (!inviteButton) return;
+
+            const canInvite = !this.inParty || this.isPartyLeader;
+            inviteButton.style.opacity = canInvite ? '1' : '0.35';
+            inviteButton.style.pointerEvents = canInvite ? 'auto' : 'none';
+            inviteButton.title = canInvite ? '' : 'Only party leader can invite';
+        };
+
+        getPartyMemberBattery = (memberId) => {
+            if (memberId === this.playerId) {
+                return this.car?.battery;
+            }
+            return this.otherPlayers?.[memberId]?.battery;
+        };
+
+        refreshPartyMemberHpUI = () => {
+            if (!this.inParty || !Array.isArray(this.partyMembers) || this.partyMembers.length === 0) return;
+
+            this.partyMembers.forEach((memberId) => {
+                const memberRow = document.getElementById(`member-${memberId}`);
+                if (!memberRow) return;
+
+                const battery = this.getPartyMemberBattery(memberId);
+                const hp = Number.isFinite(battery) ? Math.max(0, Math.min(100, Math.round(battery))) : 100;
+                const leaderTag = memberId === this.partyLeaderId ? ' [LEADER]' : '';
+                memberRow.innerText = `> ${this.formatPlayerId(memberId)}${leaderTag} | HP ${hp}%`;
+            });
         };
 
         // Add player to party
         addPlayerToParty(inviterId, playerId) {
-            ws.send(JSON.stringify({
+            if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
+                console.error('WebSocket connection is not open. Cannot add player to party.');
+                return;
+            }
+
+            this.ws.send(JSON.stringify({
                 type: 'addToParty',
                 inviterId: inviterId,
                 playerId: playerId
@@ -2077,9 +2478,12 @@ export default class
                 memberDiv.id = `member-${memberId}`;
                 memberDiv.style.paddingTop = '10px';
                 memberDiv.style.fontSize = '12px';
-                memberDiv.innerText = `➤ ${this.formatPlayerId(memberId)}`;
                 memberDiv.style.color = 'white';
                 memberDiv.style.paddingLeft = "5px";
+                const battery = this.getPartyMemberBattery(memberId);
+                const hp = Number.isFinite(battery) ? Math.max(0, Math.min(100, Math.round(battery))) : 100;
+                const leaderTag = memberId === inviterId ? ' [LEADER]' : '';
+                memberDiv.innerText = `> ${this.formatPlayerId(memberId)}${leaderTag} | HP ${hp}%`;
                 partyElement.appendChild(memberDiv);
             });
         
@@ -2116,7 +2520,6 @@ export default class
 
             partyToggle = () => {
                 let partyToggleButton = document.getElementById('toggle-party-list');
-                partyToggleButton.innerText = 'PARTY';
             
                 if (!partyToggleButton) {
                     // Create the button if it doesn't exist
@@ -2141,6 +2544,7 @@ export default class
                     `;
                     document.body.appendChild(partyToggleButton);
                 }
+                partyToggleButton.innerText = 'PARTY';
             
                 // Add event listener to toggle party list
                 partyToggleButton.onclick = this.togglePartyList;
@@ -2652,6 +3056,7 @@ export default class
                         parent.insertBefore(button, parent.children[index]); // Move the button back to its original position
                     });
                     this.controls.resetController();
+                    this.saveControllerPrefs(null);
                     this.showPopup('Buttons reset to initial positions.');
                 });
             
@@ -2675,6 +3080,7 @@ export default class
             
                     // Save to localStorage
                     localStorage.setItem('buttonPositions', JSON.stringify(buttonPositions));
+                    this.saveControllerPrefs(buttonPositions);
                     this.showPopup('Settings saved successfully.');
                     this.controls.updateController();
                 });
@@ -3267,12 +3673,27 @@ export default class
                 this.playerId = playerId;
                 this.carName = carName;
                 this.matcaps = matcaps;
+                if (typeof window !== 'undefined') {
+                    if (!this.carName) {
+                        this.carName = localStorage.getItem('selectedCarName') || null;
+                    }
+                    if (!this.matcaps || Object.keys(this.matcaps).length === 0) {
+                        try {
+                            const savedMatcaps = localStorage.getItem('matcaps');
+                            this.matcaps = savedMatcaps ? JSON.parse(savedMatcaps) : (this.matcaps || {});
+                        } catch (error) {
+                            this.matcaps = this.matcaps || {};
+                        }
+                    }
+                }
+                this.applyRandomMatcapsIfMissing();
 
                 this.cars = {};
                 this.otherPlayers = {};
 
                 // Add the token to the WebSocket URL query parameter
-                const serverAddress = `wss://krashbox.glitch.me?token=${token}`;
+                const wsBaseUrl = process.env.NEXT_PUBLIC_WS_BASE_URL || 'ws://localhost:8080';
+                const serverAddress = `${wsBaseUrl}?token=${encodeURIComponent(token)}`;
                 const ws = new WebSocket(serverAddress)
                 this.ws = ws;  // Store the WebSocket connection
 
@@ -3385,6 +3806,11 @@ export default class
                     const targetPlayerId = this.detectNearestTarget();
                     if (targetPlayerId) {
                         const playerId = this.car.playerId;
+
+                        if (this.isAlreadyLinked(targetPlayerId)) {
+                            this.showPopup(`You are already linked with ${this.formatPlayerId(targetPlayerId)}`);
+                            return;
+                        }
                 
                         console.log(`Sending friendship invite from ${playerId} to ${targetPlayerId}`);
                         sendFriendInvite(targetPlayerId, playerId);
@@ -3416,6 +3842,11 @@ export default class
 
                 // Add the invite button event listener
                 document.getElementById('invite-button').addEventListener('click', () => {
+                    if (this.inParty && !this.isPartyLeader) {
+                        this.showPopup('Only party leader can invite players.');
+                        return;
+                    }
+
                     const targetPlayerId = this.detectNearestTarget();
                     
                     if (targetPlayerId) {
@@ -3609,6 +4040,7 @@ export default class
                         type: 'update',
                         playerId: this.playerId,
                         worldId: this.worldId,
+                        selectedCar: this.carName || undefined,
                         position: playerPosition,
                         rotation: playerRotation,
                         velocity: playerVelocity,
@@ -3642,6 +4074,12 @@ export default class
                         score: playerCar.score,
                     };
 
+                    const previousLocalScore = this.playerScores[this.playerId] || 0;
+                    if (playerCar.score > previousLocalScore) {
+                        this.animateScoreGain(playerCar);
+                    }
+                    this.playerScores[this.playerId] = playerCar.score;
+
                     // Handle collision check if a coin is active
                     if (this.currentCoin) {
                         const coinPosition = this.currentCoin.position;
@@ -3661,6 +4099,7 @@ export default class
 
                     this.updateBatteryStatus(playerCar.battery);
                     this.updateScoreStatus(playerCar.score);
+                    this.refreshPartyMemberHpUI();
         
                     if (ws.readyState === WebSocket.OPEN) {
                         ws.send(JSON.stringify(updateData));
@@ -4102,6 +4541,7 @@ export default class
                 contactList.style.opacity = 1;
                 settings.style.opacity = 1;
             }
+            this.updateInviteButtonState();
     
             return playerId;
         } catch (error) {
@@ -4405,6 +4845,12 @@ export default class
             carName: this.carName,
             ws: this.ws
         })
+        this.physics.onCarDestroyed = (car, durationMs) => {
+            this.playCarDestroyedFx(car, durationMs);
+            setTimeout(() => {
+                this.playCarRestoreFx(car);
+            }, durationMs);
+        };
         this.container.add(this.physics.models.container)
     }
     
@@ -4533,3 +4979,4 @@ export default class
     }
 
 }
+

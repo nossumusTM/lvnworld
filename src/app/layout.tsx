@@ -17,11 +17,11 @@ export default function RootLayout({
 }>) {
 
   // Check if we're in a server-side context before calling headers
-  let cookies: string | null = null;
-  if (typeof headers === 'function') {
-    const serverHeaders = headers();
-    cookies = serverHeaders?.get('cookie') || null;
-  }
+  // let cookies: string | null = null;
+  // if (typeof headers === 'function') {
+  //   const serverHeaders = headers();
+  //   cookies = serverHeaders?.get('cookie') || null;
+  // }
 
   return (
     <html lang="en">

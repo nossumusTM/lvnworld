@@ -34,7 +34,10 @@ export default function Home() {
   const [selectedWorldId, setSelectedWorldId] = useState<string | null>(null); // New state for selected world ID
   const [isWorldSelected, setIsWorldSelected] = useState(false);
   const [token, setToken] = useState<string | null>(null); // State to store the token
-  const [carName, setCarName] = useState<string | null>(null);
+  const [carName, setCarName] = useState<string | null>(() => {
+    if (typeof window === 'undefined') return null;
+    return localStorage.getItem('selectedCarName');
+  });
   // const [popupGarage, setPopupGarage] = useState(false);
   const [playerCount, setPlayerCount] = useState(0);
 
@@ -48,6 +51,8 @@ export default function Home() {
   const router = useRouter();
   const maxRetries = 5;  // Limit retries to avoid infinite reconnect loop
   const retryDelay = 2000; // Delay between retries (ms)
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080';
+  const WS_BASE_URL = process.env.NEXT_PUBLIC_WS_BASE_URL || 'ws://localhost:8080';
 
   const worldPlayerCounts = new Map<string, number>(); // To track player counts per worldId
   const activeSignals = new Map<string, THREE.Object3D>(); // To track active signals
@@ -217,7 +222,7 @@ export default function Home() {
   // Function to get token from the server
   const getToken = async (playerId: string) => {
     try {
-      const response = await fetch('https://krashbox.glitch.me/getToken', {
+      const response = await fetch(`${API_BASE_URL}/getToken`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -269,7 +274,7 @@ export default function Home() {
         return;
     }
 
-    if (!sessionStorage.token) {
+    if (!sessionStorage.getItem('token')) {
       console.error("Cannot initialize WebSocket: token is missing");
       return;
     }
@@ -287,7 +292,7 @@ export default function Home() {
       return;
     }
     
-    const serverAddress = `wss://krashbox.glitch.me?token=${token}`;
+    const serverAddress = `${WS_BASE_URL}?token=${encodeURIComponent(token)}`;
     wsRef.current = new WebSocket(serverAddress);
 
     setWs(wsRef.current); 
@@ -296,6 +301,7 @@ export default function Home() {
       console.log('WebSocket connected');
       setIsWebSocketReady(true);
       setRetryCount(0);
+      updateWorldList(currentCounts);
 
       if (playerId) {
           // console.log('Requesting selected car for playerId:', playerId);
@@ -339,11 +345,13 @@ export default function Home() {
           // console.log('SelectedCar message received:', message); // Log full message
           if (message.selectedCar) {
               setCarName(message.selectedCar);
+              localStorage.setItem('selectedCarName', message.selectedCar);
               // console.log('Selected car set to:', message.selectedCar);
       
               if (message.matcaps) {
                   // console.log('Matcaps before setting state:', message.matcaps); // Log matcaps
                   setMatcaps(message.matcaps);
+                  localStorage.setItem('matcaps', JSON.stringify(message.matcaps));
                   // console.log('Matcaps state updated to:', message.matcaps);
               } else {
                   console.warn('No matcaps data received. Defaulting to empty object.');
@@ -688,43 +696,41 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
             </div>
           </div>
           {/* Show pulsing message while setting up WebSocket */}
-          {isWebSocketReady && (
-            <>
-              <div id="world-layer">
-                <div style={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
-                  <input
-                    type="text"
-                    id="search-bar"
-                    placeholder="Search destination..."
-                    onInput={(event) => filterWorlds(event)}
-                  />
-                  <button
-                    onClick={() => window.location.reload()} // Reload the page
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      width: '40px',
-                      height: '40px',
-                      background: 'none',
-                      cursor: 'pointer',
-                      // paddingRight: '10px'
-                    }}
-                  >
-                    <FaRedo size={12} style={{ color: '#fff' }} />
-                  </button>
-                </div>
+          <>
+            <div id="world-layer">
+              <div style={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
+                <input
+                  type="text"
+                  id="search-bar"
+                  placeholder="Search destination..."
+                  onInput={(event) => filterWorlds(event)}
+                />
+                <button
+                  onClick={() => window.location.reload()} // Reload the page
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    width: '40px',
+                    height: '40px',
+                    background: 'none',
+                    cursor: 'pointer',
+                    // paddingRight: '10px'
+                  }}
+                >
+                  <FaRedo size={12} style={{ color: '#fff' }} />
+                </button>
+              </div>
 
-                <div className="scroll-container">
-                  <ul id="world-list"></ul>
-                </div>
+              <div className="scroll-container">
+                <ul id="world-list"></ul>
               </div>
-              <div id='garage' className='garage'>
-                <button id='garage-button' onClick={handleGarageButtonClick}>NETROOM</button>
-                <button id='chatbox-button'>NETLINK</button>
-              </div>
-            </>
-          )}
+            </div>
+            <div id='garage' className='garage'>
+              <button id='garage-button' onClick={handleGarageButtonClick}>NETROOM</button>
+              <button id='chatbox-button'>NETLINK</button>
+            </div>
+          </>
         </div>
       )}
 

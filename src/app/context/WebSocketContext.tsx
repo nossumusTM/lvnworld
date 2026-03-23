@@ -18,6 +18,7 @@ interface WebSocketContextType {
 const WebSocketContext = createContext<WebSocketContextType | undefined>(undefined);
 
 export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const WS_BASE_URL = process.env.NEXT_PUBLIC_WS_BASE_URL || 'ws://localhost:8080';
   const [isWebSocketReady, setIsWebSocketReady] = useState(false);
   const wsRef = useRef<WebSocket | null>(null);
   const [retryCount, setRetryCount] = useState(0);
@@ -55,7 +56,7 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     const token = localStorage.getItem('token');
     console.log('Token:', token);
 
-    const serverAddress = `wss://krashbox.glitch.me?token=${token}`;
+    const serverAddress = `${WS_BASE_URL}?token=${encodeURIComponent(token || '')}`;
     console.log('WebSocket server address:', serverAddress);
 
     wsRef.current = new WebSocket(serverAddress);

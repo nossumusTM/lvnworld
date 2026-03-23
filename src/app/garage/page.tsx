@@ -20,6 +20,7 @@ import gsap from 'gsap';
 
 export default function GaragePage() {
     const router = useRouter();
+    const WS_BASE_URL = process.env.NEXT_PUBLIC_WS_BASE_URL || 'ws://localhost:8080';
     const [isLoading, setIsLoading] = useState(true);
     const [isClient, setIsClient] = useState(false);
     const [navigateToPage, setNavigateToPage] = useState<string | null>(null);
@@ -40,7 +41,7 @@ export default function GaragePage() {
     const [view, setView] = useState<'menu' | 'car' | 'rocket' | 'showroom' | 'customize'>('menu');
     const [showMatcapMenu, setShowMatcapMenu] = useState(false);
     const [selectedPart, setSelectedPart] = useState<string | null>(null);
-    const [selectedCar, setSelectedCar] = useState<Car | null>(null);
+    const [selectedCar, setSelectedCar] = useState<string>('Kybertruck');
     const [matcaps, setMatcaps] = useState({});
     const [currentCarAttributes, setCurrentCarAttributes] = useState<{ [key: string]: number } | null>(null);
     const [filteredPngIcons, setFilteredPngIcons] = useState<{ [key: string]: string }>({});
@@ -1508,12 +1509,13 @@ export default function GaragePage() {
             // Send the selected car to the server
             const playerId = new URLSearchParams(window.location.search).get('playerId');
             if (playerId) {
+                const savedMatcaps = JSON.parse(localStorage.getItem("matcaps") || "{}");
                 wsRef.current?.send(
                     JSON.stringify({
                         type: 'setSelectedCar',
                         playerId,
                         carName,
-                        matcaps,
+                        matcaps: savedMatcaps,
                     })
                 );
             }
@@ -1529,13 +1531,48 @@ export default function GaragePage() {
     };    
 
     // Send the selected car to the server
-    const sendSelectedCarToServer = () => {
+    const sendSelectedCarToServer = async () => {
         const playerId = new URLSearchParams(window.location.search).get("playerId");
-        const carName = localStorage.getItem("selectedCarName") || "kybertruck";
+        const carName = localStorage.getItem("selectedCarName") || "Kybertruck";
         const matcaps = JSON.parse(localStorage.getItem("matcaps") || "{}");
     
-        if (playerId && Object.keys(matcaps).length > 0) {
-            wsRef.current?.send(
+        if (!playerId) {
+            console.warn("Missing data to send to server:", { playerId, carName, matcaps });
+            return false;
+        }
+
+        const ws = wsRef.current;
+        if (!ws || ws.readyState !== WebSocket.OPEN) {
+            return false;
+        }
+
+        return await new Promise<boolean>((resolve) => {
+            let settled = false;
+
+            const done = (ok: boolean) => {
+                if (settled) return;
+                settled = true;
+                ws.removeEventListener('message', onAck);
+                resolve(ok);
+            };
+
+            const onAck = (event: MessageEvent) => {
+                try {
+                    const message = JSON.parse(event.data);
+                    if (
+                        message.type === 'selectedCar' &&
+                        typeof message.selectedCar === 'string' &&
+                        message.selectedCar.toLowerCase() === carName.toLowerCase()
+                    ) {
+                        done(true);
+                    }
+                } catch (_error) {
+                    // no-op
+                }
+            };
+
+            ws.addEventListener('message', onAck);
+            ws.send(
                 JSON.stringify({
                     type: "setSelectedCar",
                     playerId,
@@ -1543,10 +1580,9 @@ export default function GaragePage() {
                     matcaps,
                 })
             );
-            // console.log("Matcaps sent to server:", { playerId, carName, matcaps });
-        } else {
-            console.warn("Missing data to send to server:", { playerId, carName, matcaps });
-        }
+
+            setTimeout(() => done(false), 1200);
+        });
     };    
 
     // Trigger navigation when `navigateToPage` is set
@@ -1569,7 +1605,7 @@ export default function GaragePage() {
         if (navigateToPage) {
             const handleNavigation = async () => {
                 // Send selected car to the server
-                sendSelectedCarToServer();
+                await sendSelectedCarToServer();
     
                 // Perform navigation
                 await router.push(navigateToPage);
@@ -1579,8 +1615,6 @@ export default function GaragePage() {
                     wsRef.current.close();
                     wsRef.current = null;
                 }
-                localStorage.removeItem("matcaps");
-                localStorage.removeItem("selectedCarName");
             };
     
             handleNavigation();
@@ -1801,7 +1835,7 @@ export default function GaragePage() {
         }
 
         const token = sessionStorage.getItem('token');
-        const serverAddress = `wss://krashbox.glitch.me?token=${token}`;
+        const serverAddress = `${WS_BASE_URL}?token=${encodeURIComponent(token || '')}`;
         wsRef.current = new WebSocket(serverAddress);
 
         wsRef.current.onopen = () => {
@@ -1857,7 +1891,7 @@ export default function GaragePage() {
 
             // Handle selectedCar message
             if (message.type === 'selectedCar') {
-                const selectedCar = message.selectedCar || 'kybertruck'; // Default to kybertruck
+                const selectedCar = message.selectedCar || 'Kybertruck'; // Default to Kybertruck
                 setSelectedCar(selectedCar);
 
                 // Save carName to localStorage
@@ -2058,7 +2092,7 @@ export default function GaragePage() {
                             textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)',
                         }}
                     >
-                        Kybertruck
+                        {selectedCar || 'Kybertruck'}
                     </h3>
                 )}
                 {/* {view === 'rocket' && (

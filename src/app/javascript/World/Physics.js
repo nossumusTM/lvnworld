@@ -41,6 +41,9 @@ export default class Physics
 
         this.nonCollidablePlayers = new Set();
         this.nonCollidableCars = new Set();
+        this.worldHalfExtent = 595;
+        this.worldRoofZ = 84;
+        this.respawnDurationMs = 5000;
 
         // Set up
         if(this.debug)
@@ -440,48 +443,48 @@ export default class Physics
         })
     }
 
-    updateCarClass(CarClass) {
+    updateCarClass(CarClass, playerId) {
         this.carClass = CarClass;
         
         // Set car based on the carClass passed
         if (this.carClass === Car1) {
-            this.setCar1();
+            this.setCar1(playerId);
         } else if (this.carClass === Car2) {
-            this.setCar2();
+            this.setCar2(playerId);
         } else if (this.carClass === Car3) {
-            this.setCar3();
+            this.setCar3(playerId);
         } else if (this.carClass === Car4) {
-            this.setCar4();
+            this.setCar4(playerId);
         } else if (this.carClass === Car5) {
-            this.setCar5();
+            this.setCar5(playerId);
         } else if (this.carClass === Car6) {
-            this.setCar6();
+            this.setCar6(playerId);
         } else if (this.carClass === Car7) {
-            this.setCar7();
+            this.setCar7(playerId);
         } else if (this.carClass === Car8) {
-            this.setCar8();
+            this.setCar8(playerId);
         } else if (this.carClass === Car9) {
-            this.setCar9();
+            this.setCar9(playerId);
         } else if (this.carClass === Car10) {
-            this.setCar10();
+            this.setCar10(playerId);
         } else if (this.carClass === Car11) {
-            this.setCar11();
+            this.setCar11(playerId);
         } else if (this.carClass === Car12) {
-            this.setCar12();
+            this.setCar12(playerId);
         } else if (this.carClass === Car13) {
-            this.setCar13();
+            this.setCar13(playerId);
         } else if (this.carClass === Car14) {
-            this.setCar14();
+            this.setCar14(playerId);
         } else if (this.carClass === Car15) {
-            this.setCar15();
+            this.setCar15(playerId);
         } else if (this.carClass === Car16) {
-            this.setCar16();
+            this.setCar16(playerId);
         } else if (this.carClass === Car17) {
-            this.setCar17();
+            this.setCar17(playerId);
         } else if (this.carClass === Car18) {
-            this.setCar18();
+            this.setCar18(playerId);
         } else if (this.carClass === Car19) {
-            this.setCar19();
+            this.setCar19(playerId);
         }
     }
 
@@ -507,9 +510,9 @@ export default class Physics
         const wallMaterial = new CANNON.Material("wallMaterial");
 
         // Wall dimensions (adjust these according to your world size)
-        const wallThickness = 5;
-        const wallHeight = 40;
-        const worldSize = 1200;
+        const wallThickness = 12;
+        const wallHeight = this.worldRoofZ + 24;
+        const worldSize = this.worldHalfExtent * 2;
 
         // Four walls surrounding the world
         this.walls = [
@@ -521,7 +524,7 @@ export default class Physics
 
         // Add a roof to the world to prevent cars from flying above the walls
         const roof = {
-            position: new CANNON.Vec3(0, 0, wallHeight + wallThickness / 2),  // Positioned at the top of the walls
+            position: new CANNON.Vec3(0, 0, this.worldRoofZ + wallThickness / 2),  // Positioned at the top of the walls
             size: new CANNON.Vec3(worldSize, worldSize, wallThickness)         // Thin roof covering the world
         };
 
@@ -8751,27 +8754,9 @@ export default class Physics
                         continue;
                     }
 
-                    const playerCarBody = playerCar.physics.car.chassis.body;
-                    const otherCarBody = otherPlayerCar instanceof Car1 ? otherPlayerCar.physics.car1.chassis.body :
-                                        otherPlayerCar instanceof Car2 ? otherPlayerCar.physics.car2.chassis.body :
-                                        otherPlayerCar instanceof Car3 ? otherPlayerCar.physics.car3.chassis.body :
-                                        otherPlayerCar instanceof Car4 ? otherPlayerCar.physics.car4.chassis.body :
-                                        otherPlayerCar instanceof Car5 ? otherPlayerCar.physics.car5.chassis.body :
-                                        otherPlayerCar instanceof Car6 ? otherPlayerCar.physics.car6.chassis.body :
-                                        otherPlayerCar instanceof Car7 ? otherPlayerCar.physics.car7.chassis.body :
-                                        otherPlayerCar instanceof Car8 ? otherPlayerCar.physics.car8.chassis.body :
-                                        otherPlayerCar instanceof Car9 ? otherPlayerCar.physics.car9.chassis.body :
-                                        otherPlayerCar instanceof Car10 ? otherPlayerCar.physics.car10.chassis.body :
-                                        otherPlayerCar instanceof Car11 ? otherPlayerCar.physics.car11.chassis.body :
-                                        otherPlayerCar instanceof Car12 ? otherPlayerCar.physics.car12.chassis.body :
-                                        otherPlayerCar instanceof Car13 ? otherPlayerCar.physics.car13.chassis.body :
-                                        otherPlayerCar instanceof Car14 ? otherPlayerCar.physics.car14.chassis.body :
-                                        otherPlayerCar instanceof Car15 ? otherPlayerCar.physics.car15.chassis.body :
-                                        otherPlayerCar instanceof Car16 ? otherPlayerCar.physics.car16.chassis.body :
-                                        otherPlayerCar instanceof Car17 ? otherPlayerCar.physics.car17.chassis.body :
-                                        otherPlayerCar instanceof Car18 ? otherPlayerCar.physics.car18.chassis.body :
-                                        otherPlayerCar instanceof Car19 ? otherPlayerCar.physics.car19.chassis.body :
-                                        otherPlayerCar.physics.car20.chassis.body;
+                    const playerCarBody = this.getCarBody(playerCar);
+                    const otherCarBody = this.getCarBody(otherPlayerCar);
+                    if (!playerCarBody || !otherCarBody) continue;
 
                     if (this.detectCollision(playerCarBody, otherCarBody)) {
                         this.handleCarCollision(playerCar, otherPlayerCar);
@@ -8794,6 +8779,10 @@ export default class Physics
                         }
                     }
 
+                        if (!this.shouldCollide(bullet.body.shooterId, playerId)) {
+                            continue;
+                        }
+
                         const carBody = car.physics.car && car.physics.car.chassis && car.physics.car.chassis.body ? car.physics.car.chassis.body : 
                                         car.physics.car1 && car.physics.car1.chassis && car.physics.car1.chassis.body ? car.physics.car1.chassis.body :
                                         car.physics.car2 && car.physics.car2.chassis && car.physics.car2.chassis.body ? car.physics.car2.chassis.body :
@@ -8801,7 +8790,7 @@ export default class Physics
                                         car.physics.car4 && car.physics.car4.chassis && car.physics.car4.chassis.body ? car.physics.car4.chassis.body : null;
 
                         if (carBody && this.detectCollision(bullet.body, carBody)) {
-                            this.handleBulletCollision(bullet, this.bullets.indexOf(bullet));
+                            this.resolveBulletHitOnCar(bullet, this.bullets.indexOf(bullet), car);
                             
                             // car.createSparkEffect();
                         }
@@ -8832,12 +8821,8 @@ export default class Physics
                     const car = this.cars[playerId];
     
                     if (playerId !== bulletBody.shooterId) {
-                        const carBody = car.physics.car && car.physics.car.chassis && car.physics.car.chassis.body 
-                            ? car.physics.car.chassis.body 
-                            : car.physics.physics.car1 && car.physics.physics.car1.chassis && car.physics.physics.car1.chassis.body 
-                            ? car.physics.physics.car1.chassis.body 
-                            : null;
-    
+                        const carBody = this.getCarBody(car);
+                        if (!carBody) continue;
                         carBody.id = playerId;
     
                         if (carBody && this.shouldCollide(bulletBody.shooterId, playerId) && this.detectCollision(bulletBody, carBody)) {
@@ -8860,6 +8845,16 @@ export default class Physics
             return;
         }
 
+        // Extra safeguard: never apply bullet damage between party members
+        if (!this.shouldCollide(bullet.body.shooterId, car.playerId)) {
+            this.removeBullet(bullet, index);
+            return;
+        }
+        if (this.isCarInvulnerable(car)) {
+            this.removeBullet(bullet, index);
+            return;
+        }
+
         car.battery -= 1;
         console.log("Resolving car battery", car)
         // car.createSparkEffect();
@@ -8872,14 +8867,7 @@ export default class Physics
                 shooterCar.score += 1;
                 this.updateScoreStatus(shooterCar.score);
             }
-            // car.physics.car.sleep();
-            car.createSparkEffect();
-
-            setTimeout(() => {
-                car.physics.car.recreate();
-            }, 5000);
-
-            car.battery = 100;
+            this.triggerCarDestroyed(car, 'bullet', bullet.body.shooterId);
         }
     
         const twitchForce = new CANNON.Vec3(Math.random() * 10 - 5, Math.random() * 10 - 5, Math.random() * 10 - 5);
@@ -8905,30 +8893,14 @@ export default class Physics
         
         // const ws = new WebSocket('ws://localhost:8080');
 
-        const playerCarBody = playerCar?.physics?.car?.chassis?.body;
-        const otherCarBody = otherPlayerCar instanceof Car1 ? otherPlayerCar?.physics?.car1?.chassis?.body :
-                             otherPlayerCar instanceof Car2 ? otherPlayerCar?.physics?.car2?.chassis?.body :
-                             otherPlayerCar instanceof Car3 ? otherPlayerCar?.physics?.car3?.chassis?.body :
-                             otherPlayerCar instanceof Car4 ? otherPlayerCar?.physics?.car4?.chassis?.body :
-                             otherPlayerCar instanceof Car5 ? otherPlayerCar?.physics?.car5?.chassis?.body :
-                             otherPlayerCar instanceof Car6 ? otherPlayerCar?.physics?.car6?.chassis?.body :
-                             otherPlayerCar instanceof Car7 ? otherPlayerCar?.physics?.car7?.chassis?.body :
-                             otherPlayerCar instanceof Car8 ? otherPlayerCar?.physics?.car8?.chassis?.body :
-                             otherPlayerCar instanceof Car9 ? otherPlayerCar?.physics?.car9.chassis?.body :
-                             otherPlayerCar instanceof Car10 ? otherPlayerCar?.physics?.car10?.chassis?.body :
-                             otherPlayerCar instanceof Car11 ? otherPlayerCar?.physics?.car11?.chassis?.body :
-                             otherPlayerCar instanceof Car12 ? otherPlayerCar?.physics?.car12?.chassis?.body :
-                             otherPlayerCar instanceof Car13 ? otherPlayerCar?.physics?.car13?.chassis?.body :
-                             otherPlayerCar instanceof Car14 ? otherPlayerCar?.physics?.car14?.chassis?.body :
-                             otherPlayerCar instanceof Car15 ? otherPlayerCar?.physics?.car15?.chassis?.body :
-                             otherPlayerCar instanceof Car16 ? otherPlayerCar?.physics?.car16?.chassis?.body :
-                             otherPlayerCar instanceof Car17 ? otherPlayerCar?.physics?.car17?.chassis?.body :
-                             otherPlayerCar instanceof Car18 ? otherPlayerCar?.physics?.car18?.chassis?.body :
-                             otherPlayerCar instanceof Car19 ? otherPlayerCar?.physics?.car19?.chassis?.body :
-                             otherPlayerCar?.physics?.car20?.chassis?.body;
+        const playerCarBody = this.getCarBody(playerCar);
+        const otherCarBody = this.getCarBody(otherPlayerCar);
     
         if (!playerCarBody || !otherCarBody) {
             console.error("One of the car bodies is not initialized:", { playerCarBody, otherCarBody });
+            return;
+        }
+        if (this.isCarInvulnerable(playerCar) || this.isCarInvulnerable(otherPlayerCar)) {
             return;
         }
 
@@ -8949,6 +8921,9 @@ export default class Physics
             const hitCar = this.cars[hitBody.id];
             
             if (hitCar) {
+                if (this.isCarInvulnerable(hitCar)) {
+                    return;
+                }
                 const randomBatteryPercent = Math.floor(Math.random() * 10); // Random number between 1 and 10
                 hitCar.battery -= 1;
     
@@ -8963,7 +8938,10 @@ export default class Physics
                 }
     
                 const twitchForce = new CANNON.Vec3(Math.random() * 10 - 5, Math.random() * 10 - 5, Math.random() * 10 - 5);
-                hitCar.physics.car.chassis.body.applyImpulse(twitchForce, hitCar.physics.car.chassis.body.position);
+                const hitCarBody = this.getCarBody(hitCar);
+                if (hitCarBody) {
+                    hitCarBody.applyImpulse(twitchForce, hitCarBody.position);
+                }
     
                 this.updateBatteryStatus(hitCar.battery);
     
@@ -9015,8 +8993,7 @@ export default class Physics
                 hitterCar.score += 1;
                 this.updateScoreStatus(hitterCar.score);
             }
-            this.destroyCar(playerCar, 'car');
-            playerCar.battery = 100;
+            this.triggerCarDestroyed(playerCar, 'carCollision', playerCar.lastHitBy);
         }
     
         if (otherPlayerCar.battery <= 0) {
@@ -9025,50 +9002,7 @@ export default class Physics
                 hitterCar.score += 1;
                 this.updateScoreStatus(hitterCar.score);
             }
-    
-            let carKey;
-            if (otherPlayerCar instanceof Car1) {
-                carKey = 'car1';
-            } else if (otherPlayerCar instanceof Car2) {
-                carKey = 'car2';
-            } else if (otherPlayerCar instanceof Car3) {
-                carKey = 'car3';
-            } else if (otherPlayerCar instanceof Car4) {
-                carKey = 'car4';
-            } else if (otherPlayerCar instanceof Car5) {
-                carKey = 'car5';
-            } else if (otherPlayerCar instanceof Car6) {
-                carKey = 'car6';
-            } else if (otherPlayerCar instanceof Car7) {
-                carKey = 'car7';
-            } else if (otherPlayerCar instanceof Car8) {
-                carKey = 'car8';
-            } else if (otherPlayerCar instanceof Car9) {
-                carKey = 'car9';
-            } else if (otherPlayerCar instanceof Car10) {
-                carKey = 'car10';
-            } else if (otherPlayerCar instanceof Car11) {
-                carKey = 'car11';
-            } else if (otherPlayerCar instanceof Car12) {
-                carKey = 'car12';
-            } else if (otherPlayerCar instanceof Car13) {
-                carKey = 'car13';
-            } else if (otherPlayerCar instanceof Car14) {
-                carKey = 'car14';
-            } else if (otherPlayerCar instanceof Car15) {
-                carKey = 'car15';
-            } else if (otherPlayerCar instanceof Car16) {
-                carKey = 'car16';
-            } else if (otherPlayerCar instanceof Car17) {
-                carKey = 'car17';
-            } else if (otherPlayerCar instanceof Car18) {
-                carKey = 'car18';
-            } else if (otherPlayerCar instanceof Car19) {
-                carKey = 'car19';
-            }
-    
-            this.destroyCar(otherPlayerCar, carKey);
-            otherPlayerCar.battery = 100;
+            this.triggerCarDestroyed(otherPlayerCar, 'carCollision', otherPlayerCar.lastHitBy);
         }
     
         // if (ws && ws.readyState === WebSocket.OPEN) {
@@ -9168,15 +9102,137 @@ export default class Physics
         return distance < collisionDistance;
     }
 
+    getCarKey(car) {
+        if (!car || !car.physics) return null;
+        if (car.physics.car?.chassis?.body) return 'car';
+
+        for (let i = 1; i <= 20; i++) {
+            const key = `car${i}`;
+            if (car.physics[key]?.chassis?.body) return key;
+        }
+
+        return null;
+    }
+
+    getCarBody(car) {
+        const key = this.getCarKey(car);
+        if (!key) return null;
+        return car.physics[key]?.chassis?.body || null;
+    }
+
+    isCarInvulnerable(car) {
+        if (!car) return false;
+        return typeof car.__invulnerableUntil === 'number' && car.__invulnerableUntil > Date.now();
+    }
+
+    applyDestroyedState(car, durationMs = this.respawnDurationMs) {
+        if (!car) return;
+        const now = Date.now();
+        const until = now + durationMs;
+
+        if (this.isCarInvulnerable(car) && car.__invulnerableUntil >= until) {
+            return;
+        }
+
+        car.__invulnerableUntil = until;
+        car.battery = 0;
+
+        const body = this.getCarBody(car);
+        if (body) {
+            body.velocity.set(0, 0, 0);
+            body.angularVelocity.set(0, 0, 0);
+            body.collisionResponse = false;
+            body.sleep();
+        }
+
+        if (car.__respawnTimer) {
+            clearTimeout(car.__respawnTimer);
+        }
+
+        car.__respawnTimer = setTimeout(() => {
+            if (this.isCarInvulnerable(car)) return;
+            car.battery = 100;
+            const restoreBody = this.getCarBody(car);
+            if (restoreBody) {
+                restoreBody.collisionResponse = true;
+                restoreBody.wakeUp();
+            }
+        }, durationMs + 25);
+    }
+
+    triggerCarDestroyed(car, reason = 'unknown', attackerId = null, durationMs = this.respawnDurationMs) {
+        if (!car || this.isCarInvulnerable(car)) return;
+
+        this.applyDestroyedState(car, durationMs);
+
+        if (typeof this.onCarDestroyed === 'function') {
+            this.onCarDestroyed(car, durationMs, reason);
+        }
+
+        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+            this.ws.send(JSON.stringify({
+                type: 'destroyCar',
+                carId: car.playerId,
+                durationMs,
+                reason,
+                attackerId
+            }));
+        }
+    }
+
+    resolveBulletHitOnCar(bullet, index, car) {
+        if (!bullet || !car) return;
+        if (!this.shouldCollide(bullet.body?.shooterId, car.playerId)) return;
+        if (this.isCarInvulnerable(car)) {
+            this.removeBullet(bullet, index);
+            return;
+        }
+        const carBody = this.getCarBody(car);
+        if (!carBody) return;
+        this.resolveBulletCollision(bullet, car, index, carBody, { mass: 1 });
+    }
+
+    constrainBodyToWorldBounds(body) {
+        if (!body || !body.position || !body.velocity) return;
+
+        const limit = this.worldHalfExtent - 2;
+        const minZ = 0;
+        const maxZ = this.worldRoofZ - 1;
+
+        if (body.position.x > limit) {
+            body.position.x = limit;
+            if (body.velocity.x > 0) body.velocity.x = 0;
+        } else if (body.position.x < -limit) {
+            body.position.x = -limit;
+            if (body.velocity.x < 0) body.velocity.x = 0;
+        }
+
+        if (body.position.y > limit) {
+            body.position.y = limit;
+            if (body.velocity.y > 0) body.velocity.y = 0;
+        } else if (body.position.y < -limit) {
+            body.position.y = -limit;
+            if (body.velocity.y < 0) body.velocity.y = 0;
+        }
+
+        if (body.position.z > maxZ) {
+            body.position.z = maxZ;
+            if (body.velocity.z > 0) body.velocity.z = 0;
+        } else if (body.position.z < minZ) {
+            body.position.z = minZ;
+            if (body.velocity.z < 0) body.velocity.z = 0;
+        }
+    }
+
     updateCars() {
         const carIds = Object.keys(this.cars);
         for (let i = 0; i < carIds.length; i++) {
             const playerId = carIds[i];
             const playerCar = this.cars[playerId];
     
-            if (!playerCar || !playerCar.physics || !playerCar.physics.car) continue;
-    
-            const playerCarBody = playerCar.physics.car.chassis.body;
+            const playerCarBody = this.getCarBody(playerCar);
+            if (!playerCarBody) continue;
+            this.constrainBodyToWorldBounds(playerCarBody);
     
             for (let j = i + 1; j < carIds.length; j++) {
                 const otherPlayerId = carIds[j];
@@ -9184,26 +9240,9 @@ export default class Physics
     
                 if (!otherPlayerCar || !otherPlayerCar.physics) continue;
     
-                const otherCarBody = otherPlayerCar instanceof Car1 ? otherPlayerCar.physics.car1.chassis.body :
-                                     otherPlayerCar instanceof Car2 ? otherPlayerCar.physics.car2.chassis.body :
-                                     otherPlayerCar instanceof Car3 ? otherPlayerCar.physics.car3.chassis.body :
-                                     otherPlayerCar instanceof Car4 ? otherPlayerCar.physics.car4.chassis.body :
-                                     otherPlayerCar instanceof Car5 ? otherPlayerCar.physics.car5.chassis.body :
-                                     otherPlayerCar instanceof Car6 ? otherPlayerCar.physics.car6.chassis.body :
-                                     otherPlayerCar instanceof Car7 ? otherPlayerCar.physics.car7.chassis.body :
-                                     otherPlayerCar instanceof Car8 ? otherPlayerCar.physics.car8.chassis.body :
-                                     otherPlayerCar instanceof Car9 ? otherPlayerCar.physics.car9.chassis.body :
-                                     otherPlayerCar instanceof Car10 ? otherPlayerCar.physics.car10.chassis.body :
-                                     otherPlayerCar instanceof Car11 ? otherPlayerCar.physics.car11.chassis.body :
-                                     otherPlayerCar instanceof Car12 ? otherPlayerCar.physics.car12.chassis.body :
-                                     otherPlayerCar instanceof Car13 ? otherPlayerCar.physics.car13.chassis.body :
-                                     otherPlayerCar instanceof Car14 ? otherPlayerCar.physics.car14.chassis.body :
-                                     otherPlayerCar instanceof Car15 ? otherPlayerCar.physics.car15.chassis.body :
-                                     otherPlayerCar instanceof Car16 ? otherPlayerCar.physics.car16.chassis.body :
-                                     otherPlayerCar instanceof Car17 ? otherPlayerCar.physics.car17.chassis.body :
-                                     otherPlayerCar instanceof Car18 ? otherPlayerCar.physics.car18.chassis.body :
-                                     otherPlayerCar instanceof Car19 ? otherPlayerCar.physics.car19.chassis.body :
-                                     otherPlayerCar.physics.car20.chassis.body;
+                const otherCarBody = this.getCarBody(otherPlayerCar);
+                if (!otherCarBody) continue;
+                this.constrainBodyToWorldBounds(otherCarBody);
     
                 // if (this.detectCollision(playerCarBody, otherCarBody)) {
                 //     this.handleCarCollision(playerCar, otherPlayerCar);
@@ -9228,21 +9267,26 @@ export default class Physics
             if (bullet) {
                 bullet.mesh.position.copy(bullet.body.position);
     
-                if (bullet.body.position.length() > 1000) {
+                if (
+                    bullet.body.position.length() > 1000 ||
+                    Math.abs(bullet.body.position.x) > this.worldHalfExtent + 25 ||
+                    Math.abs(bullet.body.position.y) > this.worldHalfExtent + 25 ||
+                    bullet.body.position.z < -10 ||
+                    bullet.body.position.z > this.worldRoofZ + 25
+                ) {
                     this.removeBullet(bullet, index);
                 } else {
                     for (const playerId in this.cars) {
                         const car = this.cars[playerId];
                         if (bullet.body.shooterId !== playerId) {
-                            const carBody = car.physics.car && car.physics.car.chassis && car.physics.car.chassis.body ? car.physics.car.chassis.body : 
-                                            car.physics.car1 && car.physics.car1.chassis && car.physics.car1.chassis.body ? car.physics.car1.chassis.body :
-                                            car.physics.car2 && car.physics.car2.chassis && car.physics.car2.chassis.body ? car.physics.car2.chassis.body :
-                                            car.physics.car3 && car.physics.car3.chassis && car.physics.car3.chassis.body ? car.physics.car3.chassis.body :
-                                            car.physics.car4 && car.physics.car4.chassis && car.physics.car4.chassis.body ? car.physics.car4.chassis.body : null;
-    
+                            if (!this.shouldCollide(bullet.body.shooterId, playerId)) {
+                                continue;
+                            }
+
+                            const carBody = this.getCarBody(car);
                             if (carBody && this.detectCollision(bullet.body, carBody)) {
-                                this.handleBulletCollision(bullet, index);
-                                // car.createSparkEffect();
+                                this.resolveBulletHitOnCar(bullet, index, car);
+                                break;
                             }
                         }
                     }

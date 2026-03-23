@@ -47,10 +47,11 @@ const ModalContext = createContext(modal);
 export const useModal = () => useContext(ModalContext);
 
 function ContextProvider({ children }: { children: ReactNode; }) {
-    const initialState = cookieToInitialState(wagmiAdapter.wagmiConfig as Config);
+    // const initialState = cookieToInitialState(wagmiAdapter.wagmiConfig as Config);
 
     return (
-        <WagmiProvider config={wagmiAdapter.wagmiConfig as Config} initialState={initialState}>
+        // <WagmiProvider config={wagmiAdapter.wagmiConfig as Config} initialState={initialState}>
+        <WagmiProvider config={wagmiAdapter.wagmiConfig as Config}>
             <QueryClientProvider client={queryClient}>
                 {/* Provide the modal context */}
                 <ModalContext.Provider value={modal}>{children}</ModalContext.Provider>

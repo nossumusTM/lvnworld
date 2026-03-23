@@ -26,6 +26,7 @@ export default class Car
         this.ws = _options.ws
         this.carName = _options.carName
         this.matcaps = _options.matcaps
+        this.isRemotePlayer = Boolean(_options.isRemotePlayer)
 
         // Set up
         this.container = new THREE.Object3D()
@@ -62,7 +63,10 @@ export default class Car
         this.setWheels()
         this.setTransformControls()
         this.setShootingBall()
-        this.setShootingMechanism()
+        if (!this.isRemotePlayer)
+        {
+            this.setShootingMechanism()
+        }
 
     }
 
@@ -737,7 +741,7 @@ export default class Car
                 bulletData.velocity?.y || 0,
                 bulletData.velocity?.z || 0
             );
-            shooterId = bulletData.shooterId;
+            shooterId = bulletData.shooterId || shooterId || this.playerId;
         } else {
             const frontOffset = new THREE.Vector3(0.7, 0, 0);
             frontOffset.applyQuaternion(this.physics.car.chassis.body.quaternion);
@@ -757,6 +761,7 @@ export default class Car
             mass: 40,
             shape: new CANNON.Sphere(0.5)
         });
+        bulletBody.collisionResponse = false;
     
         bulletBody.position.set(bulletPosition.x, bulletPosition.y, bulletPosition.z);
         bulletBody.quaternion.copy(bulletQuaternion);
@@ -796,10 +801,10 @@ export default class Car
             }
         };
 
-        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+        if (!bulletData && !this.isRemotePlayer && this.ws && this.ws.readyState === WebSocket.OPEN) {
             this.ws.send(JSON.stringify(bulletDataToSend));
 
-        } else {
+        } else if (!bulletData && !this.isRemotePlayer) {
             console.error('WebSocket is not open, unable to send bullet data');
         }
     }    
