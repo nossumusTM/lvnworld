@@ -1640,6 +1640,104 @@ export default class
             this.physics.cars[playerId] = otherPlayerCar;
             this.updateCarState(otherPlayerCar, data);
         };
+
+        ensureRemotePlayerIdText = (car, playerId) => {
+            if (!car?.backLightsBattery?.object || !car?.chassis?.object) {
+                return;
+            }
+
+            const displayName = getPlayerDisplayName(playerId);
+            let playerIdText = car.playerIdText;
+
+            if (!playerIdText || car.playerIdTextValue !== displayName) {
+                const labelCanvas = document.createElement('canvas');
+                const context = labelCanvas.getContext('2d');
+
+                if (!context) {
+                    return;
+                }
+
+                const paddingX = 28;
+                const paddingY = 16;
+                const fontSize = 34;
+                context.font = `700 ${fontSize}px Orbitron, sans-serif`;
+
+                const textWidth = Math.ceil(context.measureText(displayName).width);
+                labelCanvas.width = textWidth + paddingX * 2;
+                labelCanvas.height = fontSize + paddingY * 2;
+
+                context.font = `700 ${fontSize}px Orbitron, sans-serif`;
+                context.textAlign = 'center';
+                context.textBaseline = 'middle';
+
+                context.fillStyle = 'rgba(0, 0, 0, 0.68)';
+                context.beginPath();
+                const radius = 18;
+                const width = labelCanvas.width;
+                const height = labelCanvas.height;
+                context.moveTo(radius, 0);
+                context.lineTo(width - radius, 0);
+                context.quadraticCurveTo(width, 0, width, radius);
+                context.lineTo(width, height - radius);
+                context.quadraticCurveTo(width, height, width - radius, height);
+                context.lineTo(radius, height);
+                context.quadraticCurveTo(0, height, 0, height - radius);
+                context.lineTo(0, radius);
+                context.quadraticCurveTo(0, 0, radius, 0);
+                context.closePath();
+                context.fill();
+
+                context.strokeStyle = 'rgba(255, 255, 255, 0.22)';
+                context.lineWidth = 3;
+                context.stroke();
+
+                context.fillStyle = '#ffffff';
+                context.fillText(displayName, width * 0.5, height * 0.5);
+
+                const texture = new THREE.CanvasTexture(labelCanvas);
+                texture.needsUpdate = true;
+
+                if (!playerIdText) {
+                    const material = new THREE.SpriteMaterial({
+                        map: texture,
+                        transparent: true,
+                        depthTest: false,
+                        depthWrite: false
+                    });
+
+                    playerIdText = new THREE.Sprite(material);
+                    playerIdText.renderOrder = 1000;
+                    car.playerIdText = playerIdText;
+                    car.chassis.object.add(playerIdText);
+                }
+                else {
+                    if (playerIdText.material.map) {
+                        playerIdText.material.map.dispose();
+                    }
+                    playerIdText.material.map = texture;
+                    playerIdText.material.needsUpdate = true;
+                }
+
+                const aspectRatio = labelCanvas.width / labelCanvas.height;
+                playerIdText.scale.set(0.55 * aspectRatio, 0.55, 1);
+                car.playerIdTextValue = displayName;
+            }
+
+            const batteryPosition = car.backLightsBattery.object.position;
+            playerIdText.position.set(batteryPosition.x, batteryPosition.y - 0.45, batteryPosition.z + 0.42);
+            playerIdText.visible = true;
+        };
+
+        refreshRemotePlayerIdTexts = () => {
+            Object.entries(this.otherPlayers || {}).forEach(([remotePlayerId, remoteCar]) => {
+                if (!remoteCar) {
+                    return;
+                }
+
+                remoteCar.playerIdTextValue = null;
+                this.ensureRemotePlayerIdText(remoteCar, remotePlayerId);
+            });
+        };
         
         updateCarState = (car, data) => {
             if (!car || !data) return;
@@ -1652,7 +1750,7 @@ export default class
             if (data.battery !== undefined) car.battery = data.battery;
             if (data.score !== undefined) car.score = data.score;
 
-            if (data.battery) {
+            if (data.battery !== undefined) {
                 car.battery = data.battery;
                 const batteryLevelWidth = data.battery / 100;
             
@@ -1679,42 +1777,12 @@ export default class
                         child.material.opacity = 1;
                     });
             
-                    // Format playerId for display
-                    const formatPlayerId = (playerId) => getPlayerDisplayName(playerId);
-            
-                    // Create or update playerId text separately, positioned above the battery
-                    let playerIdText = car.playerIdText; // Use car.playerIdText for storing the text mesh
-                    const font = this.resources.items.orbitronFont; // Ensure the font is correctly loaded
-                    
-                    if (!playerIdText && font) {
-                        // Only create new text if it doesn't exist and the font is loaded
-                        const playerIdMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
-                        const playerIdGeometry = new THREE.TextGeometry(formatPlayerId(data.playerId), {
-                            font: font, 
-                            size: 0.1, // Adjust size as needed
-                            height: 0.02, // Adjust depth of the text
-                            curveSegments: 12,
-                            bevelEnabled: false
-                        });
-            
-                        playerIdText = new THREE.Mesh(playerIdGeometry, playerIdMaterial);
-                        car.playerIdText = playerIdText; // Store reference to update later
-            
-                        // Add playerIdText separately, not as a child of the battery
-                        car.chassis.object.add(playerIdText); 
-                    }
-            
-                    if (playerIdText) {
-                        // Update the position of the playerId text to be just above the battery
-                        const batteryPosition = car.backLightsBattery.object.position; // Get the battery's position
-                        playerIdText.position.set(batteryPosition.x, batteryPosition.y - 0.45, batteryPosition.z + 0.3); // Offset on z-axis above the battery
-                        playerIdText.rotation.set(1.56, 1.56, 0); // Rotate to horizontal display
-                    }
-            
                 } else {
                     console.error("We cannot find the battery object");
                 }
-            }                                                  
+            }
+
+            this.ensureRemotePlayerIdText(car, data.playerId);                                                  
 
             const remoteSpeed = data.velocity
                 ? Math.sqrt(
@@ -3944,6 +4012,9 @@ export default class
                 chatContainer.appendChild(sendButton);
         
                 this.time.on('tick', () => {
+                    Object.entries(this.otherPlayers || {}).forEach(([remotePlayerId, remoteCar]) => {
+                        this.ensureRemotePlayerIdText(remoteCar, remotePlayerId);
+                    });
                     
                     // Check if score has reached the next multiple of 500
                     // if (playerCar.score >= lastAirdropScore + 5) {
@@ -4053,6 +4124,7 @@ export default class
                 });
 
                 if (typeof window !== 'undefined') {
+                    window.addEventListener('resize', this.refreshRemotePlayerIdTexts);
         
                     window.addEventListener("beforeunload", () => {
                         if (ws.readyState === WebSocket.OPEN) {
@@ -4062,6 +4134,12 @@ export default class
                             }));
                         }
                     });
+                }
+
+                if (typeof document !== 'undefined' && document.fonts?.ready) {
+                    document.fonts.ready.then(() => {
+                        this.refreshRemotePlayerIdTexts();
+                    }).catch(() => {});
                 }
         
             } catch (error) {
@@ -4474,8 +4552,8 @@ export default class
             
             if (userDisplay) {
                 userDisplay.innerHTML = formatPlayerId(playerId);
-                userDisplay.style.opacity = 0;
-                userDisplay.style.display = 'none';
+                userDisplay.style.opacity = 1;
+                userDisplay.style.display = 'block';
                 if (batteryStatus) batteryStatus.style.opacity = 1;
                 if (scoreElement) scoreElement.style.opacity = 0;
                 if (coinMarket) {

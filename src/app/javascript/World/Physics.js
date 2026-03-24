@@ -1076,7 +1076,15 @@ export default class Physics
                     this.car19.steering = Math.sign(this.car19.steering) * this.car19.options.controlsSteeringMax
                 }
             }
-    
+
+            this.car19.vehicle.setSteeringValue(-this.car19.steering, this.car19.wheels.indexes.frontLeft)
+            this.car19.vehicle.setSteeringValue(-this.car19.steering, this.car19.wheels.indexes.frontRight)
+
+            if (this.car19.options.controlsSteeringQuad) {
+                this.car19.vehicle.setSteeringValue(this.car19.steering, this.car19.wheels.indexes.backLeft)
+                this.car19.vehicle.setSteeringValue(this.car19.steering, this.car19.wheels.indexes.backRight)
+            }
+
             // Accelerate
             const accelerationSpeed = this.controls.actions.boost ? this.car19.options.controlsAcceleratingSpeedBoost : this.car19.options.controlsAcceleratingSpeed
             const accelerateStrength = 17 * accelerationSpeed
@@ -1447,7 +1455,15 @@ export default class Physics
                     this.car18.steering = Math.sign(this.car18.steering) * this.car18.options.controlsSteeringMax
                 }
             }
-    
+
+            this.car18.vehicle.setSteeringValue(-this.car18.steering, this.car18.wheels.indexes.frontLeft)
+            this.car18.vehicle.setSteeringValue(-this.car18.steering, this.car18.wheels.indexes.frontRight)
+
+            if (this.car18.options.controlsSteeringQuad) {
+                this.car18.vehicle.setSteeringValue(this.car18.steering, this.car18.wheels.indexes.backLeft)
+                this.car18.vehicle.setSteeringValue(this.car18.steering, this.car18.wheels.indexes.backRight)
+            }
+
             // Accelerate
             const accelerationSpeed = this.controls.actions.boost ? this.car18.options.controlsAcceleratingSpeedBoost : this.car18.options.controlsAcceleratingSpeed
             const accelerateStrength = 17 * accelerationSpeed
@@ -1818,7 +1834,15 @@ export default class Physics
                     this.car17.steering = Math.sign(this.car17.steering) * this.car17.options.controlsSteeringMax
                 }
             }
-    
+
+            this.car17.vehicle.setSteeringValue(-this.car17.steering, this.car17.wheels.indexes.frontLeft)
+            this.car17.vehicle.setSteeringValue(-this.car17.steering, this.car17.wheels.indexes.frontRight)
+
+            if (this.car17.options.controlsSteeringQuad) {
+                this.car17.vehicle.setSteeringValue(this.car17.steering, this.car17.wheels.indexes.backLeft)
+                this.car17.vehicle.setSteeringValue(this.car17.steering, this.car17.wheels.indexes.backRight)
+            }
+
             // Accelerate
             const accelerationSpeed = this.controls.actions.boost ? this.car17.options.controlsAcceleratingSpeedBoost : this.car17.options.controlsAcceleratingSpeed
             const accelerateStrength = 17 * accelerationSpeed
@@ -2188,7 +2212,15 @@ export default class Physics
                     this.car16.steering = Math.sign(this.car16.steering) * this.car16.options.controlsSteeringMax
                 }
             }
-    
+
+            this.car16.vehicle.setSteeringValue(-this.car16.steering, this.car16.wheels.indexes.frontLeft)
+            this.car16.vehicle.setSteeringValue(-this.car16.steering, this.car16.wheels.indexes.frontRight)
+
+            if (this.car16.options.controlsSteeringQuad) {
+                this.car16.vehicle.setSteeringValue(this.car16.steering, this.car16.wheels.indexes.backLeft)
+                this.car16.vehicle.setSteeringValue(this.car16.steering, this.car16.wheels.indexes.backRight)
+            }
+
             // Accelerate
             const accelerationSpeed = this.controls.actions.boost ? this.car16.options.controlsAcceleratingSpeedBoost : this.car16.options.controlsAcceleratingSpeed
             const accelerateStrength = 17 * accelerationSpeed
@@ -2559,7 +2591,15 @@ export default class Physics
                     this.car15.steering = Math.sign(this.car15.steering) * this.car15.options.controlsSteeringMax
                 }
             }
-    
+
+            this.car15.vehicle.setSteeringValue(-this.car15.steering, this.car15.wheels.indexes.frontLeft)
+            this.car15.vehicle.setSteeringValue(-this.car15.steering, this.car15.wheels.indexes.frontRight)
+
+            if (this.car15.options.controlsSteeringQuad) {
+                this.car15.vehicle.setSteeringValue(this.car15.steering, this.car15.wheels.indexes.backLeft)
+                this.car15.vehicle.setSteeringValue(this.car15.steering, this.car15.wheels.indexes.backRight)
+            }
+
             // Accelerate
             const accelerationSpeed = this.controls.actions.boost ? this.car15.options.controlsAcceleratingSpeedBoost : this.car15.options.controlsAcceleratingSpeed
             const accelerateStrength = 17 * accelerationSpeed
@@ -2929,7 +2969,15 @@ export default class Physics
                     this.car14.steering = Math.sign(this.car14.steering) * this.car14.options.controlsSteeringMax
                 }
             }
-    
+
+            this.car14.vehicle.setSteeringValue(-this.car14.steering, this.car14.wheels.indexes.frontLeft)
+            this.car14.vehicle.setSteeringValue(-this.car14.steering, this.car14.wheels.indexes.frontRight)
+
+            if (this.car14.options.controlsSteeringQuad) {
+                this.car14.vehicle.setSteeringValue(this.car14.steering, this.car14.wheels.indexes.backLeft)
+                this.car14.vehicle.setSteeringValue(this.car14.steering, this.car14.wheels.indexes.backRight)
+            }
+
             // Accelerate
             const accelerationSpeed = this.controls.actions.boost ? this.car14.options.controlsAcceleratingSpeedBoost : this.car14.options.controlsAcceleratingSpeed
             const accelerateStrength = 17 * accelerationSpeed
@@ -3299,7 +3347,15 @@ export default class Physics
                     this.car13.steering = Math.sign(this.car13.steering) * this.car13.options.controlsSteeringMax
                 }
             }
-    
+
+            this.car13.vehicle.setSteeringValue(-this.car13.steering, this.car13.wheels.indexes.frontLeft)
+            this.car13.vehicle.setSteeringValue(-this.car13.steering, this.car13.wheels.indexes.frontRight)
+
+            if (this.car13.options.controlsSteeringQuad) {
+                this.car13.vehicle.setSteeringValue(this.car13.steering, this.car13.wheels.indexes.backLeft)
+                this.car13.vehicle.setSteeringValue(this.car13.steering, this.car13.wheels.indexes.backRight)
+            }
+
             // Accelerate
             const accelerationSpeed = this.controls.actions.boost ? this.car13.options.controlsAcceleratingSpeedBoost : this.car13.options.controlsAcceleratingSpeed
             const accelerateStrength = 17 * accelerationSpeed
@@ -3670,7 +3726,15 @@ export default class Physics
                     this.car12.steering = Math.sign(this.car12.steering) * this.car12.options.controlsSteeringMax
                 }
             }
-    
+
+            this.car12.vehicle.setSteeringValue(-this.car12.steering, this.car12.wheels.indexes.frontLeft)
+            this.car12.vehicle.setSteeringValue(-this.car12.steering, this.car12.wheels.indexes.frontRight)
+
+            if (this.car12.options.controlsSteeringQuad) {
+                this.car12.vehicle.setSteeringValue(this.car12.steering, this.car12.wheels.indexes.backLeft)
+                this.car12.vehicle.setSteeringValue(this.car12.steering, this.car12.wheels.indexes.backRight)
+            }
+
             // Accelerate
             const accelerationSpeed = this.controls.actions.boost ? this.car12.options.controlsAcceleratingSpeedBoost : this.car12.options.controlsAcceleratingSpeed
             const accelerateStrength = 17 * accelerationSpeed
@@ -4040,7 +4104,15 @@ export default class Physics
                     this.car11.steering = Math.sign(this.car11.steering) * this.car11.options.controlsSteeringMax
                 }
             }
-    
+
+            this.car11.vehicle.setSteeringValue(-this.car11.steering, this.car11.wheels.indexes.frontLeft)
+            this.car11.vehicle.setSteeringValue(-this.car11.steering, this.car11.wheels.indexes.frontRight)
+
+            if (this.car11.options.controlsSteeringQuad) {
+                this.car11.vehicle.setSteeringValue(this.car11.steering, this.car11.wheels.indexes.backLeft)
+                this.car11.vehicle.setSteeringValue(this.car11.steering, this.car11.wheels.indexes.backRight)
+            }
+
             // Accelerate
             const accelerationSpeed = this.controls.actions.boost ? this.car11.options.controlsAcceleratingSpeedBoost : this.car11.options.controlsAcceleratingSpeed
             const accelerateStrength = 17 * accelerationSpeed
@@ -4410,7 +4482,15 @@ export default class Physics
                     this.car10.steering = Math.sign(this.car10.steering) * this.car10.options.controlsSteeringMax
                 }
             }
-    
+
+            this.car10.vehicle.setSteeringValue(-this.car10.steering, this.car10.wheels.indexes.frontLeft)
+            this.car10.vehicle.setSteeringValue(-this.car10.steering, this.car10.wheels.indexes.frontRight)
+
+            if (this.car10.options.controlsSteeringQuad) {
+                this.car10.vehicle.setSteeringValue(this.car10.steering, this.car10.wheels.indexes.backLeft)
+                this.car10.vehicle.setSteeringValue(this.car10.steering, this.car10.wheels.indexes.backRight)
+            }
+
             // Accelerate
             const accelerationSpeed = this.controls.actions.boost ? this.car10.options.controlsAcceleratingSpeedBoost : this.car10.options.controlsAcceleratingSpeed
             const accelerateStrength = 17 * accelerationSpeed
@@ -4780,7 +4860,15 @@ export default class Physics
                     this.car9.steering = Math.sign(this.car9.steering) * this.car9.options.controlsSteeringMax
                 }
             }
-    
+
+            this.car9.vehicle.setSteeringValue(-this.car9.steering, this.car9.wheels.indexes.frontLeft)
+            this.car9.vehicle.setSteeringValue(-this.car9.steering, this.car9.wheels.indexes.frontRight)
+
+            if (this.car9.options.controlsSteeringQuad) {
+                this.car9.vehicle.setSteeringValue(this.car9.steering, this.car9.wheels.indexes.backLeft)
+                this.car9.vehicle.setSteeringValue(this.car9.steering, this.car9.wheels.indexes.backRight)
+            }
+
             // Accelerate
             const accelerationSpeed = this.controls.actions.boost ? this.car9.options.controlsAcceleratingSpeedBoost : this.car9.options.controlsAcceleratingSpeed
             const accelerateStrength = 17 * accelerationSpeed
@@ -5150,7 +5238,15 @@ export default class Physics
                     this.car8.steering = Math.sign(this.car8.steering) * this.car8.options.controlsSteeringMax
                 }
             }
-    
+
+            this.car8.vehicle.setSteeringValue(-this.car8.steering, this.car8.wheels.indexes.frontLeft)
+            this.car8.vehicle.setSteeringValue(-this.car8.steering, this.car8.wheels.indexes.frontRight)
+
+            if (this.car8.options.controlsSteeringQuad) {
+                this.car8.vehicle.setSteeringValue(this.car8.steering, this.car8.wheels.indexes.backLeft)
+                this.car8.vehicle.setSteeringValue(this.car8.steering, this.car8.wheels.indexes.backRight)
+            }
+
             // Accelerate
             const accelerationSpeed = this.controls.actions.boost ? this.car8.options.controlsAcceleratingSpeedBoost : this.car8.options.controlsAcceleratingSpeed
             const accelerateStrength = 17 * accelerationSpeed
@@ -5520,7 +5616,15 @@ export default class Physics
                     this.car7.steering = Math.sign(this.car7.steering) * this.car7.options.controlsSteeringMax
                 }
             }
-    
+
+            this.car7.vehicle.setSteeringValue(-this.car7.steering, this.car7.wheels.indexes.frontLeft)
+            this.car7.vehicle.setSteeringValue(-this.car7.steering, this.car7.wheels.indexes.frontRight)
+
+            if (this.car7.options.controlsSteeringQuad) {
+                this.car7.vehicle.setSteeringValue(this.car7.steering, this.car7.wheels.indexes.backLeft)
+                this.car7.vehicle.setSteeringValue(this.car7.steering, this.car7.wheels.indexes.backRight)
+            }
+
             // Accelerate
             const accelerationSpeed = this.controls.actions.boost ? this.car7.options.controlsAcceleratingSpeedBoost : this.car7.options.controlsAcceleratingSpeed
             const accelerateStrength = 17 * accelerationSpeed
@@ -5890,7 +5994,15 @@ export default class Physics
                     this.car6.steering = Math.sign(this.car6.steering) * this.car6.options.controlsSteeringMax
                 }
             }
-    
+
+            this.car6.vehicle.setSteeringValue(-this.car6.steering, this.car6.wheels.indexes.frontLeft)
+            this.car6.vehicle.setSteeringValue(-this.car6.steering, this.car6.wheels.indexes.frontRight)
+
+            if (this.car6.options.controlsSteeringQuad) {
+                this.car6.vehicle.setSteeringValue(this.car6.steering, this.car6.wheels.indexes.backLeft)
+                this.car6.vehicle.setSteeringValue(this.car6.steering, this.car6.wheels.indexes.backRight)
+            }
+
             // Accelerate
             const accelerationSpeed = this.controls.actions.boost ? this.car6.options.controlsAcceleratingSpeedBoost : this.car6.options.controlsAcceleratingSpeed
             const accelerateStrength = 17 * accelerationSpeed
@@ -6260,7 +6372,15 @@ export default class Physics
                     this.car5.steering = Math.sign(this.car5.steering) * this.car5.options.controlsSteeringMax
                 }
             }
-    
+
+            this.car5.vehicle.setSteeringValue(-this.car5.steering, this.car5.wheels.indexes.frontLeft)
+            this.car5.vehicle.setSteeringValue(-this.car5.steering, this.car5.wheels.indexes.frontRight)
+
+            if (this.car5.options.controlsSteeringQuad) {
+                this.car5.vehicle.setSteeringValue(this.car5.steering, this.car5.wheels.indexes.backLeft)
+                this.car5.vehicle.setSteeringValue(this.car5.steering, this.car5.wheels.indexes.backRight)
+            }
+
             // Accelerate
             const accelerationSpeed = this.controls.actions.boost ? this.car5.options.controlsAcceleratingSpeedBoost : this.car5.options.controlsAcceleratingSpeed
             const accelerateStrength = 17 * accelerationSpeed
@@ -6630,7 +6750,15 @@ export default class Physics
                     this.car4.steering = Math.sign(this.car4.steering) * this.car4.options.controlsSteeringMax
                 }
             }
-    
+
+            this.car4.vehicle.setSteeringValue(-this.car4.steering, this.car4.wheels.indexes.frontLeft)
+            this.car4.vehicle.setSteeringValue(-this.car4.steering, this.car4.wheels.indexes.frontRight)
+
+            if (this.car4.options.controlsSteeringQuad) {
+                this.car4.vehicle.setSteeringValue(this.car4.steering, this.car4.wheels.indexes.backLeft)
+                this.car4.vehicle.setSteeringValue(this.car4.steering, this.car4.wheels.indexes.backRight)
+            }
+
             // Accelerate
             const accelerationSpeed = this.controls.actions.boost ? this.car4.options.controlsAcceleratingSpeedBoost : this.car4.options.controlsAcceleratingSpeed
             const accelerateStrength = 17 * accelerationSpeed
@@ -7018,13 +7146,13 @@ export default class Physics
             }
     
             // Update wheels
-            // this.car3.vehicle.setSteeringValue(-this.car3.steering, this.car3.wheels.indexes.frontLeft)
-            // this.car3.vehicle.setSteeringValue(-this.car3.steering, this.car3.wheels.indexes.frontRight)
-    
-            // if (this.car3.options.controlsSteeringQuad) {
-            //     this.car3.vehicle.setSteeringValue(this.car3.steering, this.car3.wheels.indexes.backLeft)
-            //     this.car3.vehicle.setSteeringValue(this.car3.steering, this.car3.wheels.indexes.backRight)
-            // }
+            this.car3.vehicle.setSteeringValue(-this.car3.steering, this.car3.wheels.indexes.frontLeft)
+            this.car3.vehicle.setSteeringValue(-this.car3.steering, this.car3.wheels.indexes.frontRight)
+
+            if (this.car3.options.controlsSteeringQuad) {
+                this.car3.vehicle.setSteeringValue(this.car3.steering, this.car3.wheels.indexes.backLeft)
+                this.car3.vehicle.setSteeringValue(this.car3.steering, this.car3.wheels.indexes.backRight)
+            }
     
             // Accelerate
             const accelerationSpeed = this.controls.actions.boost ? this.car3.options.controlsAcceleratingSpeedBoost : this.car3.options.controlsAcceleratingSpeed
@@ -7433,13 +7561,13 @@ export default class Physics
             }
     
             // Update wheels
-            // this.car2.vehicle.setSteeringValue(-this.car2.steering, this.car2.wheels.indexes.frontLeft)
-            // this.car2.vehicle.setSteeringValue(-this.car2.steering, this.car2.wheels.indexes.frontRight)
-    
-            // if (this.car2.options.controlsSteeringQuad) {
-            //     this.car2.vehicle.setSteeringValue(this.car2.steering, this.car2.wheels.indexes.backLeft)
-            //     this.car2.vehicle.setSteeringValue(this.car2.steering, this.car2.wheels.indexes.backRight)
-            // }
+            this.car2.vehicle.setSteeringValue(-this.car2.steering, this.car2.wheels.indexes.frontLeft)
+            this.car2.vehicle.setSteeringValue(-this.car2.steering, this.car2.wheels.indexes.frontRight)
+
+            if (this.car2.options.controlsSteeringQuad) {
+                this.car2.vehicle.setSteeringValue(this.car2.steering, this.car2.wheels.indexes.backLeft)
+                this.car2.vehicle.setSteeringValue(this.car2.steering, this.car2.wheels.indexes.backRight)
+            }
     
             // Accelerate
             const accelerationSpeed = this.controls.actions.boost ? this.car2.options.controlsAcceleratingSpeedBoost : this.car2.options.controlsAcceleratingSpeed
@@ -7830,7 +7958,15 @@ export default class Physics
                     this.car1.steering = Math.sign(this.car1.steering) * this.car1.options.controlsSteeringMax
                 }
             }
-    
+
+            this.car1.vehicle.setSteeringValue(-this.car1.steering, this.car1.wheels.indexes.frontLeft)
+            this.car1.vehicle.setSteeringValue(-this.car1.steering, this.car1.wheels.indexes.frontRight)
+
+            if (this.car1.options.controlsSteeringQuad) {
+                this.car1.vehicle.setSteeringValue(this.car1.steering, this.car1.wheels.indexes.backLeft)
+                this.car1.vehicle.setSteeringValue(this.car1.steering, this.car1.wheels.indexes.backRight)
+            }
+
             // Accelerate
             const accelerationSpeed = this.controls.actions.boost ? this.car1.options.controlsAcceleratingSpeedBoost : this.car1.options.controlsAcceleratingSpeed
             const accelerateStrength = 17 * accelerationSpeed

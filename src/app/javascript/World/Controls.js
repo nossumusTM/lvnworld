@@ -320,12 +320,12 @@ export default class Controls extends EventEmitter
     updateButtonPositions() {
         const userDisplay = document.getElementById('userDisplay');
         if (userDisplay) {
-            userDisplay.style.display = this.isVerticalDisplay() ? 'unset' : 'unset';
+            userDisplay.style.display = 'block';
         }
 
         const batteryContainer = document.getElementById('battery-status');
         if (batteryContainer) {
-            batteryContainer.style.top = this.isVerticalDisplay() ? '70px' : '60px';
+            batteryContainer.style.top = '75px';
         }
 
         const scoreContainer = document.getElementById('coin-market');
@@ -340,7 +340,7 @@ export default class Controls extends EventEmitter
 
         const partyInfo = document.getElementById('party-info');
         if (userDisplay) {
-            userDisplay.style.display = 'unset';
+            userDisplay.style.display = 'block';
         }
 
         const joystickBottom = this.isVerticalDisplay() ? '10px' : '20px';
@@ -514,6 +514,7 @@ export default class Controls extends EventEmitter
         this.touch.joystick.$element.style.height = '170px'
         this.touch.joystick.$element.style.borderRadius = '50%'
         this.touch.joystick.$element.style.transition = 'opacity 0.3s 0.0s'
+        this.touch.joystick.$element.style.touchAction = 'none'
         this.touch.joystick.$element.style.willChange = 'opacity'
         this.touch.joystick.$element.style.opacity = '0'
         this.touch.joystick.$element.style.zIndex = '10'
@@ -574,6 +575,22 @@ export default class Controls extends EventEmitter
             this.touch.joystick.angle.center.y = boundings.top + boundings.height * 0.5
         }
 
+        this.touch.joystick.reset = () =>
+        {
+            this.touch.joystick.active = false
+            this.touch.joystick.touchIdentifier = null
+            this.touch.joystick.$limit.style.opacity = '0.25'
+            this.touch.joystick.$cursor.style.transform = 'translateX(0px) translateY(0px)'
+
+            document.removeEventListener('touchend', this.touch.joystick.events.touchend)
+            document.removeEventListener('touchmove', this.touch.joystick.events.touchmove)
+            document.removeEventListener('touchcancel', this.touch.joystick.events.touchcancel)
+            document.removeEventListener('mousemove', this.touch.joystick.events.mousemove)
+            document.removeEventListener('mouseup', this.touch.joystick.events.mouseup)
+
+            this.trigger('joystickEnd')
+        }
+
         this.sizes.on('resize', this.touch.joystick.resize)
         this.touch.joystick.resize()
 
@@ -583,6 +600,8 @@ export default class Controls extends EventEmitter
             // Joystick active
             if(this.touch.joystick.active)
             {
+                this.touch.joystick.resize()
+
                 // Calculate joystick angle
                 this.touch.joystick.angle.originalValue = - Math.atan2(
                     this.touch.joystick.angle.current.y - this.touch.joystick.angle.center.y,
@@ -618,6 +637,7 @@ export default class Controls extends EventEmitter
 
             if(touch)
             {
+                this.touch.joystick.resize()
                 this.touch.joystick.active = true
 
                 this.touch.joystick.touchIdentifier = touch.identifier
@@ -629,6 +649,7 @@ export default class Controls extends EventEmitter
 
                 document.addEventListener('touchend', this.touch.joystick.events.touchend)
                 document.addEventListener('touchmove', this.touch.joystick.events.touchmove, { passive: false })
+                document.addEventListener('touchcancel', this.touch.joystick.events.touchcancel)
 
                 this.trigger('joystickStart')
             }
@@ -643,6 +664,7 @@ export default class Controls extends EventEmitter
 
             if(touch)
             {
+                this.touch.joystick.resize()
                 this.touch.joystick.angle.current.x = touch.clientX
                 this.touch.joystick.angle.current.y = touch.clientY
 
@@ -657,15 +679,18 @@ export default class Controls extends EventEmitter
 
             if(touch)
             {
-                this.touch.joystick.active = false
+                this.touch.joystick.reset()
+            }
+        }
 
-                this.touch.joystick.$limit.style.opacity = '0.25'
+        this.touch.joystick.events.touchcancel = (_event) =>
+        {
+            const touches = [..._event.changedTouches]
+            const touch = touches.find((_touch) => _touch.identifier === this.touch.joystick.touchIdentifier)
 
-                this.touch.joystick.$cursor.style.transform = 'translateX(0px) translateY(0px)'
-
-                document.removeEventListener('touchend', this.touch.joystick.events.touchend)
-
-                this.trigger('joystickEnd')
+            if(touch)
+            {
+                this.touch.joystick.reset()
             }
         }
 
@@ -674,7 +699,9 @@ export default class Controls extends EventEmitter
         {
             _event.preventDefault()
 
+            this.touch.joystick.resize()
             this.touch.joystick.active = true
+            this.touch.joystick.touchIdentifier = null
             this.touch.joystick.angle.current.x = _event.clientX
             this.touch.joystick.angle.current.y = _event.clientY
             this.touch.joystick.$limit.style.opacity = '0.5'
@@ -692,6 +719,7 @@ export default class Controls extends EventEmitter
                 return
             }
 
+            this.touch.joystick.resize()
             this.touch.joystick.angle.current.x = _event.clientX
             this.touch.joystick.angle.current.y = _event.clientY
 
@@ -705,14 +733,7 @@ export default class Controls extends EventEmitter
                 return
             }
 
-            this.touch.joystick.active = false
-            this.touch.joystick.$limit.style.opacity = '0.25'
-            this.touch.joystick.$cursor.style.transform = 'translateX(0px) translateY(0px)'
-
-            document.removeEventListener('mousemove', this.touch.joystick.events.mousemove)
-            document.removeEventListener('mouseup', this.touch.joystick.events.mouseup)
-
-            this.trigger('joystickEnd')
+            this.touch.joystick.reset()
         }
 
         this.touch.joystick.$element.addEventListener('mousedown', this.touch.joystick.events.mousedown)
@@ -741,6 +762,7 @@ export default class Controls extends EventEmitter
 
                 // Set
                 joystick.style.right = '10px';
+                this.touch.joystick.resize()
 
                 console.log("Joystick moved to the right.");
             } else {
@@ -878,6 +900,7 @@ export default class Controls extends EventEmitter
 
                 // Set right position
                 joystick.style.left = '10px';  // Adjust this value based on your requirements
+                this.touch.joystick.resize()
 
                 console.log("Joystick moved to the left.");
             } else {
@@ -2673,7 +2696,10 @@ export default class Controls extends EventEmitter
             const resetLabel = document.getElementById('reset-label');
 
 
-            if (userDisplay) userDisplay.style.opacity = 1;
+            if (userDisplay) {
+                userDisplay.style.display = 'block';
+                userDisplay.style.opacity = 1;
+            }
             if (batteryStatus) batteryStatus.style.opacity = 1;
             if (speedometer) speedometer.style.opacity = 1;
             if (inviteButton) inviteButton.style.opacity = 0;
@@ -2724,6 +2750,7 @@ export default class Controls extends EventEmitter
 
             window.addEventListener('resize', () => {
                 this.updateButtonPositions();
+                this.touch.joystick.resize();
             });
         }
     }

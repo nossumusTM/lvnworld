@@ -897,12 +897,7 @@ export default class Car
                             // console.log(`Original Child Name: ${child.name}`);
             
                             // Rename child.name to match the retrieved matcap key
-                            if (matcaps.chassis) {
-                                const matcapName = matcaps.chassis;
-                                const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1);
-                                child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
-                                // console.log(`Updated Child Name: ${child.name}`);
-                            }
+                            child.name = 'shadeMetal';
                         }
                     });
                 } else {
@@ -938,12 +933,7 @@ export default class Car
                                 // console.log(`Original Child Name: ${child.name}`);
                 
                                 // Rename child.name to match the retrieved matcap key
-                                if (matcaps.window) {
-                                    const matcapName = matcaps.window;
-                                    const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1);
-                                    child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
-                                    // console.log(`Updated Child Name: ${child.name}`);
-                                }
+                                child.name = 'shadeBlack';
                             }
                         });
                     } else {
@@ -989,12 +979,7 @@ export default class Car
                             // console.log(`Original Child Name: ${child.name}`);
             
                             // Rename child.name to match the retrieved matcap key
-                            if (matcaps.chassis) {
-                                const matcapName = matcaps.chassis;
-                                const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1);
-                                child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
-                                // console.log(`Updated Child Name: ${child.name}`);
-                            }
+                            child.name = 'shadeMetal';
                         }
                     });
                 } else {
@@ -1029,12 +1014,7 @@ export default class Car
                             // console.log(`Original Child Name: ${child.name}`);
             
                             // Rename child.name to match the retrieved matcap key
-                            if (matcaps.window) {
-                                const matcapName = matcaps.window;
-                                const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1);
-                                child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
-                                // console.log(`Updated Child Name: ${child.name}`);
-                            }
+                            child.name = 'shadeBlack';
                         }
                     });
                 } else {
@@ -1080,12 +1060,7 @@ export default class Car
                             // console.log(`Original Child Name: ${child.name}`);
             
                             // Rename child.name to match the retrieved matcap key
-                            if (matcaps.chassis) {
-                                const matcapName = matcaps.chassis;
-                                const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1);
-                                child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
-                                // console.log(`Updated Child Name: ${child.name}`);
-                            }
+                            child.name = 'shadeMetal';
                         }
                     });
                 } else {
@@ -1120,12 +1095,7 @@ export default class Car
                             // console.log(`Original Child Name: ${child.name}`);
             
                             // Rename child.name to match the retrieved matcap key
-                            if (matcaps.window) {
-                                const matcapName = matcaps.window;
-                                const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1);
-                                child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
-                                // console.log(`Updated Child Name: ${child.name}`);
-                            }
+                            child.name = 'shadeBlack';
                         }
                     });
                 } else {
@@ -1172,12 +1142,7 @@ export default class Car
                             // console.log(`Original Child Name: ${child.name}`);
             
                             // Rename child.name to match the retrieved matcap key
-                            if (matcaps.chassis) {
-                                const matcapName = matcaps.chassis;
-                                const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1);
-                                child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
-                                // console.log(`Updated Child Name: ${child.name}`);
-                            }
+                            child.name = 'shadeMetal';
                         }
                     });
                 } else {
@@ -1212,12 +1177,7 @@ export default class Car
                             // console.log(`Original Child Name: ${child.name}`);
             
                             // Rename child.name to match the retrieved matcap key
-                            if (matcaps.window) {
-                                const matcapName = matcaps.window;
-                                const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1);
-                                child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
-                                // console.log(`Updated Child Name: ${child.name}`);
-                            }
+                            child.name = 'shadeBlack';
                         }
                     });
                 } else {
@@ -1263,12 +1223,7 @@ export default class Car
                             // console.log(`Original Child Name: ${child.name}`);
             
                             // Rename child.name to match the retrieved matcap key
-                            if (matcaps.chassis) {
-                                const matcapName = matcaps.chassis;
-                                const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1);
-                                child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
-                                // console.log(`Updated Child Name: ${child.name}`);
-                            }
+                            child.name = 'shadeMetal';
                         }
                     });
                 } else {
@@ -1303,12 +1258,7 @@ export default class Car
                             // console.log(`Original Child Name: ${child.name}`);
             
                             // Rename child.name to match the retrieved matcap key
-                            if (matcaps.window) {
-                                const matcapName = matcaps.window;
-                                const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1);
-                                child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
-                                // console.log(`Updated Child Name: ${child.name}`);
-                            }
+                            child.name = 'shadeBlack';
                         }
                     });
                 } else {
@@ -1355,12 +1305,7 @@ export default class Car
                             // console.log(`Original Child Name: ${child.name}`);
             
                             // Rename child.name to match the retrieved matcap key
-                            if (matcaps.chassis) {
-                                const matcapName = matcaps.chassis;
-                                const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1);
-                                child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
-                                // console.log(`Updated Child Name: ${child.name}`);
-                            }
+                            child.name = 'shadeMetal';
                         }
                     });
                 } else {
@@ -1427,12 +1372,7 @@ export default class Car
                             // console.log(`Original Child Name: ${child.name}`);
             
                             // Rename child.name to match the retrieved matcap key
-                            if (matcaps.chassis) {
-                                const matcapName = matcaps.chassis;
-                                const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1);
-                                child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
-                                // console.log(`Updated Child Name: ${child.name}`);
-                            }
+                            child.name = 'shadeMetal';
                         }
                     });
                 } else {
@@ -1467,12 +1407,7 @@ export default class Car
                                 // console.log(`Original Child Name: ${child.name}`);
                 
                                 // Rename child.name to match the retrieved matcap key
-                                if (matcaps.window) {
-                                    const matcapName = matcaps.window;
-                                    const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1);
-                                    child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
-                                    // console.log(`Updated Child Name: ${child.name}`);
-                                }
+                                child.name = 'shadeBlack';
                             }
                         });
                     } else {
@@ -1518,12 +1453,7 @@ export default class Car
                             // console.log(`Original Child Name: ${child.name}`);
             
                             // Rename child.name to match the retrieved matcap key
-                            if (matcaps.chassis) {
-                                const matcapName = matcaps.chassis;
-                                const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1);
-                                child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
-                                // console.log(`Updated Child Name: ${child.name}`);
-                            }
+                            child.name = 'shadeMetal';
                         }
                     });
                 } else {
@@ -1558,12 +1488,7 @@ export default class Car
                                 // console.log(`Original Child Name: ${child.name}`);
                 
                                 // Rename child.name to match the retrieved matcap key
-                                if (matcaps.window) {
-                                    const matcapName = matcaps.window;
-                                    const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1);
-                                    child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
-                                    // console.log(`Updated Child Name: ${child.name}`);
-                                }
+                                child.name = 'shadeBlack';
                             }
                         });
                     } else {
@@ -1609,12 +1534,7 @@ export default class Car
                             // console.log(`Original Child Name: ${child.name}`);
             
                             // Rename child.name to match the retrieved matcap key
-                            if (matcaps.chassis) {
-                                const matcapName = matcaps.chassis;
-                                const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1);
-                                child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
-                                // console.log(`Updated Child Name: ${child.name}`);
-                            }
+                            child.name = 'shadeMetal';
                         }
                     });
                 } else {
@@ -1649,12 +1569,7 @@ export default class Car
                                 // console.log(`Original Child Name: ${child.name}`);
                 
                                 // Rename child.name to match the retrieved matcap key
-                                if (matcaps.window) {
-                                    const matcapName = matcaps.window;
-                                    const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1);
-                                    child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
-                                    // console.log(`Updated Child Name: ${child.name}`);
-                                }
+                                child.name = 'shadeBlack';
                             }
                         });
                     } else {
@@ -1700,12 +1615,7 @@ export default class Car
                             // console.log(`Original Child Name: ${child.name}`);
             
                             // Rename child.name to match the retrieved matcap key
-                            if (matcaps.chassis) {
-                                const matcapName = matcaps.chassis;
-                                const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1);
-                                child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
-                                // console.log(`Updated Child Name: ${child.name}`);
-                            }
+                            child.name = 'shadeMetal';
                         }
                     });
                 } else {
@@ -1740,12 +1650,7 @@ export default class Car
                                 // console.log(`Original Child Name: ${child.name}`);
                 
                                 // Rename child.name to match the retrieved matcap key
-                                if (matcaps.window) {
-                                    const matcapName = matcaps.window;
-                                    const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1);
-                                    child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
-                                    // console.log(`Updated Child Name: ${child.name}`);
-                                }
+                                child.name = 'shadeBlack';
                             }
                         });
                     } else {
@@ -1791,12 +1696,7 @@ export default class Car
                             // console.log(`Original Child Name: ${child.name}`);
             
                             // Rename child.name to match the retrieved matcap key
-                            if (matcaps.chassis) {
-                                const matcapName = matcaps.chassis;
-                                const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1);
-                                child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
-                                // console.log(`Updated Child Name: ${child.name}`);
-                            }
+                            child.name = 'shadeMetal';
                         }
                     });
                 } else {
@@ -1831,12 +1731,7 @@ export default class Car
                                 // console.log(`Original Child Name: ${child.name}`);
                 
                                 // Rename child.name to match the retrieved matcap key
-                                if (matcaps.window) {
-                                    const matcapName = matcaps.window;
-                                    const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1);
-                                    child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
-                                    // console.log(`Updated Child Name: ${child.name}`);
-                                }
+                                child.name = 'shadeBlack';
                             }
                         });
                     } else {
@@ -1885,12 +1780,7 @@ export default class Car
                                     // console.log(`Original Child Name: ${child.name}`);
                     
                                     // Rename child.name to match the retrieved matcap key
-                                    if (matcaps.chassis) {
-                                        const matcapName = matcaps.chassis;
-                                        const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1);
-                                        child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
-                                        // console.log(`Updated Child Name: ${child.name}`);
-                                    }
+                                    child.name = 'shadeMetal';
                                 }
                             });
                         } else {
@@ -1926,12 +1816,7 @@ export default class Car
                                 // console.log(`Original Child Name: ${child.name}`);
                 
                                 // Rename child.name to match the retrieved matcap key
-                                if (matcaps.window) {
-                                    const matcapName = matcaps.window;
-                                    const formattedMatcapName = matcapName.charAt(0).toUpperCase() + matcapName.slice(1);
-                                    child.name = `shade${formattedMatcapName}`; // Update child name to match matcap name
-                                    // console.log(`Updated Child Name: ${child.name}`);
-                                }
+                                child.name = 'shadeBlack';
                             }
                         });
                     } else {
