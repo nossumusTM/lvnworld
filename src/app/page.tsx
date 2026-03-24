@@ -22,6 +22,7 @@ export default function Home() {
   const [isMounted, setIsMounted] = useState(false); // Track when the component is mounted
   const [selectedWorldId, setSelectedWorldId] = useState<string | null>(null); // New state for selected world ID
   const [token, setToken] = useState<string | null>(null); // State to store the token
+  const [showLandingPage, setShowLandingPage] = useState(false);
   const [carName, setCarName] = useState<string | null>(() => {
     if (typeof window === 'undefined') return null;
     return localStorage.getItem('selectedCarName');
@@ -544,6 +545,27 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
 
     useEffect(() => {
       setIsMounted(true);
+      updateWorldList({});
+
+      let localRetryCount = 0;
+      const interval = setInterval(() => {
+        const container = document.getElementById('loading-layer');
+        if (container) {
+          initGlobe('loading-layer');
+          clearInterval(interval);
+        } else if (localRetryCount >= 10) {
+          console.warn('Failed to find #loading-layer after 10 retries.');
+          clearInterval(interval);
+        }
+        localRetryCount++;
+      }, 150);
+
+      return () => {
+        clearInterval(interval);
+      };
+    }, []);
+
+    useEffect(() => {
       const identity = getOrCreatePlayerIdentity();
       if (!identity?.playerId) {
         return;
@@ -557,20 +579,6 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
       getToken(identity.playerId)
         .then(() => {
           initializeWebSocket(identity.playerId);
-
-          let localRetryCount = 0;
-          const interval = setInterval(() => {
-            const container = document.getElementById('loading-layer');
-            if (container) {
-              initGlobe('loading-layer');
-              clearInterval(interval);
-            } else if (localRetryCount >= 5) {
-              console.warn('Failed to find #loading-layer after 5 retries.');
-              clearInterval(interval);
-            }
-            localRetryCount++;
-          }, 500);
-
           setHasAppInitialized(true);
           localStorage.removeItem('playerId');
           localStorage.removeItem('worldId');
@@ -593,14 +601,21 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
       {!isCanvasInitialized && (
         <div id="loading-container">
           <div id="loading-layer" className="loading-layer overflow-hidden"></div>
-          <div id="w3m-layer" className='w3m-layer flex-container'>
+          <div id="w3m-layer" className={`w3m-layer flex-container ${showLandingPage ? 'first-screen-hidden' : ''}`}>
             <div className="user-count-wrapper">
               <span id="userCountDisplay" className="user-count-display">0</span>
             </div>
+            <button
+              type="button"
+              className="who-am-i-button"
+              onClick={() => setShowLandingPage(true)}
+            >
+              WHO AM I?
+            </button>
           </div>
           {/* Show pulsing message while setting up WebSocket */}
           <>
-            <div id="world-layer">
+            <div id="world-layer" className={showLandingPage ? 'first-screen-hidden' : ''}>
               <div style={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
                 <input
                   type="text"
@@ -629,6 +644,91 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
                 <ul id="world-list"></ul>
               </div>
             </div>
+            <section className={`landing-showcase ${showLandingPage ? 'landing-showcase-active' : ''}`}>
+              <div className="landing-showcase__shell">
+                <div className="landing-showcase__topbar">
+                  <button
+                    type="button"
+                    className="landing-showcase__back-button"
+                    onClick={() => setShowLandingPage(false)}
+                  >
+                    <span className="landing-showcase__back-icon" aria-hidden="true">←</span>
+                    <span>BACK TO WORLDS</span>
+                  </button>
+                </div>
+                <p className="landing-showcase__eyebrow">FULL-STACK DELIVERY PARTNER</p>
+                <h1 className="landing-showcase__title">I design and ship digital products that move from brief to revenue.</h1>
+                <p className="landing-showcase__copy">
+                  Web apps, mobile apps, admin panels, real-time systems, AI workflows, payment flows, cloud backends, and product delivery around a clear technical task.
+                </p>
+                <div className="landing-showcase__chips">
+                  <span>Web Apps</span>
+                  <span>Mobile Apps</span>
+                  <span>Backend Systems</span>
+                  <span>Product Strategy</span>
+                </div>
+                <div className="landing-showcase__grid">
+                  <article className="landing-showcase__card">
+                    <h2>From Raw Idea To Scope</h2>
+                    <p>I turn vague requests into architecture, milestones, and an implementation path that protects budget and deadline.</p>
+                  </article>
+                  <article className="landing-showcase__card">
+                    <h2>Execution Across The Stack</h2>
+                    <p>Frontend, backend, integrations, deployment pipelines, analytics, and internal tools are handled as one coherent product.</p>
+                  </article>
+                  <article className="landing-showcase__card">
+                    <h2>Built For Launch, Not Just Demo</h2>
+                    <p>The focus is production readiness: maintainable code, clear UX, performance, security, and handoff quality.</p>
+                  </article>
+                </div>
+                <div className="landing-showcase__sections">
+                  <section className="landing-showcase__section">
+                    <h2>Core Stack</h2>
+                    <div className="landing-showcase__skill-grid">
+                      <span>Javascript</span>
+                      <span>Typescript</span>
+                      <span>Node</span>
+                      <span>Express</span>
+                      <span>Websocket</span>
+                      <span>WebRTC</span>
+                      <span>CSS</span>
+                      <span>Tailwind</span>
+                      <span>React</span>
+                      <span>React Native</span>
+                      <span>Expo</span>
+                      <span>Flutter</span>
+                      <span>Linux Administration</span>
+                      <span>AWS</span>
+                      <span>Cloud Services</span>
+                    </div>
+                  </section>
+                  <section className="landing-showcase__section">
+                    <h2>What Clients Usually Bring</h2>
+                    <p>
+                      A rough brief, a technical task, a Figma file, a half-built product, or an operational bottleneck.
+                      I translate that into architecture, implementation, deployment, and ongoing iteration.
+                    </p>
+                  </section>
+                  <section className="landing-showcase__section">
+                    <h2>Delivery Model</h2>
+                    <div className="landing-showcase__timeline">
+                      <div>
+                        <strong>1. Discovery</strong>
+                        <p>Clarify business goals, technical constraints, edge cases, and delivery scope.</p>
+                      </div>
+                      <div>
+                        <strong>2. Build</strong>
+                        <p>Implement frontend, backend, integrations, infrastructure, and internal tooling as one system.</p>
+                      </div>
+                      <div>
+                        <strong>3. Launch</strong>
+                        <p>Ship production-ready software with deployment, monitoring, polish, and a path for scale.</p>
+                      </div>
+                    </div>
+                  </section>
+                </div>
+              </div>
+            </section>
           </>
         </div>
       )}
@@ -640,7 +740,7 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
       {playerId && selectedWorldId && token && application && (
         <div className="grid bg-transparent overflow-hidden shadow-sm">
           <div className="flex justify-center items-center p-4">
-            <div id="userDisplay" className="cursor-pointer z-50"></div>
+            <div id="userDisplay" className="cursor-pointer z-50" style={{ opacity: 0, display: 'none' }}></div>
             <div id="playerCountDisplay"></div>
 
             {/* Battery Status */}

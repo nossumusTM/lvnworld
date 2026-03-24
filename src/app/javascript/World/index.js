@@ -4474,6 +4474,8 @@ export default class
             
             if (userDisplay) {
                 userDisplay.innerHTML = formatPlayerId(playerId);
+                userDisplay.style.opacity = 0;
+                userDisplay.style.display = 'none';
                 if (batteryStatus) batteryStatus.style.opacity = 1;
                 if (scoreElement) scoreElement.style.opacity = 0;
                 if (coinMarket) {
@@ -4568,10 +4570,6 @@ export default class
           }
       }
       
-      if (userDisplay) {
-        userDisplay.style.opacity = 1;
-    }
-
       // Time tick
       this.time.on('tick',() =>
       {
