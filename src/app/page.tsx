@@ -3,7 +3,6 @@
 import dynamic from 'next/dynamic';
 import React from 'react';
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
 import { initGlobe, addSignalEffect, removeSignalEffect } from './globe'; // Adjust path as necessary
 import { FaRedo } from 'react-icons/fa';
 import { getOrCreatePlayerIdentity } from './javascript/Utils/playerIdentity.js';
@@ -30,7 +29,6 @@ export default function Home() {
   // Websocket
   const [matcaps, setMatcaps] = useState({});
 
-  const router = useRouter();
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080';
   const WS_BASE_URL = process.env.NEXT_PUBLIC_WS_BASE_URL || 'ws://localhost:8080';
 
@@ -588,20 +586,6 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
     return null;
   }
 
-  const handleGarageButtonClick = () => {
-      if (playerId) {
-        router.push(`/garage?playerId=${encodeURIComponent(playerId)}`);
-          
-          // Clean up WebSocket connection
-          if (wsRef.current) {
-              wsRef.current.close();
-          }
-
-    } else {
-        console.error('Player ID is missing');
-    }
-  };
-
   return (
     <main className="overflow-hidden flex flex-col items-center" style={{ backgroundColor: '#000', fontFamily: "'Orbitron', sans-serif" }}>
       <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
@@ -610,7 +594,6 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
         <div id="loading-container">
           <div id="loading-layer" className="loading-layer overflow-hidden"></div>
           <div id="w3m-layer" className='w3m-layer flex-container'>
-            <button type="button" className='my-wallet' onClick={handleGarageButtonClick}>GARAGE</button>
             <div className="user-count-wrapper">
               <span id="userCountDisplay" className="user-count-display">0</span>
             </div>
