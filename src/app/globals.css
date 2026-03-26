@@ -1069,6 +1069,10 @@ opacity: 0;
   transition: all 0.3s ease;
 }
 
+.who-am-i-button__label {
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+}
+
 .who-am-i-button:hover {
   background-color: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.16);
@@ -1128,9 +1132,12 @@ opacity: 0;
 }
 
 .landing-showcase__shell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
   width: calc(100vw - 56px);
   height: calc(100vh - 56px);
-  padding: 0 42px 28px;
+  padding: 0;
   box-sizing: border-box;
   border-radius: 0;
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -1139,21 +1146,28 @@ opacity: 0;
   box-shadow:
     0 18px 40px rgba(0, 0, 0, 0.18),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  overflow-x: hidden;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.24) transparent;
+  overflow: hidden;
 }
 
 .landing-showcase__topbar {
-  position: sticky;
-  top: 0;
+  position: relative;
+  flex: 0 0 auto;
   z-index: 2;
-  margin: 0 -42px 26px;
+  margin: 0;
   padding: 0;
   border-radius: 0;
   background: rgba(255, 255, 255, 0.02);
   backdrop-filter: blur(26px);
+}
+
+.landing-showcase__content {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 26px 42px 26px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.24) transparent;
 }
 
 .landing-showcase__back-button {
@@ -1345,7 +1359,6 @@ opacity: 0;
   display: grid;
   grid-template-rows: auto auto auto;
   gap: 16px;
-  padding-bottom: 12px;
   min-width: 0;
 }
 
@@ -1429,6 +1442,78 @@ opacity: 0;
   grid-column: 1 / -1;
 }
 
+.landing-showcase__section-button {
+  margin-top: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.landing-showcase__contact-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.landing-showcase__greeting-strip {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-top: 22px;
+  min-height: clamp(28px, 4vw, 42px);
+  overflow: hidden;
+}
+
+.landing-showcase__greeting-label {
+  color: rgba(245, 247, 251, 0.86);
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.02rem;
+}
+
+.landing-showcase__greeting-typewriter {
+  display: inline-flex;
+  align-items: center;
+  min-height: clamp(28px, 4vw, 42px);
+  color: #f4f7ff;
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.02rem;
+  white-space: nowrap;
+}
+
+.landing-showcase__greeting-caret {
+  display: inline-block;
+  width: 2px;
+  height: 0.9em;
+  margin-left: 6px;
+  background: rgba(244, 247, 255, 0.95);
+  animation: landingCaretBlink 0.9s steps(1) infinite;
+}
+
+.landing-showcase__contact-button {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 0 18px;
+  text-decoration: none;
+}
+
+.landing-showcase__contact-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
 .landing-showcase__ticker {
   position: relative;
   display: block;
@@ -1484,6 +1569,23 @@ opacity: 0;
 
 .landing-showcase__section--story {
   background: rgba(255, 255, 255, 0.025);
+}
+
+.landing-showcase__section--contact {
+  display: flex;
+  flex-direction: column;
+}
+
+.landing-showcase__footer-note {
+  flex: 0 0 auto;
+  margin: 24px 0 12px;
+  padding: 0 24px;
+  text-align: center;
+  font-size: 9px;
+  line-height: 1.45;
+  letter-spacing: 0.06rem;
+  color: rgba(232, 240, 255, 0.58);
+  text-transform: none;
 }
 
 .landing-showcase__timeline {
@@ -2069,8 +2171,12 @@ opacity: 0;
   .landing-showcase__shell {
     width: calc(100vw - 20px);
     height: calc(100dvh - 20px);
-    padding: 0 12px 16px;
+    padding: 0;
     border-radius: 0;
+  }
+
+  .landing-showcase__content {
+    padding: 12px 12px 12px;
   }
 
   .landing-showcase__hero {
@@ -2089,11 +2195,10 @@ opacity: 0;
   .landing-showcase__body {
     grid-template-rows: auto auto auto;
     gap: 10px;
-    padding-bottom: 8px;
   }
 
   .landing-showcase__topbar {
-    margin: 0 -12px 12px;
+    margin: 0;
     padding: 0;
   }
 
@@ -2178,6 +2283,11 @@ opacity: 0;
     clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
   }
 
+  .landing-showcase__section-button,
+  .landing-showcase__contact-actions {
+    margin-top: 16px;
+  }
+
   .landing-showcase__card h2,
   .landing-showcase__section h2 {
     margin-bottom: 8px;
@@ -2228,6 +2338,46 @@ opacity: 0;
 
   .landing-showcase__skill-item svg {
     font-size: 12px;
+  }
+
+  .landing-showcase__contact-actions {
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  .landing-showcase__greeting-strip {
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .landing-showcase__greeting-label,
+  .landing-showcase__greeting-typewriter {
+    font-size: 24px;
+  }
+
+  .landing-showcase__greeting-strip,
+  .landing-showcase__greeting-typewriter {
+    min-height: 24px;
+  }
+
+  .landing-showcase__contact-button {
+    padding: 0;
+    justify-content: center;
+  }
+
+  .landing-showcase__contact-button span:last-child {
+    display: none;
+  }
+}
+
+@keyframes landingCaretBlink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
   }
 }
 

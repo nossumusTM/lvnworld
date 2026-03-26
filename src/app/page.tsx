@@ -4,11 +4,11 @@ import dynamic from 'next/dynamic';
 import React from 'react';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { initGlobe, addSignalEffect, removeSignalEffect } from './globe'; // Adjust path as necessary
-import { FaRedo } from 'react-icons/fa';
-import { FaLinux, FaNodeJs, FaReact } from 'react-icons/fa';
+import { FaCube, FaLinux, FaNodeJs, FaReact, FaRedo, FaTelegramPlane, FaWallet, FaWhatsapp } from 'react-icons/fa';
 import { BiLogoTypescript } from 'react-icons/bi';
+import { MdMailOutline } from 'react-icons/md';
 import { RiNextjsFill, RiTailwindCssFill } from 'react-icons/ri';
-import { SiCss3, SiExpress, SiExpo, SiFlutter, SiJavascript, SiWebrtc } from 'react-icons/si';
+import { SiCss3, SiExpress, SiExpo, SiFlutter, SiJavascript, SiSolidity, SiWebrtc } from 'react-icons/si';
 import { TbBrandReactNative, TbBrandSocketIo } from 'react-icons/tb';
 import { getOrCreatePlayerIdentity } from './javascript/Utils/playerIdentity.js';
 import { createRandomStarterLoadout } from './javascript/Utils/playerLoadout.js';
@@ -17,6 +17,22 @@ import { createRandomStarterLoadout } from './javascript/Utils/playerLoadout.js'
 const Application = dynamic(() => import('./javascript/Application'), {
   ssr: false,
 });
+
+const GREETING_ITEMS = [
+  'Hello',
+  'Ciao',
+  'Hola',
+  'Bonjour',
+  'Hallo',
+  'Ola',
+  'Merhaba',
+  'Privet',
+  'Salam',
+  'Namaste',
+  'Konnichiwa',
+  'Annyeong',
+  'Shalom',
+];
 
 export default function Home() {
   const MAX_PLAYERS_PER_WORLD = 5;
@@ -37,7 +53,28 @@ export default function Home() {
     { label: 'Flutter', icon: <SiFlutter aria-hidden="true" /> },
     { label: 'Linux', icon: <FaLinux aria-hidden="true" /> },
     { label: 'Next.js', icon: <RiNextjsFill aria-hidden="true" /> },
+    { label: 'Web3', icon: <FaCube aria-hidden="true" /> },
+    { label: 'Solidity', icon: <SiSolidity aria-hidden="true" /> },
+    { label: 'WalletConnect Auth', icon: <FaWallet aria-hidden="true" /> },
+    { label: 'NFT', icon: <FaCube aria-hidden="true" /> },
     { label: 'Realtime Ops', icon: <FaRedo aria-hidden="true" /> },
+  ];
+  const contactItems = [
+    {
+      label: 'Whatsapp',
+      href: 'https://wa.me/393515018252',
+      icon: <FaWhatsapp aria-hidden="true" />,
+    },
+    {
+      label: 'Telegram',
+      href: 'https://t.me/lvnmmdv',
+      icon: <FaTelegramPlane aria-hidden="true" />,
+    },
+    {
+      label: 'Mail',
+      href: 'mailto:inaplanetfoundation@gmail.com',
+      icon: <MdMailOutline aria-hidden="true" />,
+    },
   ];
   const [playerId, setPlayerId] = useState<string | null>(null);
   const [isCanvasInitialized, setIsCanvasInitialized] = useState(false); // State for canvas initialization
@@ -47,6 +84,9 @@ export default function Home() {
   const [selectedWorldId, setSelectedWorldId] = useState<string | null>(null); // New state for selected world ID
   const [token, setToken] = useState<string | null>(null); // State to store the token
   const [showLandingPage, setShowLandingPage] = useState(true);
+  const [activeGreetingIndex, setActiveGreetingIndex] = useState(0);
+  const [animatedGreeting, setAnimatedGreeting] = useState('');
+  const [isDeletingGreeting, setIsDeletingGreeting] = useState(false);
   const [carName, setCarName] = useState<string | null>(() => {
     if (typeof window === 'undefined') return null;
     return localStorage.getItem('selectedCarName');
@@ -79,6 +119,36 @@ export default function Home() {
   const handleReload = () => {
     window.location.reload(); // Reload the page
   };
+
+  useEffect(() => {
+    const currentGreeting = GREETING_ITEMS[activeGreetingIndex];
+    const normalizedGreeting = animatedGreeting === '\u00A0' ? '' : animatedGreeting;
+    const reachedEnd = normalizedGreeting === currentGreeting;
+    const reachedStart = normalizedGreeting.length === 0;
+
+    const timeout = window.setTimeout(() => {
+      if (!isDeletingGreeting) {
+        if (reachedEnd) {
+          setIsDeletingGreeting(true);
+          return;
+        }
+
+        setAnimatedGreeting(currentGreeting.slice(0, normalizedGreeting.length + 1));
+        return;
+      }
+
+      if (!reachedStart) {
+        const nextGreeting = currentGreeting.slice(0, normalizedGreeting.length - 1);
+        setAnimatedGreeting(nextGreeting || '\u00A0');
+        return;
+      }
+
+      setIsDeletingGreeting(false);
+      setActiveGreetingIndex((currentIndex) => (currentIndex + 1) % GREETING_ITEMS.length);
+    }, reachedEnd && !isDeletingGreeting ? 900 : isDeletingGreeting ? 170 : 310);
+
+    return () => window.clearTimeout(timeout);
+  }, [activeGreetingIndex, animatedGreeting, isDeletingGreeting]);
 
   const openLandingPage = useCallback(() => {
     setShowLandingPage(true);
@@ -654,12 +724,12 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
             <div className="user-count-wrapper">
               <span id="userCountDisplay" className="user-count-display">0</span>
             </div>
-              <button
+            <button
               type="button"
               className="who-am-i-button"
               onClick={openLandingPage}
             >
-              WHO WE ARE?
+              <span className="who-am-i-button__label">WHO WE ARE?</span>
             </button>
           </div>
           {/* Show pulsing message while setting up WebSocket */}
@@ -694,7 +764,7 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
               </div>
             </div>
             <section className={`landing-showcase ${showLandingPage ? 'landing-showcase-active' : ''}`}>
-              <div ref={landingShowcaseRef} className="landing-showcase__shell">
+              <div className="landing-showcase__shell">
                 <div className="landing-showcase__topbar">
                   <button
                     type="button"
@@ -705,6 +775,7 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
                     <span>ENTER THE WORLD</span>
                   </button>
                 </div>
+                <div ref={landingShowcaseRef} className="landing-showcase__content">
                 <div className="landing-showcase__body">
                   <div className="landing-showcase__hero">
                     <div className="landing-showcase__hero-copy">
@@ -792,15 +863,49 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
                       </div>
                     </div>
                   </section>
-                  <section className="landing-showcase__section landing-showcase__section--story landing-showcase__section--wide">
+                  <section className="landing-showcase__section landing-showcase__section--story">
                     <h2>The Inaplanet World</h2>
                     <p>
                       Inaplanet is our playable digital world: part arcade, part social space, part live product showcase. We built it to turn a static portfolio into something people can drive through, explore, and feel.
                     </p>
                     <p className="landing-showcase__story-copy">
-                      Users jump between cities, move through interactive spaces, and experience the project as a living environment instead of a flat page. The goal is to make discovery memorable and give people a world they can enjoy while they explore what we build.
+                      Visitors jump between cities, move through interactive spaces, and experience the project as a living environment instead of a flat page. The goal is to make discovery memorable and give people a world they can enjoy while they explore what we build.
+                    </p>
+                    <p className="landing-showcase__story-copy">
+                      The world is multiplayer, so you can connect with your friends, enter the same city, and enjoy the experience together. To enter the world, use the [ ENTER THE WORLD ] button at the top of the page.
                     </p>
                   </section>
+                  <section className="landing-showcase__section landing-showcase__section--contact">
+                    <h2>Have a project in mind? Let&apos;s discuss with us.</h2>
+                    <p>
+                      Reach out directly and we&apos;ll turn the brief into scope, architecture, and a build plan.
+                    </p>
+                    <div className="landing-showcase__greeting-strip" aria-label="Greetings in multiple languages">
+                      <span className="landing-showcase__greeting-label">Say</span>
+                      <div className="landing-showcase__greeting-typewriter" aria-live="polite">
+                        <span>{animatedGreeting}</span>
+                        <span className="landing-showcase__greeting-caret" aria-hidden="true"></span>
+                      </div>
+                    </div>
+                    <div className="landing-showcase__contact-actions">
+                      {contactItems.map((item) => (
+                        <a
+                          key={item.label}
+                          className="landing-showcase__back-button landing-showcase__section-button landing-showcase__contact-button"
+                          href={item.href}
+                          target={item.href.startsWith('http') ? '_blank' : undefined}
+                          rel={item.href.startsWith('http') ? 'noreferrer' : undefined}
+                        >
+                          <span className="landing-showcase__contact-icon">{item.icon}</span>
+                          <span>{item.label}</span>
+                        </a>
+                      ))}
+                    </div>
+                  </section>
+                </div>
+                <p className="landing-showcase__footer-note">
+                  Inaplanet Foundation. &copy; 2026 | All rights reserved.
+                </p>
                 </div>
                 </div>
               </div>
