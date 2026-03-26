@@ -52,8 +52,8 @@ const earlyConsoleNoiseFilter = `
 `;
 
 export const metadata: Metadata = {
-  title: 'LW | My Dream Playground Onchain.',
-  description: 'Nossumus Inc. Foundation.'
+  title: 'Inaplanet Foundation.',
+  description: 'Defining the future, bit by bit.'
 };
 
 // Define RootLayout

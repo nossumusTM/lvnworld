@@ -378,9 +378,6 @@ export default class
         if (!this.car) {
             console.warn('PlayerCar is not initialized');
             return null;
-        } else {
-            let targetElement = document.getElementById('target-player-id');
-            targetElement.style.opacity = '1';
         }
     
         let nearestPlayerId = null;
@@ -406,59 +403,16 @@ export default class
     
     // Other methods remain unchanged
     showTargetPlayerId(targetPlayerId) {
-        let targetElement = document.getElementById('target-player-id');
-        if (!targetElement) {
-            targetElement = document.createElement('div');
-            targetElement.id = 'target-player-id';
-            document.body.appendChild(targetElement);
-        }
-
-        // Function to format playerId
-        function formatPlayerId(targetPlayerId) {
-            return getPlayerDisplayName(targetPlayerId);
-        }
-    
-        // Update the content and show the element
-        targetElement.innerText = '' + formatPlayerId(targetPlayerId) + '';
-        targetElement.style.display = 'block';
-        targetElement.style.opacity = '1';
-        this.updateTargetPlayerDisplay();
+        return targetPlayerId;
     }
 
     // Function to dynamically update the display style based on orientation
     updateTargetPlayerDisplay() {
-        const targetElement = document.getElementById('target-player-id');
-        const miniMap = document.getElementById('mini-map');
-        if (!targetElement || !miniMap) return;
-
-        const miniMapRect = miniMap.getBoundingClientRect();
-        targetElement.style.display = 'block';
-        targetElement.style.position = 'absolute';
-        targetElement.style.textAlign = 'center';
-        targetElement.style.fontFamily = 'Orbitron, sans-serif';
-        targetElement.style.fontSize = '10px';
-        targetElement.style.top = `${miniMapRect.top}px`;
-        targetElement.style.left = `${miniMapRect.right + 12}px`;
-        targetElement.style.width = '42px';
-        targetElement.style.minHeight = `${miniMapRect.height}px`;
-        targetElement.style.background = 'rgba(0, 0, 0, 0.5)';
-        targetElement.style.color = '#fff';
-        targetElement.style.padding = '10px 6px';
-        targetElement.style.borderRadius = '5px';
-        targetElement.style.zIndex = '10';
-        targetElement.style.backdropFilter = 'blur(10px)';
-        targetElement.style.writingMode = 'vertical-rl';
-        targetElement.style.textOrientation = 'mixed';
-        targetElement.style.transform = 'rotate(180deg)';
+        return;
     }
     
     hideTargetPlayerId() {
-        const targetElement = document.getElementById('target-player-id');
-        if (targetElement) {
-            // targetElement.innerText = '⫷⫸'
-            targetElement.innerText = 'TARGET'
-            this.updateTargetPlayerDisplay();
-        }
+        return;
     }
 
     start() {
@@ -4535,6 +4489,7 @@ export default class
     
             // Update UI with player information
             const userDisplay = document.getElementById('userDisplay');
+            const exitButton = document.getElementById('game-exit-button');
             const batteryStatus = document.getElementById('battery-status');
             const scoreElement = document.getElementById('score-status');
             const coinMarket = document.getElementById('coin-market');
@@ -4554,6 +4509,10 @@ export default class
                 userDisplay.innerHTML = formatPlayerId(playerId);
                 userDisplay.style.opacity = 1;
                 userDisplay.style.display = 'block';
+                if (exitButton) {
+                    exitButton.style.opacity = 1;
+                    exitButton.style.display = 'block';
+                }
                 if (batteryStatus) batteryStatus.style.opacity = 1;
                 if (scoreElement) scoreElement.style.opacity = 0;
                 if (coinMarket) {

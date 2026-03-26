@@ -229,8 +229,8 @@ export default class Controls extends EventEmitter
         slot4: { bottom: '98px', right: '0px', left: 'unset'},
         slot5: { bottom: '20px', right: '78px', left: 'unset' },
         slot6: { bottom: '20px', right: '0px', left: 'unset'},
-        slot7: { bottom: '175px', left: '10px', right: 'unset' },
-        slot8: { bottom: '175px', left: '80px', right: 'unset' },
+        slot7: { bottom: '190px', left: '10px', right: 'unset' },
+        slot8: { bottom: '190px', left: '80px', right: 'unset' },
     };
 
     updateController() {
@@ -284,8 +284,8 @@ export default class Controls extends EventEmitter
         slot4: { action: 'forward', bottom: '98px', right: '0px', left: 'unset' },
         slot5: { action: 'backward', bottom: '20px', right: '78px', left: 'unset' },
         slot6: { action: 'brake', bottom: '20px', right: '0px', left: 'unset' },
-        slot7: { action: 'camera', bottom: '175px', left: '10px', right: 'unset' },
-        slot8: { action: 'reset', bottom: '175px', left: '80px', right: 'unset' },
+        slot7: { action: 'camera', bottom: '190px', left: '10px', right: 'unset' },
+        slot8: { action: 'reset', bottom: '190px', left: '80px', right: 'unset' },
     };    
 
     resetController() {
@@ -319,8 +319,12 @@ export default class Controls extends EventEmitter
 
     updateButtonPositions() {
         const userDisplay = document.getElementById('userDisplay');
+        const exitButton = document.getElementById('game-exit-button');
         if (userDisplay) {
             userDisplay.style.display = 'block';
+        }
+        if (exitButton) {
+            exitButton.style.display = 'block';
         }
 
         const batteryContainer = document.getElementById('battery-status');
@@ -423,7 +427,6 @@ export default class Controls extends EventEmitter
         // }
 
         // Display none if horizontal
-        const targetPlayerId = document.getElementById('target-player-id');
         const inviteButton = document.getElementById('invite-button');
         const contacts = document.getElementById('friend-invite-button');
         const contactList = document.getElementById('toggle-contact-list');
@@ -436,7 +439,6 @@ export default class Controls extends EventEmitter
         const touchNext = document.getElementById('touch-next');
         const switchContainer = document.getElementById('switch-container');
 
-        if (targetPlayerId) targetPlayerId.style.display = this.isVerticalDisplay() ? 'unset' : 'none';
         if (inviteButton) inviteButton.style.display = 'none';
         if (contacts) contacts.style.display = 'none';
         if (party) party.style.display = 'none';
@@ -506,6 +508,7 @@ export default class Controls extends EventEmitter
 
         // Element
         this.touch.joystick.$element = document.createElement('div')
+        this.touch.joystick.$element.id = 'touch-joystick'
         this.touch.joystick.$element.style.userSelect = 'none'
         this.touch.joystick.$element.style.position = 'fixed'
         this.touch.joystick.$element.style.bottom = '10px'
@@ -537,6 +540,7 @@ export default class Controls extends EventEmitter
         this.touch.joystick.$element.appendChild(this.touch.joystick.$cursor)
 
         this.touch.joystick.$limit = document.createElement('div')
+        this.touch.joystick.$limit.id = 'touch-joystick-limit'
         this.touch.joystick.$limit.style.position = 'absolute'
         this.touch.joystick.$limit.style.top = 'calc(50% - 75px)'
         this.touch.joystick.$limit.style.left = 'calc(50% - 75px)'
@@ -1028,7 +1032,6 @@ export default class Controls extends EventEmitter
         let isToggled = false;
 
         // Select the elements to be toggled
-        const targetPlayerId = document.getElementById('target-player-id');
         const inviteButton = document.getElementById('invite-button');
         const addContact = document.getElementById('friend-invite-button');
         const contactList = document.getElementById('toggle-contact-list');
@@ -1052,7 +1055,6 @@ export default class Controls extends EventEmitter
                     switchButton.style.backgroundColor = 'rgba(0, 0, 0, 0.2);';
                     switchButton.style.backdropFilter = 'blur(5px)';
 
-                    if (targetPlayerId) targetPlayerId.style.display = 'block';
                     if (inviteButton) inviteButton.style.display = 'none';
                     if (addContact) addContact.style.display = 'none';
                     if (touchRadio) touchRadio.style.display = 'none';
@@ -1069,7 +1071,6 @@ export default class Controls extends EventEmitter
                     switchButton.style.backgroundColor = 'rgba(0, 0, 0, 0.2)';
                     switchButton.style.backdropFilter = 'blur(5px)';
 
-                    if (targetPlayerId) targetPlayerId.style.display = 'none';
                     if (inviteButton) inviteButton.style.display = 'none';
                     if (addContact) addContact.style.display = 'none';
                     if (touchRadio) touchRadio.style.display = 'none';
@@ -1952,6 +1953,7 @@ export default class Controls extends EventEmitter
 
         // Element
         this.touch.siren.$element = document.createElement('div');
+        this.touch.siren.$element.id = 'touch-siren';
         this.touch.siren.$element.style.userSelect = 'none';
         this.touch.siren.$element.style.position = 'absolute';
         // this.touch.siren.$element.style.bottom = '98px';
@@ -2075,6 +2077,7 @@ export default class Controls extends EventEmitter
 
         // Element
         this.touch.boost.$element = document.createElement('div')
+        this.touch.boost.$element.id = 'touch-boost'
         this.touch.boost.$element.style.userSelect = 'none'
         this.touch.boost.$element.style.position = 'fixed'
         // this.touch.boost.$element.style.bottom = 'calc(70px * 2 + 35px)'
@@ -2193,6 +2196,7 @@ export default class Controls extends EventEmitter
 
         // Element
         this.touch.forward.$element = document.createElement('div')
+        this.touch.forward.$element.id = 'touch-forward'
         this.touch.forward.$element.style.userSelect = 'none'
         this.touch.forward.$element.style.position = 'fixed'
         // this.touch.forward.$element.style.bottom = '98px'
@@ -2307,7 +2311,7 @@ export default class Controls extends EventEmitter
 
         // Element creation and styling
         this.touch.shoot.$element = document.createElement('div');
-        // this.touch.shoot.$element.id = 'btn1';
+        this.touch.shoot.$element.id = 'touch-shoot';
         this.touch.shoot.$element.style.userSelect = 'none';
         this.touch.shoot.$element.style.position = 'fixed';
         // this.touch.shoot.$element.style.bottom = 'calc(70px * 2 + 35px)';
@@ -2436,6 +2440,7 @@ export default class Controls extends EventEmitter
 
         // Element
         this.touch.brake.$element = document.createElement('div')
+        this.touch.brake.$element.id = 'touch-brake'
         this.touch.brake.$element.style.userSelect = 'none'
         this.touch.brake.$element.style.position = 'fixed'
         // this.touch.brake.$element.style.bottom = '20px'
@@ -2549,6 +2554,7 @@ export default class Controls extends EventEmitter
 
         // Element
         this.touch.backward.$element = document.createElement('div')
+        this.touch.backward.$element.id = 'touch-backward'
         this.touch.backward.$element.style.userSelect = 'none'
         this.touch.backward.$element.style.position = 'fixed'
         this.touch.backward.$element.style.display = 'block'
@@ -2678,6 +2684,7 @@ export default class Controls extends EventEmitter
 
             // Add these lines to reveal userDisplay and battery-status
             const userDisplay = document.getElementById('userDisplay');
+            const exitButton = document.getElementById('game-exit-button');
             const batteryStatus = document.getElementById('battery-status');
             const signOutButton = document.getElementById('signOutButton');
             const speedometer = document.getElementById('speedometer');
@@ -2699,6 +2706,10 @@ export default class Controls extends EventEmitter
             if (userDisplay) {
                 userDisplay.style.display = 'block';
                 userDisplay.style.opacity = 1;
+            }
+            if (exitButton) {
+                exitButton.style.display = 'block';
+                exitButton.style.opacity = 1;
             }
             if (batteryStatus) batteryStatus.style.opacity = 1;
             if (speedometer) speedometer.style.opacity = 1;

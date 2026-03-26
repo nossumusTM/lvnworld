@@ -16,7 +16,7 @@ if(!projectId) {
 }
 
 const metadata = {
-    name: 'KyberBox',
+    name: 'Inaplanet',
     description: 'Crash, collect and cash-in',
     url: 'https://krashbox.world',
     icons: ['https://nossumus.com/public/images/krashbox32x32.png']

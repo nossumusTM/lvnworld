@@ -5,6 +5,11 @@ import React from 'react';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { initGlobe, addSignalEffect, removeSignalEffect } from './globe'; // Adjust path as necessary
 import { FaRedo } from 'react-icons/fa';
+import { FaLinux, FaNodeJs, FaReact } from 'react-icons/fa';
+import { BiLogoTypescript } from 'react-icons/bi';
+import { RiNextjsFill, RiTailwindCssFill } from 'react-icons/ri';
+import { SiCss3, SiExpress, SiExpo, SiFlutter, SiJavascript, SiWebrtc } from 'react-icons/si';
+import { TbBrandReactNative, TbBrandSocketIo } from 'react-icons/tb';
 import { getOrCreatePlayerIdentity } from './javascript/Utils/playerIdentity.js';
 import { createRandomStarterLoadout } from './javascript/Utils/playerLoadout.js';
 
@@ -14,7 +19,26 @@ const Application = dynamic(() => import('./javascript/Application'), {
 });
 
 export default function Home() {
+  const MAX_PLAYERS_PER_WORLD = 5;
   const wsRef = useRef<WebSocket | null>(null);
+  const landingShowcaseRef = useRef<HTMLDivElement | null>(null);
+  const coreStackItems = [
+    { label: 'Javascript', icon: <SiJavascript aria-hidden="true" /> },
+    { label: 'Typescript', icon: <BiLogoTypescript aria-hidden="true" /> },
+    { label: 'Node', icon: <FaNodeJs aria-hidden="true" /> },
+    { label: 'Express', icon: <SiExpress aria-hidden="true" /> },
+    { label: 'Websocket', icon: <TbBrandSocketIo aria-hidden="true" /> },
+    { label: 'WebRTC', icon: <SiWebrtc aria-hidden="true" /> },
+    { label: 'CSS', icon: <SiCss3 aria-hidden="true" /> },
+    { label: 'Tailwind', icon: <RiTailwindCssFill aria-hidden="true" /> },
+    { label: 'React', icon: <FaReact aria-hidden="true" /> },
+    { label: 'React Native', icon: <TbBrandReactNative aria-hidden="true" /> },
+    { label: 'Expo', icon: <SiExpo aria-hidden="true" /> },
+    { label: 'Flutter', icon: <SiFlutter aria-hidden="true" /> },
+    { label: 'Linux', icon: <FaLinux aria-hidden="true" /> },
+    { label: 'Next.js', icon: <RiNextjsFill aria-hidden="true" /> },
+    { label: 'Realtime Ops', icon: <FaRedo aria-hidden="true" /> },
+  ];
   const [playerId, setPlayerId] = useState<string | null>(null);
   const [isCanvasInitialized, setIsCanvasInitialized] = useState(false); // State for canvas initialization
   const [application, setApplication] = useState(false); // State for canvas initialization
@@ -22,7 +46,7 @@ export default function Home() {
   const [isMounted, setIsMounted] = useState(false); // Track when the component is mounted
   const [selectedWorldId, setSelectedWorldId] = useState<string | null>(null); // New state for selected world ID
   const [token, setToken] = useState<string | null>(null); // State to store the token
-  const [showLandingPage, setShowLandingPage] = useState(false);
+  const [showLandingPage, setShowLandingPage] = useState(true);
   const [carName, setCarName] = useState<string | null>(() => {
     if (typeof window === 'undefined') return null;
     return localStorage.getItem('selectedCarName');
@@ -55,6 +79,15 @@ export default function Home() {
   const handleReload = () => {
     window.location.reload(); // Reload the page
   };
+
+  const openLandingPage = useCallback(() => {
+    setShowLandingPage(true);
+  }, []);
+
+  const closeLandingPage = useCallback(() => {
+    landingShowcaseRef.current?.scrollTo({ top: 0, behavior: 'auto' });
+    setShowLandingPage(false);
+  }, []);
 
   const predefinedWorldIds = [
     'Baku', 'New York', 'Tokyo', 'Rome', 'Tel Aviv',
@@ -420,6 +453,10 @@ export default function Home() {
     // console.log("Session storage", sessionStorage);
   }, [applyStarterLoadout]);
 
+  const handleExitWorld = useCallback(() => {
+    window.location.reload();
+  }, []);
+
   let searchQuery = '';
 
 const filterWorlds = (event: React.FormEvent<HTMLInputElement>) => {
@@ -471,7 +508,7 @@ const updateWorldList = (counts: Record<string, number>) => {
 
         // Player count div
         const playerCountDiv = document.createElement('div');
-        playerCountDiv.textContent = `${playerCount}/20`;
+        playerCountDiv.textContent = `${playerCount}/${MAX_PLAYERS_PER_WORLD}`;
         playerCountDiv.classList.add('player-count');
 
         // Flag div
@@ -589,6 +626,18 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
       
     }, [hasAppInitialized, initializeWebSocket]);
 
+    useEffect(() => {
+      if (!showLandingPage) {
+        return;
+      }
+
+      const frame = window.requestAnimationFrame(() => {
+        landingShowcaseRef.current?.scrollTo({ top: 0, behavior: 'auto' });
+      });
+
+      return () => window.cancelAnimationFrame(frame);
+    }, [showLandingPage]);
+
   if (!isMounted) {
     // Return null on the server (or before the component is mounted on the client)
     return null;
@@ -605,12 +654,12 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
             <div className="user-count-wrapper">
               <span id="userCountDisplay" className="user-count-display">0</span>
             </div>
-            <button
+              <button
               type="button"
               className="who-am-i-button"
-              onClick={() => setShowLandingPage(true)}
+              onClick={openLandingPage}
             >
-              WHO AM I?
+              WHO WE ARE?
             </button>
           </div>
           {/* Show pulsing message while setting up WebSocket */}
@@ -645,68 +694,85 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
               </div>
             </div>
             <section className={`landing-showcase ${showLandingPage ? 'landing-showcase-active' : ''}`}>
-              <div className="landing-showcase__shell">
+              <div ref={landingShowcaseRef} className="landing-showcase__shell">
                 <div className="landing-showcase__topbar">
                   <button
                     type="button"
                     className="landing-showcase__back-button"
-                    onClick={() => setShowLandingPage(false)}
+                    onClick={closeLandingPage}
                   >
                     <span className="landing-showcase__back-icon" aria-hidden="true">←</span>
-                    <span>BACK TO WORLDS</span>
+                    <span>ENTER THE WORLD</span>
                   </button>
                 </div>
-                <p className="landing-showcase__eyebrow">FULL-STACK DELIVERY PARTNER</p>
-                <h1 className="landing-showcase__title">I design and ship digital products that move from brief to revenue.</h1>
-                <p className="landing-showcase__copy">
-                  Web apps, mobile apps, admin panels, real-time systems, AI workflows, payment flows, cloud backends, and product delivery around a clear technical task.
-                </p>
-                <div className="landing-showcase__chips">
-                  <span>Web Apps</span>
-                  <span>Mobile Apps</span>
-                  <span>Backend Systems</span>
-                  <span>Product Strategy</span>
-                </div>
-                <div className="landing-showcase__grid">
-                  <article className="landing-showcase__card">
-                    <h2>From Raw Idea To Scope</h2>
-                    <p>I turn vague requests into architecture, milestones, and an implementation path that protects budget and deadline.</p>
-                  </article>
-                  <article className="landing-showcase__card">
-                    <h2>Execution Across The Stack</h2>
-                    <p>Frontend, backend, integrations, deployment pipelines, analytics, and internal tools are handled as one coherent product.</p>
-                  </article>
-                  <article className="landing-showcase__card">
-                    <h2>Built For Launch, Not Just Demo</h2>
-                    <p>The focus is production readiness: maintainable code, clear UX, performance, security, and handoff quality.</p>
-                  </article>
-                </div>
-                <div className="landing-showcase__sections">
-                  <section className="landing-showcase__section">
+                <div className="landing-showcase__body">
+                  <div className="landing-showcase__hero">
+                    <div className="landing-showcase__hero-copy">
+                      <p className="landing-showcase__eyebrow">INAPLANET.COM</p>
+                      <h1 className="landing-showcase__title">We design and ship digital products that move from brief to revenue.</h1>
+                      <p className="landing-showcase__copy">
+                        Web apps, mobile apps, admin panels, real-time systems, AI workflows, payment flows, and product delivery built around a clear technical task.
+                      </p>
+                      <div className="landing-showcase__chips">
+                        <span>Web Apps</span>
+                        <span>Mobile Apps</span>
+                        <span>Backend Systems</span>
+                      </div>
+                    </div>
+                    <aside className="landing-showcase__hero-panel">
+                      <div className="landing-showcase__hero-panel-glow" aria-hidden="true"></div>
+                      <span className="landing-showcase__hero-kicker">Operational Focus</span>
+                      <div className="landing-showcase__hero-metrics">
+                        <div>
+                          <strong>01</strong>
+                          <span>Strategy to architecture</span>
+                        </div>
+                        <div>
+                          <strong>02</strong>
+                          <span>Execution across the stack</span>
+                        </div>
+                        <div>
+                          <strong>03</strong>
+                          <span>Launch-ready product delivery</span>
+                        </div>
+                      </div>
+                      <p className="landing-showcase__hero-note">
+                        We build products that are meant to be used, scaled, and remembered, not just presented.
+                      </p>
+                    </aside>
+                  </div>
+                  <div className="landing-showcase__highlights">
+                    <article className="landing-showcase__card">
+                      <h2>Scope</h2>
+                      <p>We turn rough briefs into a clear build plan.</p>
+                    </article>
+                    <article className="landing-showcase__card">
+                      <h2>Execution</h2>
+                      <p>Frontend, backend, integrations, and tooling move as one system.</p>
+                    </article>
+                    <article className="landing-showcase__card">
+                      <h2>Launch</h2>
+                      <p>Production readiness matters more than demo polish.</p>
+                    </article>
+                  </div>
+                  <div className="landing-showcase__sections">
+                    <section className="landing-showcase__section landing-showcase__section--wide">
                     <h2>Core Stack</h2>
-                    <div className="landing-showcase__skill-grid">
-                      <span>Javascript</span>
-                      <span>Typescript</span>
-                      <span>Node</span>
-                      <span>Express</span>
-                      <span>Websocket</span>
-                      <span>WebRTC</span>
-                      <span>CSS</span>
-                      <span>Tailwind</span>
-                      <span>React</span>
-                      <span>React Native</span>
-                      <span>Expo</span>
-                      <span>Flutter</span>
-                      <span>Linux Administration</span>
-                      <span>AWS</span>
-                      <span>Cloud Services</span>
+                    <div className="landing-showcase__ticker">
+                      <div className="landing-showcase__ticker-track">
+                        {[...coreStackItems, ...coreStackItems].map((item, index) => (
+                          <span key={`ticker-a-${item.label}-${index}`} className="landing-showcase__skill-item landing-showcase__skill-pill">
+                            {item.icon}
+                            {item.label}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   </section>
                   <section className="landing-showcase__section">
                     <h2>What Clients Usually Bring</h2>
                     <p>
-                      A rough brief, a technical task, a Figma file, a half-built product, or an operational bottleneck.
-                      I translate that into architecture, implementation, deployment, and ongoing iteration.
+                      A rough brief, a technical task, a Figma file, a half-built product, or an operational bottleneck. We translate that into architecture, implementation, deployment, and iteration.
                     </p>
                   </section>
                   <section className="landing-showcase__section">
@@ -714,18 +780,28 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
                     <div className="landing-showcase__timeline">
                       <div>
                         <strong>1. Discovery</strong>
-                        <p>Clarify business goals, technical constraints, edge cases, and delivery scope.</p>
+                        <p>Clarify goals, constraints, and scope.</p>
                       </div>
                       <div>
                         <strong>2. Build</strong>
-                        <p>Implement frontend, backend, integrations, infrastructure, and internal tooling as one system.</p>
+                        <p>Implement product, infrastructure, and integrations.</p>
                       </div>
                       <div>
                         <strong>3. Launch</strong>
-                        <p>Ship production-ready software with deployment, monitoring, polish, and a path for scale.</p>
+                        <p>Ship with monitoring, polish, and a path to scale.</p>
                       </div>
                     </div>
                   </section>
+                  <section className="landing-showcase__section landing-showcase__section--story landing-showcase__section--wide">
+                    <h2>The Inaplanet World</h2>
+                    <p>
+                      Inaplanet is our playable digital world: part arcade, part social space, part live product showcase. We built it to turn a static portfolio into something people can drive through, explore, and feel.
+                    </p>
+                    <p className="landing-showcase__story-copy">
+                      Users jump between cities, move through interactive spaces, and experience the project as a living environment instead of a flat page. The goal is to make discovery memorable and give people a world they can enjoy while they explore what we build.
+                    </p>
+                  </section>
+                </div>
                 </div>
               </div>
             </section>
@@ -740,6 +816,9 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
       {playerId && selectedWorldId && token && application && (
         <div className="grid bg-transparent overflow-hidden shadow-sm">
           <div className="flex justify-center items-center p-4">
+            <button type="button" className="game-exit-button" id="game-exit-button" onClick={handleExitWorld} style={{ opacity: 0, display: 'none' }} aria-label="Exit game world">
+              &times;
+            </button>
             <div id="userDisplay" className="cursor-pointer z-50" style={{ opacity: 0, display: 'none' }}></div>
             <div id="playerCountDisplay"></div>
 
@@ -911,7 +990,6 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
 
       {/* Other Hidden UI Elements */}
       <div id="coin-market" style={{ display: 'none', opacity: 0 }}></div>
-      <div id="target-player-id"></div>
       <button id="invite-button" style={{ display: 'none', opacity: 0 }}></button>
       <button id="friend-invite-button" style={{ display: 'none', opacity: 0 }}></button>
       <div id="touch-radio" style={{ opacity: 0 }}></div>

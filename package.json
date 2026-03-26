@@ -1,6 +1,6 @@
 {
-  "name": "krashauth",
-  "version": "0.1.0",
+  "name": "inaplanet",
+  "version": "1.0.1",
   "private": true,
   "env": {
     "NEXT_PUBLIC_MEMORY": "16GB"
