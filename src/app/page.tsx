@@ -51,7 +51,6 @@ const GREETING_ITEMS = [
   'Neih Hou',
   'Jambo',
   'Pryvit',
-  'How You Dey',
   'Oi',
 ];
 
@@ -194,7 +193,7 @@ const MODAL_COPY = {
       { title: '3. Buraxılış', copy: 'Monitorinq, son cilalar və miqyaslanma yolu ilə məhsulu təqdim edirik.' },
     ],
     expertiseTitle: 'Ekspertizamız',
-    expertiseIntro: 'Məhsul işi adətən bir neçə laydan ibarət olur. Biz biznesə görünən səthi, arxadakı əməliyyat sistemini və onu işlədən infrastrukturu qururuq. Əsas fokusumuz yüksək keyfiyyətli məhsulları həyata keçirmək üçün həm frontend, həm də backend üçün native code yazmaqdır.',
+    expertiseIntro: 'Məhsul işi adətən bir neçə təbəqədən ibarət olur. Biz biznesə görünən səthi, arxadakı əməliyyat sistemini və onu işlədən infrastrukturu qururuq. Əsas fokusumuz yüksək keyfiyyətli məhsulları həyata keçirmək üçün həm frontend, həm də backend üçün native code yazmaqdır.',
     expertiseItems: [
       {
         title: 'Şirkət saytı',
@@ -256,7 +255,7 @@ const MODAL_COPY = {
     contactTitle: 'Layihə ideyanız var? Gəlin müzakirə edək.',
     contactCopy: 'Birbaşa yazın və biz briefi scope-a, arxitekturaya və build planına çevirək.',
     greetingStripAria: 'Müxtəlif dillərdə salamlar',
-    greetingLabel: 'De',
+    greetingLabel: 'Yaz',
     contactLabels: ['Whatsapp', 'Telegram', 'E-poçt'],
     footer: 'Inaplanet Foundation. © 2026 | Bütün hüquqlar qorunur.',
   },
@@ -1115,7 +1114,7 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
   }
 
   return (
-    <main className="overflow-hidden flex flex-col items-center" style={{ backgroundColor: '#000', fontFamily: "'Exo 2', sans-serif" }}>
+    <main className="overflow-hidden flex flex-col items-center" style={{ backgroundColor: '#000', fontFamily: "'Orbitron', sans-serif" }}>
       <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 
       {!isCanvasInitialized && (
@@ -1165,7 +1164,7 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
               </div>
             </div>
             <section className={`landing-showcase ${showLandingPage ? 'landing-showcase-active' : ''}`}>
-              <div className="landing-showcase__shell">
+              <div className={`landing-showcase__shell ${language === 'en' ? 'landing-showcase__shell--orbitron' : 'landing-showcase__shell--exo'}`}>
                 <div className="landing-showcase__topbar">
                   <button
                     type="button"
@@ -1283,11 +1282,23 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
                     <h2>{modalCopy.contactTitle}</h2>
                     <p>{modalCopy.contactCopy}</p>
                     <div className="landing-showcase__greeting-strip" aria-label={modalCopy.greetingStripAria}>
-                      <span className="landing-showcase__greeting-label">{modalCopy.greetingLabel}</span>
-                      <div className="landing-showcase__greeting-typewriter" aria-live="polite">
-                        <span>{animatedGreeting}</span>
-                        <span className="landing-showcase__greeting-caret" aria-hidden="true"></span>
-                      </div>
+                      {language === 'az' ? (
+                        <>
+                          <div className="landing-showcase__greeting-typewriter" aria-live="polite">
+                            <span>{animatedGreeting}</span>
+                            <span className="landing-showcase__greeting-caret" aria-hidden="true"></span>
+                          </div>
+                          <span className="landing-showcase__greeting-label">{modalCopy.greetingLabel}</span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="landing-showcase__greeting-label">{modalCopy.greetingLabel}</span>
+                          <div className="landing-showcase__greeting-typewriter" aria-live="polite">
+                            <span>{animatedGreeting}</span>
+                            <span className="landing-showcase__greeting-caret" aria-hidden="true"></span>
+                          </div>
+                        </>
+                      )}
                     </div>
                     <div className="landing-showcase__contact-actions">
                       {contactItems.map((item, index) => (

@@ -9,6 +9,7 @@ const muteIcon = 'images/mobile/mute.png'
 const radio = 'images/mobile/fm.png'
 const previousIcon = 'images/mobile/previous.png'
 const nextIcon = 'images/mobile/next.png'
+const worldSignalBlue = '#0213f7'
 
 import EventEmitter from '../Utils/EventEmitter'
 import Sounds from './Sounds'
@@ -54,20 +55,30 @@ export default class Controls extends EventEmitter
         this.actions.shoot = false
         this.actions.camera = true
 
+        this.resetActionStates = () =>
+        {
+            this.actions.up = false
+            this.actions.right = false
+            this.actions.down = false
+            this.actions.left = false
+            this.actions.brake = false
+            this.actions.boost = false
+            this.actions.siren = false
+            this.actions.shoot = false
+            this.actions.camera = true
+        }
+
         document.addEventListener('visibilitychange', () =>
         {
             if(!document.hidden)
             {
-                this.actions.up = false
-                this.actions.right = false
-                this.actions.down = false
-                this.actions.left = false
-                this.actions.brake = false
-                this.actions.boost = false
-                this.actions.siren = false
-                this.actions.shoot = false
-                this.actions.camera = true
+                this.resetActionStates()
             }
+        })
+
+        window.addEventListener('blur', () =>
+        {
+            this.resetActionStates()
         })
     }
 
@@ -107,7 +118,9 @@ export default class Controls extends EventEmitter
 
         this.keyboard.events.keyDown = (_event) =>
         {
-            switch(_event.key)
+            const normalizedKey = _event.key.length === 1 ? _event.key.toLowerCase() : _event.key
+
+            switch(normalizedKey)
             {
                 case 'ArrowUp':
                 case 'w':
@@ -134,11 +147,13 @@ export default class Controls extends EventEmitter
                     break
 
                 case 'Control':
+                case 'control':
                 case ' ':
                     this.actions.brake = true
                     break
 
                 case 'Shift':
+                case 'shift':
                     this.addBoostActionToQueue();
                     break
 
@@ -171,7 +186,9 @@ export default class Controls extends EventEmitter
 
         this.keyboard.events.keyUp = (_event) =>
         {
-            switch(_event.key)
+            const normalizedKey = _event.key.length === 1 ? _event.key.toLowerCase() : _event.key
+
+            switch(normalizedKey)
             {
                 case 'ArrowUp':
                 case 'w':
@@ -194,11 +211,13 @@ export default class Controls extends EventEmitter
                     break
 
                 case 'Control':
+                case 'control':
                 case ' ':
                     this.actions.brake = false
                     break
 
                 case 'Shift':
+                case 'shift':
                     this.actions.boost = false
                     break
 
@@ -532,11 +551,14 @@ export default class Controls extends EventEmitter
         this.touch.joystick.$cursor.style.left = 'calc(50% - 30px)'
         this.touch.joystick.$cursor.style.width = '60px'
         this.touch.joystick.$cursor.style.height = '60px'
-        this.touch.joystick.$cursor.style.border = '2px solid #ffffff'
+        this.touch.joystick.$cursor.style.border = `2px solid ${worldSignalBlue}`
+        this.touch.joystick.$cursor.style.background = 'rgba(2, 19, 247, 0.12)'
         this.touch.joystick.$cursor.style.borderRadius = '50%'
         this.touch.joystick.$cursor.style.boxSizing = 'border-box'
         this.touch.joystick.$cursor.style.pointerEvents = 'none'
         this.touch.joystick.$cursor.style.willChange = 'transform'
+        this.touch.joystick.$cursor.style.transform = 'translate3d(0px, 0px, 0px)'
+        this.touch.joystick.$cursor.style.zIndex = '2'
         this.touch.joystick.$element.appendChild(this.touch.joystick.$cursor)
 
         this.touch.joystick.$limit = document.createElement('div')
@@ -546,12 +568,13 @@ export default class Controls extends EventEmitter
         this.touch.joystick.$limit.style.left = 'calc(50% - 75px)'
         this.touch.joystick.$limit.style.width = '150px'
         this.touch.joystick.$limit.style.height = '150px'
-        this.touch.joystick.$limit.style.border = 'unset'
-        this.touch.joystick.$limit.style.background = 'rgba(0, 0, 0, 0.5)'
+        this.touch.joystick.$limit.style.border = `1px solid rgba(2, 19, 247, 0.36)`
+        this.touch.joystick.$limit.style.background = 'rgba(2, 19, 247, 0.08)'
         this.touch.joystick.$limit.style.borderRadius = '50%'
         this.touch.joystick.$limit.style.opacity = '0.25'
         this.touch.joystick.$limit.style.pointerEvents = 'none'
         this.touch.joystick.$limit.style.boxSizing = 'border-box'
+        this.touch.joystick.$limit.style.zIndex = '1'
         this.touch.joystick.$element.appendChild(this.touch.joystick.$limit)
 
         // Angle
@@ -584,7 +607,7 @@ export default class Controls extends EventEmitter
             this.touch.joystick.active = false
             this.touch.joystick.touchIdentifier = null
             this.touch.joystick.$limit.style.opacity = '0.25'
-            this.touch.joystick.$cursor.style.transform = 'translateX(0px) translateY(0px)'
+            this.touch.joystick.$cursor.style.transform = 'translate3d(0px, 0px, 0px)'
 
             document.removeEventListener('touchend', this.touch.joystick.events.touchend)
             document.removeEventListener('touchmove', this.touch.joystick.events.touchmove)
@@ -626,7 +649,7 @@ export default class Controls extends EventEmitter
                 }
                 const cursorX = Math.sin(this.touch.joystick.angle.originalValue + Math.PI * 0.5) * radius
                 const cursorY = Math.cos(this.touch.joystick.angle.originalValue + Math.PI * 0.5) * radius
-                this.touch.joystick.$cursor.style.transform = `translateX(${cursorX}px) translateY(${cursorY}px)`
+                this.touch.joystick.$cursor.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0px)`
             }
         })
 
@@ -1821,7 +1844,7 @@ export default class Controls extends EventEmitter
                 height: 10px;
                 width: 10px;
                 border-radius: unset;
-                background: #8CFF80; /* Thumb color */
+                background: ${worldSignalBlue}; /* Thumb color */
                 cursor: pointer;
             }
         `;

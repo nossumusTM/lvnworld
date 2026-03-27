@@ -76,7 +76,7 @@ export default function RootLayout({
     <head>
     {/* Favicon using PNG */}
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Exo+2:wght@400;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.cursors-4u.net/cursors/animated/the-alien-link-select-2fa53604-32.css" />
     <link rel="icon" href="/favicon.ico" sizes="256x256" />
     <script dangerouslySetInnerHTML={{ __html: earlyConsoleNoiseFilter }} />
