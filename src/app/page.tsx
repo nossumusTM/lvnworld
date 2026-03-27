@@ -114,7 +114,7 @@ export default function Home() {
       description: 'Profiles, feeds, messaging, communities, and social loops designed for retention and interaction.',
     },
     {
-      title: 'Multiplayer gameworld',
+      title: 'Multiplayer games',
       icon: <FaGamepad aria-hidden="true" />,
       description: 'Shared interactive environments with synchronized state, session logic, and real-time player experience.',
     },
@@ -135,13 +135,13 @@ export default function Home() {
     },
     {
       title: 'VPC servers',
-      subtitle: '[private/public subnets]',
+      subtitle: 'private/public subnets',
       icon: <FaServer aria-hidden="true" />,
       description: 'Infrastructure layouts with secure network boundaries, isolated services, and deployable cloud environments.',
     },
     {
       title: 'Smart contracts',
-      subtitle: '[Tokenomics]',
+      subtitle: 'Tokenomics',
       icon: <FaCube aria-hidden="true" />,
       description: 'Solidity-based token mechanics, treasury logic, claims, and onchain product rules tied to real user flows.',
     },
@@ -872,7 +872,7 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
                   <div className="landing-showcase__hero">
                     <div className="landing-showcase__hero-copy">
                       <p className="landing-showcase__eyebrow">INAPLANET.COM</p>
-                      <h1 className="landing-showcase__title">We design and ship digital products that move from brief to revenue.</h1>
+                      <h1 className="landing-showcase__title">We Design & ship digital products that move from brief to revenue.</h1>
                       <p className="landing-showcase__copy">
                         Web apps, mobile apps, admin panels, real-time systems, AI workflows, payment flows, and product delivery built around a clear technical task.
                       </p>
@@ -961,7 +961,7 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
                   <section className="landing-showcase__section landing-showcase__section--wide landing-showcase__section--expertise">
                     <h2>Our Expertise</h2>
                     <p>
-                      Product work usually spans multiple layers. We build the business-facing surface, the operational system behind it, and the infrastructure needed to run it.
+                      Product work usually spans multiple layers. We build the business-facing surface, the operational system behind it, and the infrastructure needed to run it. We mainly focus on writing native code for both frontend and backend to bring high-quality products to life.
                     </p>
                     <div className="landing-showcase__expertise-grid">
                       {expertiseItems.map((item) => (

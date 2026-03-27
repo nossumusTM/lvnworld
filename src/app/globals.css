@@ -2349,8 +2349,19 @@ opacity: 0;
   .landing-showcase__back-button {
     width: 100%;
     height: 46px;
+    gap: 8px;
     font-size: 10px;
     letter-spacing: 0.12rem;
+  }
+
+  .landing-showcase__back-icon {
+    width: 16px;
+    height: 16px;
+    transform: translateY(0);
+  }
+
+  .landing-showcase__back-button:hover .landing-showcase__back-icon {
+    transform: translateX(-3px) translateY(0) scale(1.08);
   }
 
   .landing-showcase__eyebrow {
@@ -2560,6 +2571,7 @@ opacity: 0;
   }
 
   .landing-showcase__footer-note {
+    margin: 12px 0;
     font-size: 6px;
   }
 
