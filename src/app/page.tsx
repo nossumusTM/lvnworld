@@ -4,7 +4,27 @@ import dynamic from 'next/dynamic';
 import React from 'react';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { initGlobe, addSignalEffect, removeSignalEffect } from './globe'; // Adjust path as necessary
-import { FaCube, FaLinux, FaNodeJs, FaReact, FaRedo, FaTelegramPlane, FaWallet, FaWhatsapp } from 'react-icons/fa';
+import {
+  FaBuilding,
+  FaBroadcastTower,
+  FaCube,
+  FaDatabase,
+  FaGamepad,
+  FaLinux,
+  FaNodeJs,
+  FaReact,
+  FaRedo,
+  FaRobot,
+  FaServer,
+  FaShoppingCart,
+  FaStore,
+  FaTelegramPlane,
+  FaUserShield,
+  FaUsers,
+  FaWallet,
+  FaWhatsapp,
+  FaWindowMaximize,
+} from 'react-icons/fa';
 import { BiLogoTypescript } from 'react-icons/bi';
 import { MdMailOutline } from 'react-icons/md';
 import { RiNextjsFill, RiTailwindCssFill } from 'react-icons/ri';
@@ -19,19 +39,27 @@ const Application = dynamic(() => import('./javascript/Application'), {
 });
 
 const GREETING_ITEMS = [
-  'Hello',
-  'Ciao',
-  'Hola',
-  'Bonjour',
-  'Hallo',
-  'Ola',
+  'Salam',
   'Merhaba',
   'Privet',
-  'Salam',
-  'Namaste',
+  'Hello',
+  'Ciao',
   'Konnichiwa',
-  'Annyeong',
-  'Shalom',
+  'Annyeonghaseyo',
+  'Ni Hao',
+  'Hola',
+  'Bonjour',
+  'Marhaban',
+  'Namaste',
+  'Xin Chao',
+  'Vanakkam',
+  'Neih Hou',
+  'Sannu',
+  'Jambo',
+  'Sawatdee',
+  'Pryvit',
+  'How You Dey',
+  'Oi',
 ];
 
 export default function Home() {
@@ -58,6 +86,70 @@ export default function Home() {
     { label: 'WalletConnect Auth', icon: <FaWallet aria-hidden="true" /> },
     { label: 'NFT', icon: <FaCube aria-hidden="true" /> },
     { label: 'Realtime Ops', icon: <FaRedo aria-hidden="true" /> },
+  ];
+  const expertiseItems = [
+    {
+      title: 'Company page',
+      icon: <FaBuilding aria-hidden="true" />,
+      description: 'Clear corporate websites that present the business well, explain the offer, and convert interest into contact.',
+    },
+    {
+      title: 'Landing page',
+      icon: <FaWindowMaximize aria-hidden="true" />,
+      description: 'Focused campaign pages built around one conversion goal, fast load time, and strong message hierarchy.',
+    },
+    {
+      title: 'E-commerce',
+      icon: <FaShoppingCart aria-hidden="true" />,
+      description: 'Storefronts, catalog systems, carts, checkout, and admin flows built for sales and repeat use.',
+    },
+    {
+      title: 'Marketplace',
+      icon: <FaStore aria-hidden="true" />,
+      description: 'Multi-vendor platforms with listings, role separation, moderation, payout logic, and operational tooling.',
+    },
+    {
+      title: 'Social networks',
+      icon: <FaUsers aria-hidden="true" />,
+      description: 'Profiles, feeds, messaging, communities, and social loops designed for retention and interaction.',
+    },
+    {
+      title: 'Multiplayer gameworld',
+      icon: <FaGamepad aria-hidden="true" />,
+      description: 'Shared interactive environments with synchronized state, session logic, and real-time player experience.',
+    },
+    {
+      title: 'Backend systems',
+      icon: <FaDatabase aria-hidden="true" />,
+      description: 'APIs, databases, queues, admin tooling, and service orchestration designed for stable product operations.',
+    },
+    {
+      title: 'Real-time operations',
+      icon: <FaBroadcastTower aria-hidden="true" />,
+      description: 'Live dashboards, socket-driven updates, presence, notifications, and coordination systems that react instantly.',
+    },
+    {
+      title: 'Auth / Payment flow',
+      icon: <FaUserShield aria-hidden="true" />,
+      description: 'Identity, access control, subscriptions, payments, and recovery flows built to reduce friction and failure.',
+    },
+    {
+      title: 'VPC servers',
+      subtitle: '[private/public subnets]',
+      icon: <FaServer aria-hidden="true" />,
+      description: 'Infrastructure layouts with secure network boundaries, isolated services, and deployable cloud environments.',
+    },
+    {
+      title: 'Smart contracts',
+      subtitle: '[Tokenomics]',
+      icon: <FaCube aria-hidden="true" />,
+      description: 'Solidity-based token mechanics, treasury logic, claims, and onchain product rules tied to real user flows.',
+    },
+    {
+      title: 'AI workflows',
+      icon: <FaRobot aria-hidden="true" />,
+      description: 'Task automation, assistants, internal copilots, and AI-powered flows integrated into real product operations.',
+    },
   ];
   const contactItems = [
     {
@@ -826,6 +918,7 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
                       <p>Production readiness matters more than demo polish.</p>
                     </article>
                   </div>
+                  <div className="landing-showcase__divider" aria-hidden="true"></div>
                   <div className="landing-showcase__sections">
                     <section className="landing-showcase__section landing-showcase__section--wide">
                     <h2>Core Stack</h2>
@@ -840,10 +933,11 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
                       </div>
                     </div>
                   </section>
+                  <div className="landing-showcase__divider" aria-hidden="true"></div>
                   <section className="landing-showcase__section">
                     <h2>What Clients Usually Bring</h2>
                     <p>
-                      A rough brief, a technical task, a Figma file, a half-built product, or an operational bottleneck. We translate that into architecture, implementation, deployment, and iteration.
+                      A rough brief, a technical task, a Figma file, a half-built product, or an operational bottleneck. We translate that into architecture, implementation, deadline planning, delivery structure, deployment, and iteration. That usually means clarifying priorities, defining what needs to be shipped first, and turning an unclear starting point into a practical path to launch.
                     </p>
                   </section>
                   <section className="landing-showcase__section">
@@ -863,6 +957,28 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
                       </div>
                     </div>
                   </section>
+                  <div className="landing-showcase__divider" aria-hidden="true"></div>
+                  <section className="landing-showcase__section landing-showcase__section--wide landing-showcase__section--expertise">
+                    <h2>Our Expertise</h2>
+                    <p>
+                      Product work usually spans multiple layers. We build the business-facing surface, the operational system behind it, and the infrastructure needed to run it.
+                    </p>
+                    <div className="landing-showcase__expertise-grid">
+                      {expertiseItems.map((item) => (
+                        <article key={item.title} className="landing-showcase__expertise-card">
+                          <div className="landing-showcase__expertise-head">
+                            <span className="landing-showcase__expertise-icon">{item.icon}</span>
+                            <div className="landing-showcase__expertise-title-group">
+                              <h3>{item.title}</h3>
+                              {item.subtitle ? <span>{item.subtitle}</span> : null}
+                            </div>
+                          </div>
+                          <p>{item.description}</p>
+                        </article>
+                      ))}
+                    </div>
+                  </section>
+                  <div className="landing-showcase__divider" aria-hidden="true"></div>
                   <section className="landing-showcase__section landing-showcase__section--story">
                     <h2>The Inaplanet World</h2>
                     <p>
