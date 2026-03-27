@@ -24,9 +24,44 @@ body {
   font-family: 'Orbitron', sans-serif;
 }
 
+body,
+body *,
+body *::before,
+body *::after {
+  cursor: inherit !important;
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+}
+
+.mobile-cursor-overlay {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 34px;
+  height: 34px;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 2147483647;
+  background-image: url('https://cdn.cursors-4u.net/previews/the-alien-link-select-00d33268.webp');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  transform: translate(-4px, -3px) scale(0.88);
+  transition: opacity 0.12s ease, transform 0.12s ease;
+}
+
+.mobile-cursor-overlay-active {
+  opacity: 1;
+  transform: translate(-4px, -3px) scale(1);
+}
+
+@media (pointer: fine) {
+  .mobile-cursor-overlay {
+    display: none;
   }
 }
 
@@ -1199,13 +1234,20 @@ opacity: 0;
 }
 
 .landing-showcase__back-icon {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  line-height: 1;
   font-size: 18px;
+  transform: translateY(2px);
+  transform-origin: center;
   transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
 .landing-showcase__back-button:hover .landing-showcase__back-icon {
-  transform: translateX(-6px);
+  transform: translateX(-4px) translateY(2px) scale(1.08);
   opacity: 0.85;
 }
 
@@ -1315,6 +1357,10 @@ opacity: 0;
 .landing-showcase__chips span:hover {
   transform: translateY(-2px);
   background: rgba(255, 255, 255, 0.06);
+}
+
+.landing-showcase__chip-responsive::before {
+  content: attr(data-desktop);
 }
 
 .landing-showcase__hero-metrics {
@@ -2158,7 +2204,6 @@ opacity: 0;
 #world-list li.disabled {
   /* background-color: hsl(231, 100%, 50%); */
   color: #777;
-  cursor: not-allowed;
   opacity: 0.5;
 }
 
@@ -2334,6 +2379,10 @@ opacity: 0;
     padding: 8px 10px;
     font-size: 9px;
     letter-spacing: 0.08rem;
+  }
+
+  .landing-showcase__chip-responsive::before {
+    content: attr(data-mobile);
   }
 
   .landing-showcase__hero-kicker {
@@ -2973,12 +3022,12 @@ opacity: 0;
 
 .canvas.has-cursor-grab
 {
-    cursor: grab;
+    cursor: inherit !important;
 }
 
 .canvas.has-cursor-grabbing
 {
-    cursor: grabbing;
+    cursor: inherit !important;
 }
 
 .canvas.has-cursor-pointer

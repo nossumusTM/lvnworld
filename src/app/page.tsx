@@ -863,7 +863,7 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
                     className="landing-showcase__back-button"
                     onClick={closeLandingPage}
                   >
-                    <span className="landing-showcase__back-icon" aria-hidden="true">←</span>
+                    <span className="landing-showcase__back-icon" aria-hidden="true">↵</span>
                     <span>ENTER THE WORLD</span>
                   </button>
                 </div>
@@ -879,7 +879,7 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
                       <div className="landing-showcase__chips">
                         <span>Web Apps</span>
                         <span>Mobile Apps</span>
-                        <span>Backend Systems</span>
+                        <span className="landing-showcase__chip-responsive" data-desktop="Backend Systems" data-mobile="Backend"></span>
                       </div>
                     </div>
                     <aside className="landing-showcase__hero-panel">
