@@ -542,22 +542,25 @@ export default class Controls extends EventEmitter
         this.touch.joystick.$element.style.zIndex = '10'
         this.touch.joystick.$element.style.backgroundSize = 'contain'
         this.touch.joystick.$element.style.backgroundRepeat = 'no-repeat'
+        this.touch.joystick.$element.style.overflow = 'visible'
         // this.touch.joystick.$element.style.backgroundColor = '#ff0000'
         document.body.appendChild(this.touch.joystick.$element)
 
+        this.touch.joystick.cursorSize = 60
+        this.touch.joystick.cursorRestOffset = (170 - this.touch.joystick.cursorSize) * 0.5
+
         this.touch.joystick.$cursor = document.createElement('div')
         this.touch.joystick.$cursor.style.position = 'absolute'
-        this.touch.joystick.$cursor.style.top = 'calc(50% - 30px)'
-        this.touch.joystick.$cursor.style.left = 'calc(50% - 30px)'
-        this.touch.joystick.$cursor.style.width = '60px'
-        this.touch.joystick.$cursor.style.height = '60px'
+        this.touch.joystick.$cursor.style.top = `${this.touch.joystick.cursorRestOffset}px`
+        this.touch.joystick.$cursor.style.left = `${this.touch.joystick.cursorRestOffset}px`
+        this.touch.joystick.$cursor.style.width = `${this.touch.joystick.cursorSize}px`
+        this.touch.joystick.$cursor.style.height = `${this.touch.joystick.cursorSize}px`
         this.touch.joystick.$cursor.style.border = `2px solid ${worldSignalBlue}`
         this.touch.joystick.$cursor.style.background = 'rgba(2, 19, 247, 0.12)'
         this.touch.joystick.$cursor.style.borderRadius = '50%'
         this.touch.joystick.$cursor.style.boxSizing = 'border-box'
         this.touch.joystick.$cursor.style.pointerEvents = 'none'
-        this.touch.joystick.$cursor.style.willChange = 'transform'
-        this.touch.joystick.$cursor.style.transform = 'translate3d(0px, 0px, 0px)'
+        this.touch.joystick.$cursor.style.willChange = 'left, top'
         this.touch.joystick.$cursor.style.zIndex = '2'
         this.touch.joystick.$element.appendChild(this.touch.joystick.$cursor)
 
@@ -607,7 +610,8 @@ export default class Controls extends EventEmitter
             this.touch.joystick.active = false
             this.touch.joystick.touchIdentifier = null
             this.touch.joystick.$limit.style.opacity = '0.25'
-            this.touch.joystick.$cursor.style.transform = 'translate3d(0px, 0px, 0px)'
+            this.touch.joystick.$cursor.style.left = `${this.touch.joystick.cursorRestOffset}px`
+            this.touch.joystick.$cursor.style.top = `${this.touch.joystick.cursorRestOffset}px`
 
             document.removeEventListener('touchend', this.touch.joystick.events.touchend)
             document.removeEventListener('touchmove', this.touch.joystick.events.touchmove)
@@ -649,7 +653,8 @@ export default class Controls extends EventEmitter
                 }
                 const cursorX = Math.sin(this.touch.joystick.angle.originalValue + Math.PI * 0.5) * radius
                 const cursorY = Math.cos(this.touch.joystick.angle.originalValue + Math.PI * 0.5) * radius
-                this.touch.joystick.$cursor.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0px)`
+                this.touch.joystick.$cursor.style.left = `${this.touch.joystick.cursorRestOffset + cursorX}px`
+                this.touch.joystick.$cursor.style.top = `${this.touch.joystick.cursorRestOffset + cursorY}px`
             }
         })
 

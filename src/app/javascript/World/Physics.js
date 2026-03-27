@@ -43,7 +43,7 @@ export default class Physics
         this.nonCollidableCars = new Set();
         this.worldHalfExtent = 595;
         this.worldRoofZ = 84;
-        this.respawnDurationMs = 5000;
+        this.respawnDurationMs = 0;
 
         // Set up
         if(this.debug)
@@ -893,36 +893,7 @@ export default class Physics
         this.car19.recreateCooldown = false;
 
         this.car19.recreate = () => {
-            if (this.car19.recreateCooldown) {
-                console.log("Recreate is disabled. Please wait 10 minutes before trying again.");
-                return;
-            }
-
-            if (this.car19.recreateCount < 5) {
-                // Perform recreate actions
-                this.car19.destroy();
-                this.car19.create();
-                this.car19.chassis.body.wakeUp();
-
-                // Increment recreate count
-                this.car19.recreateCount += 1;
-                console.log(`Recreate used ${this.car19.recreateCount}/5 times.`);
-
-                // Check if limit has been reached
-                if (this.car19.recreateCount === 5) {
-                    this.car19.recreateCooldown = true;
-                    console.log("Recreate disabled for 10 minutes.");
-
-                    // Set timer to reset count and cooldown after 10 minutes (600,000 ms)
-                    setTimeout(() => {
-                        this.car19.recreateCount = 0;
-                        this.car19.recreateCooldown = false;
-                        console.log("Recreate is available again.");
-                    }, 600000); // 10 minutes in milliseconds
-                }
-            } else {
-                console.log("Recreate limit reached. Please wait 10 minutes.");
-            }
+            this.performImmediateRespawn(this.car19, 'car19');
         };
     
         // Brake
@@ -1296,9 +1267,7 @@ export default class Physics
     
         // Recreate method
         this.car18.recreate = () => {
-            this.car18.destroy()
-            this.car18.create()
-            this.car18.chassis.body.wakeUp()
+            this.performImmediateRespawn(this.car18, 'car18')
         }
     
         // Brake
@@ -1675,9 +1644,7 @@ export default class Physics
     
         // Recreate method
         this.car17.recreate = () => {
-            this.car17.destroy()
-            this.car17.create()
-            this.car17.chassis.body.wakeUp()
+            this.performImmediateRespawn(this.car17, 'car17')
         }
     
         // Brake
@@ -2054,9 +2021,7 @@ export default class Physics
     
         // Recreate method
         this.car16.recreate = () => {
-            this.car16.destroy()
-            this.car16.create()
-            this.car16.chassis.body.wakeUp()
+            this.performImmediateRespawn(this.car16, 'car16')
         }
     
         // Brake
@@ -2432,9 +2397,7 @@ export default class Physics
     
         // Recreate method
         this.car15.recreate = () => {
-            this.car15.destroy()
-            this.car15.create()
-            this.car15.chassis.body.wakeUp()
+            this.performImmediateRespawn(this.car15, 'car15')
         }
     
         // Brake
@@ -2811,9 +2774,7 @@ export default class Physics
     
         // Recreate method
         this.car14.recreate = () => {
-            this.car14.destroy()
-            this.car14.create()
-            this.car14.chassis.body.wakeUp()
+            this.performImmediateRespawn(this.car14, 'car14')
         }
     
         // Brake
@@ -3189,9 +3150,7 @@ export default class Physics
     
         // Recreate method
         this.car13.recreate = () => {
-            this.car13.destroy()
-            this.car13.create()
-            this.car13.chassis.body.wakeUp()
+            this.performImmediateRespawn(this.car13, 'car13')
         }
     
         // Brake
@@ -3567,9 +3526,7 @@ export default class Physics
     
         // Recreate method
         this.car12.recreate = () => {
-            this.car12.destroy()
-            this.car12.create()
-            this.car12.chassis.body.wakeUp()
+            this.performImmediateRespawn(this.car12, 'car12')
         }
     
         // Brake
@@ -3946,9 +3903,7 @@ export default class Physics
     
         // Recreate method
         this.car11.recreate = () => {
-            this.car11.destroy()
-            this.car11.create()
-            this.car11.chassis.body.wakeUp()
+            this.performImmediateRespawn(this.car11, 'car11')
         }
     
         // Brake
@@ -4324,9 +4279,7 @@ export default class Physics
     
         // Recreate method
         this.car10.recreate = () => {
-            this.car10.destroy()
-            this.car10.create()
-            this.car10.chassis.body.wakeUp()
+            this.performImmediateRespawn(this.car10, 'car10')
         }
     
         // Brake
@@ -4702,9 +4655,7 @@ export default class Physics
     
         // Recreate method
         this.car9.recreate = () => {
-            this.car9.destroy()
-            this.car9.create()
-            this.car9.chassis.body.wakeUp()
+            this.performImmediateRespawn(this.car9, 'car9')
         }
     
         // Brake
@@ -5080,9 +5031,7 @@ export default class Physics
     
         // Recreate method
         this.car8.recreate = () => {
-            this.car8.destroy()
-            this.car8.create()
-            this.car8.chassis.body.wakeUp()
+            this.performImmediateRespawn(this.car8, 'car8')
         }
     
         // Brake
@@ -5458,9 +5407,7 @@ export default class Physics
     
         // Recreate method
         this.car7.recreate = () => {
-            this.car7.destroy()
-            this.car7.create()
-            this.car7.chassis.body.wakeUp()
+            this.performImmediateRespawn(this.car7, 'car7')
         }
     
         // Brake
@@ -5836,9 +5783,7 @@ export default class Physics
     
         // Recreate method
         this.car6.recreate = () => {
-            this.car6.destroy()
-            this.car6.create()
-            this.car6.chassis.body.wakeUp()
+            this.performImmediateRespawn(this.car6, 'car6')
         }
     
         // Brake
@@ -6214,9 +6159,7 @@ export default class Physics
     
         // Recreate method
         this.car5.recreate = () => {
-            this.car5.destroy()
-            this.car5.create()
-            this.car5.chassis.body.wakeUp()
+            this.performImmediateRespawn(this.car5, 'car5')
         }
     
         // Brake
@@ -6592,9 +6535,7 @@ export default class Physics
     
         // Recreate method
         this.car4.recreate = () => {
-            this.car4.destroy()
-            this.car4.create()
-            this.car4.chassis.body.wakeUp()
+            this.performImmediateRespawn(this.car4, 'car4')
         }
     
         // Brake
@@ -6972,9 +6913,7 @@ export default class Physics
     
         // Recreate method
         this.car3.recreate = () => {
-            this.car3.destroy()
-            this.car3.create()
-            this.car3.chassis.body.wakeUp()
+            this.performImmediateRespawn(this.car3, 'car3')
         }
     
         // Brake
@@ -7387,9 +7326,7 @@ export default class Physics
     
         // Recreate method
         this.car2.recreate = () => {
-            this.car2.destroy()
-            this.car2.create()
-            this.car2.chassis.body.wakeUp()
+            this.performImmediateRespawn(this.car2, 'car2')
         }
     
         // Brake
@@ -7800,9 +7737,7 @@ export default class Physics
     
         // Recreate method
         this.car1.recreate = () => {
-            this.car1.destroy()
-            this.car1.create()
-            this.car1.chassis.body.wakeUp()
+            this.performImmediateRespawn(this.car1, 'car1')
         }
     
         // Brake
@@ -8309,54 +8244,7 @@ export default class Physics
         // }
 
         this.car.recreate = () => {
-            if (this.car.recreateCooldown) {
-                console.log("Recreate is disabled. Please wait 10 minutes before trying again.");
-                return;
-            }
-
-            if (this.car.recreateCount < 50) {
-                // Perform recreate actions
-                this.car.destroy();
-                this.car.create();
-                this.car.chassis.body.wakeUp();
-
-                // Increment recreate count
-                this.car.recreateCount += 1;
-                console.log(`Recreate used ${this.car.recreateCount}/50 times.`);
-
-                // Update the display for remaining resets
-                // if (touchReset) {
-                //     const countDisplay = document.getElementById('recreateCountDisplay');
-                //     countDisplay.textContent = `${50 - this.car.recreateCount}`;
-                // }
-
-                // Check if limit has been reached
-                if (this.car.recreateCount === 50) {
-                    this.car.recreateCooldown = true;
-                    console.log("Recreate disabled for 10 minutes.");
-
-                    // Display cooldown notice
-                    // if (touchReset) {
-                    //     const countDisplay = document.getElementById('recreateCountDisplay');
-                    //     countDisplay.textContent = "0";
-                    // }
-
-                    // Set timer to reset count and cooldown after 10 minutes (600,000 ms)
-                    setTimeout(() => {
-                        this.car.recreateCount = 0;
-                        this.car.recreateCooldown = false;
-                        console.log("Recreate is available again.");
-
-                        // Reset the display to 5 resets
-                        // if (touchReset) {
-                        //     const countDisplay = document.getElementById('recreateCountDisplay');
-                        //     countDisplay.textContent = "5";
-                        // }
-                    }, 600000); // 10 minutes in milliseconds
-                }
-            } else {
-                console.log("Recreate limit reached. Please wait 10 minutes.");
-            }
+            this.performImmediateRespawn(this.car, 'car');
         };
 
         /**
@@ -8993,7 +8881,9 @@ export default class Physics
 
         car.battery -= 1;
         console.log("Resolving car battery", car)
-        // car.createSparkEffect();
+        if (typeof car.createSparkEffect === 'function') {
+            car.createSparkEffect();
+        }
         console.log("SHOOT -> Battery reduced to:", car.battery);
     
         if (car.battery <= 0) {
@@ -9002,6 +8892,9 @@ export default class Physics
             if (shooterCar) {
                 shooterCar.score += 1;
                 this.updateScoreStatus(shooterCar.score);
+            }
+            if (typeof car.createCrashEffect === 'function' && car.chassis?.object) {
+                car.createCrashEffect(car.chassis.object.position, car.chassis.object.quaternion, car.chassis.object);
             }
             this.triggerCarDestroyed(car, 'bullet', bullet.body.shooterId);
         }
@@ -9256,6 +9149,50 @@ export default class Physics
         return car.physics[key]?.chassis?.body || null;
     }
 
+    getRandomRespawnDropPosition() {
+        const margin = 40;
+        const span = Math.max(20, this.worldHalfExtent - margin);
+        return new CANNON.Vec3(
+            (Math.random() * 2 - 1) * span,
+            (Math.random() * 2 - 1) * span,
+            this.worldRoofZ - 6
+        );
+    }
+
+    performImmediateRespawn(car, key) {
+        if (!car || !key || typeof car.destroy !== 'function' || typeof car.create !== 'function') {
+            return;
+        }
+
+        car.destroy();
+        car.create();
+
+        const body = car[key]?.chassis?.body;
+        if (!body) {
+            return;
+        }
+
+        const respawnPosition = this.getRandomRespawnDropPosition();
+        body.position.copy(respawnPosition);
+        body.velocity.set(0, 0, 0);
+        body.angularVelocity.set(0, 0, 0);
+        body.force.set(0, 0, 0);
+        body.torque.set(0, 0, 0);
+        body.collisionResponse = true;
+
+        const yaw = Math.random() * Math.PI * 2;
+        const respawnQuaternion = new CANNON.Quaternion();
+        respawnQuaternion.setFromAxisAngle(new CANNON.Vec3(0, 0, 1), yaw);
+        body.quaternion.copy(respawnQuaternion);
+        body.wakeUp();
+
+        car.battery = 100;
+
+        if (car.model?.container) {
+            car.model.container.scale.set(1, 1, 1);
+        }
+    }
+
     isCarInvulnerable(car) {
         if (!car) return false;
         return typeof car.__invulnerableUntil === 'number' && car.__invulnerableUntil > Date.now();
@@ -9407,6 +9344,15 @@ export default class Physics
     updateBullets() {
         this.bullets.forEach((bullet, index) => {
             if (bullet) {
+                if (typeof bullet.body.flightLevel !== 'number') {
+                    const shooterCar = this.cars[bullet.body.shooterId];
+                    const shooterBody = shooterCar ? this.getCarBody(shooterCar) : null;
+                    bullet.body.flightLevel = shooterBody ? shooterBody.position.z : bullet.body.position.z;
+                }
+
+                bullet.body.position.z = bullet.body.flightLevel;
+                bullet.body.velocity.z = 0;
+                bullet.body.force.z = 0;
                 bullet.mesh.position.copy(bullet.body.position);
     
                 if (

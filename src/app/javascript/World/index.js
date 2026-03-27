@@ -149,60 +149,53 @@ export default class
         return this.otherPlayers?.[playerId] || null;
     };
 
-    playCarDestroyedFx = (car, durationMs = 5000) => {
-        if (!car) return;
-        const target = car.container || car.chassis?.object;
-        if (!target) return;
+    playCarDestroyedFx = () => {};
 
-        if (typeof car.createCrashEffect === 'function' && car.chassis?.object) {
-            car.createCrashEffect(car.chassis.object.position, car.chassis.object.quaternion, car.chassis.object);
+    playCarRestoreFx = () => {};
+
+    recreateOtherPlayerCarImmediately = (car) => {
+        if (!car) return;
+        const carKey = this.getCarKey(car);
+
+        if (car.__respawnTimer) {
+            clearTimeout(car.__respawnTimer);
+            car.__respawnTimer = null;
         }
 
-        gsap.killTweensOf(target.scale);
-        gsap.to(target.scale, {
-            duration: 0.25,
-            x: 0.72,
-            y: 0.72,
-            z: 0.72,
-            ease: 'power2.out'
-        });
+        car.__invulnerableUntil = 0;
+        car.battery = 100;
 
-        target.traverse((child) => {
-            if (!child || !child.material) return;
-            const mats = Array.isArray(child.material) ? child.material : [child.material];
-            mats.forEach((mat) => {
-                if (!mat) return;
-                mat.transparent = true;
-                gsap.fromTo(mat, { opacity: 1 }, { duration: 0.22, opacity: 0.35, yoyo: true, repeat: 4, ease: 'power1.inOut' });
-            });
-        });
-    };
-
-    playCarRestoreFx = (car) => {
-        if (!car) return;
-        const target = car.container || car.chassis?.object;
-        if (!target) return;
-
-        if (typeof car.createSparkEffect === 'function') {
-            car.createSparkEffect();
+        if (this.physics) {
+            this.physics.nonCollidablePlayers?.clear?.();
+            this.physics.nonCollidableCars?.clear?.();
         }
 
-        gsap.killTweensOf(target.scale);
-        gsap.fromTo(
-            target.scale,
-            { x: 0.8, y: 0.8, z: 0.8 },
-            { duration: 0.35, x: 1, y: 1, z: 1, ease: 'back.out(2.2)' }
-        );
+        const recreateFn = carKey ? car.physics?.[carKey]?.recreate : null;
+        if (typeof recreateFn === 'function') {
+            recreateFn();
+        }
 
-        target.traverse((child) => {
-            if (!child || !child.material) return;
-            const mats = Array.isArray(child.material) ? child.material : [child.material];
-            mats.forEach((mat) => {
-                if (!mat) return;
-                mat.transparent = true;
-                gsap.to(mat, { duration: 0.3, opacity: 1, ease: 'power2.out' });
+        const target = car.container || car.chassis?.object;
+        if (target) {
+            target.scale.set(1, 1, 1);
+            target.traverse((child) => {
+                if (!child || !child.material) return;
+                const mats = Array.isArray(child.material) ? child.material : [child.material];
+                mats.forEach((mat) => {
+                    if (!mat) return;
+                    mat.transparent = true;
+                    mat.opacity = 1;
+                });
             });
-        });
+        }
+
+        const restoreBody = carKey ? car.physics?.[carKey]?.chassis?.body : null;
+        if (restoreBody) {
+            restoreBody.collisionResponse = true;
+            restoreBody.velocity.set(0, 0, 0);
+            restoreBody.angularVelocity.set(0, 0, 0);
+            restoreBody.wakeUp();
+        }
     };
 
     applyRandomMatcaps = () => {
@@ -1118,24 +1111,11 @@ export default class
                                 // this.updateScoreStatus(message.score);
                                 console.log("Updating bullet collision score info", message.score)
 
-                            
                                 if (message.battery <= 0) {
-                                    // Trigger the crash effect before putting the car to sleep
-                                    // car.createCrashEffect(car.chassis.object.position, car.chassis.object.quaternion);
-                                
-                                    // Put the car to sleep
-                                    // car.physics.car.sleep();
-                                
-                                    // Set a timeout to recreate the car after 5 seconds
-                                    // setTimeout(() => {
-                                    //     // Recreate the car
-                                    //     car.physics.car.recreate();
-                                
-                                    //     // Reset the battery to 100
-                                    //     car.battery = 100;
-                                    // }, 5000); // 5 seconds delay
-                                }                                
-                            
+                                    this.recreateOtherPlayerCarImmediately(car);
+                                    break;
+                                }
+
                                 const twitchForce = new CANNON.Vec3(Math.random() * 10 - 5, Math.random() * 10 - 5, Math.random() * 10 - 5);
                                 car.physics.car.chassis.body.applyImpulse(twitchForce, car.physics.car.chassis.body.position);
                             }
@@ -1445,29 +1425,16 @@ export default class
                         // Update non-collidable cars since battery is zero
                         this.physics.updateNonCollidableCars(car, Object.values(this.otherPlayers));
                         console.log("Non collidable cars", this.physics.nonCollidableCars)
-                    
-                        // Trigger crash effect and put the car to sleep (optional, based on desired behavior)
-                        if (typeof car.createCrashEffect === 'function') {
-                            car.createCrashEffect(car.chassis.object.position, car.chassis.object.quaternion);
-                        }
-                        // Set a timeout to recreate the car after 5 seconds
-                        setTimeout(() => {
-                            car.recreate(); // Recreate the car
-                            car.battery = 100; // Reset battery after recreation
-                            }, 15000); // 5 seconds delay
+
+                        this.recreateOtherPlayerCarImmediately(car);
                         }
                         break;
 
                     case 'destroyCar':
                         {
-                            const durationMs = typeof message.durationMs === 'number' ? message.durationMs : 5000;
                             const targetCar = this.getCarByPlayerId(message.carId);
                             if (targetCar) {
-                                this.physics.applyDestroyedState(targetCar, durationMs);
-                                this.playCarDestroyedFx(targetCar, durationMs);
-                                setTimeout(() => {
-                                    this.playCarRestoreFx(targetCar);
-                                }, durationMs);
+                                this.recreateOtherPlayerCarImmediately(targetCar);
                             }
                         }
                         break;
@@ -1876,38 +1843,72 @@ export default class
             removedPlayerCar.__removing = true;
 
             const carKey = this.getCarKey(removedPlayerCar);
-
+            const physicsCar = carKey ? removedPlayerCar.physics?.[carKey] : null;
             const carContainer = removedPlayerCar.container || removedPlayerCar.chassis?.object;
-            const setOpacity = (value) => {
-                if (!carContainer) return;
-                carContainer.traverse((child) => {
-                    if (child && child.material) {
-                        if (Array.isArray(child.material)) {
-                            child.material.forEach((mat) => {
-                                if (!mat) return;
-                                mat.transparent = true;
-                                mat.opacity = value;
-                            });
-                        } else {
-                            child.material.transparent = true;
-                            child.material.opacity = value;
-                        }
-                    }
-                });
-            };
 
             const finalizeRemoval = () => {
                 try {
-                    const chassisBody = carKey ? removedPlayerCar.physics?.[carKey]?.chassis?.body : null;
-                    if (chassisBody) {
-                        this.physics.world.removeBody(chassisBody);
+                    gsap.killTweensOf(carContainer?.scale);
+                } catch (_err) {
+                    // no-op
+                }
+
+                try {
+                    if (physicsCar && typeof physicsCar.destroy === 'function') {
+                        physicsCar.destroy();
+                    } else {
+                        const vehicle = physicsCar?.vehicle;
+                        if (vehicle && typeof vehicle.removeFromWorld === 'function') {
+                            vehicle.removeFromWorld(this.physics.world);
+                        }
+
+                        const wheelBodies = physicsCar?.wheels?.bodies || [];
+                        wheelBodies.forEach((wheelBody) => {
+                            if (wheelBody) {
+                                this.physics.world.removeBody(wheelBody);
+                            }
+                        });
+
+                        const chassisBody = physicsCar?.chassis?.body;
+                        if (chassisBody) {
+                            this.physics.world.removeBody(chassisBody);
+                        }
+
+                        const modelContainer = physicsCar?.model?.container;
+                        if (modelContainer?.parent) {
+                            modelContainer.parent.remove(modelContainer);
+                        }
                     }
                 } catch (_err) {
                     // no-op
                 }
 
-                if (carContainer) {
-                    this.container.remove(carContainer);
+                if (removedPlayerCar.playerIdText?.parent) {
+                    removedPlayerCar.playerIdText.parent.remove(removedPlayerCar.playerIdText);
+                }
+
+                if (this.shadows?.items?.length) {
+                    this.shadows.items = this.shadows.items.filter((shadow) => {
+                        const isRemovedCarShadow =
+                            shadow?.reference === removedPlayerCar.chassis?.main ||
+                            shadow?.reference === removedPlayerCar.chassis?.object ||
+                            (carContainer && shadow?.reference === carContainer);
+
+                        if (isRemovedCarShadow) {
+                            if (shadow.mesh?.parent) {
+                                shadow.mesh.parent.remove(shadow.mesh);
+                            }
+                            if (shadow.material?.dispose) {
+                                shadow.material.dispose();
+                            }
+                        }
+
+                        return !isRemovedCarShadow;
+                    });
+                }
+
+                if (carContainer?.parent) {
+                    carContainer.parent.remove(carContainer);
                 }
 
                 delete this.physics.cars[playerId];
@@ -1917,27 +1918,7 @@ export default class
                 console.log(`Player ${playerId} removed`);
             };
 
-            if (!carContainer) {
-                finalizeRemoval();
-                return;
-            }
-
-            const fadeState = { opacity: 1 };
-            gsap.to(fadeState, {
-                duration: 0.35,
-                opacity: 0,
-                ease: 'power2.out',
-                onUpdate: () => setOpacity(fadeState.opacity)
-            });
-
-            gsap.to(carContainer.scale, {
-                duration: 0.4,
-                x: 0.01,
-                y: 0.01,
-                z: 0.01,
-                ease: 'power2.in',
-                onComplete: finalizeRemoval
-            });
+            finalizeRemoval();
         };
 
         // Show invite prompt
@@ -4847,11 +4828,8 @@ export default class
             carName: this.carName,
             ws: this.ws
         })
-        this.physics.onCarDestroyed = (car, durationMs) => {
-            this.playCarDestroyedFx(car, durationMs);
-            setTimeout(() => {
-                this.playCarRestoreFx(car);
-            }, durationMs);
+        this.physics.onCarDestroyed = (car) => {
+            this.recreateOtherPlayerCarImmediately(car);
         };
         this.container.add(this.physics.models.container)
     }
@@ -4981,4 +4959,3 @@ export default class
     }
 
 }
-

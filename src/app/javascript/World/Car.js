@@ -345,73 +345,67 @@ export default class Car
             texture.needsUpdate = true;
 
             const material = new THREE.PointsMaterial({
-                size: 15.0, // Adjust size for visibility
+                size: 9.5,
                 vertexColors: true,
                 sizeAttenuation: true,
                 transparent: true,
                 opacity: 0.9,
                 map: texture,
-                blending: THREE.AdditiveBlending, // Glowing effect
-                depthWrite: false, // Prevent depth issues
+                blending: THREE.AdditiveBlending,
+                depthWrite: false,
             });
 
-            const particleCount = 3; // 3 particles for a boiling effect
+            const particleCount = 8;
             const geometry = new THREE.BufferGeometry();
             const vertices = [];
             const colors = [];
+            const haloRadius = 0.72;
 
-            // Initialize particles (close together)
             for (let i = 0; i < particleCount; i++) {
-                vertices.push(0, 0, 0); // Start from the same position
-                colors.push(1.0, 1.0, 1.0); // Yellow color for the particles
+                const angle = (i / particleCount) * Math.PI * 2;
+                vertices.push(
+                    Math.cos(angle) * haloRadius,
+                    Math.sin(angle) * haloRadius,
+                    0
+                );
+                colors.push(1.0, 0.96, 0.72);
             }
 
             geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
             geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
 
             const particles = new THREE.Points(geometry, material);
-            chassis.add(particles); // Add particles to the chassis
+            chassis.add(particles);
 
-            const duration = 5000; // Effect duration (in milliseconds)
+            const duration = 5000;
             const startTime = performance.now();
 
             const animateParticles = () => {
                 const elapsedTime = performance.now() - startTime;
                 const positions = geometry.attributes.position.array;
+                const spin = elapsedTime * 0.0025;
 
-                // Boiling effect: particles will move up and down chaotically
                 for (let i = 0; i < particleCount; i++) {
-                    const progress = elapsedTime / duration;
-
-                    // Smaller chaotic movement for particles (movement relative to chassis)
-                    const xOffset = Math.sin(elapsedTime * 0.1 + i) * 0.5; // Horizontal random movement
-                    const yOffset = Math.sin(elapsedTime * 0.2 + i) * 1.0; // Vertical oscillation
-                    const zOffset = Math.cos(elapsedTime * 0.1 + i) * 0.5; // Depth movement
-
-                    // Apply chaotic movement to positions (relative to chassis)
-                    positions[i * 3] = xOffset;
-                    positions[i * 3 + 1] = yOffset;
-                    positions[i * 3 + 2] = zOffset;
+                    const angle = (i / particleCount) * Math.PI * 2 + spin;
+                    positions[i * 3] = Math.cos(angle) * haloRadius;
+                    positions[i * 3 + 1] = Math.sin(angle) * haloRadius;
+                    positions[i * 3 + 2] = Math.sin(elapsedTime * 0.006 + i) * 0.08;
                 }
 
-                geometry.attributes.position.needsUpdate = true; // Reflect position updates
+                geometry.attributes.position.needsUpdate = true;
 
                 if (elapsedTime < duration) {
-                    requestAnimationFrame(animateParticles); // Continue animation
+                    requestAnimationFrame(animateParticles);
                 } else {
-                    // Cleanup after the effect completes
                     chassis.remove(particles);
                     particles.geometry.dispose();
                     particles.material.dispose();
                 }
             };
 
-            // Attach particles to the chassis using its position and quaternion
-            particles.position.set(0, 0, 0.5); // Set the particles to chassis's position
-            particles.quaternion.copy(chassis.quaternion); // Attach to chassis rotation
-            particles.rotation.setFromQuaternion(chassis.quaternion); // Apply chassis quaternion for rotation
+            particles.position.set(0, 0, 1.8);
 
-            animateParticles(); // Start the animation
+            animateParticles();
         };
 
         img.onerror = (error) => {
