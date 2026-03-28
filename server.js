@@ -8,14 +8,36 @@ const WebSocket = require("ws");
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: "8kb" }));
 
 const PORT = Number(process.env.PORT || 8080);
 const JWT_SECRET = process.env.JWT_SECRET || "dev-secret-change-me";
-const MAX_PLAYERS_PER_WORLD = Number(process.env.MAX_PLAYERS_PER_WORLD || 7);
+const MAX_PLAYERS_PER_WORLD = Number(process.env.MAX_PLAYERS_PER_WORLD || 10);
 const MAX_PARTY_SIZE = Number(process.env.MAX_PARTY_SIZE || 8);
 const TOKEN_EXPIRES_IN = process.env.TOKEN_EXPIRES_IN || "7d";
 const IS_PRODUCTION = process.env.NODE_ENV === "production";
+const WS_MESSAGE_MAX_BYTES = Number(process.env.WS_MESSAGE_MAX_BYTES || 32 * 1024);
+const WORLD_COORD_LIMIT = Number(process.env.WORLD_COORD_LIMIT || 620);
+const WORLD_Z_MIN = -20;
+const WORLD_Z_MAX = 140;
+const VELOCITY_LIMIT = 250;
+const MAX_INVALID_MESSAGES = Number(process.env.MAX_INVALID_MESSAGES || 8);
+
+const PLAYER_ID_REGEX = /^0x[a-fA-F0-9]{40}$/;
+const WORLD_ID_REGEX = /^world-[a-zA-Z0-9_-]{1,32}$/;
+const MATCAP_KEY_REGEX = /^[a-zA-Z0-9_-]{1,32}$/;
+
+const MESSAGE_RATE_LIMITS = {
+  update: { limit: 90, windowMs: 1000 },
+  join: { limit: 6, windowMs: 10000 },
+  bulletFired: { limit: 16, windowMs: 1000 },
+  bulletCollision: { limit: 24, windowMs: 1000 },
+  destroyCar: { limit: 24, windowMs: 1000 },
+  invite: { limit: 12, windowMs: 10000 },
+  inviteFriendship: { limit: 12, windowMs: 10000 },
+  partyMessage: { limit: 10, windowMs: 5000 },
+  default: { limit: 40, windowMs: 1000 }
+};
 
 if (IS_PRODUCTION && (!process.env.JWT_SECRET || JWT_SECRET === "dev-secret-change-me")) {
   throw new Error("JWT_SECRET must be set to a strong value in production.");
@@ -35,6 +57,209 @@ const playerProfiles = new Map();
 function safeSend(ws, payload) {
   if (ws && ws.readyState === WebSocket.OPEN) {
     ws.send(JSON.stringify(payload));
+  }
+}
+
+function isPlainObject(value) {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function sanitizeString(value, maxLength = 64) {
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  if (!trimmed || trimmed.length > maxLength) return null;
+  return trimmed;
+}
+
+function sanitizePlayerId(value) {
+  const playerId = sanitizeString(value, 42);
+  if (!playerId || !PLAYER_ID_REGEX.test(playerId)) return null;
+  return playerId;
+}
+
+function sanitizeWorldId(value) {
+  const worldId = sanitizeString(value, 40);
+  if (!worldId || !WORLD_ID_REGEX.test(worldId)) return null;
+  return worldId;
+}
+
+function sanitizeBoolean(value) {
+  return Boolean(value);
+}
+
+function sanitizeFiniteNumber(value, min, max, fallback = null) {
+  if (!isFiniteNumber(value)) return fallback;
+  return Math.min(max, Math.max(min, value));
+}
+
+function sanitizeVec3(value, limits) {
+  if (!isPlainObject(value)) return null;
+
+  const x = sanitizeFiniteNumber(value.x, limits.minX, limits.maxX);
+  const y = sanitizeFiniteNumber(value.y, limits.minY, limits.maxY);
+  const z = sanitizeFiniteNumber(value.z, limits.minZ, limits.maxZ);
+
+  if (x === null || y === null || z === null) return null;
+  return { x, y, z };
+}
+
+function sanitizeQuaternion(value) {
+  if (!isPlainObject(value)) return null;
+
+  const x = sanitizeFiniteNumber(value.x, -1.5, 1.5);
+  const y = sanitizeFiniteNumber(value.y, -1.5, 1.5);
+  const z = sanitizeFiniteNumber(value.z, -1.5, 1.5);
+  const w = sanitizeFiniteNumber(value.w, -1.5, 1.5);
+
+  if (x === null || y === null || z === null || w === null) return null;
+  return { x, y, z, w };
+}
+
+function sanitizeWheelState(value) {
+  if (!isPlainObject(value)) return null;
+
+  const position = sanitizeVec3(value.position, {
+    minX: -WORLD_COORD_LIMIT,
+    maxX: WORLD_COORD_LIMIT,
+    minY: -WORLD_COORD_LIMIT,
+    maxY: WORLD_COORD_LIMIT,
+    minZ: WORLD_Z_MIN,
+    maxZ: WORLD_Z_MAX
+  });
+  const rotation = sanitizeQuaternion(value.rotation);
+  const rotationAngle = sanitizeFiniteNumber(value.rotationAngle, -500, 500, 0);
+  const brake = sanitizeFiniteNumber(value.brake, 0, 1, 0);
+
+  if (!position || !rotation) return null;
+
+  return {
+    position,
+    rotation,
+    rotationAngle,
+    brake
+  };
+}
+
+function sanitizeControls(value) {
+  if (!isPlainObject(value)) return null;
+
+  return {
+    boost: sanitizeBoolean(value.boost),
+    brake: sanitizeBoolean(value.brake),
+    down: sanitizeBoolean(value.down),
+    left: sanitizeBoolean(value.left),
+    right: sanitizeBoolean(value.right),
+    up: sanitizeBoolean(value.up),
+    shoot: sanitizeBoolean(value.shoot),
+    siren: sanitizeBoolean(value.siren),
+    steering: sanitizeFiniteNumber(value.steering, -1, 1, 0)
+  };
+}
+
+function sanitizeMatcaps(value) {
+  if (!isPlainObject(value)) return {};
+
+  const sanitized = {};
+  for (const [key, matcap] of Object.entries(value).slice(0, 16)) {
+    if (!MATCAP_KEY_REGEX.test(key)) continue;
+    const safeMatcap = sanitizeString(matcap, 64);
+    if (safeMatcap) {
+      sanitized[key] = safeMatcap;
+    }
+  }
+  return sanitized;
+}
+
+function sanitizeSelectedCar(value) {
+  return sanitizeString(value, 64);
+}
+
+function sanitizeRealtimeState(value) {
+  if (!isPlainObject(value)) return {};
+
+  const sanitized = {};
+
+  const position = sanitizeVec3(value.position, {
+    minX: -WORLD_COORD_LIMIT,
+    maxX: WORLD_COORD_LIMIT,
+    minY: -WORLD_COORD_LIMIT,
+    maxY: WORLD_COORD_LIMIT,
+    minZ: WORLD_Z_MIN,
+    maxZ: WORLD_Z_MAX
+  });
+  if (position) sanitized.position = position;
+
+  const rotation = sanitizeQuaternion(value.rotation);
+  if (rotation) sanitized.rotation = rotation;
+
+  const velocity = sanitizeVec3(value.velocity, {
+    minX: -VELOCITY_LIMIT,
+    maxX: VELOCITY_LIMIT,
+    minY: -VELOCITY_LIMIT,
+    maxY: VELOCITY_LIMIT,
+    minZ: -VELOCITY_LIMIT,
+    maxZ: VELOCITY_LIMIT
+  });
+  if (velocity) sanitized.velocity = velocity;
+
+  if (Array.isArray(value.wheels)) {
+    const sanitizedWheels = value.wheels.slice(0, 4).map(sanitizeWheelState).filter(Boolean);
+    if (sanitizedWheels.length) sanitized.wheels = sanitizedWheels;
+  }
+
+  const controls = sanitizeControls(value.controls);
+  if (controls) sanitized.controls = controls;
+
+  const selectedCar = sanitizeSelectedCar(value.selectedCar);
+  if (selectedCar) sanitized.selectedCar = selectedCar;
+
+  if (isPlainObject(value.matcaps)) {
+    sanitized.matcaps = sanitizeMatcaps(value.matcaps);
+  }
+
+  return sanitized;
+}
+
+function buildPlayerSnapshot(playerId, player) {
+  return {
+    playerId,
+    ...(player.state || {}),
+    selectedCar: player.selectedCar || null,
+    matcaps: player.matcaps || {},
+    score: isFiniteNumber(player.score) ? player.score : 0,
+    battery: isFiniteNumber(player.battery) ? clamp(player.battery, 0, 100) : 100
+  };
+}
+
+function consumeRateLimit(meta, type) {
+  if (!meta) return false;
+
+  const config = MESSAGE_RATE_LIMITS[type] || MESSAGE_RATE_LIMITS.default;
+  const now = Date.now();
+  const bucket = meta.rateLimits.get(type) || { startedAt: now, count: 0 };
+
+  if (now - bucket.startedAt >= config.windowMs) {
+    bucket.startedAt = now;
+    bucket.count = 0;
+  }
+
+  bucket.count += 1;
+  meta.rateLimits.set(type, bucket);
+
+  return bucket.count > config.limit;
+}
+
+function registerInvalidMessage(ws, meta, error, closeCode = null) {
+  if (!meta) return;
+  meta.invalidMessages += 1;
+  safeSend(ws, { type: "error", error });
+
+  if (closeCode || meta.invalidMessages >= MAX_INVALID_MESSAGES) {
+    try {
+      ws.close(closeCode || 4008, error);
+    } catch (_error) {
+      // no-op
+    }
   }
 }
 
@@ -134,11 +359,6 @@ function worldFor(worldId) {
   return worlds.get(worldId);
 }
 
-function worldPlayerCount(worldId) {
-  const world = worlds.get(worldId);
-  return world ? world.players.size : 0;
-}
-
 function emitPlayerCount(worldId) {
   const world = worlds.get(worldId);
   if (!world) return;
@@ -162,14 +382,7 @@ function broadcastToWorld(worldId, payload, excludePlayerId) {
 function getWorldState(worldId) {
   const world = worlds.get(worldId);
   if (!world) return [];
-  return [...world.players.entries()].map(([playerId, player]) => ({
-    playerId,
-    ...(player.state || {}),
-    selectedCar: player.selectedCar || null,
-    matcaps: player.matcaps || {},
-    score: player.score || 0,
-    battery: typeof player.battery === "number" ? player.battery : 100
-  }));
+  return [...world.players.entries()].map(([playerId, player]) => buildPlayerSnapshot(playerId, player));
 }
 
 function isFiniteNumber(value) {
@@ -196,16 +409,15 @@ function updatePlayerState(worldId, playerId, incoming) {
 
   current.state = {
     ...(current.state || {}),
-    ...incoming
+    ...sanitizeRealtimeState(incoming)
   };
 
-  if (isFiniteNumber(incoming.score)) current.score = incoming.score;
-  if (isFiniteNumber(incoming.battery)) current.battery = clamp(incoming.battery, 0, 100);
-  if (typeof incoming.selectedCar === "string" && incoming.selectedCar.trim()) {
-    current.selectedCar = incoming.selectedCar;
+  const selectedCar = sanitizeSelectedCar(incoming.selectedCar);
+  if (selectedCar) {
+    current.selectedCar = selectedCar;
   }
-  if (incoming.matcaps && typeof incoming.matcaps === "object") {
-    current.matcaps = incoming.matcaps;
+  if (isPlainObject(incoming.matcaps)) {
+    current.matcaps = sanitizeMatcaps(incoming.matcaps);
   }
 
   world.players.set(playerId, current);
@@ -217,9 +429,7 @@ function updatePlayerState(worldId, playerId, incoming) {
   if (current.matcaps && typeof current.matcaps === "object") {
     profile.matcaps = current.matcaps;
   }
-  if (isFiniteNumber(current.score)) {
-    profile.score = current.score;
-  }
+  profile.score = isFiniteNumber(current.score) ? current.score : 0;
 
   return current;
 }
@@ -228,9 +438,15 @@ function createToken(playerId) {
   return jwt.sign({ playerId }, JWT_SECRET, { expiresIn: TOKEN_EXPIRES_IN });
 }
 
-function cleanupPlayer(playerId, worldId) {
+function cleanupPlayer(playerId, worldId, expectedWs = null) {
   const world = worlds.get(worldId);
   if (!world) return;
+
+  const existing = world.players.get(playerId);
+  if (!existing) return;
+  if (expectedWs && existing.ws && existing.ws !== expectedWs) {
+    return;
+  }
 
   if (world.players.delete(playerId)) {
     broadcastToWorld(worldId, { type: "playerRemoved", playerId }, playerId);
@@ -243,7 +459,9 @@ function cleanupPlayer(playerId, worldId) {
   }
 
   removePlayerFromParty(playerId);
-  playerToSocket.delete(playerId);
+  if (!expectedWs || playerToSocket.get(playerId) === expectedWs) {
+    playerToSocket.delete(playerId);
+  }
 }
 
 function getOrCreatePartyByLeader(leaderId) {
@@ -348,6 +566,10 @@ app.get("/health", (_req, res) => {
 });
 
 app.get("/state", (_req, res) => {
+  if (IS_PRODUCTION) {
+    return res.status(404).json({ error: "Not found" });
+  }
+
   const snapshot = [...worlds.entries()].reduce((acc, [worldId, world]) => {
     acc[worldId] = {
       playerCount: world.players.size,
@@ -371,14 +593,32 @@ app.get("/state", (_req, res) => {
 });
 
 app.post("/getToken", (req, res) => {
-  const { playerId } = req.body || {};
-  if (!playerId || typeof playerId !== "string") {
-    return res.status(400).json({ error: "playerId is required" });
+  const playerId = sanitizePlayerId(req.body?.playerId);
+  if (!playerId) {
+    return res.status(400).json({ error: "valid playerId is required" });
   }
 
   const token = createToken(playerId);
   return res.json({ token });
 });
+
+function handleSocketDisconnect(ws) {
+  const meta = socketMeta.get(ws);
+  if (!meta || meta.closed) return;
+
+  meta.closed = true;
+  connectedClients.delete(ws);
+
+  if (meta.playerId && meta.worldId) {
+    cleanupPlayer(meta.playerId, meta.worldId, ws);
+  }
+
+  if (meta.playerId && playerToSocket.get(meta.playerId) === ws) {
+    playerToSocket.delete(meta.playerId);
+  }
+
+  broadcastGlobalPlayerCount();
+}
 
 wss.on("connection", (ws, req) => {
   const requestUrl = new URL(req.url || "/", `http://${req.headers.host}`);
@@ -402,7 +642,10 @@ wss.on("connection", (ws, req) => {
   socketMeta.set(ws, {
     authenticatedPlayerId: decoded.playerId,
     playerId: null,
-    worldId: null
+    worldId: null,
+    invalidMessages: 0,
+    rateLimits: new Map(),
+    closed: false
   });
 
   connectedClients.add(ws);
@@ -410,50 +653,40 @@ wss.on("connection", (ws, req) => {
   broadcastGlobalPlayerCount();
 
   ws.on("message", (raw) => {
+    const meta = socketMeta.get(ws);
+    if (!meta || meta.closed) return;
+
+    if (Buffer.byteLength(raw) > WS_MESSAGE_MAX_BYTES) {
+      registerInvalidMessage(ws, meta, "Message too large", 4009);
+      return;
+    }
+
     let message;
     try {
       message = JSON.parse(raw.toString());
     } catch (_error) {
+      registerInvalidMessage(ws, meta, "Invalid JSON payload");
       return;
     }
 
-    const meta = socketMeta.get(ws);
-    if (!meta) return;
-
-    if (message.type === "generateWorldId") {
-      const predefined = Array.isArray(message.predefinedWorldIds) ? message.predefinedWorldIds : [];
-      let selected = predefined.find((id) => worldPlayerCount(id) < MAX_PLAYERS_PER_WORLD) || null;
-      if (!selected) {
-        const autoId = `world-${Math.max(worlds.size + 1, 1)}`;
-        selected = autoId;
-      }
-      safeSend(ws, {
-        type: "generateWorldIdResult",
-        success: Boolean(selected),
-        worldId: selected
-      });
+    if (!isPlainObject(message)) {
+      registerInvalidMessage(ws, meta, "Invalid message payload");
       return;
     }
 
-    if (message.type === "findPlayerWorld") {
-      const targetPlayerId = message.playerId;
-      let foundWorldId = null;
-      for (const [worldId, world] of worlds.entries()) {
-        if (world.players.has(targetPlayerId)) {
-          foundWorldId = worldId;
-          break;
-        }
-      }
-      safeSend(ws, {
-        type: "findPlayerWorldResult",
-        success: Boolean(foundWorldId),
-        worldId: foundWorldId
-      });
+    const messageType = sanitizeString(message.type, 40);
+    if (!messageType) {
+      registerInvalidMessage(ws, meta, "Invalid message type");
       return;
     }
 
-    if (message.type === "getSelectedCar") {
-      const playerId = message.playerId;
+    if (consumeRateLimit(meta, messageType)) {
+      registerInvalidMessage(ws, meta, `Rate limit exceeded for ${messageType}`);
+      return;
+    }
+
+    if (messageType === "getSelectedCar") {
+      const playerId = sanitizePlayerId(message.playerId);
       if (!playerId || playerId !== meta.authenticatedPlayerId) {
         safeSend(ws, { type: "error", error: "Token/player mismatch" });
         return;
@@ -468,20 +701,19 @@ wss.on("connection", (ws, req) => {
       return;
     }
 
-    if (message.type === "setSelectedCar") {
-      const playerId = message.playerId;
+    if (messageType === "setSelectedCar") {
+      const playerId = sanitizePlayerId(message.playerId);
       if (!playerId || playerId !== meta.authenticatedPlayerId) {
         safeSend(ws, { type: "error", error: "Token/player mismatch" });
         return;
       }
 
       const profile = ensurePlayerProfile(playerId);
-      if (typeof message.carName === "string" && message.carName.trim()) {
-        profile.selectedCar = message.carName;
+      const selectedCar = sanitizeSelectedCar(message.carName);
+      if (selectedCar) {
+        profile.selectedCar = selectedCar;
       }
-      if (message.matcaps && typeof message.matcaps === "object") {
-        profile.matcaps = message.matcaps;
-      }
+      profile.matcaps = sanitizeMatcaps(message.matcaps);
 
       for (const [worldId, world] of worlds.entries()) {
         if (!world.players.has(playerId)) continue;
@@ -496,10 +728,7 @@ wss.on("connection", (ws, req) => {
           worldId,
           {
             type: "playerSelectionUpdate",
-            playerId,
-            selectedCar: livePlayer.selectedCar,
-            matcaps: livePlayer.matcaps || {},
-            ...(livePlayer.state || {})
+            ...buildPlayerSnapshot(playerId, livePlayer)
           },
           playerId
         );
@@ -513,8 +742,8 @@ wss.on("connection", (ws, req) => {
       return;
     }
 
-    if (message.type === "getScore") {
-      const playerId = message.playerId;
+    if (messageType === "getScore") {
+      const playerId = sanitizePlayerId(message.playerId);
       if (!playerId || playerId !== meta.authenticatedPlayerId) {
         safeSend(ws, { type: "error", error: "Token/player mismatch" });
         return;
@@ -529,8 +758,8 @@ wss.on("connection", (ws, req) => {
       return;
     }
 
-    if (message.type === "getControllerPrefs") {
-      const playerId = message.playerId;
+    if (messageType === "getControllerPrefs") {
+      const playerId = sanitizePlayerId(message.playerId);
       if (!playerId || playerId !== meta.authenticatedPlayerId) {
         safeSend(ws, { type: "error", error: "Token/player mismatch" });
         return;
@@ -545,8 +774,8 @@ wss.on("connection", (ws, req) => {
       return;
     }
 
-    if (message.type === "saveControllerPrefs") {
-      const playerId = message.playerId;
+    if (messageType === "saveControllerPrefs") {
+      const playerId = sanitizePlayerId(message.playerId);
       if (!playerId || playerId !== meta.authenticatedPlayerId) {
         safeSend(ws, { type: "error", error: "Token/player mismatch" });
         return;
@@ -562,37 +791,36 @@ wss.on("connection", (ws, req) => {
       return;
     }
 
-    if (message.type === "getFriends" || message.type === "updateFriendList") {
-      const playerId = message.playerId;
+    if (messageType === "getFriends" || messageType === "updateFriendList") {
+      const playerId = sanitizePlayerId(message.playerId);
       if (!playerId || playerId !== meta.authenticatedPlayerId) {
         safeSend(ws, { type: "error", error: "Token/player mismatch" });
         return;
       }
-      emitFriendList(ws, playerId, message.type === "getFriends" ? "friendList" : "friendListUpdate");
+      emitFriendList(ws, playerId, messageType === "getFriends" ? "friendList" : "friendListUpdate");
       return;
     }
 
-    if (message.type === "updateFriendLabel") {
-      const playerId = message.playerId;
-      const friendId = message.friendId;
+    if (messageType === "updateFriendLabel") {
+      const playerId = sanitizePlayerId(message.playerId);
+      const friendId = sanitizePlayerId(message.friendId);
       if (!playerId || playerId !== meta.authenticatedPlayerId || !friendId) {
         safeSend(ws, { type: "error", error: "Invalid friend label update" });
         return;
       }
 
-      const profile = ensurePlayerProfile(playerId);
       const friends = getFriendList(playerId);
       const entry = friends.find((item) => item && item.friendId === friendId);
       if (entry) {
-        entry.label = typeof message.label === "string" ? message.label.trim().slice(0, 60) : "";
+        entry.label = sanitizeString(message.label, 60) || "";
       }
       emitFriendList(ws, playerId, "friendListUpdate");
       return;
     }
 
-    if (message.type === "removeFriend") {
-      const playerId = message.playerId;
-      const friendId = message.friendId;
+    if (messageType === "removeFriend") {
+      const playerId = sanitizePlayerId(message.playerId);
+      const friendId = sanitizePlayerId(message.friendId);
       if (!playerId || playerId !== meta.authenticatedPlayerId || !friendId) {
         safeSend(ws, { type: "error", error: "Invalid removeFriend request" });
         return;
@@ -609,13 +837,14 @@ wss.on("connection", (ws, req) => {
       return;
     }
 
-    if (message.type === "inviteFriendship") {
-      const inviterId = message.friendRequestId;
-      const targetPlayerId = message.targetPlayerId;
+    if (messageType === "inviteFriendship") {
+      const inviterId = sanitizePlayerId(message.friendRequestId);
+      const targetPlayerId = sanitizePlayerId(message.targetPlayerId);
       if (!inviterId || inviterId !== meta.authenticatedPlayerId || !targetPlayerId) {
         safeSend(ws, { type: "error", error: "Invalid friendship invite" });
         return;
       }
+      if (inviterId === targetPlayerId) return;
 
       const targetWs = playerToSocket.get(targetPlayerId);
       if (!targetWs) return;
@@ -628,10 +857,11 @@ wss.on("connection", (ws, req) => {
       return;
     }
 
-    if (message.type === "friendshipResponse") {
+    if (messageType === "friendshipResponse") {
       const responderId = meta.authenticatedPlayerId;
-      const inviterId = message.friendRequestId;
-      if (!inviterId || message.playerId !== responderId) {
+      const inviterId = sanitizePlayerId(message.friendRequestId);
+      const playerId = sanitizePlayerId(message.playerId);
+      if (!inviterId || playerId !== responderId) {
         safeSend(ws, { type: "error", error: "Invalid friendship response" });
         return;
       }
@@ -654,19 +884,20 @@ wss.on("connection", (ws, req) => {
       return;
     }
 
-    if (message.type === "join") {
-      const playerId = message.playerId;
-      const worldId = message.worldId || "world-1";
-      const selectedCar =
-        typeof message.selectedCar === "string" && message.selectedCar.trim()
-          ? message.selectedCar
-          : null;
-      const matcaps = message.matcaps && typeof message.matcaps === "object" ? message.matcaps : {};
+    if (messageType === "join") {
+      const playerId = sanitizePlayerId(message.playerId);
+      const worldId = sanitizeWorldId(message.worldId) || "world-1";
+      const selectedCar = sanitizeSelectedCar(message.selectedCar);
+      const matcaps = sanitizeMatcaps(message.matcaps);
 
       if (!playerId || playerId !== meta.authenticatedPlayerId) {
         safeSend(ws, { type: "error", error: "Token/player mismatch" });
         ws.close(4003, "Token/player mismatch");
         return;
+      }
+
+      if (meta.playerId && meta.worldId && (meta.playerId !== playerId || meta.worldId !== worldId)) {
+        cleanupPlayer(meta.playerId, meta.worldId, ws);
       }
 
       const world = worldFor(worldId);
@@ -717,14 +948,7 @@ wss.on("connection", (ws, req) => {
         {
           type: "playerJoined",
           playerId,
-          state: {
-            playerId,
-            ...(world.players.get(playerId).state || {}),
-            selectedCar: world.players.get(playerId).selectedCar || null,
-            matcaps: world.players.get(playerId).matcaps || {},
-            score: world.players.get(playerId).score || 0,
-            battery: world.players.get(playerId).battery
-          }
+          state: buildPlayerSnapshot(playerId, world.players.get(playerId))
         },
         playerId
       );
@@ -741,49 +965,81 @@ wss.on("connection", (ws, req) => {
     const world = worlds.get(meta.worldId);
     if (!world || !world.players.has(meta.playerId)) return;
 
-    if (message.type === "update") {
-      message.playerId = meta.playerId;
-      message.worldId = meta.worldId;
-      updatePlayerState(meta.worldId, meta.playerId, message);
-      broadcastToWorld(meta.worldId, message, meta.playerId);
+    if (messageType === "update") {
+      const updated = updatePlayerState(meta.worldId, meta.playerId, message);
+      if (!updated) return;
+
+      broadcastToWorld(
+        meta.worldId,
+        {
+          type: "update",
+          ...buildPlayerSnapshot(meta.playerId, updated)
+        },
+        meta.playerId
+      );
       return;
     }
 
-    if (message.type === "carStateUpdate") {
-      message.playerId = meta.playerId;
-      message.worldId = meta.worldId;
-      updatePlayerState(meta.worldId, meta.playerId, message);
-      broadcastToWorld(meta.worldId, message, meta.playerId);
+    if (messageType === "remove") {
+      cleanupPlayer(meta.playerId, meta.worldId, ws);
       return;
     }
 
-    if (message.type === "remove") {
-      cleanupPlayer(meta.playerId, meta.worldId);
-      return;
-    }
+    if (messageType === "bulletFired") {
+      const position = sanitizeVec3(message.position, {
+        minX: -WORLD_COORD_LIMIT,
+        maxX: WORLD_COORD_LIMIT,
+        minY: -WORLD_COORD_LIMIT,
+        maxY: WORLD_COORD_LIMIT,
+        minZ: WORLD_Z_MIN,
+        maxZ: WORLD_Z_MAX
+      });
+      const rotation = sanitizeQuaternion(message.rotation);
+      const velocity = sanitizeVec3(message.velocity, {
+        minX: -VELOCITY_LIMIT,
+        maxX: VELOCITY_LIMIT,
+        minY: -VELOCITY_LIMIT,
+        maxY: VELOCITY_LIMIT,
+        minZ: -VELOCITY_LIMIT,
+        maxZ: VELOCITY_LIMIT
+      });
 
-    if (message.type === "bulletFired") {
-      message.shooterId = meta.playerId;
-      broadcastToWorld(meta.worldId, message, meta.playerId);
-      return;
-    }
-
-    if (message.type === "bulletCollision") {
-      const targetPlayerId = message.carId;
-      const shooterId = message.shooterId;
-      if (arePartyMates(shooterId, targetPlayerId)) {
+      if (!position || !rotation || !velocity) {
+        safeSend(ws, { type: "error", error: "Invalid bullet payload" });
         return;
       }
-      const target = getPlayer(meta.worldId, targetPlayerId);
-      const shooter = getPlayer(meta.worldId, shooterId);
 
-      if (target && isFiniteNumber(message.battery)) {
-        target.battery = clamp(message.battery, 0, 100);
-        world.players.set(targetPlayerId, target);
+      broadcastToWorld(
+        meta.worldId,
+        {
+          type: "bulletFired",
+          shooterId: meta.playerId,
+          position,
+          rotation,
+          velocity
+        },
+        meta.playerId
+      );
+      return;
+    }
+
+    if (messageType === "bulletCollision") {
+      const targetPlayerId = sanitizePlayerId(message.carId);
+      const shooterId = meta.playerId;
+
+      if (!targetPlayerId || targetPlayerId === shooterId || arePartyMates(shooterId, targetPlayerId)) {
+        return;
       }
 
-      if (shooter && isFiniteNumber(message.score)) {
-        shooter.score = message.score;
+      const target = getPlayer(meta.worldId, targetPlayerId);
+      const shooter = getPlayer(meta.worldId, shooterId);
+      if (!target || !shooter) return;
+
+      target.battery = clamp((isFiniteNumber(target.battery) ? target.battery : 100) - 1, 0, 100);
+      world.players.set(targetPlayerId, target);
+
+      if (target.battery <= 0) {
+        shooter.score = (isFiniteNumber(shooter.score) ? shooter.score : 0) + 1;
         world.players.set(shooterId, shooter);
         safeSend(shooter.ws, {
           type: "playerScore",
@@ -792,63 +1048,67 @@ wss.on("connection", (ws, req) => {
         });
       }
 
-      broadcastToWorld(meta.worldId, message, meta.playerId);
-      return;
-    }
+      ensurePlayerProfile(shooterId).score = shooter.score || 0;
 
-    if (message.type === "carCollision") {
-      const hitCarId = message.hitCarId;
-      if (arePartyMates(meta.playerId, hitCarId)) {
-        return;
-      }
-      const hitCar = getPlayer(meta.worldId, hitCarId);
-
-      if (hitCar && isFiniteNumber(message.battery)) {
-        hitCar.battery = clamp(message.battery, 0, 100);
-        world.players.set(hitCarId, hitCar);
-      }
-
-      if (isFiniteNumber(message.score)) {
-        const hitter = getPlayer(meta.worldId, meta.playerId);
-        if (hitter) {
-          hitter.score = message.score;
-          world.players.set(meta.playerId, hitter);
-          safeSend(hitter.ws, {
-            type: "playerScore",
-            playerId: meta.playerId,
-            score: hitter.score
-          });
-        }
-      }
-
-      broadcastToWorld(meta.worldId, message, meta.playerId);
-      return;
-    }
-
-    if (message.type === "batteryUpdate") {
-      const updated = updatePlayerState(meta.worldId, meta.playerId, {
-        battery: clamp(message.battery, 0, 100)
-      });
-      if (!updated) return;
       broadcastToWorld(
         meta.worldId,
         {
-          type: "batteryStatus",
-          playerId: meta.playerId,
-          battery: updated.battery
+          type: "bulletCollision",
+          carId: targetPlayerId,
+          shooterId,
+          battery: target.battery,
+          score: shooter.score || 0
         },
         meta.playerId
       );
       return;
     }
 
-    if (message.type === "destroyCar" || message.type === "bulletUpdate") {
-      broadcastToWorld(meta.worldId, message, meta.playerId);
+    if (messageType === "destroyCar") {
+      const targetPlayerId = sanitizePlayerId(message.carId);
+      const attackerId = sanitizePlayerId(message.attackerId);
+      const reason = sanitizeString(message.reason, 32) || "unknown";
+      const durationMs = sanitizeFiniteNumber(message.durationMs, 0, 15000, 0);
+
+      if (!targetPlayerId) return;
+
+      const target = getPlayer(meta.worldId, targetPlayerId);
+      if (!target) return;
+
+      if (reason === "carCollision" && attackerId && attackerId !== targetPlayerId && !arePartyMates(attackerId, targetPlayerId)) {
+        const attacker = getPlayer(meta.worldId, attackerId);
+        if (attacker) {
+          attacker.score = (isFiniteNumber(attacker.score) ? attacker.score : 0) + 1;
+          world.players.set(attackerId, attacker);
+          ensurePlayerProfile(attackerId).score = attacker.score;
+          safeSend(attacker.ws, {
+            type: "playerScore",
+            playerId: attackerId,
+            score: attacker.score
+          });
+        }
+      }
+
+      target.battery = 100;
+      world.players.set(targetPlayerId, target);
+
+      broadcastToWorld(
+        meta.worldId,
+        {
+          type: "destroyCar",
+          carId: targetPlayerId,
+          durationMs,
+          reason,
+          attackerId: attackerId || null
+        },
+        meta.playerId
+      );
       return;
     }
 
-    if (message.type === "invite") {
-      if (message.inviterId !== meta.playerId) return;
+    if (messageType === "invite") {
+      const inviterId = sanitizePlayerId(message.inviterId);
+      if (inviterId !== meta.playerId) return;
       const inviterParty = getPartyForPlayer(meta.playerId);
       if (inviterParty && inviterParty.leader !== meta.playerId) {
         safeSend(ws, {
@@ -865,7 +1125,8 @@ wss.on("connection", (ws, req) => {
         return;
       }
 
-      const targetPlayerId = message.targetPlayerId;
+      const targetPlayerId = sanitizePlayerId(message.targetPlayerId);
+      if (!targetPlayerId || targetPlayerId === meta.playerId) return;
       const targetWs = playerToSocket.get(targetPlayerId);
       const targetMeta = targetWs ? socketMeta.get(targetWs) : null;
       if (!targetWs || !targetMeta || targetMeta.worldId !== meta.worldId) return;
@@ -886,22 +1147,25 @@ wss.on("connection", (ws, req) => {
       return;
     }
 
-    if (message.type === "inviteResponse") {
-      if (message.playerId !== meta.playerId) return;
-      const inviterWs = playerToSocket.get(message.inviterId);
+    if (messageType === "inviteResponse") {
+      const playerId = sanitizePlayerId(message.playerId);
+      const inviterId = sanitizePlayerId(message.inviterId);
+      if (playerId !== meta.playerId || !inviterId) return;
+      const inviterWs = playerToSocket.get(inviterId);
       safeSend(inviterWs, {
         type: "inviteResponse",
         response: message.response,
-        inviterId: message.inviterId,
-        playerId: message.playerId
+        inviterId,
+        playerId
       });
       return;
     }
 
-    if (message.type === "addToParty") {
-      const inviterId = message.inviterId;
-      const playerId = message.playerId;
+    if (messageType === "addToParty") {
+      const inviterId = sanitizePlayerId(message.inviterId);
+      const playerId = sanitizePlayerId(message.playerId);
       if (inviterId !== meta.playerId) return;
+      if (!playerId || playerId === inviterId) return;
 
       const inviterWs = playerToSocket.get(inviterId);
       const playerWs = playerToSocket.get(playerId);
@@ -930,11 +1194,11 @@ wss.on("connection", (ws, req) => {
       return;
     }
 
-    if (message.type === "partyMessage") {
+    if (messageType === "partyMessage") {
       const partyId = playerToPartyId.get(meta.playerId);
       const party = partyId ? parties.get(partyId) : null;
       if (!party) return;
-      const text = typeof message.text === "string" ? message.text.trim().slice(0, 500) : "";
+      const text = sanitizeString(message.text, 500) || "";
       if (!text) return;
 
       for (const memberId of party.members) {
@@ -948,34 +1212,22 @@ wss.on("connection", (ws, req) => {
       return;
     }
 
-    if (message.type === "leaveParty") {
-      const leavingPlayerId = message.playerId || meta.playerId;
+    if (messageType === "leaveParty") {
+      const leavingPlayerId = sanitizePlayerId(message.playerId) || meta.playerId;
       if (leavingPlayerId !== meta.playerId) return;
       removePlayerFromParty(leavingPlayerId);
       return;
     }
+
+    safeSend(ws, { type: "error", error: `Unsupported message type: ${messageType}` });
   });
 
   ws.on("close", () => {
-    const meta = socketMeta.get(ws);
-    if (!meta) return;
-    connectedClients.delete(ws);
-    if (meta.playerId && meta.worldId) {
-      cleanupPlayer(meta.playerId, meta.worldId);
-      playerToSocket.delete(meta.playerId);
-    }
-    broadcastGlobalPlayerCount();
+    handleSocketDisconnect(ws);
   });
 
   ws.on("error", () => {
-    const meta = socketMeta.get(ws);
-    if (!meta) return;
-    connectedClients.delete(ws);
-    if (meta.playerId && meta.worldId) {
-      cleanupPlayer(meta.playerId, meta.worldId);
-      playerToSocket.delete(meta.playerId);
-    }
-    broadcastGlobalPlayerCount();
+    handleSocketDisconnect(ws);
   });
 });
 

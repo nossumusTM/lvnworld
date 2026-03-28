@@ -560,7 +560,8 @@ export default class Controls extends EventEmitter
         this.touch.joystick.$cursor.style.borderRadius = '50%'
         this.touch.joystick.$cursor.style.boxSizing = 'border-box'
         this.touch.joystick.$cursor.style.pointerEvents = 'none'
-        this.touch.joystick.$cursor.style.willChange = 'left, top'
+        this.touch.joystick.$cursor.style.transform = 'translate3d(0px, 0px, 0px)'
+        this.touch.joystick.$cursor.style.willChange = 'transform'
         this.touch.joystick.$cursor.style.zIndex = '2'
         this.touch.joystick.$element.appendChild(this.touch.joystick.$cursor)
 
@@ -610,8 +611,7 @@ export default class Controls extends EventEmitter
             this.touch.joystick.active = false
             this.touch.joystick.touchIdentifier = null
             this.touch.joystick.$limit.style.opacity = '0.25'
-            this.touch.joystick.$cursor.style.left = `${this.touch.joystick.cursorRestOffset}px`
-            this.touch.joystick.$cursor.style.top = `${this.touch.joystick.cursorRestOffset}px`
+            this.touch.joystick.$cursor.style.transform = 'translate3d(0px, 0px, 0px)'
 
             document.removeEventListener('touchend', this.touch.joystick.events.touchend)
             document.removeEventListener('touchmove', this.touch.joystick.events.touchmove)
@@ -653,8 +653,7 @@ export default class Controls extends EventEmitter
                 }
                 const cursorX = Math.sin(this.touch.joystick.angle.originalValue + Math.PI * 0.5) * radius
                 const cursorY = Math.cos(this.touch.joystick.angle.originalValue + Math.PI * 0.5) * radius
-                this.touch.joystick.$cursor.style.left = `${this.touch.joystick.cursorRestOffset + cursorX}px`
-                this.touch.joystick.$cursor.style.top = `${this.touch.joystick.cursorRestOffset + cursorY}px`
+                this.touch.joystick.$cursor.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0px)`
             }
         })
 

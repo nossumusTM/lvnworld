@@ -24,16 +24,29 @@ export function initGlobe(containerId: string): void {
     // Renderer Setup
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     container.appendChild(renderer.domElement);
 
+    const globeSystem = new THREE.Group();
+    if (scene) {
+        scene.add(globeSystem);
+    }
+
     // Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Soft white light
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1); // Directional light
-    directionalLight.position.set(10, 10, 10);
+    const ambientLight = new THREE.AmbientLight(0x7b89a8, 0.56);
+    const hemisphereLight = new THREE.HemisphereLight(0xa9d3ff, 0x05070d, 1.44);
+    const sunLight = new THREE.DirectionalLight(0xffe1a8, 3.3);
+    const moonLight = new THREE.DirectionalLight(0x8eb6ff, 0.84);
+    const sunFillLight = new THREE.PointLight(0xffc66d, 2.2, 42, 2);
+    const moonFillLight = new THREE.PointLight(0x6e92ff, 0.48, 28, 2);
 
     if (scene) {
         scene.add(ambientLight);
-        scene.add(directionalLight);
+        scene.add(hemisphereLight);
+        scene.add(sunLight);
+        scene.add(moonLight);
+        scene.add(sunFillLight);
+        scene.add(moonFillLight);
     }
 
     // Determine texture based on current time (AM or PM)
@@ -58,14 +71,63 @@ export function initGlobe(containerId: string): void {
         map: earthTexture,
         bumpMap: bumpTexture,
         bumpScale: 0.5,
+        emissive: new THREE.Color(0x060d1a),
+        emissiveIntensity: 0.12,
+        roughness: 0.92,
+        metalness: 0.02,
     });
 
     const globeMesh = new THREE.Mesh(globeGeometry, globeMaterial);
     globeMesh.name = 'globeMesh'; // Add a name for easy access
     globeMesh.rotation.y = Math.PI; // Initial rotation
+    globeMesh.scale.setScalar(0);
+    globeSystem.add(globeMesh);
+
+    const updateCelestialLighting = (angle: number) => {
+        const sunRadius = 14.5;
+        const moonRadius = 12.5;
+        const sunPosition = new THREE.Vector3(
+            Math.cos(angle) * sunRadius,
+            Math.sin(angle) * sunRadius * 0.72,
+            Math.sin(angle * 0.45) * 3.4 + 1.4
+        );
+        const moonAngle = angle + Math.PI;
+        const moonPosition = new THREE.Vector3(
+            Math.cos(moonAngle) * moonRadius,
+            Math.sin(moonAngle) * moonRadius * 0.8,
+            Math.sin(moonAngle * 0.4) * 1.8 - 0.9
+        );
+
+        sunLight.position.copy(sunPosition);
+        moonLight.position.copy(moonPosition);
+        sunFillLight.position.copy(sunPosition);
+        moonFillLight.position.copy(moonPosition);
+        sunLight.target.position.set(0, 0, 0);
+        moonLight.target.position.set(0, 0, 0);
+    };
+
     if (scene) {
-        scene.add(globeMesh);
+        scene.add(sunLight.target);
+        scene.add(moonLight.target);
     }
+
+    let globeOrbitAngle = Math.PI * 0.2;
+    globeSystem.position.set(0, 0, 0);
+    updateCelestialLighting(globeOrbitAngle);
+
+    const globeScaleStart = performance.now();
+    const globeScaleDuration = 2550;
+    const animateGlobeScaleIn = () => {
+        const elapsed = performance.now() - globeScaleStart;
+        const progress = Math.min(elapsed / globeScaleDuration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        globeMesh.scale.setScalar(eased);
+
+        if (progress < 1) {
+            requestAnimationFrame(animateGlobeScaleIn);
+        }
+    };
+    animateGlobeScaleIn();
 
     // Orbit Controls
     const controls = new OrbitControls(camera, renderer.domElement);
@@ -75,10 +137,15 @@ export function initGlobe(containerId: string): void {
     controls.dampingFactor = 0.01;
     controls.minPolarAngle = Math.PI / 3; // Restrict upward rotation
     controls.maxPolarAngle = (2 * Math.PI) / 3; // Restrict downward rotation
+    controls.target.set(0, 0, 0);
+    controls.update();
 
     // Animation Loop
     function animate() {
         requestAnimationFrame(animate);
+
+        globeOrbitAngle += 0.0011;
+        updateCelestialLighting(globeOrbitAngle);
 
         // Rotate the globe
         globeMesh.rotation.x += 0.001;

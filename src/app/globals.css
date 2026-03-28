@@ -1116,8 +1116,9 @@ opacity: 0;
 
 .game-exit-button {
   position: fixed;
-  top: max(15px, env(safe-area-inset-top));
-  right: max(14px, env(safe-area-inset-right));
+  top: 15px;
+  left: 303px;
+  right: auto;
   z-index: 10002;
   display: inline-flex;
   align-items: center;
@@ -1127,7 +1128,7 @@ opacity: 0;
   padding: 10px 0;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 0;
-  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+  clip-path: polygon(0 10px, 10px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px));
   background: rgba(255, 255, 255, 0.02);
   color: #fff;
   font-family: 'Orbitron', sans-serif;
@@ -1218,12 +1219,13 @@ opacity: 0;
   display: flex;
   justify-content: center;
   gap: 8px;
-  width: fit-content;
+  width: 100%;
   margin: 26px auto;
   z-index: 3;
 }
 
 .landing-showcase__language-button {
+  flex: 1 1 0;
   min-width: 52px;
   height: 32px;
   border: 1px solid rgba(255, 255, 255, 0.14);
@@ -1779,6 +1781,23 @@ opacity: 0;
 
 .landing-showcase__story-copy {
   margin-top: 12px !important;
+}
+
+.landing-showcase__story-cta {
+  display: inline;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  font: inherit;
+  line-height: inherit;
+  text-align: inherit;
+}
+
+.landing-showcase__story-cta:hover {
+  color: rgba(255, 255, 255, 0.92);
 }
 
 .landing-showcase__section--story {
@@ -4120,10 +4139,11 @@ opacity: 0;
 
 @media (max-width: 767px) {
   .game-exit-button {
-    top: max(12px, env(safe-area-inset-top));
-    right: max(10px, env(safe-area-inset-right));
+    top: 15px;
+    left: 303px;
+    right: auto;
     width: 32px;
-    height: 92px;
+    height: 100px;
     padding: 8px 0;
     font-size: 10px;
     letter-spacing: 0.2rem;

@@ -9331,10 +9331,11 @@ export default class Physics
     getRandomRespawnDropPosition() {
         const margin = 40;
         const span = Math.max(20, this.worldHalfExtent - margin);
+        const respawnDropZ = Math.max(18, this.worldRoofZ - 20);
         return new CANNON.Vec3(
             (Math.random() * 2 - 1) * span,
             (Math.random() * 2 - 1) * span,
-            this.worldRoofZ - 6
+            respawnDropZ
         );
     }
 
@@ -9343,17 +9344,41 @@ export default class Physics
             return;
         }
 
+        const physicsCar = car[key] || car;
+        const previousBody = physicsCar?.chassis?.body || null;
+        const previousWheelBodies = Array.isArray(physicsCar?.wheels?.bodies) ? [...physicsCar.wheels.bodies] : [];
+
         car.destroy();
+
+        if (previousBody?.world === this.world) {
+            this.world.removeBody(previousBody);
+        }
+
+        for (const wheelBody of previousWheelBodies) {
+            if (wheelBody?.world === this.world) {
+                this.world.removeBody(wheelBody);
+            }
+        }
+
         car.create();
 
-        const body = car[key]?.chassis?.body;
+        const recreatedPhysicsCar = car[key] || car;
+        const vehicle = recreatedPhysicsCar?.vehicle || null;
+        const body = recreatedPhysicsCar?.chassis?.body;
         if (!body) {
             return;
         }
 
         const respawnPosition = this.getRandomRespawnDropPosition();
         body.position.copy(respawnPosition);
-        body.velocity.set(0, 0, 0);
+        if (body.previousPosition) {
+            body.previousPosition.copy(respawnPosition);
+        }
+        if (body.interpolatedPosition) {
+            body.interpolatedPosition.copy(respawnPosition);
+        }
+
+        body.velocity.set(0, 0, -18);
         body.angularVelocity.set(0, 0, 0);
         body.force.set(0, 0, 0);
         body.torque.set(0, 0, 0);
@@ -9363,7 +9388,37 @@ export default class Physics
         const respawnQuaternion = new CANNON.Quaternion();
         respawnQuaternion.setFromAxisAngle(new CANNON.Vec3(0, 0, 1), yaw);
         body.quaternion.copy(respawnQuaternion);
+        if (body.previousQuaternion) {
+            body.previousQuaternion.copy(respawnQuaternion);
+        }
+        if (body.interpolatedQuaternion) {
+            body.interpolatedQuaternion.copy(respawnQuaternion);
+        }
+
         body.wakeUp();
+
+        const wheelBodies = Array.isArray(recreatedPhysicsCar?.wheels?.bodies) ? recreatedPhysicsCar.wheels.bodies : [];
+        if (vehicle?.wheelInfos?.length) {
+            for (let i = 0; i < vehicle.wheelInfos.length; i++) {
+                vehicle.updateWheelTransform(i);
+
+                const wheelBody = wheelBodies[i];
+                const transform = vehicle.wheelInfos[i]?.worldTransform;
+                if (!wheelBody || !transform) {
+                    continue;
+                }
+
+                wheelBody.position.copy(transform.position);
+                wheelBody.quaternion.copy(transform.quaternion);
+                if (wheelBody.velocity) {
+                    wheelBody.velocity.set(0, 0, 0);
+                }
+                if (wheelBody.angularVelocity) {
+                    wheelBody.angularVelocity.set(0, 0, 0);
+                }
+                wheelBody.wakeUp?.();
+            }
+        }
 
         car.battery = 100;
 

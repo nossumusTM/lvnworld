@@ -5,7 +5,7 @@ import React from 'react';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { initGlobe, addSignalEffect, removeSignalEffect } from './globe'; // Adjust path as necessary
 import {
-  FaBuilding,
+  FaBriefcase,
   FaBroadcastTower,
   FaCube,
   FaDatabase,
@@ -97,7 +97,7 @@ const MODAL_COPY = {
     expertiseIntro: 'Product work usually spans multiple layers. We build the business-facing surface, the operational system behind it, and the infrastructure needed to run it. We mainly focus on writing native code for both frontend and backend to bring high-quality products to life.',
     expertiseItems: [
       {
-        title: 'Company page',
+        title: 'Corporative page',
         description: 'Clear corporate websites that present the business well, explain the offer, and convert interest into contact.',
       },
       {
@@ -147,11 +147,11 @@ const MODAL_COPY = {
         description: 'Task automation, assistants, internal copilots, and AI-powered flows integrated into real product operations.',
       },
     ],
-    worldTitle: 'The Inaplanet World',
+    worldTitle: 'About the Inaplaet',
     worldParagraphs: [
-      'Inaplanet is our playable digital world: part arcade, part social space, part live product showcase. We built it to turn a static portfolio into something people can drive through, explore, and feel.',
-      'Visitors jump between cities, move through interactive spaces, and experience the project as a living environment instead of a flat page. The goal is to make discovery memorable and give people a world they can enjoy while they explore what we build.',
-      'The world is multiplayer, so you can connect with your friends, enter the same city, and enjoy the experience together. To enter the world, use the [ ENTER THE PLANET ] button at the top of the page.',
+      'Inaplanet is our playable digital planet: part arcade, part social space, part live product showcase. We built it to turn a static portfolio into something people can drive through, explore, and feel.',
+      'Visitors jump between cities, move through interactive spaces, and experience the project as a living environment instead of a flat page. The goal is to make discovery memorable and give people a planet they can enjoy while they explore what we build.',
+      'The planet is multiplayer, so you can connect with your friends, enter the same city, and enjoy the experience together. To enter the planet, use the ENTER button at the top of the page.',
     ],
     contactTitle: "Have a project in mind? Let's discuss with us.",
     contactCopy: "Reach out directly and we'll turn the brief into scope, architecture, and a build plan.",
@@ -164,9 +164,9 @@ const MODAL_COPY = {
     languageSwitcherLabel: 'Modal dilini seçin',
     enterButton: 'PLANETƏ DAXİL OL',
     heroTitle: 'Briefdən gəlirə gedən rəqəmsal məhsulları dizayn edir və təhvil verir.',
-    heroCopy: 'Veb tətbiqlər, mobil tətbiqlər, admin panellər, real-time sistemlər, AI iş axınları, ödəniş axınları və aydın texniki tapşırıq ətrafında qurulan məhsul təhvili.',
+    heroCopy: 'Web tətbiqlər, mobil tətbiqlər, admin panellər, real-time sistemlər, AI iş axınları, ödəniş axınları və aydın texniki tapşırıq ətrafında qurulan məhsul təhvili.',
     chips: {
-      web: 'Veb tətbiqlər',
+      web: 'Web tətbiqlər',
       mobile: 'Mobil tətbiqlər',
       backendDesktop: 'Backend sistemləri',
       backendMobile: 'Backend',
@@ -246,11 +246,11 @@ const MODAL_COPY = {
         description: 'Real məhsul əməliyyatlarına inteqrasiya olunan task automation, assistant-lar, daxili copilots və AI əsaslı axınlar.',
       },
     ],
-    worldTitle: 'Inaplanet Dünyası',
+    worldTitle: 'Inaplanet Haqqında',
     worldParagraphs: [
-      'Inaplanet bizim oynanıla bilən rəqəmsal dünyamızdır: bir hissəsi arcade, bir hissəsi social space, bir hissəsi isə canlı product showcase-dir. Biz bunu statik portfolionu insanların içində sürə, araşdıra və hiss edə biləcəyi bir təcrübəyə çevirmək üçün qurduq.',
-      'Ziyarətçilər şəhərlər arasında keçir, interaktiv məkanlardan keçir və layihəni düz səhifə kimi deyil, yaşayan mühit kimi təcrübədən keçirirlər. Məqsəd kəşfi yadda qalan etmək və insanlara qurduqlarımızı araşdırarkən zövq ala biləcəkləri bir dünya təqdim etməkdir.',
-      'Dünya multiplayer-dir, buna görə dostlarınızla qoşula, eyni şəhərə daxil ola və təcrübəni birlikdə yaşaya bilərsiniz. Daxil olmaq üçün səhifənin yuxarısındakı [ PLANETƏ DAXİL OL ] düyməsindən istifadə edin.',
+      'Inaplanet bizim oynanıla bilən rəqəmsal planetimizdir: bir hissəsi arcade, bir hissəsi social space, bir hissəsi isə canlı product showcase-dir. Biz bunu statik portfolionu insanların içində sürə, araşdıra və hiss edə biləcəyi bir təcrübəyə çevirmək üçün qurduq.',
+      'Ziyarətçilər şəhərlər arasında keçir, interaktiv məkanlardan keçir və layihəni düz səhifə kimi deyil, yaşayan mühit kimi təcrübədən keçirirlər. Məqsəd kəşfi yadda qalan etmək və insanlara qurduqlarımızı araşdırarkən zövq ala biləcəkləri bir planet təqdim etməkdir.',
+      'Planet multiplayer-dir, buna görə dostlarınızla qoşula, eyni şəhərə daxil ola və təcrübəni birlikdə yaşaya bilərsiniz. Daxil olmaq üçün səhifənin yuxarısındakı ENTER düyməsindən istifadə edin.',
     ],
     contactTitle: 'Layihə ideyanız var? Gəlin müzakirə edək.',
     contactCopy: 'Birbaşa yazın və biz briefi scope-a, arxitekturaya və build planına çevirək.',
@@ -345,11 +345,11 @@ const MODAL_COPY = {
         description: 'Автоматизация задач, ассистенты, внутренние copilots и AI-потоки, встроенные в реальные продуктовые операции.',
       },
     ],
-    worldTitle: 'Мир Inaplanet',
+    worldTitle: 'О планете Inaplanet',
     worldParagraphs: [
-      'Inaplanet — это наш игровой цифровой мир: немного arcade, немного social space и немного живой product showcase. Мы построили его, чтобы превратить статичное портфолио в пространство, по которому можно ездить, исследовать и чувствовать.',
-      'Посетители перемещаются между городами, проходят через интерактивные пространства и воспринимают проект как живую среду, а не как плоскую страницу. Цель — сделать знакомство запоминающимся и дать людям мир, которым можно наслаждаться, пока они изучают то, что мы создаем.',
-      'Этот мир мультиплеерный, поэтому вы можете подключиться с друзьями, войти в один и тот же город и пройти этот опыт вместе. Чтобы войти, используйте кнопку [ ВОЙТИ В ПЛАНЕТУ ] вверху страницы.',
+      'Inaplanet — это наша игровая цифровая планета: немного arcade, немного social space и немного живой product showcase. Мы построили ее, чтобы превратить статичное портфолио в пространство, по которому можно ездить, исследовать и чувствовать.',
+      'Посетители перемещаются между городами, проходят через интерактивные пространства и воспринимают проект как живую среду, а не как плоскую страницу. Цель — сделать знакомство запоминающимся и дать людям планету, которой можно наслаждаться, пока они изучают то, что мы создаем.',
+      'Эта планета мультиплеерная, поэтому вы можете подключиться с друзьями, войти в один и тот же город и пройти этот опыт вместе. Чтобы войти, используйте кнопку ENTER вверху страницы.',
     ],
     contactTitle: 'Есть проект в голове? Давайте обсудим.',
     contactCopy: 'Напишите напрямую, и мы превратим бриф в scope, архитектуру и build plan.',
@@ -363,7 +363,7 @@ const MODAL_COPY = {
 type ModalLanguage = keyof typeof MODAL_COPY;
 
 export default function Home() {
-  const MAX_PLAYERS_PER_WORLD = 7;
+  const MAX_PLAYERS_PER_WORLD = 10;
   const wsRef = useRef<WebSocket | null>(null);
   const landingShowcaseRef = useRef<HTMLDivElement | null>(null);
   const coreStackItems = [
@@ -389,8 +389,8 @@ export default function Home() {
   ];
   const expertiseItems = [
     {
-      title: 'Company page',
-      icon: <FaBuilding aria-hidden="true" />,
+      title: 'Corporative page',
+      icon: <FaBriefcase aria-hidden="true" />,
       description: 'Clear corporate websites that present the business well, explain the offer, and convert interest into contact.',
     },
     {
@@ -487,6 +487,9 @@ export default function Home() {
   // Websocket
   const [matcaps, setMatcaps] = useState({});
   const modalCopy = MODAL_COPY[language];
+  const storyCtaLabel = 'ENTER';
+  const highlightedWorldParagraph = modalCopy.worldParagraphs[2];
+  const highlightedWorldParagraphParts = highlightedWorldParagraph.split(storyCtaLabel);
   const localizedExpertiseItems = modalCopy.expertiseItems.map((item, index) => ({
     icon: expertiseItems[index].icon,
     title: item.title,
@@ -1276,7 +1279,17 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
                     <h2>{modalCopy.worldTitle}</h2>
                     <p>{modalCopy.worldParagraphs[0]}</p>
                     <p className="landing-showcase__story-copy">{modalCopy.worldParagraphs[1]}</p>
-                    <p className="landing-showcase__story-copy">{modalCopy.worldParagraphs[2]}</p>
+                    <p className="landing-showcase__story-copy">
+                      {highlightedWorldParagraphParts[0]}
+                      <button
+                        type="button"
+                        className="landing-showcase__story-cta"
+                        onClick={closeLandingPage}
+                      >
+                        {storyCtaLabel}
+                      </button>
+                      {highlightedWorldParagraphParts.slice(1).join(storyCtaLabel)}
+                    </p>
                   </section>
                   <section className="landing-showcase__section landing-showcase__section--contact">
                     <h2>{modalCopy.contactTitle}</h2>
