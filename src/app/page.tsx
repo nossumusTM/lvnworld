@@ -97,7 +97,7 @@ const MODAL_COPY = {
     expertiseIntro: 'Product work usually spans multiple layers. We build the business-facing surface, the operational system behind it, and the infrastructure needed to run it. We mainly focus on writing native code for both frontend and backend to bring high-quality products to life.',
     expertiseItems: [
       {
-        title: 'Corporative page',
+        title: 'Corporate website',
         description: 'Clear corporate websites that present the business well, explain the offer, and convert interest into contact.',
       },
       {
@@ -154,7 +154,7 @@ const MODAL_COPY = {
       'The planet is multiplayer, so you can connect with your friends, enter the same city, and enjoy the experience together. To enter the planet, use the ENTER button at the top of the page.',
     ],
     contactTitle: "Have a project in mind? Let's discuss with us.",
-    contactCopy: "Reach out directly and we'll turn the brief into scope, architecture, and a build plan.",
+    contactCopy: "Reach out directly via mail to office@inaplanet.com and we'll turn the brief into scope, architecture, and a build plan.",
     greetingStripAria: 'Greetings in multiple languages',
     greetingLabel: 'Text',
     contactLabels: ['Whatsapp', 'Telegram', 'Mail'],
@@ -278,7 +278,7 @@ const MODAL_COPY = {
     ],
     heroNote: 'Мы создаем продукты, которыми пользуются, которые масштабируются и запоминаются, а не просто показываются.',
     highlights: [
-      { title: 'Scope', copy: 'Мы превращаем сырой бриф в понятный build plan.' },
+      { title: 'Объем', copy: 'Мы превращаем сырой бриф в понятный план сборки.' },
       { title: 'Исполнение', copy: 'Frontend, backend, интеграции и инструменты движутся как одна система.' },
       { title: 'Запуск', copy: 'Готовность к production важнее, чем просто эффектный демо-вид.' },
     ],
@@ -389,7 +389,7 @@ export default function Home() {
   ];
   const expertiseItems = [
     {
-      title: 'Corporative page',
+      title: 'Corporate website',
       icon: <FaBriefcase aria-hidden="true" />,
       description: 'Clear corporate websites that present the business well, explain the offer, and convert interest into contact.',
     },
@@ -930,6 +930,14 @@ export default function Home() {
     window.location.reload();
   }, []);
 
+  const handleCameraZoom = useCallback((direction: 'in' | 'out') => {
+    window.dispatchEvent(
+      new CustomEvent('inaplanet-camera-zoom', {
+        detail: { direction },
+      })
+    );
+  }, []);
+
   let searchQuery = '';
 
 const filterWorlds = (event: React.FormEvent<HTMLInputElement>) => {
@@ -1293,7 +1301,17 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
                   </section>
                   <section className="landing-showcase__section landing-showcase__section--contact">
                     <h2>{modalCopy.contactTitle}</h2>
-                    <p>{modalCopy.contactCopy}</p>
+                    <p>
+                      {modalCopy.contactCopy.includes('office@inaplanet.com') ? (
+                        <>
+                          {modalCopy.contactCopy.split('office@inaplanet.com')[0]}
+                          <span className="landing-showcase__contact-email">office@inaplanet.com</span>
+                          {modalCopy.contactCopy.split('office@inaplanet.com').slice(1).join('office@inaplanet.com')}
+                        </>
+                      ) : (
+                        modalCopy.contactCopy
+                      )}
+                    </p>
                     <div className="landing-showcase__greeting-strip" aria-label={modalCopy.greetingStripAria}>
                       {language === 'az' ? (
                         <>
@@ -1347,16 +1365,44 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
       {playerId && selectedWorldId && token && application && (
         <div className="grid bg-transparent overflow-hidden shadow-sm">
           <div className="flex justify-center items-center p-4">
-            <button
-              type="button"
-              className="game-exit-button"
-              id="game-exit-button"
-              onClick={handleExitWorld}
+            <div
+              className="game-map-actions"
+              id="game-map-actions"
               style={{ opacity: 0, display: 'none' }}
-              aria-label="Exit game world"
             >
-              EXIT
-            </button>
+              <div className="game-zoom-controls">
+                <button
+                  type="button"
+                  className="game-zoom-button"
+                  id="game-zoom-in-button"
+                  onClick={() => handleCameraZoom('in')}
+                  style={{ opacity: 0, display: 'none' }}
+                  aria-label="Zoom in"
+                >
+                  +
+                </button>
+                <button
+                  type="button"
+                  className="game-zoom-button"
+                  id="game-zoom-out-button"
+                  onClick={() => handleCameraZoom('out')}
+                  style={{ opacity: 0, display: 'none' }}
+                  aria-label="Zoom out"
+                >
+                  -
+                </button>
+              </div>
+              <button
+                type="button"
+                className="game-exit-button"
+                id="game-exit-button"
+                onClick={handleExitWorld}
+                style={{ opacity: 0, display: 'none' }}
+                aria-label="Exit game world"
+              >
+                EXIT
+              </button>
+            </div>
             <div id="userDisplay" className="cursor-pointer z-50" style={{ opacity: 0, display: 'none' }}></div>
             <div id="playerCountDisplay"></div>
 

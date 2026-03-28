@@ -292,9 +292,35 @@ const Application = ({ playerId, selectedWorldId, token, carName, matcaps }) => 
         this.camera.instance.far = 1000;
         this.camera.instance.updateProjectionMatrix();
 
+        const cameraTargetPosition = new THREE.Vector3();
+        const zoomStep = 0.08;
+
+        this.handleCameraZoomButton = (event) => {
+            if (!this.camera || !this.camera.zoom || this.camera.isNewCameraActive) {
+                return;
+            }
+
+            const direction = event?.detail?.direction;
+            const zoomDelta = direction === 'in' ? -zoomStep : direction === 'out' ? zoomStep : 0;
+
+            if (!zoomDelta) {
+                return;
+            }
+
+            this.camera.zoom.targetValue = THREE.MathUtils.clamp(
+                this.camera.zoom.targetValue + zoomDelta,
+                0,
+                this.camera.zoom.maxValue
+            );
+        };
+
+        window.addEventListener('inaplanet-camera-zoom', this.handleCameraZoomButton);
+
         this.time.on('tick', () => {
             if (this.world && this.world.car) {
                 const chassisObject = this.world.car.chassis.object;
+                const chassisCameraTarget = this.world.car.chassis.cameraTarget || chassisObject;
+                chassisCameraTarget.getWorldPosition(cameraTargetPosition);
         
                 if (this.camera.isNewCameraActive) {
                     // Calculate the forward vector in local space
@@ -324,7 +350,7 @@ const Application = ({ playerId, selectedWorldId, token, carName, matcaps }) => 
                     this.camera.instance.position.copy(chassisObject.position).add(cameraOffset);
         
                     // Continuously update the camera to look at the car's position
-                    this.camera.instance.lookAt(chassisObject.position);
+                    this.camera.instance.lookAt(cameraTargetPosition);
         
                     // Adjust clipping planes
                     this.camera.instance.near = 0.1;
@@ -338,9 +364,9 @@ const Application = ({ playerId, selectedWorldId, token, carName, matcaps }) => 
         
                 } else {
                     // Default camera is driven by Camera.js so zoom remains active.
-                    this.camera.target.x = chassisObject.position.x;
-                    this.camera.target.y = chassisObject.position.y;
-                    this.camera.target.z = chassisObject.position.z;
+                    this.camera.target.x = cameraTargetPosition.x;
+                    this.camera.target.y = cameraTargetPosition.y;
+                    this.camera.target.z = cameraTargetPosition.z;
                 }
             }
         });
@@ -461,6 +487,10 @@ const Application = ({ playerId, selectedWorldId, token, carName, matcaps }) => 
     {
         this.time.off('tick')
         this.sizes.off('resize')
+        if(this.handleCameraZoomButton)
+        {
+            window.removeEventListener('inaplanet-camera-zoom', this.handleCameraZoomButton)
+        }
 
         this.camera.orbitControls.dispose()
         this.renderer.dispose()

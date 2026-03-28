@@ -362,109 +362,79 @@ export default class Car18
     }
 
     createSirenEffect() {
-        const sirenTexture = '/images/texture/siren.png';
-    
-        const img = new Image();
-        img.src = sirenTexture;
-        img.crossOrigin = "anonymous";
+        const glowCanvas = document.createElement('canvas');
+        glowCanvas.width = 128;
+        glowCanvas.height = 128;
 
-        img.onload = () => {
-            const texture = new THREE.Texture(img);
-            texture.needsUpdate = true;
+        const glowContext = glowCanvas.getContext('2d');
+        const glowGradient = glowContext.createRadialGradient(64, 64, 6, 64, 64, 64);
+        glowGradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+        glowGradient.addColorStop(0.28, 'rgba(255, 255, 255, 0.96)');
+        glowGradient.addColorStop(0.58, 'rgba(255, 255, 255, 0.38)');
+        glowGradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        glowContext.fillStyle = glowGradient;
+        glowContext.fillRect(0, 0, 128, 128);
 
-            const material = new THREE.PointsMaterial({
-                size: 0.5,  // Smaller size for a more concentrated effect
-                vertexColors: true,
-                sizeAttenuation: true,
-                transparent: true,
-                opacity: 0.5,
-                map: texture,
-                blending: THREE.AdditiveBlending,
-                depthWrite: false,
-            });
+        const glowTexture = new THREE.CanvasTexture(glowCanvas);
+        glowTexture.needsUpdate = true;
 
-            const particleCount = 20; // Fewer particles for a focused effect
-            const geometry = new THREE.BufferGeometry();
-            const vertices = [];
-            const colors = [];
+        const sirenColors = [
+            new THREE.Color(0x00ff00),
+            new THREE.Color(0xffffff),
+        ];
 
-            // Alternating red and blue colors for the siren effect
-            const sirenColors = [
-                [1.0, 1.0, 1.0], // Red
-                [0.0, 1.0, 0.0], // Blue
-            ];
+        const material = new THREE.SpriteMaterial({
+            map: glowTexture,
+            color: sirenColors[0].clone(),
+            transparent: true,
+            opacity: 0.95,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+        });
 
-            // Initialize particles with positions relative to the antenna
-            const initialOffset = new THREE.Vector3(0.5, 0.2, 0.5); // Offset from antenna position
-            for (let i = 0; i < particleCount; i++) {
-                vertices.push(initialOffset.x, initialOffset.y, initialOffset.z);
-                const [r, g, b] = sirenColors[i % 2];
-                colors.push(r, g, b);
-            }
+        const sprite = new THREE.Sprite(material);
+        sprite.scale.setScalar(0.36);
 
-            geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-            geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+        const anchor = this.antena.effectAnchor || this.antena.object;
+        anchor.add(sprite);
 
-            const particles = new THREE.Points(geometry, material);
-            this.antena.object.add(particles); // Attach to the antenna object
+        const duration = 5000;
+        const startTime = performance.now();
+        const anchorWorldPosition = new THREE.Vector3();
+        const cameraPosition = new THREE.Vector3();
+        const cameraInstance = this.camera && this.camera.instance ? this.camera.instance : null;
 
-            const duration = 5000; // Effect duration
-            const startTime = performance.now();
+        const animateParticles = () => {
+            const elapsedTime = performance.now() - startTime;
 
-            const animateParticles = () => {
-                const elapsedTime = performance.now() - startTime;
+            if (elapsedTime < duration) {
+                const blinkColor = sirenColors[Math.floor(elapsedTime / 250) % sirenColors.length];
+                material.color.copy(blinkColor);
 
-                if (elapsedTime < duration) {
-                    const positions = geometry.attributes.position.array;
-
-                    for (let i = 0; i < particleCount; i++) {
-                        const radius = 0.05; // Smaller radius for a compact effect
-                        const speed = 0.02;
-                        const angle = elapsedTime * speed + i * (Math.PI / particleCount);
-
-                        // Calculate new positions in a circular path around the antenna
-                        const x = Math.cos(angle) * radius;
-                        const y = Math.sin(angle) * radius; // Fixed height above the antenna
-                        const z = 0; // Positioned at the same level as the antenna
-
-                        const vector = new THREE.Vector3(x, y, z);
-                        vector.applyQuaternion(this.antena.object.quaternion); // Apply antenna rotation
-
-                        const antennaPosition = this.antena.object.position.clone(); // Clone to avoid mutating
-                        positions[i * 3] = antennaPosition.x + initialOffset.x + vector.x;
-                        positions[i * 3 + 1] = antennaPosition.y + initialOffset.y + vector.y;
-                        positions[i * 3 + 2] = antennaPosition.z + initialOffset.z + vector.z; // Update with antenna position
-                    }
-
-                    geometry.attributes.position.needsUpdate = true;
-
-                    // Alternate colors over time to simulate flashing red and blue lights
-                    const colorArray = geometry.attributes.color.array;
-                    const isRed = Math.floor(elapsedTime / 500) % 2 === 0;
-                    for (let i = 0; i < particleCount; i++) {
-                        const [r, g, b] = isRed ? sirenColors[0] : sirenColors[1];
-                        colorArray[i * 3] = r;
-                        colorArray[i * 3 + 1] = g;
-                        colorArray[i * 3 + 2] = b;
-                    }
-
-                    geometry.attributes.color.needsUpdate = true;
-
-                    requestAnimationFrame(animateParticles);
-                } else {
-                    // Cleanup after the effect completes
-                    this.antena.object.remove(particles); // Remove from antenna object
-                    particles.geometry.dispose();
-                    particles.material.dispose();
+                const isAttachedCamera = Boolean(cameraInstance && this.camera && this.camera.isNewCameraActive);
+                let nearFade = 1;
+                if (isAttachedCamera) {
+                    anchor.getWorldPosition(anchorWorldPosition);
+                    cameraInstance.getWorldPosition(cameraPosition);
+                    const distance = anchorWorldPosition.distanceTo(cameraPosition);
+                    nearFade = THREE.MathUtils.clamp((distance - 2.8) / 1.6, 0, 1);
                 }
-            };
 
-            animateParticles(); // Start the animation
+                const pulse = 0.72 + Math.abs(Math.sin(elapsedTime * 0.014)) * 0.28;
+                material.opacity = pulse * nearFade;
+                const baseScale = isAttachedCamera ? 0.02 : 0.32;
+                const scaleAmplitude = isAttachedCamera ? 0.045 : 0.08;
+                const scale = baseScale + Math.abs(Math.sin(elapsedTime * 0.01)) * scaleAmplitude;
+                sprite.scale.setScalar(scale * (isAttachedCamera ? (0.04 + nearFade * 0.96) : 1));
+                requestAnimationFrame(animateParticles);
+            } else {
+                anchor.remove(sprite);
+                glowTexture.dispose();
+                material.dispose();
+            }
         };
 
-        img.onerror = (error) => {
-            console.error('Failed to load base64 image:', error);
-        };
+        animateParticles();
     }
 
     createNitroEffect(position, quaternion, carChassis) {
@@ -795,6 +765,28 @@ export default class Car18
 
         this.antena.object = this.objects.getConvertedMesh(this.models.antena.scene.children)
         this.chassis.object.add(this.antena.object)
+        this.antena.object.updateMatrixWorld(true)
+        this.antena.effectAnchor = new THREE.Object3D()
+
+        const antennaBounds = new THREE.Box3().setFromObject(this.antena.object)
+        const topCenter = new THREE.Vector3()
+
+        if(antennaBounds.isEmpty())
+        {
+            topCenter.set(0, 0, 0.4)
+        }
+        else
+        {
+            topCenter.set(
+                (antennaBounds.min.x + antennaBounds.max.x) * 0.5,
+                (antennaBounds.min.y + antennaBounds.max.y) * 0.5,
+                antennaBounds.max.z + 0.02
+            )
+            this.antena.object.worldToLocal(topCenter)
+        }
+
+        this.antena.effectAnchor.position.copy(topCenter)
+        this.antena.object.add(this.antena.effectAnchor)
 
         this.antena.speed = new THREE.Vector2()
         this.antena.absolutePosition = new THREE.Vector2()

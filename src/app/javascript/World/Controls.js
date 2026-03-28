@@ -338,12 +338,24 @@ export default class Controls extends EventEmitter
 
     updateButtonPositions() {
         const userDisplay = document.getElementById('userDisplay');
+        const mapActions = document.getElementById('game-map-actions');
         const exitButton = document.getElementById('game-exit-button');
+        const zoomInButton = document.getElementById('game-zoom-in-button');
+        const zoomOutButton = document.getElementById('game-zoom-out-button');
         if (userDisplay) {
             userDisplay.style.display = 'block';
         }
+        if (mapActions) {
+            mapActions.style.display = 'flex';
+        }
         if (exitButton) {
             exitButton.style.display = 'block';
+        }
+        if (zoomInButton) {
+            zoomInButton.style.display = 'inline-flex';
+        }
+        if (zoomOutButton) {
+            zoomOutButton.style.display = 'inline-flex';
         }
 
         const batteryContainer = document.getElementById('battery-status');
@@ -2727,7 +2739,10 @@ export default class Controls extends EventEmitter
 
             // Add these lines to reveal userDisplay and battery-status
             const userDisplay = document.getElementById('userDisplay');
+            const mapActions = document.getElementById('game-map-actions');
             const exitButton = document.getElementById('game-exit-button');
+            const zoomInButton = document.getElementById('game-zoom-in-button');
+            const zoomOutButton = document.getElementById('game-zoom-out-button');
             const batteryStatus = document.getElementById('battery-status');
             const signOutButton = document.getElementById('signOutButton');
             const speedometer = document.getElementById('speedometer');
@@ -2750,9 +2765,21 @@ export default class Controls extends EventEmitter
                 userDisplay.style.display = 'block';
                 userDisplay.style.opacity = 1;
             }
+            if (mapActions) {
+                mapActions.style.display = 'flex';
+                mapActions.style.opacity = 1;
+            }
             if (exitButton) {
                 exitButton.style.display = 'block';
                 exitButton.style.opacity = 1;
+            }
+            if (zoomInButton) {
+                zoomInButton.style.display = 'inline-flex';
+                zoomInButton.style.opacity = 1;
+            }
+            if (zoomOutButton) {
+                zoomOutButton.style.display = 'inline-flex';
+                zoomOutButton.style.opacity = 1;
             }
             if (batteryStatus) batteryStatus.style.opacity = 1;
             if (speedometer) speedometer.style.opacity = 1;

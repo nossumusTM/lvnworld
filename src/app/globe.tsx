@@ -32,6 +32,13 @@ export function initGlobe(containerId: string): void {
         scene.add(globeSystem);
     }
 
+    const applyResponsiveScale = () => {
+        const isMobileView = window.matchMedia('(max-width: 768px)').matches;
+        globeSystem.scale.setScalar(isMobileView ? 0.5 : 1);
+    };
+
+    applyResponsiveScale();
+
     // Lighting
     const ambientLight = new THREE.AmbientLight(0x7b89a8, 0.56);
     const hemisphereLight = new THREE.HemisphereLight(0xa9d3ff, 0x05070d, 1.44);
@@ -162,6 +169,7 @@ export function initGlobe(containerId: string): void {
         camera.aspect = container.clientWidth / container.clientHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(container.clientWidth, container.clientHeight);
+        applyResponsiveScale();
     });
 }
 

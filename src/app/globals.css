@@ -1114,12 +1114,62 @@ opacity: 0;
   border-color: rgba(255, 255, 255, 0.16);
 }
 
-.game-exit-button {
+.game-map-actions {
   position: fixed;
   top: 15px;
   left: 303px;
-  right: auto;
   z-index: 10002;
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.game-zoom-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+.game-zoom-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 46px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  background: rgba(255, 255, 255, 0.02);
+  color: #fff;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+  backdrop-filter: blur(26px);
+  -webkit-backdrop-filter: blur(26px);
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  pointer-events: auto;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.3s ease;
+}
+
+.game-zoom-button:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.game-exit-button {
+  position: relative;
+  top: auto;
+  left: auto;
+  right: auto;
+  z-index: auto;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1128,7 +1178,7 @@ opacity: 0;
   padding: 10px 0;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 0;
-  clip-path: polygon(0 10px, 10px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px));
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
   background: rgba(255, 255, 255, 0.02);
   color: #fff;
   font-family: 'Orbitron', sans-serif;
@@ -1807,6 +1857,11 @@ opacity: 0;
 .landing-showcase__section--contact {
   display: flex;
   flex-direction: column;
+}
+
+.landing-showcase__contact-email {
+  color: #fff;
+  font-weight: 700;
 }
 
 .landing-showcase__footer-note {
@@ -4138,10 +4193,23 @@ opacity: 0;
 }
 
 @media (max-width: 767px) {
-  .game-exit-button {
+  .game-map-actions {
     top: 15px;
     left: 303px;
-    right: auto;
+    gap: 6px;
+  }
+
+  .game-zoom-controls {
+    gap: 6px;
+  }
+
+  .game-zoom-button {
+    width: 32px;
+    height: 47px;
+    font-size: 18px;
+  }
+
+  .game-exit-button {
     width: 32px;
     height: 100px;
     padding: 8px 0;

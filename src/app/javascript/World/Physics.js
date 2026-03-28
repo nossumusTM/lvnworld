@@ -41,6 +41,7 @@ export default class Physics
 
         this.nonCollidablePlayers = new Set();
         this.nonCollidableCars = new Set();
+        this.carCollisionCooldowns = new Map();
         this.worldHalfExtent = 595;
         this.worldRoofZ = 84;
         this.respawnDurationMs = 0;
@@ -8893,9 +8894,6 @@ export default class Physics
 
         car.battery -= 1;
         console.log("Resolving car battery", car)
-        if (typeof car.createSparkEffect === 'function') {
-            car.createSparkEffect();
-        }
         console.log("SHOOT -> Battery reduced to:", car.battery);
     
         if (car.battery <= 0) {
@@ -8939,6 +8937,12 @@ export default class Physics
             0.24
         );
         const worldImpactPoint = carBody.pointToWorldFrame(localImpactOffset, new CANNON.Vec3());
+        this.createRocketImpactEffect(
+            car,
+            new THREE.Vector3(worldImpactPoint.x, worldImpactPoint.y, worldImpactPoint.z),
+            new THREE.Vector3(impactDirection.x, impactDirection.y, impactDirection.z),
+            impactStrength
+        );
         carBody.applyImpulse(impactImpulse, worldImpactPoint);
     
         this.updateBatteryStatus(car.battery);
@@ -8957,12 +8961,221 @@ export default class Physics
         }
     }    
 
+    getImpactHostContainer(primaryCar, secondaryCar = null) {
+        return (
+            primaryCar?.container?.parent ||
+            secondaryCar?.container?.parent ||
+            primaryCar?.container ||
+            secondaryCar?.container ||
+            this.models?.container ||
+            null
+        );
+    }
+
+    createImpactEffect({ hostContainer, origin, direction, impactStrength, mode = 'car' }) {
+        if (!hostContainer || !origin) {
+            return;
+        }
+
+        const normalizedDirection = direction?.clone?.() || new THREE.Vector3(1, 0, 0.15);
+        if (normalizedDirection.lengthSq() < 0.0001) {
+            normalizedDirection.set(1, 0, 0.15);
+        }
+        normalizedDirection.normalize();
+
+        const tangent = new THREE.Vector3(-normalizedDirection.y, normalizedDirection.x, 0);
+        if (tangent.lengthSq() < 0.0001) {
+            tangent.set(0, 1, 0);
+        } else {
+            tangent.normalize();
+        }
+
+        const bitangent = new THREE.Vector3().crossVectors(normalizedDirection, tangent).normalize();
+        const intensity = Math.max(1, impactStrength || 1);
+        const isRocket = mode === 'rocket';
+        const sparkCount = Math.min(isRocket ? 38 : 28, Math.max(isRocket ? 20 : 16, Math.round(intensity * (isRocket ? 0.55 : 0.4))));
+        const streakCount = Math.min(isRocket ? 22 : 16, Math.max(isRocket ? 10 : 8, Math.round(intensity * 0.22)));
+
+        const sparkGeometry = new THREE.BufferGeometry();
+        const sparkPositions = new Float32Array(sparkCount * 3);
+        const sparkColors = new Float32Array(sparkCount * 3);
+        const sparkVelocities = [];
+
+        for (let i = 0; i < sparkCount; i++) {
+            sparkPositions[i * 3 + 0] = 0;
+            sparkPositions[i * 3 + 1] = 0;
+            sparkPositions[i * 3 + 2] = 0;
+
+            const forward = normalizedDirection.clone().multiplyScalar((0.12 + Math.random() * 0.24) * (isRocket ? 1.45 : 1));
+            const lateral = tangent.clone().multiplyScalar((Math.random() - 0.5) * (isRocket ? 0.26 : 0.18));
+            const vertical = bitangent.clone().multiplyScalar((Math.random() - 0.5) * 0.12);
+            forward.z += 0.04 + Math.random() * 0.08;
+            sparkVelocities.push(forward.add(lateral).add(vertical));
+
+            const heat = Math.random();
+            if (isRocket) {
+                if (heat < 0.18) {
+                    sparkColors.set([1, 1, 1], i * 3);
+                } else if (heat < 0.62) {
+                    sparkColors.set([0.38, 0.72, 1], i * 3);
+                } else {
+                    sparkColors.set([1, 0.62, 0.18], i * 3);
+                }
+            } else {
+                if (heat < 0.22) {
+                    sparkColors.set([1, 1, 1], i * 3);
+                } else if (heat < 0.68) {
+                    sparkColors.set([1, 0.82, 0.38], i * 3);
+                } else {
+                    sparkColors.set([1, 0.46, 0.14], i * 3);
+                }
+            }
+        }
+
+        sparkGeometry.setAttribute('position', new THREE.BufferAttribute(sparkPositions, 3));
+        sparkGeometry.setAttribute('color', new THREE.BufferAttribute(sparkColors, 3));
+
+        const sparkMaterial = new THREE.PointsMaterial({
+            size: isRocket ? 0.38 : 0.3,
+            vertexColors: true,
+            transparent: true,
+            opacity: 0.95,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
+
+        const sparks = new THREE.Points(sparkGeometry, sparkMaterial);
+        sparks.position.copy(origin);
+        hostContainer.add(sparks);
+
+        const streakGeometry = new THREE.BufferGeometry();
+        const streakPositions = new Float32Array(streakCount * 6);
+        const streakColors = new Float32Array(streakCount * 6);
+        const streakVelocities = [];
+
+        for (let i = 0; i < streakCount; i++) {
+            const streakVelocity = normalizedDirection
+                .clone()
+                .multiplyScalar((0.18 + Math.random() * 0.22) * (isRocket ? 1.6 : 1.15))
+                .add(tangent.clone().multiplyScalar((Math.random() - 0.5) * 0.16))
+                .add(bitangent.clone().multiplyScalar((Math.random() - 0.5) * 0.09));
+            streakVelocity.z += 0.02 + Math.random() * 0.06;
+            streakVelocities.push(streakVelocity);
+
+            const base = i * 6;
+            streakPositions[base + 0] = 0;
+            streakPositions[base + 1] = 0;
+            streakPositions[base + 2] = 0;
+            streakPositions[base + 3] = -streakVelocity.x * 0.7;
+            streakPositions[base + 4] = -streakVelocity.y * 0.7;
+            streakPositions[base + 5] = -streakVelocity.z * 0.7;
+
+            const streakColor = isRocket ? [0.72, 0.9, 1] : [1, 0.86, 0.48];
+            streakColors.set(streakColor, base + 0);
+            streakColors.set(streakColor, base + 3);
+        }
+
+        streakGeometry.setAttribute('position', new THREE.BufferAttribute(streakPositions, 3));
+        streakGeometry.setAttribute('color', new THREE.BufferAttribute(streakColors, 3));
+
+        const streakMaterial = new THREE.LineBasicMaterial({
+            vertexColors: true,
+            transparent: true,
+            opacity: isRocket ? 0.8 : 0.72,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
+
+        const streaks = new THREE.LineSegments(streakGeometry, streakMaterial);
+        streaks.position.copy(origin);
+        hostContainer.add(streaks);
+
+        const ringMaterial = new THREE.MeshBasicMaterial({
+            color: isRocket ? 0x7db8ff : 0xffc56b,
+            transparent: true,
+            opacity: isRocket ? 0.38 : 0.26,
+            side: THREE.DoubleSide,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending
+        });
+        const ring = new THREE.Mesh(new THREE.RingGeometry(isRocket ? 0.14 : 0.18, isRocket ? 0.3 : 0.4, 32), ringMaterial);
+        ring.position.copy(origin);
+        ring.lookAt(origin.clone().add(normalizedDirection));
+        hostContainer.add(ring);
+
+        const flashMaterial = new THREE.SpriteMaterial({
+            color: isRocket ? 0xa8d4ff : 0xfff1cb,
+            transparent: true,
+            opacity: isRocket ? 0.48 : 0.34,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
+        const flash = new THREE.Sprite(flashMaterial);
+        flash.position.copy(origin);
+        flash.scale.setScalar(isRocket ? 0.95 : 0.72);
+        hostContainer.add(flash);
+
+        const startedAt = performance.now();
+        const duration = isRocket ? 320 : 260;
+
+        const animate = () => {
+            const elapsed = performance.now() - startedAt;
+            const progress = elapsed / duration;
+
+            if (progress >= 1) {
+                hostContainer.remove(sparks);
+                hostContainer.remove(streaks);
+                hostContainer.remove(ring);
+                hostContainer.remove(flash);
+                sparkGeometry.dispose();
+                sparkMaterial.dispose();
+                streakGeometry.dispose();
+                streakMaterial.dispose();
+                ring.geometry.dispose();
+                ringMaterial.dispose();
+                flashMaterial.dispose();
+                return;
+            }
+
+            for (let i = 0; i < sparkCount; i++) {
+                const velocity = sparkVelocities[i];
+                sparkPositions[i * 3 + 0] += velocity.x;
+                sparkPositions[i * 3 + 1] += velocity.y;
+                sparkPositions[i * 3 + 2] += velocity.z;
+                velocity.multiplyScalar(isRocket ? 0.94 : 0.92);
+                velocity.z -= isRocket ? 0.003 : 0.006;
+            }
+
+            for (let i = 0; i < streakCount; i++) {
+                const velocity = streakVelocities[i];
+                const base = i * 6;
+                streakPositions[base + 0] += velocity.x;
+                streakPositions[base + 1] += velocity.y;
+                streakPositions[base + 2] += velocity.z;
+                streakPositions[base + 3] = streakPositions[base + 0] - velocity.x * 0.9;
+                streakPositions[base + 4] = streakPositions[base + 1] - velocity.y * 0.9;
+                streakPositions[base + 5] = streakPositions[base + 2] - velocity.z * 0.9;
+                velocity.multiplyScalar(0.93);
+            }
+
+            sparkGeometry.attributes.position.needsUpdate = true;
+            streakGeometry.attributes.position.needsUpdate = true;
+
+            sparkMaterial.opacity = 0.95 * (1 - progress);
+            streakMaterial.opacity = (isRocket ? 0.8 : 0.72) * (1 - progress);
+            ring.scale.setScalar(1 + progress * (isRocket ? 2.4 : 1.9));
+            ringMaterial.opacity = (isRocket ? 0.38 : 0.26) * (1 - progress);
+            flash.scale.setScalar((isRocket ? 0.95 : 0.72) + progress * (isRocket ? 1.8 : 1.25));
+            flashMaterial.opacity = (isRocket ? 0.48 : 0.34) * (1 - progress);
+
+            requestAnimationFrame(animate);
+        };
+
+        animate();
+    }
+
     createCarImpactEffect(playerCar, otherPlayerCar, impactDirection, impactStrength) {
-        const hostContainer =
-            playerCar?.container?.parent ||
-            otherPlayerCar?.container?.parent ||
-            playerCar?.container ||
-            otherPlayerCar?.container;
+        const hostContainer = this.getImpactHostContainer(playerCar, otherPlayerCar);
 
         if (!hostContainer || !playerCar?.chassis?.object || !otherPlayerCar?.chassis?.object) {
             return;
@@ -8972,121 +9185,33 @@ export default class Physics
             .copy(playerCar.chassis.object.position)
             .add(otherPlayerCar.chassis.object.position)
             .multiplyScalar(0.5);
-        origin.z += 0.45;
+        origin.z += 0.42;
 
-        const direction = impactDirection.clone();
-        if (direction.lengthSq() < 0.0001) {
-            direction.set(1, 0, 0.15);
-        }
-        direction.normalize();
-
-        const tangent = new THREE.Vector3(-direction.y, direction.x, 0);
-        if (tangent.lengthSq() < 0.0001) {
-            tangent.set(0, 1, 0);
-        } else {
-            tangent.normalize();
-        }
-
-        const particleCount = Math.min(24 + Math.round(impactStrength * 0.35), 56);
-        const geometry = new THREE.BufferGeometry();
-        const positions = new Float32Array(particleCount * 3);
-        const colors = new Float32Array(particleCount * 3);
-        const velocities = [];
-
-        for (let i = 0; i < particleCount; i++) {
-            const spread = (Math.random() - 0.5) * 0.85;
-            const lift = 0.2 + Math.random() * 0.45;
-            const speed = 0.12 + Math.random() * 0.24 + impactStrength * 0.002;
-            const velocity = direction
-                .clone()
-                .multiplyScalar(speed)
-                .add(tangent.clone().multiplyScalar(spread * 0.12));
-            velocity.z += lift * 0.08;
-            velocities.push(velocity);
-
-            positions[i * 3 + 0] = 0;
-            positions[i * 3 + 1] = 0;
-            positions[i * 3 + 2] = 0;
-
-            const heat = Math.random();
-            if (heat < 0.18) {
-                colors.set([1, 1, 1], i * 3);
-            } else if (heat < 0.62) {
-                colors.set([1, 0.84, 0.32], i * 3);
-            } else {
-                colors.set([1, 0.45, 0.08], i * 3);
-            }
-        }
-
-        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-
-        const material = new THREE.PointsMaterial({
-            size: 0.45,
-            vertexColors: true,
-            transparent: true,
-            opacity: 0.95,
-            blending: THREE.AdditiveBlending,
-            depthWrite: false
+        this.createImpactEffect({
+            hostContainer,
+            origin,
+            direction: impactDirection,
+            impactStrength,
+            mode: 'car'
         });
+    }
 
-        const sparks = new THREE.Points(geometry, material);
-        sparks.position.copy(origin);
-        hostContainer.add(sparks);
+    createRocketImpactEffect(car, origin, impactDirection, impactStrength) {
+        const hostContainer = this.getImpactHostContainer(car);
+        if (!hostContainer) {
+            return;
+        }
 
-        const flashMaterial = new THREE.MeshBasicMaterial({
-            color: 0xffd27a,
-            transparent: true,
-            opacity: 0.32,
-            side: THREE.DoubleSide,
-            depthWrite: false
+        this.createImpactEffect({
+            hostContainer,
+            origin,
+            direction: impactDirection,
+            impactStrength,
+            mode: 'rocket'
         });
-        const flash = new THREE.Mesh(new THREE.CircleGeometry(0.42, 24), flashMaterial);
-        flash.position.copy(origin);
-        flash.lookAt(origin.clone().add(new THREE.Vector3(0, 0, 1)));
-        hostContainer.add(flash);
-
-        const startedAt = performance.now();
-        const duration = 220;
-
-        const animate = () => {
-            const elapsed = performance.now() - startedAt;
-            const progress = elapsed / duration;
-
-            if (progress >= 1) {
-                hostContainer.remove(sparks);
-                hostContainer.remove(flash);
-                geometry.dispose();
-                material.dispose();
-                flash.geometry.dispose();
-                flashMaterial.dispose();
-                return;
-            }
-
-            for (let i = 0; i < particleCount; i++) {
-                const velocity = velocities[i];
-                positions[i * 3 + 0] += velocity.x;
-                positions[i * 3 + 1] += velocity.y;
-                positions[i * 3 + 2] += velocity.z;
-                velocity.multiplyScalar(0.93);
-                velocity.z -= 0.01;
-            }
-
-            geometry.attributes.position.needsUpdate = true;
-            material.opacity = 1 - progress;
-            flash.scale.setScalar(1 + progress * 1.8);
-            flashMaterial.opacity = 0.32 * (1 - progress);
-
-            requestAnimationFrame(animate);
-        };
-
-        animate();
     }
     
     handleCarCollision(playerCar, otherPlayerCar) {
-        
-        // const ws = new WebSocket('ws://localhost:8080');
-
         const playerCarBody = this.getCarBody(playerCar);
         const otherCarBody = this.getCarBody(otherPlayerCar);
     
@@ -9106,47 +9231,18 @@ export default class Physics
         if (!this.shouldCollideCars(playerCar.playerId, otherPlayerCar.playerId)) {
             return; // Exit if the cars should not collide (i.e., they are in the same party)
         }
-    
-        const handleCollisionEvent = (_event) => {
-            const relativeVelocity = _event.contact.getImpactVelocityAlongNormal();
-            this.sounds.play('carHit', relativeVelocity);
-    
-            const hitBody = _event.body;
-            const hitCar = this.cars[hitBody.id];
-            
-            if (hitCar) {
-                if (this.isCarInvulnerable(hitCar)) {
-                    return;
-                }
-                hitCar.battery -= 1;
-    
-                if (hitCar.battery <= 0) {
-                    const hitterCar = this.cars[hitCar.lastHitBy];
-                    if (hitterCar) {
-                        hitterCar.score += 1;
-                        this.updateScoreStatus(hitterCar.score);
-                    }
-                    this.destroyCar(hitCar);
-                    hitCar.battery = 100;
-                }
-    
-                this.updateBatteryStatus(hitCar.battery);
-    
-                // if (ws && ws.readyState === WebSocket.OPEN) {
-                //     ws.send(JSON.stringify({
-                //         type: 'carCollision',
-                //         hitCarId: hitCar.playerId,
-                //         battery: hitCar.battery,
-                //         score: hitCar.score,
-                //     }));
-                // }
-            }
-        };
-    
-        playerCarBody.addEventListener('collide', handleCollisionEvent);
-        otherCarBody.addEventListener('collide', handleCollisionEvent);
-        
-        // Apply collision effects (impulse, movement)
+
+        const pairKey = [playerCar.playerId, otherPlayerCar.playerId].sort().join(':');
+        const now = Date.now();
+        const lastImpactAt = this.carCollisionCooldowns.get(pairKey) || 0;
+        if (now - lastImpactAt < 180) {
+            return;
+        }
+        this.carCollisionCooldowns.set(pairKey, now);
+
+        const relativeVelocity = playerCarBody.velocity.vsub(otherCarBody.velocity).length();
+        this.sounds.play('carHit', relativeVelocity);
+
         this.applyCollisionEffects(playerCarBody, otherCarBody, playerCar, otherPlayerCar);
     }
 
@@ -9225,40 +9321,16 @@ export default class Physics
     }
     
     destroyCar(car, carKey) {
-        
-        // const ws = new WebSocket('ws://localhost:8080');
-
-        if (!car || !car.physics || !car.physics[carKey]) {
-            // console.error("Invalid car or carKey:", car, carKey);
+        if (!car) {
             return;
         }
 
-        // Update non-collidable cars, passing the current car and all cars from this.cars
-        const allCars = Object.values(this.cars);  // Get all cars from this.cars
-        this.updateNonCollidableCars(car, allCars);
-
-        car.physics.car.chassis.body.sleep();
-
-            setTimeout(() => {
-                this.nonCollidablePlayers.clear();
-                this.nonCollidableCars.clear();
-                car.physics.car.recreate();
-            }, 10000);
-
-        // Ensure car has the createCrashEffect method
-        if (typeof car.createCrashEffect === 'function') {
-            car.createCrashEffect(car.chassis.object.position, car.chassis.object.quaternion, car.chassis.object); // Trigger crash effect
-        } else {
-            console.error("car.createCrashEffect is not a function");
+        const resolvedCarKey = carKey || this.getCarKey(car);
+        if (!resolvedCarKey) {
+            return;
         }
-    
-        // if (ws && ws.readyState === WebSocket.OPEN) {
-        //     ws.send(JSON.stringify({
-        //         type: 'destroyCar',
-        //         playerId: car.playerId,
-        //         carKey: carKey,
-        //     }));
-        // }
+
+        this.triggerCarDestroyed(car, 'legacyDestroy', car.lastHitBy || null);
     }    
     
     // Function to update battery status in HTML
