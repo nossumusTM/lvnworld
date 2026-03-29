@@ -8369,7 +8369,55 @@ export default class Physics
                 }
             }
 
-            this.syncWheelBodies(this.car, { freezeWheelRoll: true })
+            // Update wheel bodies
+            const isCarNearlyStationary =
+                chassisBody.velocity.lengthSquared() < 0.0225 &&
+                Math.abs(this.car.accelerating) < 0.0001 &&
+                !this.controls.actions.up &&
+                !this.controls.actions.down &&
+                !this.controls.actions.boost
+
+            if(!this.car.wheels.restQuaternions)
+            {
+                this.car.wheels.restQuaternions = []
+            }
+
+            for(let i = 0; i < this.car.vehicle.wheelInfos.length; i++)
+            {
+                this.car.vehicle.updateWheelTransform(i)
+
+                const transform = this.car.vehicle.wheelInfos[i].worldTransform
+                this.car.wheels.bodies[i].position.copy(transform.position)
+                const targetQuaternion = new CANNON.Quaternion(
+                    transform.quaternion.x,
+                    transform.quaternion.y,
+                    transform.quaternion.z,
+                    transform.quaternion.w
+                )
+
+                // Rotate the wheels on the right
+                if(i === 1 || i === 3)
+                {
+                    const rotationQuaternion = new CANNON.Quaternion(0, 0, 0, 1)
+                    rotationQuaternion.setFromAxisAngle(new CANNON.Vec3(0, 0, 1), Math.PI)
+                    targetQuaternion.copy(targetQuaternion.mult(rotationQuaternion))
+                }
+
+                if(isCarNearlyStationary && this.car.wheels.restQuaternions[i])
+                {
+                    this.car.wheels.bodies[i].quaternion.copy(this.car.wheels.restQuaternions[i])
+                }
+                else
+                {
+                    this.car.wheels.bodies[i].quaternion.copy(targetQuaternion)
+                    this.car.wheels.restQuaternions[i] = new CANNON.Quaternion(
+                        targetQuaternion.x,
+                        targetQuaternion.y,
+                        targetQuaternion.z,
+                        targetQuaternion.w
+                    )
+                }
+            }
 
             // Slow down back
             if(!this.controls.actions.up && !this.controls.actions.down)
@@ -8414,46 +8462,23 @@ export default class Physics
                 return
             }
 
-            const touchJoystickActive = Boolean(this.controls.touch?.joystick?.active)
-            const rawTouchSteerValue = touchJoystickActive && Number.isFinite(this.controls.touch.joystick.steerValue)
-                ? this.controls.touch.joystick.steerValue
-                : 0
-            const touchSteerMagnitude = Math.min(1, Math.abs(rawTouchSteerValue))
-            const speedReference = Math.max(this.car.options.controlsAcceleratinMaxSpeedBoost, this.car.options.controlsAcceleratinMaxSpeed, 0.001)
-            const speedRatio = Math.min(1, Math.abs(this.car.forwardSpeed) / speedReference)
-
             /**
              * Steering
              */
-            if(touchJoystickActive)
+            if(this.controls.touch)
             {
-                const deadZone = 0.08
-                const steerValue = touchSteerMagnitude < deadZone ? 0 : rawTouchSteerValue
-                const steeringRangeScale = THREE.MathUtils.lerp(
-                    1,
-                    this.controls.actions.boost ? 0.42 : 0.62,
-                    speedRatio
-                )
-                const targetSteering = steerValue * this.car.options.controlsSteeringMax * steeringRangeScale
-                const steeringNeedsCentering = Math.abs(targetSteering) < Math.abs(this.car.steering)
-                const steerFollowBase = steeringNeedsCentering
-                    ? (this.controls.actions.boost ? 0.032 : 0.038)
-                    : (this.controls.actions.boost ? 0.0085 : 0.0115)
-                const steerFollowStrength = Math.min(
-                    1,
-                    this.time.delta * THREE.MathUtils.lerp(
-                        steerFollowBase,
-                        steerFollowBase * (steeringNeedsCentering ? 0.9 : 0.76),
-                        speedRatio
-                    )
-                )
+                let deltaAngle = 0
 
-                this.car.steering += (targetSteering - this.car.steering) * steerFollowStrength
-
-                if(Math.abs(targetSteering - this.car.steering) < 0.0005)
+                if(this.controls.touch.joystick.active)
                 {
-                    this.car.steering = targetSteering
+                    // Calculate delta between joystick and car angles
+                    deltaAngle = (this.controls.touch.joystick.angle.value - this.car.angle + Math.PI) % (Math.PI * 2) - Math.PI
+                    deltaAngle = deltaAngle < - Math.PI ? deltaAngle + Math.PI * 2 : deltaAngle
                 }
+
+                // Update steering directly
+                const goingForward = Math.abs(this.car.forwardSpeed) < 0.01 ? true : this.car.goingForward
+                this.car.steering = deltaAngle * (goingForward ? - 1 : 1)
 
                 // Clamp steer
                 if(Math.abs(this.car.steering) > this.car.options.controlsSteeringMax)
@@ -8506,29 +8531,12 @@ export default class Physics
                 this.car.vehicle.setSteeringValue(this.car.steering, this.car.wheels.indexes.backRight)
             }
 
-            this.syncWheelBodies(this.car, { freezeWheelRoll: true })
-
-            for(const _wheelKey in this.car.wheels.bodies)
-            {
-                const wheelBody = this.car.wheels.bodies[_wheelKey]
-                const wheelMesh = this.car.model.wheels[_wheelKey]
-
-                wheelMesh.position.copy(wheelBody.position)
-                wheelMesh.quaternion.copy(wheelBody.quaternion)
-            }
-
             /**
              * Accelerate
              */
             const accelerationSpeed = this.controls.actions.boost ? this.car.options.controlsAcceleratingSpeedBoost : this.car.options.controlsAcceleratingSpeed
-            let accelerateStrength = 17 * accelerationSpeed
+            const accelerateStrength = 17 * accelerationSpeed
             const controlsAcceleratinMaxSpeed = this.controls.actions.boost ? this.car.options.controlsAcceleratinMaxSpeedBoost : this.car.options.controlsAcceleratinMaxSpeed
-
-            if(touchJoystickActive && this.controls.actions.boost)
-            {
-                const turningBoostCut = THREE.MathUtils.lerp(1, 0.62, touchSteerMagnitude * (0.65 + speedRatio * 0.35))
-                accelerateStrength *= turningBoostCut
-            }
 
             // Accelerate up
             if(this.controls.actions.up)
