@@ -20,7 +20,7 @@ export default class InformationSection
         this.container.matrixAutoUpdate = false
 
         this.setStatic()
-        this.setLinks()
+        // this.setLinks()
         this.setActivities()
         this.setTiles()
     }

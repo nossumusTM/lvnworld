@@ -29,7 +29,7 @@ function parseMobileCursorValue(value: string | null): boolean | null {
 }
 
 export default function MobileCursorOverlay() {
-  const [isEnabled, setIsEnabled] = useState(true);
+  const [isEnabled, setIsEnabled] = useState(false);
   const [isActive, setIsActive] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
@@ -53,7 +53,7 @@ export default function MobileCursorOverlay() {
       const storedPreference = parseMobileCursorValue(
         window.localStorage.getItem(MOBILE_CURSOR_STORAGE_KEY)
       );
-      const nextEnabled = storedPreference ?? true;
+      const nextEnabled = storedPreference ?? false;
       setIsEnabled(nextEnabled);
       return nextEnabled;
     };
