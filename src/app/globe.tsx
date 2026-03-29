@@ -44,9 +44,9 @@ export function initGlobe(containerId: string): void {
     const currentTime = new Date();
     const hours = currentTime.getHours();
 
-    const dayTextureUrl = '//unpkg.com/three-globe/example/img/earth-blue-marble.jpg';
+    const dayTextureUrl = '/images/texture/dayTexture.png';
     // const dayTextureUrl = '//unpkg.com/three-globe/example/img/earth-night.png';
-    const nightTextureUrl = '//unpkg.com/three-globe/example/img/earth-dark.jpg';
+    const nightTextureUrl = '/images/texture/nightTexture.png';
     const bumpTextureUrl = '//unpkg.com/three-globe/example/img/earth-topology.png';
 
     const isDayTexture = hours < 12;
