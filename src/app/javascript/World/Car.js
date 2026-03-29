@@ -31,6 +31,67 @@ function normalizeStoredMatcaps(matcaps = {})
     return normalizedMatcaps
 }
 
+function createRoundedRectShape(width, height, radius)
+{
+    const halfWidth = width * 0.5
+    const halfHeight = height * 0.5
+    const clampedRadius = Math.max(0.001, Math.min(radius, halfWidth, halfHeight))
+    const shape = new THREE.Shape()
+
+    shape.moveTo(-halfWidth + clampedRadius, -halfHeight)
+    shape.lineTo(halfWidth - clampedRadius, -halfHeight)
+    shape.quadraticCurveTo(halfWidth, -halfHeight, halfWidth, -halfHeight + clampedRadius)
+    shape.lineTo(halfWidth, halfHeight - clampedRadius)
+    shape.quadraticCurveTo(halfWidth, halfHeight, halfWidth - clampedRadius, halfHeight)
+    shape.lineTo(-halfWidth + clampedRadius, halfHeight)
+    shape.quadraticCurveTo(-halfWidth, halfHeight, -halfWidth, halfHeight - clampedRadius)
+    shape.lineTo(-halfWidth, -halfHeight + clampedRadius)
+    shape.quadraticCurveTo(-halfWidth, -halfHeight, -halfWidth + clampedRadius, -halfHeight)
+
+    return shape
+}
+
+function getObjectLocalBounds(object)
+{
+    if (!object) {
+        return new THREE.Box3();
+    }
+
+    object.updateMatrixWorld(true);
+
+    const objectInverseMatrix = object.matrixWorld.clone().invert();
+    const localBounds = new THREE.Box3();
+    let hasBounds = false;
+
+    object.traverse((child) =>
+    {
+        if (!(child instanceof THREE.Mesh) || !child.geometry) {
+            return;
+        }
+
+        if (!child.geometry.boundingBox) {
+            child.geometry.computeBoundingBox();
+        }
+
+        if (!child.geometry.boundingBox) {
+            return;
+        }
+
+        const childBounds = child.geometry.boundingBox.clone();
+        childBounds.applyMatrix4(child.matrixWorld);
+        childBounds.applyMatrix4(objectInverseMatrix);
+
+        if (!hasBounds) {
+            localBounds.copy(childBounds);
+            hasBounds = true;
+        } else {
+            localBounds.union(childBounds);
+        }
+    });
+
+    return hasBounds ? localBounds : new THREE.Box3();
+}
+
 export default class Car
 {
     constructor(_options)
@@ -511,8 +572,20 @@ export default class Car
 
             // Keep the exhaust fully local to the chassis and anchor it to the actual rear-light side.
             carChassis.add(particles);
+            const chassisBounds = this.chassis?.localBounds || getObjectLocalBounds(carChassis);
+            const chassisSize = new THREE.Vector3();
+            if (!chassisBounds.isEmpty()) {
+                chassisBounds.getSize(chassisSize);
+            }
 
-            const rearAnchor = this.backLightsBrake?.object?.position?.clone() || new THREE.Vector3(-0.95, 0, 0.38);
+            const backLightAnchor = this.backLightsBrake?.object?.position?.clone() || null;
+            const rearAnchor = new THREE.Vector3(
+                !chassisBounds.isEmpty() ? chassisBounds.min.x - Math.max(0.24, chassisSize.x * 0.08) : -0.95,
+                backLightAnchor?.y || 0,
+                backLightAnchor?.z || (!chassisBounds.isEmpty()
+                    ? chassisBounds.min.z + Math.max(0.24, chassisSize.z * 0.45)
+                    : 0.38)
+            );
             const rearDirection = rearAnchor.clone();
             rearDirection.z = 0;
 
@@ -529,8 +602,10 @@ export default class Car
                 lateralDirection.normalize();
             }
 
-            const exhaustOffset = rearAnchor.clone().add(rearDirection.clone().multiplyScalar(0.32));
-            exhaustOffset.z += 0.04;
+            const exhaustOffset = rearAnchor.clone().add(
+                rearDirection.clone().multiplyScalar(Math.max(0.2, chassisSize.x * 0.04))
+            );
+            exhaustOffset.z += Math.max(0.03, chassisSize.z * 0.03);
             particles.position.copy(exhaustOffset);
 
             let isBoostActive = true; // Track if bullet is active
@@ -761,6 +836,252 @@ export default class Car
         if (this.batteryVector && this.backLightsBattery.object) {
             this.batteryVector.copy(this.backLightsBattery.object.position);
         }
+    }
+
+    ensureBodyVisible()
+    {
+        if (!this.chassis?.main) {
+            return;
+        }
+
+        this.chassis.main.visible = true;
+        this.chassis.main.traverse((child) =>
+        {
+            if (!(child instanceof THREE.Mesh)) {
+                return;
+            }
+
+            child.visible = true;
+            const materials = Array.isArray(child.material) ? child.material : [child.material];
+            materials.forEach((material) =>
+            {
+                if (!material) {
+                    return;
+                }
+
+                if (typeof material.opacity === 'number' && material.opacity === 0) {
+                    material.opacity = 1;
+                }
+            });
+        });
+    }
+
+    ensureBatteryIndicatorMesh()
+    {
+        if (!this.backLightsBattery?.object) {
+            return;
+        }
+
+        if (!this.backLightsBattery.object.userData.roundedIndicatorReady) {
+            while (this.backLightsBattery.object.children.length > 0) {
+                const child = this.backLightsBattery.object.children[0];
+                this.backLightsBattery.object.remove(child);
+
+                if (child.geometry?.dispose) {
+                    child.geometry.dispose();
+                }
+            }
+
+            const geometry = new THREE.ExtrudeGeometry(
+                createRoundedRectShape(1, 0.073, 0.0365),
+                {
+                    depth: 0.04,
+                    bevelEnabled: false,
+                    steps: 1
+                }
+            );
+            geometry.translate(0, 0, -0.02);
+
+            const indicatorMesh = new THREE.Mesh(geometry, this.backLightsBattery.materialRed);
+            indicatorMesh.userData.baseScale = new THREE.Vector3(1, 1, 1);
+
+            this.backLightsBattery.object.add(indicatorMesh);
+            this.backLightsBattery.object.userData.roundedIndicatorReady = true;
+            this.backLightsBattery.object.userData.baseWidth = 1;
+        }
+
+        this.backLightsBattery.object.traverse((child) =>
+        {
+            if (!(child instanceof THREE.Mesh)) {
+                return;
+            }
+
+            child.visible = true;
+            if (!child.userData.baseScale) {
+                child.userData.baseScale = child.scale.clone();
+            }
+        });
+    }
+
+    getBatteryIndicatorBaseWidth()
+    {
+        if (!this.backLightsBattery?.object) {
+            return 1;
+        }
+
+        if (this.backLightsBattery.object.userData.baseWidth) {
+            return this.backLightsBattery.object.userData.baseWidth;
+        }
+
+        this.backLightsBattery.object.updateMatrixWorld(true);
+
+        const objectInverseMatrix = this.backLightsBattery.object.matrixWorld.clone().invert();
+        const localBounds = new THREE.Box3();
+        let hasBounds = false;
+
+        this.backLightsBattery.object.traverse((child) =>
+        {
+            if (!(child instanceof THREE.Mesh) || !child.geometry) {
+                return;
+            }
+
+            if (!child.geometry.boundingBox) {
+                child.geometry.computeBoundingBox();
+            }
+
+            if (!child.geometry.boundingBox) {
+                return;
+            }
+
+            const baseScale = child.userData.baseScale || child.scale;
+            const localMatrix = new THREE.Matrix4().compose(
+                child.position.clone(),
+                child.quaternion.clone(),
+                baseScale.clone()
+            );
+            const parentMatrixWorld = child.parent?.matrixWorld || this.backLightsBattery.object.matrixWorld;
+            const childBaseMatrixWorld = new THREE.Matrix4().multiplyMatrices(parentMatrixWorld, localMatrix);
+            const childBounds = child.geometry.boundingBox.clone();
+
+            childBounds.applyMatrix4(childBaseMatrixWorld);
+            childBounds.applyMatrix4(objectInverseMatrix);
+
+            if (!hasBounds) {
+                localBounds.copy(childBounds);
+                hasBounds = true;
+            } else {
+                localBounds.union(childBounds);
+            }
+        });
+
+        const baseWidth = hasBounds ? Math.max(localBounds.max.x - localBounds.min.x, 0.001) : 1;
+        this.backLightsBattery.object.userData.baseWidth = baseWidth;
+
+        return baseWidth;
+    }
+
+    updateBatteryIndicatorAnchor()
+    {
+        if (!this.chassis?.main || !this.backLightsBattery?.object) {
+            return;
+        }
+
+        this.chassis.main.updateMatrixWorld(true);
+
+        const chassisBounds = new THREE.Box3().setFromObject(this.chassis.main);
+        if (chassisBounds.isEmpty()) {
+            return;
+        }
+
+        const chassisSize = new THREE.Vector3();
+        chassisBounds.getSize(chassisSize);
+
+        const anchorWorld = new THREE.Vector3();
+        if (this.playerIdText) {
+            this.playerIdText.getWorldPosition(anchorWorld);
+            anchorWorld.z += (this.playerIdText.scale?.y || 0.55) + Math.max(0.14, chassisSize.z * 0.12);
+        } else if (this.backLightsBrake?.object) {
+            this.backLightsBrake.object.getWorldPosition(anchorWorld);
+            anchorWorld.z = chassisBounds.max.z + Math.max(0.16, chassisSize.z * 0.18);
+        } else {
+            chassisBounds.getCenter(anchorWorld);
+            anchorWorld.x = chassisBounds.min.x + chassisSize.x * 0.15;
+            anchorWorld.z = chassisBounds.max.z + Math.max(0.16, chassisSize.z * 0.18);
+        }
+
+        const anchorLocal = this.chassis.main.worldToLocal(anchorWorld);
+        this.backLightsBattery.object.position.copy(anchorLocal);
+    }
+
+    alignBatteryIndicatorToCamera()
+    {
+        if (!this.backLightsBattery?.object || !this.camera?.instance) {
+            return;
+        }
+
+        const parent = this.backLightsBattery.object.parent;
+        if (!parent) {
+            return;
+        }
+
+        parent.updateMatrixWorld(true);
+        this.camera.instance.updateMatrixWorld(true);
+
+        const parentWorldQuaternion = new THREE.Quaternion();
+        const cameraWorldQuaternion = new THREE.Quaternion();
+
+        parent.getWorldQuaternion(parentWorldQuaternion);
+        this.camera.instance.getWorldQuaternion(cameraWorldQuaternion);
+
+        this.backLightsBattery.object.quaternion.copy(
+            parentWorldQuaternion.invert().multiply(cameraWorldQuaternion)
+        );
+    }
+
+    updateBatteryIndicatorVisual(battery = this.battery)
+    {
+        if (!this.backLightsBattery?.object) {
+            return;
+        }
+
+        const clampedBattery = Math.max(0, Math.min(100, Number.isFinite(battery) ? battery : 100));
+        const batteryRatio = clampedBattery / 100;
+
+        this.ensureBatteryIndicatorMesh();
+        this.updateBatteryIndicatorAnchor();
+        this.alignBatteryIndicatorToCamera();
+
+        const indicatorColor = new THREE.Color().setRGB(1 - batteryRatio, batteryRatio, 0.2);
+        const scaleRatio = Math.max(0.08, batteryRatio);
+        const baseIndicatorWidth = this.getBatteryIndicatorBaseWidth();
+        const targetIndicatorWidth = Math.max(
+            0.001,
+            (this.playerIdText?.scale?.x || baseIndicatorWidth) * scaleRatio
+        );
+        const widthScaleFactor = targetIndicatorWidth / baseIndicatorWidth;
+
+        this.backLightsBattery.object.traverse((child) =>
+        {
+            if (!(child instanceof THREE.Mesh)) {
+                return;
+            }
+
+            const baseScale = child.userData.baseScale || child.scale;
+            child.scale.set(baseScale.x * widthScaleFactor, baseScale.y, baseScale.z);
+            child.visible = true;
+
+            const materials = Array.isArray(child.material) ? child.material : [child.material];
+            materials.forEach((material) =>
+            {
+                if (!material) {
+                    return;
+                }
+
+                if ('color' in material && material.color) {
+                    material.color.copy(indicatorColor);
+                }
+
+                material.transparent = true;
+                material.opacity = clampedBattery > 0 ? 0.95 : 0.45;
+                material.depthTest = false;
+                material.depthWrite = false;
+                material.side = THREE.DoubleSide;
+            });
+        });
+
+        this.backLightsBattery.object.renderOrder = 1000;
+
+        this.updateBatteryPosition();
     }
 
     setModels(carName, matcaps)
@@ -1881,9 +2202,10 @@ export default class Car
                 -this.chassis.object.rotation.z
             );
 
+            this.handleNitroEffect();
+
             if (!this.isRemotePlayer) {
                 this.updateSpeedometer();
-                this.handleNitroEffect();
                 this.handleSirenEffect();
             }
     
@@ -2085,6 +2407,12 @@ export default class Car
             this.chassis.main.worldToLocal(chassisCenter);
         }
 
+        this.chassis.localBounds = getObjectLocalBounds(this.chassis.main);
+        this.chassis.size = new THREE.Vector3();
+        if (!this.chassis.localBounds.isEmpty()) {
+            this.chassis.localBounds.getSize(this.chassis.size);
+        }
+
         this.chassis.cameraTarget.position.copy(chassisCenter);
         this.chassis.main.add(this.chassis.cameraTarget);
     
@@ -2247,7 +2575,7 @@ export default class Car
         this.backLightsBattery = {}
 
         this.backLightsBattery.materialRed = this.materials.pures.items.red.clone()
-        this.backLightsBattery.materialWhite = this.materials.pures.items.red.clone()
+        this.backLightsBattery.materialWhite = this.materials.pures.items.white.clone()
         this.backLightsBattery.materialRed.transparent = true
         this.backLightsBattery.materialRed.opacity = 0
         this.backLightsBattery.materialWhite.transparent = true
@@ -2259,6 +2587,7 @@ export default class Car
             _child.material = this.backLightsBattery.materialRed
         }
 
+        this.backLightsBattery.baseRotation = this.backLightsBattery.object.rotation.clone()
         this.chassis.object.add(this.backLightsBattery.object)
 
         // Initialize battery status in three.js vector
@@ -2291,15 +2620,7 @@ export default class Car
                     this.headLights.material.opacity = this.physics.controls.actions.up ? 1 : 0.1
                 }
 
-                // const batteryLevelWidth = this.battery / 100; // Calculate the width based on battery percentage
-                //     this.backLightsBattery.object.children.forEach(child => {
-                //         child.material = this.backLightsBattery.materialWhite;
-                //         child.scale.set(batteryLevelWidth, 0.41, 0.41); // Update the scale to show battery level
-                //         child.material.opacity = 1;
-                //     })
-        
-                // Update the battery status position
-                this.updateBatteryPosition();
+                this.updateBatteryIndicatorVisual(this.battery);
             })
     }
 
@@ -2308,12 +2629,15 @@ export default class Car
         this.wheels = {}
         this.wheels.object = this.objects.getConvertedMesh(this.models.wheel.scene.children)
         this.wheels.items = []
+        this.wheels.targetQuaternions = []
+        this.wheels.visualSteeringSmoothing = 0.32
 
         for(let i = 0; i < 4; i++)
         {
             const object = this.wheels.object.clone()
 
             this.wheels.items.push(object)
+            this.wheels.targetQuaternions.push(new THREE.Quaternion())
             this.container.add(object)
         }
 
@@ -2322,13 +2646,44 @@ export default class Car
         {
             if(!this.transformControls.enabled)
             {
+                const wheelIndexes = this.physics.car.wheels.indexes
+                const frontLeftIndex = wheelIndexes?.frontLeft
+                const frontRightIndex = wheelIndexes?.frontRight
+                const smoothingFactor = Math.min(1, Math.max(this.wheels.visualSteeringSmoothing, this.time.delta * 0.02))
+
                 for(const _wheelKey in this.physics.car.wheels.bodies)
                 {
+                    const wheelIndex = Number(_wheelKey)
                     const wheelBody = this.physics.car.wheels.bodies[_wheelKey]
                     const wheelObject = this.wheels.items[_wheelKey]
+                    const targetQuaternion = this.wheels.targetQuaternions[_wheelKey]
+                    const isFrontWheel = wheelIndex === frontLeftIndex || wheelIndex === frontRightIndex
 
                     wheelObject.position.copy(wheelBody.position)
-                    wheelObject.quaternion.copy(wheelBody.quaternion)
+
+                    targetQuaternion.set(
+                        wheelBody.quaternion.x,
+                        wheelBody.quaternion.y,
+                        wheelBody.quaternion.z,
+                        wheelBody.quaternion.w
+                    )
+
+                    if(isFrontWheel)
+                    {
+                        if(wheelObject.userData.quaternionInitialized)
+                        {
+                            wheelObject.quaternion.slerp(targetQuaternion, smoothingFactor)
+                        }
+                        else
+                        {
+                            wheelObject.quaternion.copy(targetQuaternion)
+                            wheelObject.userData.quaternionInitialized = true
+                        }
+                    }
+                    else
+                    {
+                        wheelObject.quaternion.copy(targetQuaternion)
+                    }
                 }
             }
         })

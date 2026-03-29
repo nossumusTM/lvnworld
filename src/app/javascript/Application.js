@@ -31,6 +31,8 @@ const Application = ({ playerId, selectedWorldId, token, carName, matcaps }) => 
           this.token = token;
           this.carName = carName;
           this.matcaps = matcaps;
+          this.animationFrame = null;
+          this.isDocumentVisible = typeof document === 'undefined' ? true : document.visibilityState !== 'hidden';
 
         //   console.log("CAR NAME APP:", this.matcaps);
   
@@ -44,6 +46,13 @@ const Application = ({ playerId, selectedWorldId, token, carName, matcaps }) => 
           this.setPasses();
           this.setWorld(this.worldId, this.carName, this.matcaps);
           this.animate();
+
+          if (typeof document !== 'undefined') {
+            this.handleVisibilityChange = () => {
+              this.isDocumentVisible = document.visibilityState !== 'hidden';
+            };
+            document.addEventListener('visibilitychange', this.handleVisibilityChange);
+          }
 
           // Resize canvas when window size changes
           this.sizes.on('resize', this.resizeCanvas.bind(this));
@@ -64,6 +73,9 @@ const Application = ({ playerId, selectedWorldId, token, carName, matcaps }) => 
     
             window.addEventListener('touchstart', () => {
                 this.config.touch = true;
+                if (this.renderer) {
+                    this.renderer.setPixelRatio(this.getPixelRatio());
+                }
                 if (this.world && this.world.controls) {
                     this.world.controls.setTouch();
                 }
@@ -100,9 +112,7 @@ const Application = ({ playerId, selectedWorldId, token, carName, matcaps }) => 
         })
         // this.renderer.setClearColor(0x414141, 1)
         this.renderer.setClearColor(0x000000, 1)
-        // this.renderer.setPixelRatio(Math.min(Math.max(window.devicePixelRatio, 1.5), 2))
-        // this.renderer.setPixelRatio(2)
-        this.renderer.setPixelRatio(window.devicePixelRatio || 1);
+        this.renderer.setPixelRatio(this.getPixelRatio())
         this.renderer.setSize(this.sizes.viewport.width, this.sizes.viewport.height)
         this.renderer.autoClear = false
 
@@ -113,8 +123,23 @@ const Application = ({ playerId, selectedWorldId, token, carName, matcaps }) => 
         // Resize event
         this.sizes.on('resize', () =>
         {
+            this.renderer.setPixelRatio(this.getPixelRatio())
             this.renderer.setSize(this.sizes.viewport.width, this.sizes.viewport.height)
         })
+    }
+
+    getPixelRatio()
+    {
+        if(typeof window === 'undefined')
+        {
+            return 1
+        }
+
+        const rawPixelRatio = window.devicePixelRatio || 1
+        const isCompactViewport = window.innerWidth <= 1024
+        const maxPixelRatio = isCompactViewport ? 1.5 : 2
+
+        return Math.min(rawPixelRatio, maxPixelRatio)
     }
 
     /**
@@ -122,6 +147,7 @@ const Application = ({ playerId, selectedWorldId, token, carName, matcaps }) => 
     */
     resizeCanvas() {
         const { width, height } = this.sizes.viewport;
+        this.renderer.setPixelRatio(this.getPixelRatio());
         this.renderer.setSize(width, height);
 
         if (this.camera && this.camera.instance) {
@@ -131,7 +157,12 @@ const Application = ({ playerId, selectedWorldId, token, carName, matcaps }) => 
     }
 
     animate() {
-        requestAnimationFrame(() => this.animate());
+        this.animationFrame = requestAnimationFrame(() => this.animate());
+
+        if(!this.isDocumentVisible)
+        {
+            return
+        }
 
         if (this.camera) {
             this.camera.pan.reset();
@@ -412,6 +443,15 @@ const Application = ({ playerId, selectedWorldId, token, carName, matcaps }) => 
     {
         this.time.off('tick')
         this.sizes.off('resize')
+        if(this.animationFrame)
+        {
+            window.cancelAnimationFrame(this.animationFrame)
+            this.animationFrame = null
+        }
+        if(this.handleVisibilityChange)
+        {
+            document.removeEventListener('visibilitychange', this.handleVisibilityChange)
+        }
         if(this.handleCameraZoomButton)
         {
             window.removeEventListener('inaplanet-camera-zoom', this.handleCameraZoomButton)

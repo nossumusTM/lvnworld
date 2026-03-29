@@ -366,6 +366,13 @@ export default function Home() {
   const MAX_PLAYERS_PER_WORLD = 10;
   const wsRef = useRef<WebSocket | null>(null);
   const landingShowcaseRef = useRef<HTMLDivElement | null>(null);
+  const worldPlayerCountsRef = useRef(new Map<string, number>());
+  const currentCountsRef = useRef<Record<string, number>>({});
+  const searchQueryRef = useRef('');
+  const pendingPlayerCountRef = useRef<number | null>(null);
+  const playerCountFrameRef = useRef<number | null>(null);
+  const pendingWorldCountsRef = useRef<Record<string, number> | null>(null);
+  const worldCountsFrameRef = useRef<number | null>(null);
   const coreStackItems = [
     { label: 'Javascript', icon: <SiJavascript aria-hidden="true" /> },
     { label: 'Typescript', icon: <BiLogoTypescript aria-hidden="true" /> },
@@ -578,7 +585,6 @@ export default function Home() {
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080';
   const WS_BASE_URL = process.env.NEXT_PUBLIC_WS_BASE_URL || 'ws://localhost:8080';
 
-  const worldPlayerCounts = new Map<string, number>(); // To track player counts per worldId
   const applyStarterLoadout = useCallback((playerId: string) => {
     const starterLoadout = createRandomStarterLoadout();
 
@@ -609,6 +615,14 @@ export default function Home() {
 
       if (typeof landingCloseTimerRef.current === 'number') {
         window.clearTimeout(landingCloseTimerRef.current);
+      }
+
+      if (typeof playerCountFrameRef.current === 'number') {
+        window.cancelAnimationFrame(playerCountFrameRef.current);
+      }
+
+      if (typeof worldCountsFrameRef.current === 'number') {
+        window.cancelAnimationFrame(worldCountsFrameRef.current);
       }
     };
   }, []);
@@ -852,6 +866,60 @@ export default function Home() {
     }
   };
 
+  const applyWorldCounts = useCallback((counts: Record<string, number>) => {
+    updateWorldList(counts);
+
+    Object.entries(counts).forEach(([worldId, count]) => {
+      const location = worldLocations[worldId as keyof typeof worldLocations];
+      const previousCount = worldPlayerCountsRef.current.get(worldId) || 0;
+      const newCount = typeof count === 'number' ? count : 0;
+
+      worldPlayerCountsRef.current.set(worldId, newCount);
+
+      if (newCount > 0 && previousCount === 0 && location) {
+        addSignalEffect(worldId, location);
+      }
+
+      if (newCount === 0 && previousCount > 0) {
+        removeSignalEffect(worldId);
+      }
+    });
+  }, []);
+
+  const schedulePlayerCountUpdate = useCallback((count: number) => {
+    pendingPlayerCountRef.current = count;
+
+    if (playerCountFrameRef.current !== null) {
+      return;
+    }
+
+    playerCountFrameRef.current = window.requestAnimationFrame(() => {
+      playerCountFrameRef.current = null;
+
+      if (typeof pendingPlayerCountRef.current === 'number') {
+        updatePlayerCount(pendingPlayerCountRef.current);
+        pendingPlayerCountRef.current = null;
+      }
+    });
+  }, []);
+
+  const scheduleWorldCountsUpdate = useCallback((counts: Record<string, number>) => {
+    pendingWorldCountsRef.current = counts;
+
+    if (worldCountsFrameRef.current !== null) {
+      return;
+    }
+
+    worldCountsFrameRef.current = window.requestAnimationFrame(() => {
+      worldCountsFrameRef.current = null;
+
+      if (pendingWorldCountsRef.current) {
+        applyWorldCounts(pendingWorldCountsRef.current);
+        pendingWorldCountsRef.current = null;
+      }
+    });
+  }, [applyWorldCounts]);
+
   // Handle disconnection and refresh the page
   // useEffect(() => {
   //   if (!isConnected && hasAppInitialized) {
@@ -904,7 +972,7 @@ export default function Home() {
 
     wsRef.current.onopen = () => {
       console.log('WebSocket connected');
-      updateWorldList(currentCounts);
+      updateWorldList(currentCountsRef.current);
 
       if (playerId) {
           applyStarterLoadout(playerId);
@@ -961,7 +1029,7 @@ export default function Home() {
 
       // User count
       if (message.type === 'playerCount') {
-        updatePlayerCount(message.count);
+        schedulePlayerCountUpdate(message.count);
       }
   
       // Handle the 'worldCounts' type message
@@ -974,32 +1042,7 @@ export default function Home() {
   
           // Only update the world list if no world has been selected
           if (!selectedWorldId) {
-              // console.log("Updating world list with counts:", message.counts);
-              updateWorldList(message.counts);
-
-              Object.entries(message.counts).forEach(([worldId, count]) => {
-                const location = worldLocations[worldId as keyof typeof worldLocations];
-                const previousCount = worldPlayerCounts.get(worldId) || 0; // Get previous count or default to 0
-                const newCount = typeof count === 'number' ? count : 0;
-            
-                // Update the count in the map
-                worldPlayerCounts.set(worldId, newCount);
-            
-                // Add signal if count > 0 and signal doesn't already exist
-                if (newCount > 0 && previousCount === 0) {
-                    if (location) {
-                        // console.log(`Adding signal for ${worldId} at ${location.lat}, ${location.lng}`);
-                        addSignalEffect(worldId, location);
-                    }
-                }
-            
-                // Remove signal if count becomes 0
-                if (newCount === 0 && previousCount > 0) {
-                    // console.log(`Removing signal for ${worldId}, no players remaining.`);
-                    removeSignalEffect(worldId);
-                }
-            });            
-
+              scheduleWorldCountsUpdate(message.counts);
           } else {
               // console.log("World has already been selected, not updating list.");
           }
@@ -1038,7 +1081,7 @@ export default function Home() {
     // localStorage.removeItem('token');
     // sessionStorage.removeItem('token');
     // console.log("Session storage", sessionStorage);
-  }, [applyStarterLoadout]);
+  }, [applyStarterLoadout, schedulePlayerCountUpdate, scheduleWorldCountsUpdate, selectedWorldId]);
 
   const handleExitWorld = useCallback(() => {
     window.location.reload();
@@ -1052,15 +1095,11 @@ export default function Home() {
     );
   }, []);
 
-  let searchQuery = '';
-
 const filterWorlds = (event: React.FormEvent<HTMLInputElement>) => {
   const target = event.target as HTMLInputElement;
-  searchQuery = target.value.toLowerCase();
-  updateWorldList(currentCounts); // Reapply filtering based on the updated search query
+  searchQueryRef.current = target.value.toLowerCase();
+  updateWorldList(currentCountsRef.current); // Reapply filtering based on the updated search query
 };
-
-let currentCounts: Record<string, number> = {}; // Define the shape of `counts`
 
 const updatePlayerCount = (count: number) => {
   const playerCountElement = document.getElementById('userCountDisplay');
@@ -1082,14 +1121,14 @@ const updatePlayerCount = (count: number) => {
 };
 
 const updateWorldList = (counts: Record<string, number>) => {
-  currentCounts = counts; // Store the counts for reuse
+  currentCountsRef.current = counts; // Store the counts for reuse
   const worldList = document.getElementById('world-list');
 
   if (worldList) {
     worldList.innerHTML = ''; // Clear existing list items
 
     predefinedWorldIds
-      .filter((worldId) => worldId.toLowerCase().includes(searchQuery)) // Filter worlds by search query
+      .filter((worldId) => worldId.toLowerCase().includes(searchQueryRef.current)) // Filter worlds by search query
       .forEach((worldId) => {
         const index = predefinedWorldIds.indexOf(worldId); // Get the index for flag lookup
         const playerCount = counts[worldId] || 0; // Default to 0 if no count available
@@ -1365,11 +1404,11 @@ const handleWorldSelection = (worldId: string, listItem: HTMLLIElement, worldLis
                     </div>
                   </section>
                   <div className="landing-showcase__divider" aria-hidden="true"></div>
-                  <section className="landing-showcase__section">
+                  <section className="landing-showcase__section landing-showcase__section--clients">
                     <h2>{modalCopy.clientsTitle}</h2>
                     <p>{modalCopy.clientsCopy}</p>
                   </section>
-                  <section className="landing-showcase__section">
+                  <section className="landing-showcase__section landing-showcase__section--delivery">
                     <h2>{modalCopy.deliveryTitle}</h2>
                     <div className="landing-showcase__timeline">
                       {modalCopy.deliverySteps.map((step) => (

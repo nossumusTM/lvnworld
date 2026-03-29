@@ -9447,10 +9447,30 @@ export default class Physics
             return false
         }
 
-        return body.velocity.lengthSquared() < 0.01
-            && body.angularVelocity.lengthSquared() < 0.04
-            && Math.abs(car.forwardSpeed || 0) < 0.01
-            && Math.abs(car.accelerating || 0) < 0.0001
+        if(!car.wheels)
+        {
+            car.wheels = {}
+        }
+
+        const velocityLengthSquared = body.velocity.lengthSquared()
+        const angularVelocityLengthSquared = body.angularVelocity.lengthSquared()
+        const forwardSpeed = Math.abs(car.forwardSpeed || 0)
+        const accelerating = Math.abs(car.accelerating || 0)
+        const isFreezeActive = car.wheels.rollFreezeActive === true
+
+        const enterFreezeWindow = velocityLengthSquared < 0.01
+            && angularVelocityLengthSquared < 0.04
+            && forwardSpeed < 0.01
+            && accelerating < 0.0001
+
+        const stayFrozenWindow = velocityLengthSquared < 0.04
+            && angularVelocityLengthSquared < 0.16
+            && forwardSpeed < 0.03
+            && accelerating < 0.0001
+
+        car.wheels.rollFreezeActive = isFreezeActive ? stayFrozenWindow : enterFreezeWindow
+
+        return car.wheels.rollFreezeActive
     }
 
     syncWheelBodies(car, options = {})

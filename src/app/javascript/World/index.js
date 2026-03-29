@@ -76,6 +76,11 @@ export default class
         this.partyLeaderId = null;
 
         this.messageQueue = [];
+        this.latestQueuedPlayerUpdate = null;
+        this.pendingRemotePlayerUpdates = new Map();
+        this.recentlyRemovedRemotePlayers = new Map();
+        this.lastHudUpdateAt = 0;
+        this.lastPartyHudUpdateAt = 0;
         
         this.lastKnownPositions = {};
         this.coinActive = false;
@@ -912,6 +917,11 @@ export default class
                 while (this.messageQueue.length > 0) {
                     ws.send(JSON.stringify(this.messageQueue.shift()));
                 }
+
+                if (this.latestQueuedPlayerUpdate) {
+                    ws.send(JSON.stringify(this.latestQueuedPlayerUpdate));
+                    this.latestQueuedPlayerUpdate = null;
+                }
             };
     
             ws.onmessage = (event) => {
@@ -1042,36 +1052,7 @@ export default class
                             break;
 
                     case 'update':
-                        if (message.playerId !== this.playerId) {
-                            const remoteSelectedCar = this.normalizeCarName(
-                                message.selectedCar ||
-                                this.otherPlayerSelectedCars[message.playerId] ||
-                                'Kybertruck'
-                            );
-                            const currentSelectedCar = this.otherPlayerSelectedCars[message.playerId];
-
-                            if (!this.otherPlayers[message.playerId] || currentSelectedCar !== remoteSelectedCar) {
-                                this.createOtherPlayerCar(message.playerId, message);
-                            }
-
-                            const car = this.otherPlayers[message.playerId];
-                            if (car) {
-                                const previousScore = this.playerScores[message.playerId] || 0;
-                                const nextScore = typeof message.score === 'number' ? message.score : previousScore;
-                                this.updateCarState(car, message);
-                                if (nextScore > previousScore) {
-                                    this.animateScoreGain(car);
-                                }
-                                this.playerScores[message.playerId] = nextScore;
-                                this.updateMiniMap(
-                                    message.playerId,
-                                    message.position.x,
-                                    message.position.y,
-                                    message.rotation,
-                                    true
-                                );
-                            }
-                        }
+                        this.queueRemotePlayerUpdate(message);
                         break;
 
                     case 'coinUpdate':
@@ -1659,6 +1640,76 @@ export default class
                 this.ensureRemotePlayerIdText(remoteCar, remotePlayerId);
             });
         };
+
+        queueRemotePlayerUpdate = (message) => {
+            if (!message?.playerId || message.playerId === this.playerId) {
+                return;
+            }
+
+            this.pendingRemotePlayerUpdates.set(message.playerId, message);
+        };
+
+        applyRemotePlayerUpdate = (message) => {
+            if (!message || message.playerId === this.playerId) {
+                return;
+            }
+
+            const removedAt = this.recentlyRemovedRemotePlayers.get(message.playerId);
+            if (typeof removedAt === 'number') {
+                if (Date.now() - removedAt < 1500) {
+                    return;
+                }
+
+                this.recentlyRemovedRemotePlayers.delete(message.playerId);
+            }
+
+            const remoteSelectedCar = this.normalizeCarName(
+                message.selectedCar ||
+                this.otherPlayerSelectedCars[message.playerId] ||
+                'Kybertruck'
+            );
+            const currentSelectedCar = this.otherPlayerSelectedCars[message.playerId];
+
+            if (!this.otherPlayers[message.playerId] || currentSelectedCar !== remoteSelectedCar) {
+                this.createOtherPlayerCar(message.playerId, message);
+            }
+
+            const car = this.otherPlayers[message.playerId];
+            if (!car) {
+                return;
+            }
+
+            const previousScore = this.playerScores[message.playerId] || 0;
+            const nextScore = typeof message.score === 'number' ? message.score : previousScore;
+
+            this.updateCarState(car, message);
+
+            if (nextScore > previousScore) {
+                this.animateScoreGain(car);
+            }
+
+            this.playerScores[message.playerId] = nextScore;
+            this.updateMiniMap(
+                message.playerId,
+                message.position.x,
+                message.position.y,
+                message.rotation,
+                true
+            );
+        };
+
+        flushPendingRemotePlayerUpdates = () => {
+            if (!this.pendingRemotePlayerUpdates.size) {
+                return;
+            }
+
+            const pendingMessages = Array.from(this.pendingRemotePlayerUpdates.values());
+            this.pendingRemotePlayerUpdates.clear();
+
+            pendingMessages.forEach((message) => {
+                this.applyRemotePlayerUpdate(message);
+            });
+        };
         
         updateCarState = (car, data) => {
             if (!car || !data) return;
@@ -1669,40 +1720,22 @@ export default class
             if (data.position) car.physics[carKey].chassis.body.position.set(data.position.x, data.position.y, data.position.z);
             if (data.rotation) car.physics[carKey].chassis.body.quaternion.set(data.rotation.x, data.rotation.y, data.rotation.z, data.rotation.w);
             if (data.velocity) car.physics[carKey].chassis.body.velocity.set(data.velocity.x, data.velocity.y, data.velocity.z);
+            const previousBattery = car.__lastNetworkBattery;
             if (data.battery !== undefined) car.battery = data.battery;
             if (data.score !== undefined) car.score = data.score;
 
-            if (data.battery !== undefined) {
+            if (data.battery !== undefined && data.battery !== previousBattery) {
                 car.battery = data.battery;
-                const batteryLevelWidth = data.battery / 100;
-            
                 if (!car.chassis.object.children.includes(car.backLightsBattery.object)) {
                     car.chassis.object.add(car.backLightsBattery.object);
-                    car.chassis.object.add(car.objects.getConvertedMesh(car.models.chassis.scene.children));
                 }
-            
-                if (car.backLightsBattery) {
-                    // Add the battery visual representation
-                    if (car.backLightsBattery.object.children.length === 0) {
-                        const defaultChild = new THREE.Mesh(new THREE.BoxGeometry(0.055, 2.32, 0.18), car.backLightsBattery.materialRed);
-                        car.backLightsBattery.object.add(defaultChild);
-                        car.backLightsBattery.object.position.set(-0.22, 0, 1.1);
-                        car.backLightsBattery.object.rotation.set(0, 1, 0);
-                    }
-            
-                    // Update the battery color and scale based on battery level
-                    car.backLightsBattery.object.children.forEach(child => {
-                        const greenColor = data.battery / 100;
-                        const redValue = 1 - greenColor;
-                        child.material.color.setRGB(redValue, greenColor, 0.5);
-                        child.scale.set(batteryLevelWidth, 4, 3);
-                        child.material.opacity = 1;
-                    });
-            
-                } else {
-                    console.error("We cannot find the battery object");
-                }
+
+                car.updateBatteryIndicatorVisual?.(data.battery);
+
+                car.__lastNetworkBattery = data.battery;
             }
+
+            car.ensureBodyVisible?.();
 
             this.ensureRemotePlayerIdText(car, data.playerId);                                                  
 
@@ -1717,6 +1750,12 @@ export default class
             }
 
             if (data.controls) {
+                const previousControls = car.__lastRemoteControls || null;
+                const controlsAffectLights = !previousControls ||
+                    previousControls.up !== data.controls.up ||
+                    previousControls.down !== data.controls.down ||
+                    previousControls.brake !== data.controls.brake;
+
                 car.controls.actions.left = data.controls.left;
                 car.controls.actions.right = data.controls.right;
                 car.controls.actions.up = data.controls.up;
@@ -1726,12 +1765,12 @@ export default class
                 car.controls.actions.shoot = data.controls.shoot;
                 car.controls.actions.siren = data.controls.siren;
 
-                if (!car.isLightBlinkActive?.() && car.headLights?.material) {
+                if (controlsAffectLights && !car.isLightBlinkActive?.() && car.headLights?.material) {
                     car.headLights.material.transparent = true;
                     car.headLights.material.opacity = data.controls.up ? 1 : 0.1;
                 }
 
-                if (!car.isLightBlinkActive?.() && car.headLights?.object) {
+                if (controlsAffectLights && !car.isLightBlinkActive?.() && car.headLights?.object) {
                     car.headLights.object.traverse((child) => {
                         if (child instanceof THREE.Mesh) {
                             child.visible = true;
@@ -1749,12 +1788,12 @@ export default class
                     });
                 }
 
-                if (!car.isLightBlinkActive?.() && car.backLightsReverse?.material) {
+                if (controlsAffectLights && !car.isLightBlinkActive?.() && car.backLightsReverse?.material) {
                     car.backLightsReverse.material.transparent = true;
                     car.backLightsReverse.material.opacity = data.controls.down ? 1 : 0.5;
                 }
 
-                if (!car.isLightBlinkActive?.() && car.backLightsBrake?.material) {
+                if (controlsAffectLights && !car.isLightBlinkActive?.() && car.backLightsBrake?.material) {
                     car.backLightsBrake.material.transparent = true;
                     car.backLightsBrake.material.opacity = data.controls.brake ? 1 : 0.5;
                 }
@@ -1781,41 +1820,44 @@ export default class
                 }
 
                 car.physics.syncWheelBodies?.(car.physics[carKey], { freezeWheelRoll: true });
-
-                if (data.controls.boost) {
-                    car.createNitroEffect(car.physics[carKey].chassis.body.position, car.physics[carKey].chassis.body.quaternion, car.chassis.object)
-                }
+                car.__lastRemoteControls = {
+                    boost: data.controls.boost,
+                    brake: data.controls.brake,
+                    down: data.controls.down,
+                    left: data.controls.left,
+                    right: data.controls.right,
+                    shoot: data.controls.shoot,
+                    siren: data.controls.siren,
+                    steering: carSteeringValue,
+                    up: data.controls.up
+                };
 
                 if (data.controls.siren) {
                     car.createSirenEffect()
                 }
             }
             
-            if (car.backLightsBattery) {
-                const batteryLevelWidth = car.battery / 100;
-                car.backLightsBattery.object.children.forEach(child => {
-                    child.material = car.battery === 100 ? car.backLightsBattery.materialWhite : car.backLightsBattery.materialRed;
-                    child.scale.set(batteryLevelWidth, 0.41, 0.41);
-                    child.material.opacity = 1;
-                });
-            } else {
-                console.error("Cannot find the battery object");
-            }
+            car.updateBatteryIndicatorVisual?.(car.battery);
         };
 
         removePlayerCar = (playerId) => {
             const removedPlayerCar = this.otherPlayers[playerId];
 
             if (!removedPlayerCar) {
+                this.recentlyRemovedRemotePlayers.set(playerId, Date.now());
+                this.pendingRemotePlayerUpdates.delete(playerId);
                 delete this.physics.cars[playerId];
                 delete this.otherPlayers[playerId];
                 delete this.otherPlayerSelectedCars[playerId];
+                delete this.playerScores[playerId];
                 this.removeFromMiniMap(playerId);
                 return;
             }
 
             if (removedPlayerCar.__removing) return;
             removedPlayerCar.__removing = true;
+            this.recentlyRemovedRemotePlayers.set(playerId, Date.now());
+            this.pendingRemotePlayerUpdates.delete(playerId);
 
             const carKey = this.getCarKey(removedPlayerCar);
             const physicsCar = carKey ? removedPlayerCar.physics?.[carKey] : null;
@@ -1831,34 +1873,40 @@ export default class
                 try {
                     if (physicsCar && typeof physicsCar.destroy === 'function') {
                         physicsCar.destroy();
-                    } else {
-                        const vehicle = physicsCar?.vehicle;
-                        if (vehicle && typeof vehicle.removeFromWorld === 'function') {
-                            vehicle.removeFromWorld(this.physics.world);
-                        }
+                    }
 
-                        const wheelBodies = physicsCar?.wheels?.bodies || [];
-                        wheelBodies.forEach((wheelBody) => {
-                            if (wheelBody) {
-                                this.physics.world.removeBody(wheelBody);
-                            }
-                        });
+                    const vehicle = physicsCar?.vehicle;
+                    if (vehicle && typeof vehicle.removeFromWorld === 'function') {
+                        vehicle.removeFromWorld(this.physics.world);
+                    }
 
-                        const chassisBody = physicsCar?.chassis?.body;
-                        if (chassisBody) {
-                            this.physics.world.removeBody(chassisBody);
+                    const wheelBodies = physicsCar?.wheels?.bodies || [];
+                    wheelBodies.forEach((wheelBody) => {
+                        if (wheelBody?.world === this.physics.world) {
+                            this.physics.world.removeBody(wheelBody);
                         }
+                    });
 
-                        const modelContainer = physicsCar?.model?.container;
-                        if (modelContainer?.parent) {
-                            modelContainer.parent.remove(modelContainer);
-                        }
+                    const chassisBody = physicsCar?.chassis?.body;
+                    if (chassisBody?.world === this.physics.world) {
+                        this.physics.world.removeBody(chassisBody);
+                    }
+
+                    const modelContainer = physicsCar?.model?.container;
+                    if (modelContainer?.parent) {
+                        modelContainer.parent.remove(modelContainer);
                     }
                 } catch (_err) {
                     // no-op
                 }
 
                 if (removedPlayerCar.playerIdText?.parent) {
+                    if (removedPlayerCar.playerIdText.material?.map?.dispose) {
+                        removedPlayerCar.playerIdText.material.map.dispose();
+                    }
+                    if (removedPlayerCar.playerIdText.material?.dispose) {
+                        removedPlayerCar.playerIdText.material.dispose();
+                    }
                     removedPlayerCar.playerIdText.parent.remove(removedPlayerCar.playerIdText);
                 }
 
@@ -1886,9 +1934,31 @@ export default class
                     carContainer.parent.remove(carContainer);
                 }
 
+                carContainer?.traverse?.((child) => {
+                    if (child.geometry?.dispose) {
+                        child.geometry.dispose();
+                    }
+
+                    const materials = Array.isArray(child.material) ? child.material : [child.material];
+                    materials.forEach((material) => {
+                        if (!material) {
+                            return;
+                        }
+
+                        if (material.map?.dispose) {
+                            material.map.dispose();
+                        }
+
+                        if (material.dispose) {
+                            material.dispose();
+                        }
+                    });
+                });
+
                 delete this.physics.cars[playerId];
                 delete this.otherPlayers[playerId];
                 delete this.otherPlayerSelectedCars[playerId];
+                delete this.playerScores[playerId];
                 this.removeFromMiniMap(playerId);
                 console.log(`Player ${playerId} removed`);
             };
@@ -3922,9 +3992,7 @@ export default class
                 chatContainer.appendChild(sendButton);
         
                 this.time.on('tick', () => {
-                    Object.entries(this.otherPlayers || {}).forEach(([remotePlayerId, remoteCar]) => {
-                        this.ensureRemotePlayerIdText(remoteCar, remotePlayerId);
-                    });
+                    this.flushPendingRemotePlayerUpdates();
                     
                     // Check if score has reached the next multiple of 500
                     // if (playerCar.score >= lastAirdropScore + 5) {
@@ -4014,14 +4082,23 @@ export default class
                         // console.log("No coin to check for collision.");
                     }
 
-                    this.updateBatteryStatus(playerCar.battery);
-                    this.updateScoreStatus(playerCar.score);
-                    this.refreshPartyMemberHpUI();
+                    const now = typeof performance !== 'undefined' ? performance.now() : Date.now();
+
+                    if (now - this.lastHudUpdateAt >= 100) {
+                        this.updateBatteryStatus(playerCar.battery);
+                        this.updateScoreStatus(playerCar.score);
+                        this.lastHudUpdateAt = now;
+                    }
+
+                    if (now - this.lastPartyHudUpdateAt >= 100) {
+                        this.refreshPartyMemberHpUI();
+                        this.lastPartyHudUpdateAt = now;
+                    }
         
                     if (ws.readyState === WebSocket.OPEN) {
                         ws.send(JSON.stringify(updateData));
                     } else if (ws.readyState === WebSocket.CONNECTING) {
-                        this.messageQueue.push(updateData);
+                        this.latestQueuedPlayerUpdate = updateData;
                     }
         
                     this.updateMiniMap(
